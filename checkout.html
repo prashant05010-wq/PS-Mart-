@@ -1,3 +1,398 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Checkout | PS Mart</title><link rel="stylesheet" href="style.css"></head><body><header class="header"><a class="logo" href="index.html">🛍️ <b>PS</b> Mart</a></header><main><h1>Checkout</h1><div class="checkout"><div class="box"><h2>1. Delivery Address</h2><input placeholder="Full name"><input placeholder="Mobile number"><input placeholder="Address"><input placeholder="City"><input placeholder="PIN code"><h2>2. Payment Method</h2><label><input type="radio" name="pay" checked> UPI</label><label><input type="radio" name="pay"> Credit / Debit Card</label><label><input type="radio" name="pay"> Cash on Delivery</label></div><div id="summary" class="box"></div></div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!doctype html>
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1">
+
+<title>Checkout | PS Mart</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="header">
+
+  <a class="logo" href="index.html">
+    🛍️ <b>PS</b> Mart
+  </a>
+
+</header>
+
+
+<main>
+
+<h1>Checkout</h1>
+
+
+<div class="checkout">
+
+
+<!-- DELIVERY ADDRESS -->
+
+<div class="box">
+
+<h2>1. Delivery Address</h2>
+
+<input
+  id="fullName"
+  placeholder="Full name"
+  required
+>
+
+<input
+  id="phone"
+  placeholder="Mobile number"
+  type="tel"
+  required
+>
+
+<input
+  id="address"
+  placeholder="Address"
+  required
+>
+
+<input
+  id="city"
+  placeholder="City"
+  required
+>
+
+<input
+  id="pincode"
+  placeholder="PIN code"
+  type="number"
+  required
+>
+
+
+<h2>2. Payment Method</h2>
+
+
+<label>
+
+<input
+  type="radio"
+  name="pay"
+  value="UPI"
+  checked
+>
+
+UPI
+
+</label>
+
+
+<label>
+
+<input
+  type="radio"
+  name="pay"
+  value="Card"
+>
+
+Credit / Debit Card
+
+</label>
+
+
+<label>
+
+<input
+  type="radio"
+  name="pay"
+  value="COD"
+>
+
+Cash on Delivery
+
+</label>
+
+
+<button
+  class="goldbtn block"
+  onclick="placeOrder()"
+>
+
+  🛍️ Place Order
+
+</button>
+
+</div>
+
+
+<!-- ORDER SUMMARY -->
+
+<div
+  id="summary"
+  class="box"
+></div>
+
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="data.js"></script>
+
 <script src="app.js"></script>
+
+
+<script>
+
+
+async function placeOrder() {
+
+  const fullName =
+    document.getElementById("fullName").value.trim();
+
+  const phone =
+    document.getElementById("phone").value.trim();
+
+  const address =
+    document.getElementById("address").value.trim();
+
+  const city =
+    document.getElementById("city").value.trim();
+
+  const pincode =
+    document.getElementById("pincode").value.trim();
+
+
+  if (
+    !fullName ||
+    !phone ||
+    !address ||
+    !city ||
+    !pincode
+  ) {
+
+    alert("Please fill all delivery details.");
+
+    return;
+
+  }
+
+
+  const {
+    data: {
+      user
+    }
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (!user) {
+
+    alert("Please login first.");
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  const c = cart();
+
+
+  if (!c.length) {
+
+    alert("Your cart is empty.");
+
+    return;
+
+  }
+
+
+  const ids =
+    c.map(x => x.id);
+
+
+  const {
+    data: products,
+    error: productError
+  } =
+    await supabaseClient
+      .from("products")
+      .select("*")
+      .in("id", ids)
+      .eq("status", "approved");
+
+
+  if (productError) {
+
+    console.log(productError);
+
+    alert("Unable to load products.");
+
+    return;
+
+  }
+
+
+  let total = 0;
+
+
+  for (const item of c) {
+
+    const product =
+      products.find(
+        p =>
+          String(p.id) ===
+          String(item.id)
+      );
+
+
+    if (!product) continue;
+
+
+    total +=
+      Number(product.price) *
+      item.qty;
+
+  }
+
+
+  if (total <= 0) {
+
+    alert("Unable to calculate order total.");
+
+    return;
+
+  }
+
+
+  const deliveryAddress =
+    `${fullName}, ${phone}, ${address}, ${city} - ${pincode}`;
+
+
+  /* CREATE ORDER */
+
+  const {
+    data: order,
+    error: orderError
+  } =
+    await supabaseClient
+      .from("orders")
+      .insert({
+
+        customer_id: user.id,
+
+        total_amount: total,
+
+        status: "placed",
+
+        address: deliveryAddress
+
+      })
+      .select()
+      .single();
+
+
+  if (orderError) {
+
+    console.log(orderError);
+
+    alert(
+      "Order could not be created: " +
+      orderError.message
+    );
+
+    return;
+
+  }
+
+
+  /* CREATE ORDER ITEMS */
+
+
+  const orderItems = [];
+
+
+  for (const item of c) {
+
+    const product =
+      products.find(
+        p =>
+          String(p.id) ===
+          String(item.id)
+      );
+
+
+    if (!product) continue;
+
+
+    orderItems.push({
+
+      order_id: order.id,
+
+      product_id: product.id,
+
+      seller_id: product.seller_id,
+
+      quantity: item.qty,
+
+      price: product.price
+
+    });
+
+  }
+
+
+  const {
+    error: itemError
+  } =
+    await supabaseClient
+      .from("order_items")
+      .insert(orderItems);
+
+
+  if (itemError) {
+
+    console.log(itemError);
+
+    alert(
+      "Order created but items could not be saved."
+    );
+
+    return;
+
+  }
+
+
+  /* CLEAR CART */
+
+  localStorage.removeItem("psmart-cart");
+
+
+  updateCount();
+
+
+  alert(
+    "Order placed successfully! 🎉"
+  );
+
+
+  window.location.href =
+    "orders.html";
+
+}
+
+
+</script>
+
+</body>
+
+</html>
