@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PS Mart Admin Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f7f1e8;
+  color:#3b2618;
+}
+
+header{
+  background:#3b2618;
+  color:#f5c76a;
+  padding:18px 25px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+header h2{
+  margin:0;
+}
+
+.logout{
+  background:#f5c76a;
+  color:#3b2618;
+  border:0;
+  padding:10px 16px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.container{
+  max-width:1100px;
+  margin:30px auto;
+  padding:0 20px;
+}
+
+h1{
+  margin-bottom:25px;
+}
+
+.message{
+  background:white;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:20px;
+}
+
+.section{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  margin-bottom:25px;
+  box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
+
+.section h2{
+  margin-top:0;
+}
+
+.card{
+  border:1px solid #ddd;
+  border-radius:10px;
+  padding:15px;
+  margin:12px 0;
+}
+
+.card h3{
+  margin-top:0;
+}
+
+button{
+  border:0;
+  padding:9px 14px;
+  border-radius:7px;
+  cursor:pointer;
+  margin:5px;
+  font-weight:bold;
+}
+
+.approve{
+  background:#198754;
+  color:white;
+}
+
+.reject{
+  background:#dc3545;
+  color:white;
+}
+
+.refresh{
+  background:#3b2618;
+  color:#f5c76a;
+}
+
+.status{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:6px;
+  background:#fff3cd;
+  color:#856404;
+  font-size:13px;
+}
+
+.empty{
+  color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>👑 PS Mart Admin</h2>
+  <button class="logout" onclick="logoutAdmin()">Logout</button>
+</header>
+
+<div class="container">
+
+  <h1>Admin Dashboard</h1>
+
+  <div id="message" class="message">
+    Loading...
+  </div>
+
+  <div class="section">
+    <h2>👤 Seller Requests</h2>
+    <button class="refresh" onclick="loadSellers()">Refresh Sellers</button>
+    <div id="sellers">Loading sellers...</div>
+  </div>
+
+  <div class="section">
+    <h2>📦 Product Requests</h2>
+    <button class="refresh" onclick="loadProducts()">Refresh Products</button>
+    <div id="products">Loading products...</div>
+  </div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL = "https://nctscffhnztscczjxhat.supabase.co";
+
+/*
+  IMPORTANT:
+  Yahan wahi Supabase anon/public key use karo
+  jo tumne app.js me already use ki hai.
+*/
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+// ---------------- LOGIN CHECK ----------------
+
+async function checkAdmin(){
+
+  const {
+    data:{user}
+  } = await supabaseClient.auth.getUser();
+
+  if(!user){
+
+    document.getElementById("message").innerHTML =
+      "❌ Please login first.";
+
+    document.getElementById("sellers").innerHTML = "";
+    document.getElementById("products").innerHTML = "";
+
+    return false;
+  }
+
+  const {data:profile,error} =
+    await supabaseClient
+      .from("profiles")
+      .select("role,full_name")
+      .eq("id",user.id)
+      .single();
+
+  if(error){
+
+    document.getElementById("message").innerHTML =
+      "❌ Profile not found.";
+
+    return false;
+  }
+
+  if(profile.role !== "admin"){
+
+    document.getElementById("message").innerHTML =
+      "❌ Access denied. Admin only.";
+
+    document.getElementById("sellers").innerHTML = "";
+    document.getElementById("products").innerHTML = "";
+
+    return false;
+  }
+
+  document.getElementById("message").innerHTML =
+    "✅ Welcome Admin " + (profile.full_name || "");
+
+  return true;
+}
+
+
+// ---------------- SELLERS ----------------
+
+async function loadSellers(){
+
+  const allowed = await checkAdmin();
+
+  if(!allowed) return;
+
+  const {data,error} =
+    await supabaseClient
+      .from("sellers")
+      .select("*")
+      .order("created_at",{ascending:false});
+
+  const box = document.getElementById("sellers");
+
+  if(error){
+
+    box.innerHTML =
+      "❌ Error loading sellers: " + error.message;
+
+    return;
+  }
+
+  if(!data || data.length === 0){
+
+    box.innerHTML =
+      "<p class='empty'>No seller requests found.</p>";
+
+    return;
+  }
+
+  box.innerHTML = "";
+
+  data.forEach(seller => {
+
+    const card = document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML = `
+
+      <h3>${seller.shop_name || "No Shop Name"}</h3>
+
+      <p>
+        <b>Phone:</b>
+        ${seller.phone || "Not provided"}
+      </p>
+
+      <p>
+        <b>Status:</b>
+        <span class="status">
+          ${seller.status}
+        </span>
+      </p>
+
+      ${
+        seller.status === "pending"
+        ?
+        `
+        <button
+          class="approve"
+          onclick="updateSeller('${seller.id}','approved')">
+          ✅ Approve
+        </button>
+
+        <button
+          class="reject"
+          onclick="updateSeller('${seller.id}','rejected')">
+          ❌ Reject
+        </button>
+        `
+        :
+        ""
+      }
+
+    `;
+
+    box.appendChild(card);
+
+  });
+
+}
+
+
+// ---------------- UPDATE SELLER ----------------
+
+async function updateSeller(id,status){
+
+  const {error} =
+    await supabaseClient
+      .from("sellers")
+      .update({status:status})
+      .eq("id",id);
+
+  if(error){
+
+    alert("Error: " + error.message);
+
+    return;
+  }
+
+  alert(
+    status === "approved"
+    ? "Seller approved successfully."
+    : "Seller rejected."
+  );
+
+  loadSellers();
+}
+
+
+// ---------------- PRODUCTS ----------------
+
+async function loadProducts(){
+
+  const allowed = await checkAdmin();
+
+  if(!allowed) return;
+
+  const {data,error} =
+    await supabaseClient
+      .from("products")
+      .select(`
+        id,
+        name,
+        description,
+        price,
+        old_price,
+        stock,
+        image_url,
+        status,
+        sellers(shop_name)
+      `)
+      .order("created_at",{ascending:false});
+
+  const box = document.getElementById("products");
+
+  if(error){
+
+    box.innerHTML =
+      "❌ Error loading products: " + error.message;
+
+    return;
+  }
+
+  if(!data || data.length === 0){
+
+    box.innerHTML =
+      "<p class='empty'>No product requests found.</p>";
+
+    return;
+  }
+
+  box.innerHTML = "";
+
+  data.forEach(product => {
+
+    const card = document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML = `
+
+      <h3>${product.name || "Unnamed Product"}</h3>
+
+      <p>
+        <b>Seller:</b>
+        ${product.sellers?.shop_name || "Unknown"}
+      </p>
+
+      <p>
+        <b>Price:</b>
+        ₹${product.price || 0}
+      </p>
+
+      <p>
+        <b>Stock:</b>
+        ${product.stock || 0}
+      </p>
+
+      <p>
+        <b>Status:</b>
+        <span class="status">
+          ${product.status}
+        </span>
+      </p>
+
+      ${
+        product.image_url
+        ?
+        `<img
+          src="${product.image_url}"
+          style="width:100px;height:100px;object-fit:cover;border-radius:8px;"
+        >`
+        :
+        ""
+      }
+
+      ${
+        product.status === "pending"
+        ?
+        `
+        <br>
+
+        <button
+          class="approve"
+          onclick="updateProduct('${product.id}','approved')">
+          ✅ Approve
+        </button>
+
+        <button
+          class="reject"
+          onclick="updateProduct('${product.id}','rejected')">
+          ❌ Reject
+        </button>
+        `
+        :
+        ""
+      }
+
+    `;
+
+    box.appendChild(card);
+
+  });
+
+}
+
+
+// ---------------- UPDATE PRODUCT ----------------
+
+async function updateProduct(id,status){
+
+  const {error} =
+    await supabaseClient
+      .from("products")
+      .update({status:status})
+      .eq("id",id);
+
+  if(error){
+
+    alert("Error: " + error.message);
+
+    return;
+  }
+
+  alert(
+    status === "approved"
+    ? "Product approved successfully."
+    : "Product rejected."
+  );
+
+  loadProducts();
+}
+
+
+// ---------------- LOGOUT ----------------
+
+async function logoutAdmin(){
+
+  await supabaseClient.auth.signOut();
+
+  window.location.href = "login.html";
+
+}
+
+
+// ---------------- START ----------------
+
+(async function(){
+
+  const allowed = await checkAdmin();
+
+  if(allowed){
+
+    loadSellers();
+    loadProducts();
+
+  }
+
+})();
+
+</script>
+
+</body>
+</html>
