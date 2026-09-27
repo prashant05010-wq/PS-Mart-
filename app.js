@@ -415,7 +415,6 @@ async function detail() {
 /* =========================
    CART
 ========================= */
-
 async function renderCart() {
 
   const e = document.querySelector("#cart");
