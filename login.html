@@ -1,14 +1,16 @@
 <!doctype html>
 <html lang="en">
+
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>Login | PS Mart</title>
 
 <link rel="stylesheet" href="style.css">
 
 <style>
+
 .loginwrap{
   min-height:75vh;
   display:flex;
@@ -25,6 +27,7 @@
   border-radius:18px;
   box-shadow:0 10px 35px rgba(0,0,0,.12);
   text-align:center;
+  box-sizing:border-box;
 }
 
 .loginbox h1{
@@ -62,8 +65,8 @@
   opacity:.9;
 }
 
-#otpBox{
-  display:none;
+.signupbtn{
+  background:#333;
 }
 
 #message{
@@ -71,80 +74,77 @@
   font-weight:bold;
 }
 
-.backbtn{
-  background:none;
-  border:0;
-  color:#8a641d;
-  cursor:pointer;
-  margin-top:12px;
-}
 </style>
+
 </head>
 
 <body>
 
 <header class="header">
-  <a class="logo" href="index.html">🛍️ <b>PS</b> Mart</a>
+
+  <a class="logo" href="index.html">
+    🛍️ <b>PS</b> Mart
+  </a>
+
 </header>
+
 
 <main class="loginwrap">
 
-  <div class="loginbox">
+<div class="loginbox">
 
-    <h1>Welcome to PS Mart</h1>
+  <h1>Welcome to PS Mart</h1>
 
-    <p>Login with your mobile number</p>
-
-    <!-- PHONE BOX -->
-    <div id="phoneBox">
-
-      <input
-        type="tel"
-        id="phone"
-        placeholder="Enter 10 digit mobile number"
-        maxlength="10"
-        inputmode="numeric"
-      >
-
-      <button class="goldbtn" onclick="sendOTP()">
-        Send OTP
-      </button>
-
-    </div>
+  <p id="subtitle">Login to continue shopping</p>
 
 
-    <!-- OTP BOX -->
-    <div id="otpBox">
+  <!-- EMAIL -->
 
-      <p>OTP sent to your mobile number</p>
-
-      <input
-        type="text"
-        id="otp"
-        placeholder="Enter 6 digit OTP"
-        maxlength="6"
-        inputmode="numeric"
-      >
-
-      <button class="goldbtn" onclick="verifyOTP()">
-        Verify OTP & Login
-      </button>
-
-      <button class="backbtn" onclick="changeNumber()">
-        Change Mobile Number
-      </button>
-
-    </div>
+  <input
+    type="email"
+    id="email"
+    placeholder="Enter your email"
+  >
 
 
-    <div id="message"></div>
+  <!-- PASSWORD -->
 
-  </div>
+  <input
+    type="password"
+    id="password"
+    placeholder="Enter password"
+  >
+
+
+  <!-- LOGIN -->
+
+  <button
+    class="goldbtn"
+    onclick="loginUserNow()"
+  >
+    Login
+  </button>
+
+
+  <!-- CREATE ACCOUNT -->
+
+  <button
+    class="goldbtn signupbtn"
+    onclick="signupUserNow()"
+  >
+    Create Account
+  </button>
+
+
+  <div id="message"></div>
+
+</div>
 
 </main>
 
 
 <!-- SUPABASE -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="data.js"></script>
@@ -153,95 +153,40 @@
 
 <script>
 
-let userPhone = "";
+/* LOGIN */
+
+async function loginUserNow(){
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+  const message =
+    document.getElementById("message");
 
 
-/* SEND OTP */
-async function sendOTP(){
+  if(!email || !password){
 
-  const phoneInput = document.getElementById("phone");
-  const message = document.getElementById("message");
-
-  let phone = phoneInput.value.trim();
-
-  /* Check 10 digit Indian mobile number */
-
-  if(!/^[6-9]\d{9}$/.test(phone)){
-
-    message.innerText = "Please enter a valid 10 digit mobile number.";
-
-    return;
-  }
-
-  userPhone = "+91" + phone;
-
-  message.innerText = "Sending OTP...";
-
-  try{
-
-    const { error } = await supabaseClient.auth.signInWithOtp({
-
-      phone: userPhone
-
-    });
-
-    if(error){
-
-      console.error(error);
-
-      message.innerText = error.message;
-
-      return;
-    }
-
-    document.getElementById("phoneBox").style.display = "none";
-
-    document.getElementById("otpBox").style.display = "block";
-
-    message.innerText = "OTP sent successfully.";
-
-  }
-
-  catch(err){
-
-    console.error(err);
-
-    message.innerText = "Something went wrong. Please try again.";
-
-  }
-
-}
-
-
-/* VERIFY OTP */
-async function verifyOTP(){
-
-  const otp = document.getElementById("otp").value.trim();
-
-  const message = document.getElementById("message");
-
-
-  if(!/^\d{6}$/.test(otp)){
-
-    message.innerText = "Please enter 6 digit OTP.";
+    message.innerText =
+      "Please enter email and password.";
 
     return;
   }
 
 
-  message.innerText = "Verifying OTP...";
+  message.innerText = "Logging in...";
 
 
   try{
 
     const { data, error } =
-      await supabaseClient.auth.verifyOtp({
+      await supabaseClient.auth.signInWithPassword({
 
-        phone: userPhone,
+        email: email,
 
-        token: otp,
-
-        type: "sms"
+        password: password
 
       });
 
@@ -250,7 +195,92 @@ async function verifyOTP(){
 
       console.error(error);
 
-      message.innerText = error.message;
+      message.innerText =
+        error.message;
+
+      return;
+    }
+
+
+    message.innerText =
+      "Login successful!";
+
+
+    setTimeout(() => {
+
+      window.location.href =
+        "index.html";
+
+    }, 800);
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    message.innerText =
+      "Something went wrong.";
+
+  }
+
+}
+
+
+/* CREATE ACCOUNT */
+
+async function signupUserNow(){
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const password =
+    document.getElementById("password").value;
+
+  const message =
+    document.getElementById("message");
+
+
+  if(!email || !password){
+
+    message.innerText =
+      "Please enter email and password.";
+
+    return;
+  }
+
+
+  if(password.length < 6){
+
+    message.innerText =
+      "Password must be at least 6 characters.";
+
+    return;
+  }
+
+
+  message.innerText =
+    "Creating account...";
+
+
+  try{
+
+    const { data, error } =
+      await supabaseClient.auth.signUp({
+
+        email: email,
+
+        password: password
+
+      });
+
+
+    if(error){
+
+      console.error(error);
+
+      message.innerText =
+        error.message;
 
       return;
     }
@@ -258,43 +288,39 @@ async function verifyOTP(){
 
     if(data.session){
 
-      message.innerText = "Login successful!";
+      message.innerText =
+        "Account created successfully!";
 
       setTimeout(() => {
 
-        window.location.href = "index.html";
+        window.location.href =
+          "index.html";
 
-      }, 1000);
+      }, 800);
+
+    }
+    else{
+
+      message.innerText =
+        "Account created. Check your email to verify your account.";
 
     }
 
   }
 
-  catch(err){
+  catch(error){
 
-    console.error(err);
+    console.error(error);
 
-    message.innerText = "OTP verification failed.";
+    message.innerText =
+      "Something went wrong.";
 
   }
-
-}
-
-
-/* CHANGE NUMBER */
-function changeNumber(){
-
-  document.getElementById("phoneBox").style.display = "block";
-
-  document.getElementById("otpBox").style.display = "none";
-
-  document.getElementById("otp").value = "";
-
-  document.getElementById("message").innerText = "";
 
 }
 
 </script>
 
 </body>
+
 </html>
