@@ -186,12 +186,23 @@ async function loadProfile(){
         user.email || "Not available";
 
 
-    const { data: profile } =
-        await supabaseClient
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+   const { data: profile, error: profileError } =
+    await supabaseClient
+    .from("profiles")
+    .select("full_name, phone, role")
+    .eq("id", user.id)
+    .maybeSingle();
+
+if (profileError) {
+    console.log("Profile error:", profileError);
+}
+
+if (!profile) {
+    document.getElementById("name").textContent = "Not added";
+    document.getElementById("phone").textContent = "Not added";
+    document.getElementById("role").textContent = "customer";
+    return;
+}
 
 
     if(profile){
