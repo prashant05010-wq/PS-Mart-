@@ -223,11 +223,31 @@ async function loadEarnings(){
   }
 
 
-  let totalSales = 0;
-  let totalCommission = 0;
+ let totalSales = 0;
+let totalCommission = 0;
 
-  let html = "";
+let html = "";
 
+/* Get commission rate from Supabase */
+
+const { data:settings, error:settingsError } =
+  await supabaseClient
+  .from("marketplace_settings")
+  .select("commission_rate")
+  .limit(1)
+  .single();
+
+if(settingsError){
+
+  console.log(settingsError);
+
+  alert("Commission rate load nahi hua ❌");
+
+  return;
+}
+
+const commissionRate =
+  Number(settings.commission_rate) / 100;
 
   if(!items || items.length === 0){
 
@@ -293,10 +313,8 @@ async function loadEarnings(){
       10%
     */
 
-    const commission =
-      sale * 0.10;
-
-
+   const commission =
+  sale * commissionRate;
     const earning =
       sale - commission;
 
