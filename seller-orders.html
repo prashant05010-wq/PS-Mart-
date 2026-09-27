@@ -1,143 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Seller Orders | PS Mart</title>
+<meta charset="UTF-8">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-  <style>
-    *{
-      box-sizing:border-box;
-    }
+<title>Seller Orders | PS Mart</title>
 
-    body{
-      margin:0;
-      font-family:Arial,sans-serif;
-      background:#f7f1e8;
-      color:#3b2416;
-    }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    header{
-      background:#3b2416;
-      color:white;
-      padding:18px 25px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
+<style>
 
-    header h2{
-      margin:0;
-    }
+*{
+  box-sizing:border-box;
+}
 
-    .back{
-      color:white;
-      text-decoration:none;
-      background:#8b5e34;
-      padding:9px 14px;
-      border-radius:7px;
-    }
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f7f1e8;
+  color:#3b2416;
+}
 
-    .container{
-      width:92%;
-      max-width:1100px;
-      margin:25px auto;
-    }
+header{
+  background:#3b2416;
+  color:white;
+  padding:18px 25px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-    .top{
-      background:white;
-      padding:20px;
-      border-radius:12px;
-      margin-bottom:20px;
-      box-shadow:0 3px 15px rgba(0,0,0,.08);
-    }
+header h2{
+  margin:0;
+}
 
-    .order{
-      background:white;
-      padding:20px;
-      border-radius:12px;
-      margin-bottom:18px;
-      box-shadow:0 3px 15px rgba(0,0,0,.08);
-    }
+.back{
+  color:white;
+  text-decoration:none;
+  background:#8b5e34;
+  padding:9px 14px;
+  border-radius:7px;
+}
 
-    .order h3{
-      margin-top:0;
-      color:#8b5e34;
-    }
+.container{
+  width:92%;
+  max-width:1100px;
+  margin:25px auto;
+}
 
-    .row{
-      margin:8px 0;
-    }
+.top{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:20px;
+  box-shadow:0 3px 15px rgba(0,0,0,.08);
+}
 
-    .label{
-      font-weight:bold;
-    }
+.order{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:18px;
+  box-shadow:0 3px 15px rgba(0,0,0,.08);
+}
 
-    .status{
-      display:inline-block;
-      padding:7px 12px;
-      border-radius:15px;
-      background:#fff3cd;
-      color:#856404;
-      font-size:13px;
-      margin-top:8px;
-    }
+.order h3{
+  margin-top:0;
+  color:#8b5e34;
+}
 
-    .empty{
-      background:white;
-      padding:35px;
-      text-align:center;
-      border-radius:12px;
-    }
+.row{
+  margin:8px 0;
+}
 
-    #message{
-      text-align:center;
-      margin:20px 0;
-      font-weight:bold;
-    }
+.label{
+  font-weight:bold;
+}
 
-    @media(max-width:600px){
-      header{
-        padding:15px;
-      }
+.status{
+  display:inline-block;
+  padding:7px 12px;
+  border-radius:15px;
+  background:#fff3cd;
+  color:#856404;
+  font-size:13px;
+  margin-top:8px;
+}
 
-      .container{
-        width:94%;
-      }
-    }
-  </style>
+.status-box{
+  margin-top:18px;
+  padding-top:18px;
+  border-top:1px solid #eee;
+}
+
+.status-box label{
+  display:block;
+  font-weight:bold;
+  margin-bottom:8px;
+}
+
+.status-select{
+  width:100%;
+  max-width:350px;
+  padding:11px;
+  border:1px solid #ccc;
+  border-radius:7px;
+  font-size:15px;
+  background:white;
+}
+
+.update-btn{
+  margin-top:10px;
+  padding:11px 18px;
+  border:0;
+  border-radius:7px;
+  background:#8b5e34;
+  color:white;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.update-btn:hover{
+  opacity:.9;
+}
+
+.update-btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.empty{
+  background:white;
+  padding:35px;
+  text-align:center;
+  border-radius:12px;
+}
+
+#message{
+  text-align:center;
+  margin:20px 0;
+  font-weight:bold;
+}
+
+.success{
+  color:green;
+}
+
+.error{
+  color:#d32f2f;
+}
+
+@media(max-width:600px){
+
+  header{
+    padding:15px;
+  }
+
+  .container{
+    width:94%;
+  }
+
+}
+
+</style>
+
 </head>
+
 
 <body>
 
+
 <header>
+
   <h2>🏪 Seller Orders</h2>
-  <a class="back" href="seller-dashboard.html">Dashboard</a>
+
+  <a
+    class="back"
+    href="seller-dashboard.html">
+    Dashboard
+  </a>
+
 </header>
+
 
 <div class="container">
 
+
   <div class="top">
+
     <h1>Customer Orders</h1>
-    <p>Orders containing your products will appear here.</p>
+
+    <p>
+      Manage your customer orders and update delivery status.
+    </p>
+
   </div>
 
-  <div id="message">Loading orders...</div>
+
+  <div id="message">
+    Loading orders...
+  </div>
+
 
   <div id="orders"></div>
 
+
 </div>
 
+
 <script>
+
+
+/* =========================
+   SUPABASE
+========================= */
 
 const SUPABASE_URL =
 "https://nctscffhnztscczjxhat.supabase.co";
 
 const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+"YOUR_EXISTING_ANON_KEY";
+
 
 const supabaseClient =
 window.supabase.createClient(
@@ -145,6 +232,10 @@ window.supabase.createClient(
   SUPABASE_KEY
 );
 
+
+/* =========================
+   LOAD ORDERS
+========================= */
 
 async function loadOrders(){
 
@@ -156,9 +247,12 @@ async function loadOrders(){
 
 
   const {
-    data: { user },
-    error: authError
-  } = await supabaseClient.auth.getUser();
+    data:{
+      user
+    },
+    error:authError
+  } =
+    await supabaseClient.auth.getUser();
 
 
   if(authError || !user){
@@ -167,16 +261,29 @@ async function loadOrders(){
       "Please login first.";
 
     return;
+
   }
 
 
+  /* =========================
+     SELLER
+  ========================= */
+
   const {
-    data: seller,
-    error: sellerError
-  } = await supabaseClient
+    data:seller,
+    error:sellerError
+  } =
+    await supabaseClient
+
     .from("sellers")
+
     .select("id")
-    .eq("user_id", user.id)
+
+    .eq(
+      "user_id",
+      user.id
+    )
+
     .maybeSingle();
 
 
@@ -186,6 +293,7 @@ async function loadOrders(){
       sellerError.message;
 
     return;
+
   }
 
 
@@ -195,33 +303,53 @@ async function loadOrders(){
       "Seller account not found.";
 
     return;
+
   }
 
+
+  /* =========================
+     ORDER ITEMS
+  ========================= */
 
   const {
     data,
     error
-  } = await supabaseClient
+  } =
+    await supabaseClient
+
     .from("order_items")
+
     .select(`
+
       id,
       order_id,
       product_id,
       quantity,
       price,
+
       orders(
         total_amount,
         status,
         address
       ),
+
       products(
         name
       )
+
     `)
-    .eq("seller_id", seller.id)
-    .order("id", {
-      ascending:false
-    });
+
+    .eq(
+      "seller_id",
+      seller.id
+    )
+
+    .order(
+      "id",
+      {
+        ascending:false
+      }
+    );
 
 
   if(error){
@@ -230,6 +358,7 @@ async function loadOrders(){
       error.message;
 
     return;
+
   }
 
 
@@ -239,17 +368,32 @@ async function loadOrders(){
   if(!data || data.length === 0){
 
     ordersBox.innerHTML = `
+
       <div class="empty">
-        <h2>No orders yet</h2>
-        <p>Customer orders will appear here.</p>
+
+        <h2>
+          No orders yet
+        </h2>
+
+        <p>
+          Customer orders will appear here.
+        </p>
+
       </div>
+
     `;
 
     return;
+
   }
 
 
+  /* =========================
+     DISPLAY ORDERS
+  ========================= */
+
   ordersBox.innerHTML =
+
     data.map(item => {
 
       const order =
@@ -258,41 +402,169 @@ async function loadOrders(){
       const product =
         item.products || {};
 
+      const status =
+        order.status || "placed";
+
+
       return `
+
         <div class="order">
 
-          <h3>Order #${item.order_id}</h3>
+
+          <h3>
+            Order #${item.order_id}
+          </h3>
+
 
           <div class="row">
-            <span class="label">Product:</span>
+
+            <span class="label">
+              Product:
+            </span>
+
             ${product.name || "Product"}
+
           </div>
 
+
           <div class="row">
-            <span class="label">Quantity:</span>
+
+            <span class="label">
+              Quantity:
+            </span>
+
             ${item.quantity}
+
           </div>
 
-          <div class="row">
-            <span class="label">Item Amount:</span>
-            ₹${item.price}
-          </div>
 
           <div class="row">
-            <span class="label">Order Total:</span>
-            ₹${order.total_amount || 0}
+
+            <span class="label">
+              Item Amount:
+            </span>
+
+            ₹${Number(
+              item.price || 0
+            ).toLocaleString("en-IN")}
+
           </div>
 
+
           <div class="row">
-            <span class="label">Delivery Address:</span>
+
+            <span class="label">
+              Order Total:
+            </span>
+
+            ₹${Number(
+              order.total_amount || 0
+            ).toLocaleString("en-IN")}
+
+          </div>
+
+
+          <div class="row">
+
+            <span class="label">
+              Delivery Address:
+            </span>
+
             ${order.address || "Not available"}
+
           </div>
+
 
           <span class="status">
-            ${order.status || "placed"}
+
+            Current Status:
+            ${status.replaceAll("_"," ")}
+
           </span>
 
+
+          <!-- STATUS UPDATE -->
+
+          <div class="status-box">
+
+            <label>
+              Update Order Status
+            </label>
+
+
+            <select
+              class="status-select"
+              id="status-${item.order_id}"
+            >
+
+              <option
+                value="placed"
+                ${status === "placed" ? "selected" : ""}
+              >
+                📦 Order Placed
+              </option>
+
+
+              <option
+                value="confirmed"
+                ${status === "confirmed" ? "selected" : ""}
+              >
+                ✓ Confirmed
+              </option>
+
+
+              <option
+                value="shipped"
+                ${status === "shipped" ? "selected" : ""}
+              >
+                🚚 Shipped
+              </option>
+
+
+              <option
+                value="out_for_delivery"
+                ${status === "out_for_delivery" ? "selected" : ""}
+              >
+                🛵 Out for Delivery
+              </option>
+
+
+              <option
+                value="delivered"
+                ${status === "delivered" ? "selected" : ""}
+              >
+                ✓ Delivered
+              </option>
+
+
+              <option
+                value="cancelled"
+                ${status === "cancelled" ? "selected" : ""}
+              >
+                ✕ Cancelled
+              </option>
+
+            </select>
+
+
+            <br>
+
+
+            <button
+              class="update-btn"
+              onclick="updateStatus('${item.order_id}')"
+            >
+
+              Update Status
+
+            </button>
+
+
+          </div>
+
+
         </div>
+
       `;
 
     }).join("");
@@ -300,9 +572,81 @@ async function loadOrders(){
 }
 
 
+/* =========================
+   UPDATE STATUS
+========================= */
+
+async function updateStatus(orderId){
+
+  const select =
+    document.getElementById(
+      "status-" + orderId
+    );
+
+
+  if(!select){
+
+    return;
+
+  }
+
+
+  const newStatus =
+    select.value;
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+
+    .from("orders")
+
+    .update({
+
+      status:newStatus
+
+    })
+
+    .eq(
+      "id",
+      orderId
+    );
+
+
+  if(error){
+
+    alert(
+      "Status update failed:\n" +
+      error.message
+    );
+
+    console.log(error);
+
+    return;
+
+  }
+
+
+  alert(
+    "Order status updated successfully ✓"
+  );
+
+
+  await loadOrders();
+
+}
+
+
+/* =========================
+   START
+========================= */
+
 loadOrders();
 
 </script>
 
+
 </body>
+
 </html>
