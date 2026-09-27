@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Seller Earnings | PS Mart</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:#f7f1e8;
+      color:#3b2416;
+    }
+
+    header{
+      background:#3b2416;
+      color:white;
+      padding:18px 25px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    header h2{
+      margin:0;
+    }
+
+    .back{
+      color:white;
+      text-decoration:none;
+      background:#8b5e34;
+      padding:9px 14px;
+      border-radius:7px;
+    }
+
+    .container{
+      width:92%;
+      max-width:1100px;
+      margin:25px auto;
+    }
+
+    .top{
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      margin-bottom:20px;
+      box-shadow:0 3px 15px rgba(0,0,0,.08);
+    }
+
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:18px;
+      margin-bottom:25px;
+    }
+
+    .card{
+      background:white;
+      padding:25px;
+      border-radius:12px;
+      text-align:center;
+      box-shadow:0 3px 15px rgba(0,0,0,.08);
+    }
+
+    .icon{
+      font-size:35px;
+    }
+
+    .card h3{
+      margin:12px 0 8px;
+      color:#666;
+    }
+
+    .amount{
+      font-size:27px;
+      font-weight:bold;
+      color:#8b5e34;
+    }
+
+    .tablebox{
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      overflow-x:auto;
+      box-shadow:0 3px 15px rgba(0,0,0,.08);
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    th,td{
+      padding:12px;
+      border-bottom:1px solid #eee;
+      text-align:left;
+    }
+
+    th{
+      background:#f7f1e8;
+    }
+
+    .empty{
+      text-align:center;
+      padding:30px;
+    }
+
+    #message{
+      text-align:center;
+      margin:20px 0;
+      font-weight:bold;
+    }
+
+    @media(max-width:700px){
+      .cards{
+        grid-template-columns:1fr;
+      }
+
+      header{
+        padding:15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h2>💰 Seller Earnings</h2>
+  <a class="back" href="seller-dashboard.html">Dashboard</a>
+</header>
+
+<div class="container">
+
+  <div class="top">
+    <h1>My Earnings</h1>
+    <p>Your sales and commission summary.</p>
+  </div>
+
+  <div id="message">Loading earnings...</div>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="icon">🧾</div>
+      <h3>Total Orders</h3>
+      <div class="amount" id="totalOrders">0</div>
+    </div>
+
+    <div class="card">
+      <div class="icon">💰</div>
+      <h3>Total Sales</h3>
+      <div class="amount" id="totalSales">₹0</div>
+    </div>
+
+    <div class="card">
+      <div class="icon">💵</div>
+      <h3>Commission</h3>
+      <div class="amount" id="totalCommission">₹0</div>
+    </div>
+
+  </div>
+
+  <div class="tablebox">
+
+    <h2>Sales Details</h2>
+
+    <div id="salesTable">
+      <div class="empty">
+        No sales yet.
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://nctscffhnztscczjxhat.supabase.co";
+
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+async function loadEarnings(){
+
+  const message =
+    document.getElementById("message");
+
+  const table =
+    document.getElementById("salesTable");
+
+
+  const {
+    data: { user },
+    error: authError
+  } = await supabaseClient.auth.getUser();
+
+
+  if(authError || !user){
+
+    message.innerText =
+      "Please login first.";
+
+    return;
+  }
+
+
+  const {
+    data: seller,
+    error: sellerError
+  } = await supabaseClient
+    .from("sellers")
+    .select("id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+
+  if(sellerError){
+
+    message.innerText =
+      sellerError.message;
+
+    return;
+  }
+
+
+  if(!seller){
+
+    message.innerText =
+      "Seller account not found.";
+
+    return;
+  }
+
+
+  const {
+    data: commissions,
+    error
+  } = await supabaseClient
+    .from("commissions")
+    .select(`
+      id,
+      order_id,
+      amount,
+      rate
+    `)
+    .eq("seller_id", seller.id)
+    .order("id", {
+      ascending:false
+    });
+
+
+  if(error){
+
+    message.innerText =
+      error.message;
+
+    return;
+  }
+
+
+  message.innerText = "";
+
+
+  if(!commissions || commissions.length === 0){
+
+    document.getElementById("totalOrders").innerText = "0";
+    document.getElementById("totalSales").innerText = "₹0";
+    document.getElementById("totalCommission").innerText = "₹0";
+
+    table.innerHTML = `
+      <div class="empty">
+        <h3>No sales yet</h3>
+        <p>Your earnings will appear here after orders are completed.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  let totalCommission = 0;
+  let totalSales = 0;
+
+
+  commissions.forEach(item => {
+
+    const commission =
+      Number(item.amount) || 0;
+
+    const rate =
+      Number(item.rate) || 0;
+
+    totalCommission += commission;
+
+    if(rate < 100){
+
+      totalSales +=
+        commission / (rate / 100);
+
+    }
+
+  });
+
+
+  document.getElementById("totalOrders").innerText =
+    commissions.length;
+
+  document.getElementById("totalSales").innerText =
+    "₹" + Math.round(totalSales);
+
+  document.getElementById("totalCommission").innerText =
+    "₹" + Math.round(totalCommission);
+
+
+  table.innerHTML = `
+    <table>
+
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Commission</th>
+          <th>Rate</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        ${commissions.map(item => `
+          <tr>
+
+            <td>#${item.order_id}</td>
+
+            <td>
+              ₹${item.amount}
+            </td>
+
+            <td>
+              ${item.rate}%
+            </td>
+
+          </tr>
+        `).join("")}
+
+      </tbody>
+
+    </table>
+  `;
+
+}
+
+
+loadEarnings();
+
+</script>
+
+</body>
+</html>
