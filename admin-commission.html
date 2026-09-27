@@ -150,6 +150,56 @@ supabase.createClient(
 */
 
 const DEFAULT_RATE = 10;
+  async function saveCommission(){
+
+  const input =
+    document.getElementById("commissionRate");
+
+  const rate =
+    Number(input.value);
+
+  if(
+    isNaN(rate) ||
+    rate < 0 ||
+    rate > 100
+  ){
+    alert("Please enter a rate between 0 and 100.");
+    return;
+  }
+
+  const { data, error } =
+    await supabaseClient
+    .from("marketplace_settings")
+    .select("id")
+    .limit(1)
+    .single();
+
+  if(error){
+    console.log(error);
+    alert("Commission setting nahi mili ❌");
+    return;
+  }
+
+  const { error:updateError } =
+    await supabaseClient
+    .from("marketplace_settings")
+    .update({
+      commission_rate: rate,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", data.id);
+
+  if(updateError){
+    console.log(updateError);
+    alert("Commission save nahi hua ❌");
+    return;
+  }
+
+  document.getElementById("currentRate").innerText =
+    rate + "%";
+
+  alert("Commission rate saved successfully ✅");
+}
 
 
 async function loadCommission(){
