@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Profile | PS Mart</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f7f1e8;
+    color:#3b2416;
+}
+
+header{
+    background:#4b2e1f;
+    color:white;
+    padding:18px;
+    text-align:center;
+}
+
+.container{
+    max-width:700px;
+    margin:30px auto;
+    padding:20px;
+}
+
+.card{
+    background:white;
+    border-radius:14px;
+    padding:25px;
+    margin-bottom:20px;
+    box-shadow:0 4px 15px rgba(0,0,0,.12);
+}
+
+h2{
+    margin-top:0;
+    color:#6b421f;
+}
+
+.info{
+    padding:12px 0;
+    border-bottom:1px solid #eee;
+}
+
+button,
+a.btn{
+    display:block;
+    width:100%;
+    box-sizing:border-box;
+    padding:13px;
+    margin-top:12px;
+    border:none;
+    border-radius:8px;
+    background:#b8860b;
+    color:white;
+    text-align:center;
+    text-decoration:none;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.logout{
+    background:#8b2e2e !important;
+}
+
+.hidden{
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>👤 My Profile</h1>
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>Account Details</h2>
+
+        <div class="info">
+            <strong>Name:</strong>
+            <span id="name">Loading...</span>
+        </div>
+
+        <div class="info">
+            <strong>Email:</strong>
+            <span id="email">Loading...</span>
+        </div>
+
+        <div class="info">
+            <strong>Phone:</strong>
+            <span id="phone">Loading...</span>
+        </div>
+
+        <div class="info">
+            <strong>Role:</strong>
+            <span id="role">Loading...</span>
+        </div>
+
+    </div>
+
+
+    <!-- Seller Section -->
+
+    <div class="card hidden" id="sellerSection">
+
+        <h2>🏪 Seller</h2>
+
+        <a class="btn" href="seller-dashboard.html">
+            Seller Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- Admin Section -->
+
+    <div class="card hidden" id="adminSection">
+
+        <h2>⚙️ Admin</h2>
+
+        <a class="btn" href="admin-dashboard.html">
+            Admin Dashboard
+        </a>
+
+    </div>
+
+
+    <div class="card">
+
+        <a class="btn" href="index.html">
+            🏠 Home
+        </a>
+
+        <button class="logout" onclick="logout()">
+            🚪 Logout
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://nctscffhnztscczjxhat.supabase.co";
+
+const SUPABASE_KEY =
+"<YOUR_SUPABASE_ANON_KEY>";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+async function loadProfile(){
+
+    const {
+        data: { user },
+        error
+    } = await supabaseClient.auth.getUser();
+
+
+    if(error || !user){
+
+        window.location.href = "login.html";
+        return;
+
+    }
+
+
+    document.getElementById("email").textContent =
+        user.email || "Not available";
+
+
+    const { data: profile } =
+        await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+
+    if(profile){
+
+        document.getElementById("name").textContent =
+            profile.full_name || "Not added";
+
+        document.getElementById("phone").textContent =
+            profile.phone || "Not added";
+
+        document.getElementById("role").textContent =
+            profile.role || "customer";
+
+
+        if(profile.role === "seller"){
+
+            document
+            .getElementById("sellerSection")
+            .classList.remove("hidden");
+
+        }
+
+
+        if(profile.role === "admin"){
+
+            document
+            .getElementById("adminSection")
+            .classList.remove("hidden");
+
+        }
+
+    }
+
+}
+
+
+async function logout(){
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href = "index.html";
+
+}
+
+
+loadProfile();
+
+</script>
+
+</body>
+</html>
