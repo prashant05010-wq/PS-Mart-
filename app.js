@@ -704,3 +704,49 @@ detail();
 renderCart();
 
 summary();
+/* =========================
+   LOGIN STATE
+========================= */
+
+async function updateLoginState() {
+
+  const {
+    data: {
+      user
+    }
+  } = await supabaseClient.auth.getUser();
+
+  const loginLinks =
+    document.querySelectorAll(
+      'a[href="login.html"]'
+    );
+
+  if (user) {
+
+    loginLinks.forEach(link => {
+
+      link.textContent = "👤 Profile";
+
+      link.href = "profile.html";
+
+    });
+
+  }
+
+}
+
+
+/* WATCH LOGIN / LOGOUT */
+
+supabaseClient.auth.onAuthStateChange(
+  (event, session) => {
+
+    updateLoginState();
+
+  }
+);
+
+
+/* CHECK CURRENT SESSION */
+
+updateLoginState();
