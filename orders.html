@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>My Orders | PS Mart</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="header">
+
+  <a class="logo" href="index.html">
+    🛍️ <b>PS</b> Mart
+  </a>
+
+</header>
+
+<main>
+
+<h1>My Orders</h1>
+
+<div id="orders" class="orders">
+  Loading orders...
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+
+
+<script>
+
+async function loadOrders() {
+
+  const box =
+    document.getElementById("orders");
+
+  const {
+    data: {
+      user
+    }
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (!user) {
+
+    box.innerHTML = `
+      <div class="empty">
+
+        Please login first.
+
+        <br><br>
+
+        <a
+          class="goldbtn"
+          href="login.html">
+          Login
+        </a>
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const {
+    data: orders,
+    error
+  } =
+    await supabaseClient
+
+      .from("orders")
+
+      .select("*")
+
+      .eq(
+        "customer_id",
+        user.id
+      )
+
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (error) {
+
+    console.log(
+      "Orders error:",
+      error
+    );
+
+    box.innerHTML = `
+      <div class="empty">
+
+        Unable to load orders.
+
+        <br><br>
+
+        ${error.message}
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if (!orders || !orders.length) {
+
+    box.innerHTML = `
+      <div class="empty">
+
+        🛒 No orders yet.
+
+        <br><br>
+
+        <a
+          class="goldbtn"
+          href="products.html">
+          Start Shopping
+        </a>
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  box.innerHTML = orders.map(order => `
+
+    <div class="box" style="margin-bottom:20px;">
+
+      <h2>
+        Order #${order.id}
+      </h2>
+
+      <p>
+        <b>Status:</b>
+        ${order.status}
+      </p>
+
+      <p>
+        <b>Total:</b>
+        ₹${Number(
+          order.total_amount || 0
+        ).toLocaleString("en-IN")}
+      </p>
+
+      <p>
+        <b>Delivery Address:</b><br>
+        ${order.address || "Not available"}
+      </p>
+
+    </div>
+
+  `).join("");
+
+}
+
+
+loadOrders();
+
+</script>
+
+</body>
+
+</html>
