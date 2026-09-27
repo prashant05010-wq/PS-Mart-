@@ -483,86 +483,90 @@ async function loadOrders(){
           </span>
 
 
-          <!-- STATUS UPDATE -->
+        
+             <!-- STATUS UPDATE -->
 
-          <div class="status-box">
+<div class="status-box">
 
-            <label>
-              Update Order Status
-            </label>
+  ${
+    status === "cancelled"
 
+    ? `
+      <div style="
+        padding:12px;
+        background:#fdeaea;
+        color:#d32f2f;
+        border-radius:7px;
+        font-weight:bold;
+      ">
+        ❌ This order was cancelled by the customer.
+      </div>
+    `
 
-            <select
-              class="status-select"
-              id="status-${item.order_id}"
-            >
+    : `
+      <label>
+        Update Order Status
+      </label>
 
-              <option
-                value="placed"
-                ${status === "placed" ? "selected" : ""}
-              >
-                📦 Order Placed
-              </option>
+      <select
+        class="status-select"
+        id="status-${item.order_id}"
+      >
+        <option
+          value="placed"
+          ${status === "placed" ? "selected" : ""}
+        >
+          📦 Order Placed
+        </option>
 
+        <option
+          value="confirmed"
+          ${status === "confirmed" ? "selected" : ""}
+        >
+          ✓ Confirmed
+        </option>
 
-              <option
-                value="confirmed"
-                ${status === "confirmed" ? "selected" : ""}
-              >
-                ✓ Confirmed
-              </option>
+        <option
+          value="shipped"
+          ${status === "shipped" ? "selected" : ""}
+        >
+          🚚 Shipped
+        </option>
 
+        <option
+          value="out_for_delivery"
+          ${status === "out_for_delivery" ? "selected" : ""}
+        >
+          🛵 Out for Delivery
+        </option>
 
-              <option
-                value="shipped"
-                ${status === "shipped" ? "selected" : ""}
-              >
-                🚚 Shipped
-              </option>
+        <option
+          value="delivered"
+          ${status === "delivered" ? "selected" : ""}
+        >
+          ✓ Delivered
+        </option>
 
+        <option
+          value="cancelled"
+          ${status === "cancelled" ? "selected" : ""}
+        >
+          ✕ Cancelled
+        </option>
+      </select>
 
-              <option
-                value="out_for_delivery"
-                ${status === "out_for_delivery" ? "selected" : ""}
-              >
-                🛵 Out for Delivery
-              </option>
+      <br>
 
+      <button
+        class="update-btn"
+        onclick="updateStatus('${item.order_id}')"
+      >
+        Update Status
+      </button>
+    `
+  }
 
-              <option
-                value="delivered"
-                ${status === "delivered" ? "selected" : ""}
-              >
-                ✓ Delivered
-              </option>
-
-
-              <option
-                value="cancelled"
-                ${status === "cancelled" ? "selected" : ""}
-              >
-                ✕ Cancelled
-              </option>
-
-            </select>
-
-
-            <br>
-
-
-            <button
-              class="update-btn"
-              onclick="updateStatus('${item.order_id}')"
-            >
-
-              Update Status
-
-            </button>
-
-
-          </div>
-
-
+</div>
         </div>
 
       `;
