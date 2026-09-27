@@ -416,19 +416,17 @@ async function detail() {
    CART
 ========================= */
 
-function renderCart() {
+async function renderCart() {
 
-  let e =
-    document.querySelector("#cart");
+  const e = document.querySelector("#cart");
 
   if (!e) return;
 
-  let c = cart();
+  const c = cart();
 
   if (!c.length) {
 
-    e.innerHTML =
-      `
+    e.innerHTML = `
       <div class="empty">
         Your cart is empty 🛒
         <br>
@@ -436,11 +434,29 @@ function renderCart() {
           Continue Shopping
         </a>
       </div>
-      `;
+    `;
 
     return;
   }
 
+  const ids = c.map(x => x.id);
+
+  const { data: products, error } =
+    await supabaseClient
+      .from("products")
+      .select("*")
+      .in("id", ids)
+      .eq("status", "approved");
+
+  if (error) {
+
+    console.log("Cart products error:", error);
+
+    e.innerHTML =
+      "<div class='empty'>Unable to load cart.</div>";
+
+    return;
+  }
 
   let total = 0;
 
@@ -448,39 +464,56 @@ function renderCart() {
 
     <div>
 
-      ${c.map(x => {
+      ${c.map(item => {
 
-        let p =
-          typeof PRODUCTS !== "undefined"
-          ? PRODUCTS.find(a => a.id == x.id)
-          : null;
+        const p =
+          products.find(
+            product =>
+              String(product.id) === String(item.id)
+          );
 
         if (!p) return "";
 
-        total +=
-          Number(p.price) * x.qty;
+        const amount =
+          Number(p.price) * item.qty;
+
+        total += amount;
 
         return `
 
           <div class="cartrow">
 
-            <span class="pic mini">
-              ${p.icon || "🛍️"}
-            </span>
+            <div class="pic mini">
+
+              ${
+                p.image_url
+                ? `<img
+                    src="${p.image_url}"
+                    alt="${p.name}"
+                    style="width:100%;height:100%;object-fit:contain;"
+                  >`
+                : "🛍️"
+              }
+
+            </div>
 
             <div>
 
               <b>${p.name}</b>
 
               <p>
-                ${money(p.price)}
-                × ${x.qty}
+                ${money(p.price)} × ${item.qty}
+              </p>
+
+              <p>
+                Subtotal:
+                <b>${money(amount)}</b>
               </p>
 
             </div>
 
             <button
-              onclick="remove(${p.id})">
+              onclick="remove('${p.id}')">
               Remove
             </button>
 
@@ -494,9 +527,7 @@ function renderCart() {
 
     <div class="summary">
 
-      <h2>
-        Price Details
-      </h2>
+      <h2>Price Details</h2>
 
       <p>
         Total
@@ -505,16 +536,12 @@ function renderCart() {
 
       <p>
         Delivery
-        <b class="green">
-          FREE
-        </b>
+        <b class="green">FREE</b>
       </p>
 
       <hr>
 
-      <h2>
-        ${money(total)}
-      </h2>
+      <h2>${money(total)}</h2>
 
       <a
         class="goldbtn block"
@@ -526,8 +553,6 @@ function renderCart() {
 
   `;
 }
-
-
 /* =========================
    CHECKOUT SUMMARY
 ========================= */
