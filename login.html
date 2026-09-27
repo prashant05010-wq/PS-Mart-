@@ -65,19 +65,13 @@
   opacity:.9;
 }
 
-.signupbtn{
-  background:#333;
-}
-
-.resetbtn{
-  background:transparent;
-  color:#8a641d;
-  border:1px solid #c99a3d;
-}
-
 #message{
   margin-top:15px;
   font-weight:bold;
+}
+
+.hidden{
+  display:none;
 }
 
 </style>
@@ -101,7 +95,7 @@
 
   <h1>Welcome to PS Mart</h1>
 
-  <p>Login to continue shopping</p>
+  <p id="subtitle">Enter your email to continue</p>
 
 
   <!-- EMAIL -->
@@ -114,44 +108,38 @@
   >
 
 
-  <!-- PASSWORD -->
-
-  <input
-    type="password"
-    id="password"
-    placeholder="Enter password"
-    autocomplete="current-password"
-  >
-
-
-  <!-- LOGIN -->
+  <!-- SEND OTP -->
 
   <button
     class="goldbtn"
-    onclick="loginUserNow()"
+    id="sendOtpBtn"
+    onclick="sendOTP()"
   >
-    Login
+    Send OTP
   </button>
 
 
-  <!-- FORGOT PASSWORD -->
+  <!-- OTP -->
 
-  <button
-    class="goldbtn resetbtn"
-    onclick="resetPassword()"
-  >
-    Forgot Password?
-  </button>
+  <div id="otpBox" class="hidden">
 
+    <input
+      type="text"
+      id="otp"
+      placeholder="Enter 6-digit OTP"
+      inputmode="numeric"
+      maxlength="6"
+      autocomplete="one-time-code"
+    >
 
-  <!-- CREATE ACCOUNT -->
+    <button
+      class="goldbtn"
+      onclick="verifyOTP()"
+    >
+      Verify OTP & Login
+    </button>
 
-  <button
-    class="goldbtn signupbtn"
-    onclick="signupUserNow()"
-  >
-    Create Account
-  </button>
+  </div>
 
 
   <div id="message"></div>
@@ -171,42 +159,39 @@
 
 <script>
 
-/* LOGIN */
+/* SEND OTP */
 
-async function loginUserNow(){
+async function sendOTP(){
 
   const email =
     document.getElementById("email").value.trim();
 
-  const password =
-    document.getElementById("password").value;
-
   const message =
     document.getElementById("message");
 
-
-  if(!email || !password){
+  if(!email){
 
     message.innerText =
-      "Please enter email and password.";
+      "Please enter your email.";
 
     return;
   }
 
-
-  message.innerText = "Logging in...";
-
+  message.innerText =
+    "Sending OTP...";
 
   try{
 
-    const { data, error } =
-      await supabaseClient.auth.signInWithPassword({
+    const { error } =
+      await supabaseClient.auth.signInWithOtp({
 
         email: email,
-        password: password
+
+        options: {
+          shouldCreateUser: true
+        }
 
       });
-
 
     if(error){
 
@@ -218,17 +203,17 @@ async function loginUserNow(){
       return;
     }
 
-
     message.innerText =
-      "Login successful!";
+      "OTP sent! Check your email.";
 
+    document
+      .getElementById("otpBox")
+      .classList.remove("hidden");
 
-    setTimeout(() => {
-
-      window.location.href =
-        "index.html";
-
-    }, 800);
+    document
+      .getElementById("sendOtpBtn")
+      .innerText =
+      "Resend OTP";
 
   }
 
@@ -244,52 +229,50 @@ async function loginUserNow(){
 }
 
 
-/* CREATE ACCOUNT */
+/* VERIFY OTP */
 
-async function signupUserNow(){
+async function verifyOTP(){
 
   const email =
     document.getElementById("email").value.trim();
 
-  const password =
-    document.getElementById("password").value;
+  const otp =
+    document.getElementById("otp").value.trim();
 
   const message =
     document.getElementById("message");
 
-
-  if(!email || !password){
+  if(!email){
 
     message.innerText =
-      "Please enter email and password.";
+      "Please enter your email.";
 
     return;
   }
 
-
-  if(password.length < 6){
+  if(!otp || otp.length !== 6){
 
     message.innerText =
-      "Password must be at least 6 characters.";
+      "Please enter the 6-digit OTP.";
 
     return;
   }
-
 
   message.innerText =
-    "Creating account...";
-
+    "Verifying OTP...";
 
   try{
 
     const { data, error } =
-      await supabaseClient.auth.signUp({
+      await supabaseClient.auth.verifyOtp({
 
         email: email,
-        password: password
+
+        token: otp,
+
+        type: "email"
 
       });
-
 
     if(error){
 
@@ -301,94 +284,26 @@ async function signupUserNow(){
       return;
     }
 
-
     if(data.session){
 
       message.innerText =
-        "Account created successfully!";
+        "Login successful!";
 
       setTimeout(() => {
 
         window.location.href =
           "index.html";
 
-      }, 800);
+      }, 700);
 
     }
 
     else{
 
       message.innerText =
-        "Account created. Check your email to verify your account.";
+        "OTP verified. Please try again.";
 
     }
-
-  }
-
-  catch(error){
-
-    console.error(error);
-
-    message.innerText =
-      "Something went wrong.";
-
-  }
-
-}
-
-
-/* FORGOT PASSWORD */
-
-async function resetPassword(){
-
-  const email =
-    document.getElementById("email").value.trim();
-
-  const message =
-    document.getElementById("message");
-
-
-  if(!email){
-
-    message.innerText =
-      "Please enter your email first.";
-
-    return;
-  }
-
-
-  message.innerText =
-    "Sending password reset email...";
-
-
-  try{
-
-    const { error } =
-      await supabaseClient.auth.resetPasswordForEmail(
-
-        email,
-
-        {
-          redirectTo:
-            "https://prashant05010-wq.github.io/PS-Mart-/login.html"
-        }
-
-      );
-
-
-    if(error){
-
-      console.error(error);
-
-      message.innerText =
-        error.message;
-
-      return;
-    }
-
-
-    message.innerText =
-      "Password reset link sent. Check your email.";
 
   }
 
