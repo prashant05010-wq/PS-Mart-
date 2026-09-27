@@ -142,29 +142,52 @@ function card(p) {
   return `
     <article class="product">
 
-      <a href="product.html?id=${p.id}">
+      <div style="position:relative;">
 
-        <div class="pic">
+        <a href="product.html?id=${p.id}">
 
-          ${
-            p.image_url
-              ? `
-                <img
-                  src="${p.image_url}"
-                  alt="${p.name}"
-                  style="
-                    width:100%;
-                    height:100%;
-                    object-fit:contain;
-                  "
-                >
-              `
-              : "🛍️"
-          }
+          <div class="pic">
 
-        </div>
+            ${
+              p.image_url
+                ? `
+                  <img
+                    src="${p.image_url}"
+                    alt="${p.name}"
+                    style="
+                      width:100%;
+                      height:100%;
+                      object-fit:contain;
+                    "
+                  >
+                `
+                : "🛍️"
+            }
 
-      </a>
+          </div>
+
+        </a>
+
+        <button
+          onclick="event.stopPropagation(); toggleWishlist('${p.id}', this)"
+          style="
+            position:absolute;
+            top:8px;
+            right:8px;
+            width:38px;
+            height:38px;
+            border-radius:50%;
+            border:none;
+            background:white;
+            color:#b8860b;
+            font-size:24px;
+            cursor:pointer;
+            box-shadow:0 2px 8px rgba(0,0,0,.15);
+          ">
+          ♡
+        </button>
+
+      </div>
 
       <small>
         PS Mart Seller
@@ -200,7 +223,6 @@ function card(p) {
     </article>
   `;
 }
-
 
 /* =========================
    LOAD APPROVED PRODUCTS
