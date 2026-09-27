@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Seller Orders | PS Mart</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:#f7f1e8;
+      color:#3b2416;
+    }
+
+    header{
+      background:#3b2416;
+      color:white;
+      padding:18px 25px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    header h2{
+      margin:0;
+    }
+
+    .back{
+      color:white;
+      text-decoration:none;
+      background:#8b5e34;
+      padding:9px 14px;
+      border-radius:7px;
+    }
+
+    .container{
+      width:92%;
+      max-width:1100px;
+      margin:25px auto;
+    }
+
+    .top{
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      margin-bottom:20px;
+      box-shadow:0 3px 15px rgba(0,0,0,.08);
+    }
+
+    .order{
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      margin-bottom:18px;
+      box-shadow:0 3px 15px rgba(0,0,0,.08);
+    }
+
+    .order h3{
+      margin-top:0;
+      color:#8b5e34;
+    }
+
+    .row{
+      margin:8px 0;
+    }
+
+    .label{
+      font-weight:bold;
+    }
+
+    .status{
+      display:inline-block;
+      padding:7px 12px;
+      border-radius:15px;
+      background:#fff3cd;
+      color:#856404;
+      font-size:13px;
+      margin-top:8px;
+    }
+
+    .empty{
+      background:white;
+      padding:35px;
+      text-align:center;
+      border-radius:12px;
+    }
+
+    #message{
+      text-align:center;
+      margin:20px 0;
+      font-weight:bold;
+    }
+
+    @media(max-width:600px){
+      header{
+        padding:15px;
+      }
+
+      .container{
+        width:94%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h2>🏪 Seller Orders</h2>
+  <a class="back" href="seller-dashboard.html">Dashboard</a>
+</header>
+
+<div class="container">
+
+  <div class="top">
+    <h1>Customer Orders</h1>
+    <p>Orders containing your products will appear here.</p>
+  </div>
+
+  <div id="message">Loading orders...</div>
+
+  <div id="orders"></div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://nctscffhnztscczjxhat.supabase.co";
+
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+async function loadOrders(){
+
+  const message =
+    document.getElementById("message");
+
+  const ordersBox =
+    document.getElementById("orders");
+
+
+  const {
+    data: { user },
+    error: authError
+  } = await supabaseClient.auth.getUser();
+
+
+  if(authError || !user){
+
+    message.innerText =
+      "Please login first.";
+
+    return;
+  }
+
+
+  const {
+    data: seller,
+    error: sellerError
+  } = await supabaseClient
+    .from("sellers")
+    .select("id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+
+  if(sellerError){
+
+    message.innerText =
+      sellerError.message;
+
+    return;
+  }
+
+
+  if(!seller){
+
+    message.innerText =
+      "Seller account not found.";
+
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("order_items")
+    .select(`
+      id,
+      order_id,
+      product_id,
+      quantity,
+      price,
+      orders(
+        total_amount,
+        status,
+        address
+      ),
+      products(
+        name
+      )
+    `)
+    .eq("seller_id", seller.id)
+    .order("id", {
+      ascending:false
+    });
+
+
+  if(error){
+
+    message.innerText =
+      error.message;
+
+    return;
+  }
+
+
+  message.innerText = "";
+
+
+  if(!data || data.length === 0){
+
+    ordersBox.innerHTML = `
+      <div class="empty">
+        <h2>No orders yet</h2>
+        <p>Customer orders will appear here.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  ordersBox.innerHTML =
+    data.map(item => {
+
+      const order =
+        item.orders || {};
+
+      const product =
+        item.products || {};
+
+      return `
+        <div class="order">
+
+          <h3>Order #${item.order_id}</h3>
+
+          <div class="row">
+            <span class="label">Product:</span>
+            ${product.name || "Product"}
+          </div>
+
+          <div class="row">
+            <span class="label">Quantity:</span>
+            ${item.quantity}
+          </div>
+
+          <div class="row">
+            <span class="label">Item Amount:</span>
+            ₹${item.price}
+          </div>
+
+          <div class="row">
+            <span class="label">Order Total:</span>
+            ₹${order.total_amount || 0}
+          </div>
+
+          <div class="row">
+            <span class="label">Delivery Address:</span>
+            ${order.address || "Not available"}
+          </div>
+
+          <span class="status">
+            ${order.status || "placed"}
+          </span>
+
+        </div>
+      `;
+
+    }).join("");
+
+}
+
+
+loadOrders();
+
+</script>
+
+</body>
+</html>
