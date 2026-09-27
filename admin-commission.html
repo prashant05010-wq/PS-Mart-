@@ -152,16 +152,21 @@ supabase.createClient(
 const DEFAULT_RATE = 10;
 
 
-function loadCommission(){
+async function loadCommission(){
 
-  const savedRate =
-    localStorage.getItem("psmart-commission-rate");
+  const { data, error } = await supabaseClient
+    .from("marketplace_settings")
+    .select("commission_rate")
+    .limit(1)
+    .single();
 
-  const rate =
-    savedRate !== null
-      ? Number(savedRate)
-      : DEFAULT_RATE;
+  if(error){
+    console.log(error);
+    alert("Commission load nahi ho paya ❌");
+    return;
+  }
 
+  const rate = Number(data.commission_rate);
 
   document.getElementById("currentRate").innerText =
     rate + "%";
@@ -169,43 +174,6 @@ function loadCommission(){
   document.getElementById("commissionRate").value =
     rate;
 }
-
-
-function saveCommission(){
-
-  const input =
-    document.getElementById("commissionRate");
-
-  const rate =
-    Number(input.value);
-
-
-  if(
-    isNaN(rate) ||
-    rate < 0 ||
-    rate > 100
-  ){
-
-    alert("Please enter a rate between 0 and 100.");
-    return;
-  }
-
-
-  localStorage.setItem(
-    "psmart-commission-rate",
-    rate
-  );
-
-
-  document.getElementById("currentRate").innerText =
-    rate + "%";
-
-
-  alert(
-    "Commission rate saved successfully ✅"
-  );
-}
-
 
 loadCommission();
 
