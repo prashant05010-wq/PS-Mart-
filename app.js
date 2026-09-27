@@ -1,14 +1,706 @@
-const money=n=>"₹"+n.toLocaleString("en-IN");
-function cart(){return JSON.parse(localStorage.getItem("psmart-cart")||"[]")}
-function saveCart(c){localStorage.setItem("psmart-cart",JSON.stringify(c));updateCount()}
-function updateCount(){let n=cart().reduce((s,x)=>s+x.qty,0);document.querySelectorAll("#count").forEach(e=>e.textContent=n)}
-function add(id){let c=cart(),x=c.find(a=>a.id==id);x?x.qty++:c.push({id:+id,qty:1});saveCart(c);alert("Added to cart ✓")}
-function remove(id){saveCart(cart().filter(x=>x.id!=id));renderCart()}
-function search(){let q=document.querySelector("#search").value.trim();if(q)location.href="products.html?q="+encodeURIComponent(q)}
-function card(p){return `<article class="product"><a href="product.html?id=${p.id}"><div class="pic">${p.icon}</div></a><small>${p.brand}</small><h3>${p.name}</h3><div class="rating">★ ${p.rating}</div><b>${money(p.price)}</b> <del>${money(p.old)}</del><button onclick="add(${p.id})">🛒 Add to Cart</button></article>`}
-function renderProducts(){let el=document.querySelector("#products");if(!el)return;let u=new URLSearchParams(location.search),cat=u.get("cat"),q=(u.get("q")||"").toLowerCase();let a=PRODUCTS.filter(p=>(!cat||p.cat==cat)&&(!q||(p.name+" "+p.brand+" "+p.cat).toLowerCase().includes(q)));let s=document.querySelector("#sort")?.value;if(s=="low")a.sort((x,y)=>x.price-y.price);if(s=="high")a.sort((x,y)=>y.price-x.price);document.querySelector("#title").textContent=cat?cat+" Products":q?`Search: ${q}`:"All Products";el.innerHTML=a.map(card).join("")||"<div class='empty'>No products found.</div>"}
-function renderHome(){let e=document.querySelector("#homeProducts");if(e)e.innerHTML=PRODUCTS.slice(0,5).map(card).join("")}
-function detail(){let e=document.querySelector("#detail");if(!e)return;let p=PRODUCTS.find(x=>x.id==new URLSearchParams(location.search).get("id"))||PRODUCTS[0];e.innerHTML=`<div class="bigpic">${p.icon}</div><div><small>${p.brand}</small><h1>${p.name}</h1><div class="rating">★ ${p.rating} / 5</div><h2>${money(p.price)} <del>${money(p.old)}</del></h2><p class="green">✓ Available &nbsp; ✓ Secure Payment &nbsp; ✓ Easy Returns</p><p>Premium quality product with fast delivery and customer support from PS Mart.</p><button class="goldbtn" onclick="add(${p.id})">🛒 Add to Cart</button> <a class="buy" href="cart.html">Buy Now</a><hr><h3>Description</h3><p>Product details, specifications and customer reviews will appear here.</p></div>`}
-function renderCart(){let e=document.querySelector("#cart");if(!e)return;let c=cart();if(!c.length){e.innerHTML="<div class='empty'>Your cart is empty 🛒<br><a href='products.html'>Continue Shopping</a></div>";return}let total=0;e.innerHTML=`<div>${c.map(x=>{let p=PRODUCTS.find(a=>a.id==x.id);total+=p.price*x.qty;return `<div class="cartrow"><span class="pic mini">${p.icon}</span><div><b>${p.name}</b><p>${money(p.price)} × ${x.qty}</p></div><button onclick="remove(${p.id})">Remove</button></div>`}).join("")}</div><div class="summary"><h2>Price Details</h2><p>Total <b>${money(total)}</b></p><p>Delivery <b class="green">FREE</b></p><hr><h2>${money(total)}</h2><a class="goldbtn block" href="checkout.html">Proceed to Checkout →</a></div>`}
-function summary(){let e=document.querySelector("#summary");if(!e)return;let total=cart().reduce((s,x)=>s+(PRODUCTS.find(p=>p.id==x.id)?.price||0)*x.qty,0);e.innerHTML=`<h2>Order Summary</h2><p>Items: ${cart().reduce((s,x)=>s+x.qty,0)}</p><h2>Total: ${money(total)}</h2><button class="goldbtn block" onclick="alert('Demo order placed. Real payment/order system will be connected in Part 2.')">Place Order</button>`}
-updateCount();renderHome();renderProducts();detail();renderCart();summary();
+/* =========================
+   PS MART + SUPABASE
+========================= */
+
+const SUPABASE_URL = "https://nctscffhnztscczjxhat.supabase.co";
+
+const SUPABASE_KEY = "PASTE_YOUR_PUBLISHABLE_OR_ANON_KEY_HERE";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =========================
+   MONEY
+========================= */
+
+const money = n =>
+  "₹" + Number(n || 0).toLocaleString("en-IN");
+
+
+/* =========================
+   LOCAL CART
+========================= */
+
+function cart() {
+  return JSON.parse(localStorage.getItem("psmart-cart") || "[]");
+}
+
+function saveCart(c) {
+  localStorage.setItem("psmart-cart", JSON.stringify(c));
+  updateCount();
+}
+
+function updateCount() {
+  let n = cart().reduce((s, x) => s + x.qty, 0);
+
+  document
+    .querySelectorAll("#count")
+    .forEach(e => e.textContent = n);
+}
+
+function add(id) {
+  let c = cart();
+  let x = c.find(a => a.id == id);
+
+  x ? x.qty++ : c.push({
+    id: Number(id),
+    qty: 1
+  });
+
+  saveCart(c);
+
+  alert("Added to cart ✓");
+}
+
+function remove(id) {
+  saveCart(
+    cart().filter(x => x.id != id)
+  );
+
+  renderCart();
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+function search() {
+
+  let input = document.querySelector("#search");
+
+  if (!input) return;
+
+  let q = input.value.trim();
+
+  if (q) {
+    location.href =
+      "products.html?q=" +
+      encodeURIComponent(q);
+  }
+}
+
+
+/* =========================
+   PRODUCT CARD
+========================= */
+
+function card(p) {
+
+  return `
+    <article class="product">
+
+      <a href="product.html?id=${p.id}">
+        <div class="pic">
+          ${p.icon || "🛍️"}
+        </div>
+      </a>
+
+      <small>${p.brand || ""}</small>
+
+      <h3>${p.name}</h3>
+
+      <div class="rating">
+        ★ ${p.rating || "4.0"}
+      </div>
+
+      <b>${money(p.price)}</b>
+
+      ${
+        p.old
+        ? `<del>${money(p.old)}</del>`
+        : ""
+      }
+
+      <button onclick="add(${p.id})">
+        🛒 Add to Cart
+      </button>
+
+    </article>
+  `;
+}
+
+
+/* =========================
+   PRODUCTS
+========================= */
+
+async function loadProductsFromSupabase() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("products")
+      .select("*")
+      .eq("status", "approved")
+      .order("created_at", {
+        ascending: false
+      });
+
+  if (error) {
+
+    console.log(
+      "Supabase products error:",
+      error.message
+    );
+
+    return [];
+
+  }
+
+  return data || [];
+}
+
+
+/* =========================
+   PRODUCTS PAGE
+========================= */
+
+async function renderProducts() {
+
+  let el = document.querySelector("#products");
+
+  if (!el) return;
+
+  let u =
+    new URLSearchParams(location.search);
+
+  let cat = u.get("cat");
+
+  let q =
+    (u.get("q") || "").toLowerCase();
+
+  let products =
+    await loadProductsFromSupabase();
+
+  /* If Supabase has no products yet,
+     use existing demo products */
+
+  if (!products.length &&
+      typeof PRODUCTS !== "undefined") {
+
+    products = PRODUCTS;
+  }
+
+  let a = products.filter(p => {
+
+    let category =
+      p.cat ||
+      p.category ||
+      "";
+
+    let name =
+      p.name ||
+      "";
+
+    let brand =
+      p.brand ||
+      "";
+
+    return (
+      (!cat || category == cat) &&
+      (
+        !q ||
+        (
+          name +
+          " " +
+          brand +
+          " " +
+          category
+        )
+        .toLowerCase()
+        .includes(q)
+      )
+    );
+
+  });
+
+
+  let s =
+    document.querySelector("#sort")?.value;
+
+  if (s == "low") {
+
+    a.sort(
+      (x, y) =>
+        Number(x.price) -
+        Number(y.price)
+    );
+
+  }
+
+  if (s == "high") {
+
+    a.sort(
+      (x, y) =>
+        Number(y.price) -
+        Number(x.price)
+    );
+
+  }
+
+
+  let title =
+    document.querySelector("#title");
+
+  if (title) {
+
+    title.textContent =
+      cat
+      ? cat + " Products"
+      : q
+      ? `Search: ${q}`
+      : "All Products";
+
+  }
+
+
+  el.innerHTML =
+    a.length
+    ? a.map(card).join("")
+    : "<div class='empty'>No products found.</div>";
+}
+
+
+/* =========================
+   HOME
+========================= */
+
+async function renderHome() {
+
+  let e =
+    document.querySelector("#homeProducts");
+
+  if (!e) return;
+
+  let products =
+    await loadProductsFromSupabase();
+
+  if (!products.length &&
+      typeof PRODUCTS !== "undefined") {
+
+    products = PRODUCTS;
+
+  }
+
+  e.innerHTML =
+    products
+      .slice(0, 5)
+      .map(card)
+      .join("");
+}
+
+
+/* =========================
+   PRODUCT DETAIL
+========================= */
+
+async function detail() {
+
+  let e =
+    document.querySelector("#detail");
+
+  if (!e) return;
+
+  let id =
+    new URLSearchParams(location.search)
+      .get("id");
+
+  let products =
+    await loadProductsFromSupabase();
+
+  if (!products.length &&
+      typeof PRODUCTS !== "undefined") {
+
+    products = PRODUCTS;
+
+  }
+
+  let p =
+    products.find(x => x.id == id) ||
+    products[0];
+
+  if (!p) {
+
+    e.innerHTML =
+      "<div class='empty'>Product not found.</div>";
+
+    return;
+  }
+
+
+  e.innerHTML = `
+
+    <div class="bigpic">
+      ${p.icon || "🛍️"}
+    </div>
+
+    <div>
+
+      <small>
+        ${p.brand || "PS Mart Seller"}
+      </small>
+
+      <h1>
+        ${p.name}
+      </h1>
+
+      <div class="rating">
+        ★ ${p.rating || "4.0"} / 5
+      </div>
+
+      <h2>
+        ${money(p.price)}
+        ${
+          p.old
+          ? `<del>${money(p.old)}</del>`
+          : ""
+        }
+      </h2>
+
+      <p class="green">
+        ✓ Available
+        &nbsp;
+        ✓ Secure Payment
+        &nbsp;
+        ✓ Easy Returns
+      </p>
+
+      <p>
+        ${
+          p.description ||
+          "Premium quality product available on PS Mart."
+        }
+      </p>
+
+      <button
+        class="goldbtn"
+        onclick="add(${p.id})">
+        🛒 Add to Cart
+      </button>
+
+      <a
+        class="buy"
+        href="cart.html">
+        Buy Now
+      </a>
+
+      <hr>
+
+      <h3>Description</h3>
+
+      <p>
+        ${
+          p.description ||
+          "Product details, specifications and customer reviews will appear here."
+        }
+      </p>
+
+    </div>
+  `;
+}
+
+
+/* =========================
+   CART
+========================= */
+
+function renderCart() {
+
+  let e =
+    document.querySelector("#cart");
+
+  if (!e) return;
+
+  let c = cart();
+
+  if (!c.length) {
+
+    e.innerHTML =
+      `
+      <div class="empty">
+        Your cart is empty 🛒
+        <br>
+        <a href="products.html">
+          Continue Shopping
+        </a>
+      </div>
+      `;
+
+    return;
+  }
+
+
+  let total = 0;
+
+  e.innerHTML = `
+
+    <div>
+
+      ${c.map(x => {
+
+        let p =
+          typeof PRODUCTS !== "undefined"
+          ? PRODUCTS.find(a => a.id == x.id)
+          : null;
+
+        if (!p) return "";
+
+        total +=
+          Number(p.price) * x.qty;
+
+        return `
+
+          <div class="cartrow">
+
+            <span class="pic mini">
+              ${p.icon || "🛍️"}
+            </span>
+
+            <div>
+
+              <b>${p.name}</b>
+
+              <p>
+                ${money(p.price)}
+                × ${x.qty}
+              </p>
+
+            </div>
+
+            <button
+              onclick="remove(${p.id})">
+              Remove
+            </button>
+
+          </div>
+
+        `;
+
+      }).join("")}
+
+    </div>
+
+    <div class="summary">
+
+      <h2>
+        Price Details
+      </h2>
+
+      <p>
+        Total
+        <b>${money(total)}</b>
+      </p>
+
+      <p>
+        Delivery
+        <b class="green">
+          FREE
+        </b>
+      </p>
+
+      <hr>
+
+      <h2>
+        ${money(total)}
+      </h2>
+
+      <a
+        class="goldbtn block"
+        href="checkout.html">
+        Proceed to Checkout →
+      </a>
+
+    </div>
+
+  `;
+}
+
+
+/* =========================
+   CHECKOUT SUMMARY
+========================= */
+
+function summary() {
+
+  let e =
+    document.querySelector("#summary");
+
+  if (!e) return;
+
+  let total =
+    cart().reduce(
+      (s, x) => {
+
+        let p =
+          typeof PRODUCTS !== "undefined"
+          ? PRODUCTS.find(
+              p => p.id == x.id
+            )
+          : null;
+
+        return s +
+          (p?.price || 0) *
+          x.qty;
+
+      },
+      0
+    );
+
+
+  e.innerHTML = `
+
+    <h2>
+      Order Summary
+    </h2>
+
+    <p>
+      Items:
+      ${
+        cart().reduce(
+          (s, x) =>
+            s + x.qty,
+          0
+        )
+      }
+    </p>
+
+    <h2>
+      Total:
+      ${money(total)}
+    </h2>
+
+    <button
+      class="goldbtn block"
+      onclick="alert('Order system will be connected next.')">
+      Place Order
+    </button>
+
+  `;
+}
+
+
+/* =========================
+   SUPABASE AUTH FUNCTIONS
+========================= */
+
+async function signUpUser(
+  email,
+  password,
+  fullName
+) {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.auth.signUp({
+
+      email,
+      password,
+
+      options: {
+        data: {
+          full_name: fullName
+        }
+      }
+
+    });
+
+
+  if (error) {
+
+    alert(error.message);
+    return null;
+
+  }
+
+  return data;
+
+}
+
+
+async function loginUser(
+  email,
+  password
+) {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.auth.signInWithPassword({
+
+      email,
+      password
+
+    });
+
+
+  if (error) {
+
+    alert(error.message);
+    return null;
+
+  }
+
+  alert("Login successful ✓");
+
+  return data;
+
+}
+
+
+async function logoutUser() {
+
+  const {
+    error
+  } =
+    await supabaseClient.auth.signOut();
+
+  if (error) {
+
+    alert(error.message);
+    return;
+
+  }
+
+  location.href = "index.html";
+}
+
+
+/* =========================
+   CURRENT USER
+========================= */
+
+async function getCurrentUser() {
+
+  const {
+    data: {
+      user
+    }
+  } =
+    await supabaseClient.auth.getUser();
+
+  return user;
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+updateCount();
+
+renderHome();
+
+renderProducts();
+
+detail();
+
+renderCart();
+
+summary();
