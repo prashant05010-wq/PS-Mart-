@@ -8,7 +8,272 @@
 <title>My Orders | PS Mart</title>
 
 <link rel="stylesheet" href="style.css">
+
+<style>
+
+/* =========================
+   ORDERS PAGE
+========================= */
+
+.orders-page{
+  max-width:1100px;
+  margin:30px auto;
+  padding:0 15px;
+}
+
+.order-card{
+  background:#fff;
+  border:1px solid #ddd;
+  border-radius:10px;
+  margin-bottom:25px;
+  overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.order-top{
+  background:#f7f7f7;
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.order-id{
+  font-weight:bold;
+}
+
+.order-status{
+  font-weight:bold;
+  text-transform:capitalize;
+}
+
+.status-placed{
+  color:#2874f0;
+}
+
+.status-confirmed{
+  color:#2874f0;
+}
+
+.status-shipped{
+  color:#ff9800;
+}
+
+.status-delivered{
+  color:#008000;
+}
+
+.status-cancelled{
+  color:#d32f2f;
+}
+
+.order-body{
+  padding:20px;
+}
+
+.product-row{
+  display:flex;
+  gap:20px;
+  align-items:center;
+  padding-bottom:20px;
+  border-bottom:1px solid #eee;
+}
+
+.product-image{
+  width:110px;
+  height:110px;
+  border:1px solid #eee;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  flex-shrink:0;
+}
+
+.product-image img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.product-info{
+  flex:1;
+}
+
+.product-info h3{
+  margin:0 0 8px;
+}
+
+.product-info p{
+  margin:5px 0;
+}
+
+.price{
+  font-size:20px;
+  font-weight:bold;
+}
+
+.order-summary{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  flex-wrap:wrap;
+  margin-top:20px;
+}
+
+.address{
+  flex:1;
+  min-width:250px;
+}
+
+.total{
+  min-width:180px;
+}
+
+.total h2{
+  margin:0;
+}
+
+/* =========================
+   TRACKING
+========================= */
+
+.tracking{
+  margin-top:25px;
+  padding:20px;
+  background:#fafafa;
+  border-radius:8px;
+}
+
+.tracking h3{
+  margin-top:0;
+}
+
+.timeline{
+  display:flex;
+  justify-content:space-between;
+  position:relative;
+  margin:30px 10px 10px;
+}
+
+.timeline:before{
+  content:"";
+  position:absolute;
+  top:15px;
+  left:5%;
+  right:5%;
+  height:3px;
+  background:#ddd;
+  z-index:0;
+}
+
+.step{
+  position:relative;
+  z-index:1;
+  text-align:center;
+  width:20%;
+}
+
+.circle{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:#ddd;
+  color:#777;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:auto;
+  font-weight:bold;
+}
+
+.step.active .circle{
+  background:#2874f0;
+  color:white;
+}
+
+.step.done .circle{
+  background:#008000;
+  color:white;
+}
+
+.step span{
+  display:block;
+  margin-top:8px;
+  font-size:13px;
+}
+
+.track-note{
+  margin-top:20px;
+  font-size:14px;
+  color:#555;
+}
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty-orders{
+  text-align:center;
+  padding:60px 20px;
+  background:#fff;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+
+.empty-orders h2{
+  margin-bottom:10px;
+}
+
+.loading{
+  text-align:center;
+  padding:50px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px){
+
+  .product-row{
+    align-items:flex-start;
+  }
+
+  .product-image{
+    width:80px;
+    height:80px;
+  }
+
+  .timeline{
+    margin-left:0;
+    margin-right:0;
+  }
+
+  .timeline:before{
+    left:10%;
+    right:10%;
+  }
+
+  .step span{
+    font-size:10px;
+  }
+
+  .circle{
+    width:26px;
+    height:26px;
+    font-size:12px;
+  }
+
+}
+
+</style>
+
 </head>
+
 
 <body>
 
@@ -20,12 +285,17 @@
 
 </header>
 
-<main>
+
+<main class="orders-page">
 
 <h1>My Orders</h1>
 
-<div id="orders" class="orders">
-  Loading orders...
+<div id="orders">
+
+  <div class="loading">
+    Loading your orders...
+  </div>
+
 </div>
 
 </main>
@@ -39,137 +309,613 @@
 
 <script>
 
-async function loadOrders() {
+
+/* =========================
+   STATUS
+========================= */
+
+function statusIndex(status){
+
+  const list = [
+    "placed",
+    "confirmed",
+    "shipped",
+    "out_for_delivery",
+    "delivered"
+  ];
+
+  return list.indexOf(status);
+
+}
+
+
+/* =========================
+   TRACKING
+========================= */
+
+function tracking(order){
+
+  let status =
+    String(order.status || "placed")
+    .toLowerCase()
+    .replaceAll(" ","_");
+
+
+  /* cancelled */
+
+  if(status === "cancelled"){
+
+    return `
+
+      <div class="tracking">
+
+        <h3>Order Tracking</h3>
+
+        <div class="track-note"
+             style="color:#d32f2f;font-weight:bold;">
+
+          ❌ This order has been cancelled.
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  let current =
+    statusIndex(status);
+
+
+  /* Database currently has:
+     placed, confirmed, shipped,
+     delivered, cancelled
+
+     So if delivered, mark all steps.
+  */
+
+
+  if(current < 0){
+
+    current = 0;
+
+  }
+
+
+  return `
+
+    <div class="tracking">
+
+      <h3>🚚 Order Tracking</h3>
+
+      <div class="timeline">
+
+
+        <div class="step ${
+          current >= 0 ? "done" : ""
+        }">
+
+          <div class="circle">✓</div>
+
+          <span>
+            Ordered
+          </span>
+
+        </div>
+
+
+        <div class="step ${
+          current >= 1 ? "done" : ""
+        }">
+
+          <div class="circle">
+            ${current >= 1 ? "✓" : "2"}
+          </div>
+
+          <span>
+            Confirmed
+          </span>
+
+        </div>
+
+
+        <div class="step ${
+          current >= 2 ? "done" : ""
+        }">
+
+          <div class="circle">
+            ${current >= 2 ? "✓" : "3"}
+          </div>
+
+          <span>
+            Shipped
+          </span>
+
+        </div>
+
+
+        <div class="step ${
+          current >= 3 ? "done" : ""
+        }">
+
+          <div class="circle">
+            ${current >= 3 ? "✓" : "4"}
+          </div>
+
+          <span>
+            Out for Delivery
+          </span>
+
+        </div>
+
+
+        <div class="step ${
+          current >= 4 ? "done" : ""
+        }">
+
+          <div class="circle">
+            ${current >= 4 ? "✓" : "5"}
+          </div>
+
+          <span>
+            Delivered
+          </span>
+
+        </div>
+
+
+      </div>
+
+
+      <div class="track-note">
+
+        Current Status:
+        <b>
+          ${status.replaceAll("_"," ")}
+        </b>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================
+   LOAD ORDERS
+========================= */
+
+async function loadOrders(){
 
   const box =
     document.getElementById("orders");
 
+
   const {
-    data: {
+    data:{
       user
     }
   } =
-    await supabaseClient.auth.getUser();
+    await supabaseClient
+    .auth
+    .getUser();
 
 
-  if (!user) {
+  if(!user){
 
     box.innerHTML = `
-      <div class="empty">
 
-        Please login first.
+      <div class="empty-orders">
 
-        <br><br>
+        <h2>🔐 Please Login</h2>
+
+        <p>
+          Login to see your orders.
+        </p>
+
+        <br>
 
         <a
           class="goldbtn"
           href="login.html">
+
           Login
+
         </a>
 
       </div>
+
     `;
 
     return;
+
   }
 
 
+  /* =========================
+     ORDERS
+  ========================= */
+
   const {
-    data: orders,
-    error
+    data:orders,
+    error:orderError
   } =
     await supabaseClient
 
-      .from("orders")
+    .from("orders")
 
-      .select("*")
+    .select("*")
 
-      .eq(
-        "customer_id",
-        user.id
-      )
+    .eq(
+      "customer_id",
+      user.id
+    )
 
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
+    .order(
+      "created_at",
+      {
+        ascending:false
+      }
+    );
 
 
-  if (error) {
+  if(orderError){
 
     console.log(
       "Orders error:",
-      error
+      orderError
     );
 
+
     box.innerHTML = `
-      <div class="empty">
 
-        Unable to load orders.
+      <div class="empty-orders">
 
-        <br><br>
+        <h2>
+          Unable to load orders
+        </h2>
 
-        ${error.message}
+        <p>
+          ${orderError.message}
+        </p>
 
       </div>
+
     `;
 
     return;
+
   }
 
 
-  if (!orders || !orders.length) {
+  if(!orders || !orders.length){
 
     box.innerHTML = `
-      <div class="empty">
 
-        🛒 No orders yet.
+      <div class="empty-orders">
 
-        <br><br>
+        <h2>
+          🛒 No Orders Yet
+        </h2>
+
+        <p>
+          You haven't placed any order yet.
+        </p>
+
+        <br>
 
         <a
           class="goldbtn"
           href="products.html">
+
           Start Shopping
+
         </a>
 
       </div>
+
     `;
 
     return;
+
   }
 
 
-  box.innerHTML = orders.map(order => `
+  /* =========================
+     GET ORDER ITEMS
+  ========================= */
 
-    <div class="box" style="margin-bottom:20px;">
+  const orderIds =
+    orders.map(
+      order => order.id
+    );
 
-      <h2>
-        Order #${order.id}
-      </h2>
 
-      <p>
-        <b>Status:</b>
-        ${order.status}
-      </p>
+  const {
+    data:items,
+    error:itemError
+  } =
+    await supabaseClient
 
-      <p>
-        <b>Total:</b>
-        ₹${Number(
-          order.total_amount || 0
-        ).toLocaleString("en-IN")}
-      </p>
+    .from("order_items")
 
-      <p>
-        <b>Delivery Address:</b><br>
-        ${order.address || "Not available"}
-      </p>
+    .select("*")
 
-    </div>
+    .in(
+      "order_id",
+      orderIds
+    );
 
-  `).join("");
+
+  if(itemError){
+
+    console.log(
+      "Order items error:",
+      itemError
+    );
+
+  }
+
+
+  /* =========================
+     PRODUCT IDS
+  ========================= */
+
+  const productIds =
+    (items || []).map(
+      item => item.product_id
+    );
+
+
+  let products = [];
+
+
+  if(productIds.length){
+
+    const {
+      data:productData
+    } =
+      await supabaseClient
+
+      .from("products")
+
+      .select("*")
+
+      .in(
+        "id",
+        productIds
+      );
+
+
+    products =
+      productData || [];
+
+  }
+
+
+  /* =========================
+     CREATE ORDER CARDS
+  ========================= */
+
+  box.innerHTML = orders.map(order => {
+
+
+    const orderItems =
+      (items || [])
+      .filter(
+        item =>
+          String(item.order_id) ===
+          String(order.id)
+      );
+
+
+    const productHTML =
+      orderItems.map(item => {
+
+
+        const product =
+          products.find(
+            p =>
+              String(p.id) ===
+              String(item.product_id)
+          );
+
+
+        if(!product){
+
+          return "";
+
+        }
+
+
+        const qty =
+          Number(item.quantity || 1);
+
+
+        const price =
+          Number(item.price || 0);
+
+
+        return `
+
+          <div class="product-row">
+
+
+            <div class="product-image">
+
+              ${
+                product.image_url
+
+                ?
+
+                `
+
+                <img
+                  src="${product.image_url}"
+                  alt="${product.name}"
+                >
+
+                `
+
+                :
+
+                "🛍️"
+
+              }
+
+            </div>
+
+
+            <div class="product-info">
+
+              <h3>
+                ${product.name}
+              </h3>
+
+              <p>
+                Quantity:
+                <b>${qty}</b>
+              </p>
+
+              <p class="price">
+                ₹${price.toLocaleString("en-IN")}
+              </p>
+
+            </div>
+
+
+          </div>
+
+        `;
+
+      }).join("");
+
+
+    const date =
+      order.created_at
+
+      ?
+
+      new Date(
+        order.created_at
+      ).toLocaleString("en-IN")
+
+      :
+
+      "Date not available";
+
+
+    return `
+
+      <div class="order-card">
+
+
+        <!-- ORDER HEADER -->
+
+        <div class="order-top">
+
+          <div>
+
+            <div class="order-id">
+              Order ID: ${order.id}
+            </div>
+
+            <small>
+              ${date}
+            </small>
+
+          </div>
+
+
+          <div class="
+            order-status
+            status-${order.status}
+          ">
+
+            ${
+              order.status === "delivered"
+              ? "✓ Delivered"
+              :
+              order.status === "shipped"
+              ? "🚚 Shipped"
+              :
+              order.status === "confirmed"
+              ? "✓ Confirmed"
+              :
+              order.status === "cancelled"
+              ? "✕ Cancelled"
+              :
+              "📦 Order Placed"
+            }
+
+          </div>
+
+        </div>
+
+
+        <!-- PRODUCTS -->
+
+        <div class="order-body">
+
+          ${productHTML}
+
+
+          <!-- SUMMARY -->
+
+          <div class="order-summary">
+
+
+            <div class="address">
+
+              <h3>
+                📍 Delivery Address
+              </h3>
+
+              <p>
+                ${order.address || "Not available"}
+              </p>
+
+            </div>
+
+
+            <div class="total">
+
+              <p>
+                Payment
+              </p>
+
+              <h2>
+                ₹${Number(
+                  order.total_amount || 0
+                ).toLocaleString("en-IN")}
+              </h2>
+
+              <small>
+                Total Amount
+              </small>
+
+            </div>
+
+
+          </div>
+
+
+          <!-- TRACKING -->
+
+          ${tracking(order)}
+
+
+        </div>
+
+      </div>
+
+    `;
+
+  }).join("");
 
 }
 
@@ -177,6 +923,7 @@ async function loadOrders() {
 loadOrders();
 
 </script>
+
 
 </body>
 
