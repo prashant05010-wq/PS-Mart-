@@ -4,7 +4,7 @@
 
 const SUPABASE_URL = "https://nctscffhnztscczjxhat.supabase.co";
 
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+const SUPABASE_KEY = "YOUR_EXISTING_ANON_KEY";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
@@ -25,35 +25,62 @@ const money = n =>
 ========================= */
 
 function cart() {
-  return JSON.parse(localStorage.getItem("psmart-cart") || "[]");
+  return JSON.parse(
+    localStorage.getItem("psmart-cart") || "[]"
+  );
 }
 
+
 function saveCart(c) {
-  localStorage.setItem("psmart-cart", JSON.stringify(c));
+  localStorage.setItem(
+    "psmart-cart",
+    JSON.stringify(c)
+  );
+
   updateCount();
 }
 
+
 function updateCount() {
-  let n = cart().reduce((s, x) => s + x.qty, 0);
+
+  const n = cart().reduce(
+    (sum, item) =>
+      sum + Number(item.qty || 0),
+    0
+  );
 
   document
     .querySelectorAll("#count")
-    .forEach(e => e.textContent = n);
+    .forEach(e => {
+      e.textContent = n;
+    });
 }
+
+
+/* =========================
+   ADD TO CART
+========================= */
 
 async function add(id) {
 
   let c = cart();
 
-  let x = c.find(a => String(a.id) === String(id));
+  let item = c.find(
+    x => String(x.id) === String(id)
+  );
 
-  if (x) {
-    x.qty++;
+  if (item) {
+
+    item.qty =
+      Number(item.qty || 0) + 1;
+
   } else {
+
     c.push({
       id: id,
       qty: 1
     });
+
   }
 
   saveCart(c);
@@ -61,22 +88,47 @@ async function add(id) {
   alert("Added to cart ✓");
 }
 
+
+/* =========================
+   REMOVE FROM CART
+========================= */
+
+async function remove(id) {
+
+  let c = cart();
+
+  c = c.filter(
+    item =>
+      String(item.id) !== String(id)
+  );
+
+  saveCart(c);
+
+  await renderCart();
+
+}
+
+
 /* =========================
    SEARCH
 ========================= */
 
 function search() {
 
-  let input = document.querySelector("#search");
+  const input =
+    document.querySelector("#search");
 
   if (!input) return;
 
-  let q = input.value.trim();
+  const q =
+    input.value.trim();
 
   if (q) {
+
     location.href =
       "products.html?q=" +
       encodeURIComponent(q);
+
   }
 }
 
@@ -96,35 +148,52 @@ function card(p) {
 
           ${
             p.image_url
-            ? `<img
-                src="${p.image_url}"
-                alt="${p.name}"
-                style="width:100%;height:100%;object-fit:contain;"
-              >`
-            : (p.icon || "🛍️")
+              ? `
+                <img
+                  src="${p.image_url}"
+                  alt="${p.name}"
+                  style="
+                    width:100%;
+                    height:100%;
+                    object-fit:contain;
+                  "
+                >
+              `
+              : "🛍️"
           }
 
         </div>
 
       </a>
 
-      <small>${p.brand || "PS Mart Seller"}</small>
+      <small>
+        PS Mart Seller
+      </small>
 
-      <h3>${p.name}</h3>
+      <h3>
+        ${p.name}
+      </h3>
 
       <div class="rating">
-        ★ ${p.rating || "4.0"}
+        ★ 4.0
       </div>
 
-      <b>${money(p.price)}</b>
+      <b>
+        ${money(p.price)}
+      </b>
 
       ${
         p.old_price
-        ? `<del>${money(p.old_price)}</del>`
-        : ""
+          ? `
+            <del>
+              ${money(p.old_price)}
+            </del>
+          `
+          : ""
       }
 
-      <button onclick="add(${p.id})">
+      <button
+        onclick="add('${p.id}')">
         🛒 Add to Cart
       </button>
 
@@ -134,19 +203,19 @@ function card(p) {
 
 
 /* =========================
-   PRODUCTS
+   LOAD APPROVED PRODUCTS
 ========================= */
 
 async function loadProductsFromSupabase() {
 
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await supabaseClient
       .from("products")
       .select("*")
-      .eq("status", "approved")
-      .order("created_at", {
-        ascending: false
-      });
+      .eq("status", "approved");
 
   if (error) {
 
@@ -169,136 +238,161 @@ async function loadProductsFromSupabase() {
 
 async function renderProducts() {
 
-  let el = document.querySelector("#products");
+  const el =
+    document.querySelector("#products");
 
   if (!el) return;
 
-  let u =
-    new URLSearchParams(location.search);
+  const params =
+    new URLSearchParams(
+      location.search
+    );
 
-  let cat = u.get("cat");
+  const cat =
+    params.get("cat");
 
-  let q =
-    (u.get("q") || "").toLowerCase();
+  const q =
+    (params.get("q") || "")
+      .toLowerCase()
+      .trim();
 
   let products =
     await loadProductsFromSupabase();
 
-  /* If Supabase has no products yet,
-     use existing demo products */
 
-  if (!products.length &&
-      typeof PRODUCTS !== "undefined") {
+  /* =========================
+     SEARCH / CATEGORY FILTER
+  ========================= */
 
-    products = PRODUCTS;
-  }
+  let filtered =
+    products.filter(p => {
 
-  let a = products.filter(p => {
+      const name =
+        String(p.name || "")
+          .toLowerCase();
 
-    let category =
-      p.cat ||
-      p.category ||
-      "";
+      const description =
+        String(p.description || "")
+          .toLowerCase();
 
-    let name =
-      p.name ||
-      "";
-
-    let brand =
-      p.brand ||
-      "";
-
-    return (
-      (!cat || category == cat) &&
-      (
+      return (
         !q ||
-        (
-          name +
-          " " +
-          brand +
-          " " +
-          category
-        )
-        .toLowerCase()
-        .includes(q)
-      )
-    );
+        name.includes(q) ||
+        description.includes(q)
+      );
 
-  });
+    });
 
 
-  let s =
-    document.querySelector("#sort")?.value;
+  /* =========================
+     SORT
+  ========================= */
 
-  if (s == "low") {
+  const sort =
+    document.querySelector("#sort")
+      ?.value;
 
-    a.sort(
-      (x, y) =>
-        Number(x.price) -
-        Number(y.price)
-    );
 
-  }
+  if (sort === "low") {
 
-  if (s == "high") {
-
-    a.sort(
-      (x, y) =>
-        Number(y.price) -
-        Number(x.price)
+    filtered.sort(
+      (a, b) =>
+        Number(a.price) -
+        Number(b.price)
     );
 
   }
 
 
-  let title =
+  if (sort === "high") {
+
+    filtered.sort(
+      (a, b) =>
+        Number(b.price) -
+        Number(a.price)
+    );
+
+  }
+
+
+  /* =========================
+     TITLE
+  ========================= */
+
+  const title =
     document.querySelector("#title");
 
   if (title) {
 
-    title.textContent =
-      cat
-      ? cat + " Products"
-      : q
-      ? `Search: ${q}`
-      : "All Products";
+    if (q) {
+
+      title.textContent =
+        `Search: ${q}`;
+
+    } else if (cat) {
+
+      title.textContent =
+        `${cat} Products`;
+
+    } else {
+
+      title.textContent =
+        "All Products";
+
+    }
 
   }
 
 
+  /* =========================
+     SHOW PRODUCTS
+  ========================= */
+
   el.innerHTML =
-    a.length
-    ? a.map(card).join("")
-    : "<div class='empty'>No products found.</div>";
+    filtered.length
+      ? filtered
+          .map(card)
+          .join("")
+      : `
+        <div class="empty">
+          No products found.
+        </div>
+      `;
 }
 
 
 /* =========================
-   HOME
+   HOME PRODUCTS
 ========================= */
 
 async function renderHome() {
 
-  let e =
-    document.querySelector("#homeProducts");
+  const e =
+    document.querySelector(
+      "#homeProducts"
+    );
 
   if (!e) return;
 
-  let products =
+  const products =
     await loadProductsFromSupabase();
-
-  if (!products.length &&
-      typeof PRODUCTS !== "undefined") {
-
-    products = PRODUCTS;
-
-  }
 
   e.innerHTML =
     products
       .slice(0, 5)
       .map(card)
       .join("");
+
+
+  if (!products.length) {
+
+    e.innerHTML = `
+      <div class="empty">
+        No products available yet.
+      </div>
+    `;
+
+  }
 }
 
 
@@ -308,48 +402,80 @@ async function renderHome() {
 
 async function detail() {
 
-  let e =
+  const e =
     document.querySelector("#detail");
 
   if (!e) return;
 
-  let id =
-    new URLSearchParams(location.search)
-      .get("id");
+  const id =
+    new URLSearchParams(
+      location.search
+    ).get("id");
 
-  let products =
-    await loadProductsFromSupabase();
-
-  if (!products.length &&
-      typeof PRODUCTS !== "undefined") {
-
-    products = PRODUCTS;
-
-  }
-
-  let p =
-    products.find(x => x.id == id) ||
-    products[0];
-
-  if (!p) {
+  if (!id) {
 
     e.innerHTML =
       "<div class='empty'>Product not found.</div>";
 
     return;
+
+  }
+
+
+  const {
+    data: p,
+    error
+  } =
+    await supabaseClient
+      .from("products")
+      .select("*")
+      .eq("id", id)
+      .eq("status", "approved")
+      .maybeSingle();
+
+
+  if (error || !p) {
+
+    console.log(
+      "Product detail error:",
+      error
+    );
+
+    e.innerHTML =
+      "<div class='empty'>Product not found.</div>";
+
+    return;
+
   }
 
 
   e.innerHTML = `
 
     <div class="bigpic">
-      ${p.icon || "🛍️"}
+
+      ${
+        p.image_url
+          ? `
+            <img
+              src="${p.image_url}"
+              alt="${p.name}"
+              style="
+                width:100%;
+                height:100%;
+                object-fit:contain;
+              "
+            >
+          `
+          : "🛍️"
+      }
+
     </div>
+
 
     <div>
 
       <small>
-        ${p.brand || "PS Mart Seller"}
+        PS Mart Seller
       </small>
 
       <h1>
@@ -357,16 +483,22 @@ async function detail() {
       </h1>
 
       <div class="rating">
-        ★ ${p.rating || "4.0"} / 5
+        ★ 4.0 / 5
       </div>
 
       <h2>
         ${money(p.price)}
+
         ${
-          p.old
-          ? `<del>${money(p.old)}</del>`
-          : ""
+          p.old_price
+            ? `
+              <del>
+                ${money(p.old_price)}
+              </del>
+            `
+            : ""
         }
+
       </h2>
 
       <p class="green">
@@ -386,7 +518,7 @@ async function detail() {
 
       <button
         class="goldbtn"
-        onclick="add(${p.id})">
+        onclick="add('${p.id}')">
         🛒 Add to Cart
       </button>
 
@@ -398,149 +530,242 @@ async function detail() {
 
       <hr>
 
-      <h3>Description</h3>
+      <h3>
+        Description
+      </h3>
 
       <p>
         ${
           p.description ||
-          "Product details, specifications and customer reviews will appear here."
+          "Product details will appear here."
         }
       </p>
 
     </div>
+
   `;
 }
 
 
 /* =========================
-   CART
+   CART PAGE
 ========================= */
+
 async function renderCart() {
 
-  const e = document.querySelector("#cart");
+  const e =
+    document.querySelector("#cart");
 
   if (!e) return;
 
+
   const c = cart();
+
+
+  /* EMPTY CART */
 
   if (!c.length) {
 
     e.innerHTML = `
+
       <div class="empty">
+
         Your cart is empty 🛒
-        <br>
+
+        <br><br>
+
         <a href="products.html">
           Continue Shopping
         </a>
+
       </div>
+
     `;
 
     return;
+
   }
 
-  const ids = c.map(x => x.id);
 
-  const { data: products, error } =
+  /* PRODUCT IDS */
+
+  const ids =
+    c.map(
+      item => item.id
+    );
+
+
+  /* FETCH PRODUCTS */
+
+  const {
+    data: products,
+    error
+  } =
     await supabaseClient
       .from("products")
       .select("*")
       .in("id", ids)
       .eq("status", "approved");
 
+
   if (error) {
 
-    console.log("Cart products error:", error);
+    console.log(
+      "Cart products error:",
+      error
+    );
 
-    e.innerHTML =
-      "<div class='empty'>Unable to load cart.</div>";
+    e.innerHTML = `
+      <div class="empty">
+        Unable to load cart.
+      </div>
+    `;
 
     return;
+
   }
 
+
   let total = 0;
+
+
+  const rows =
+    c.map(item => {
+
+      const p =
+        products.find(
+          product =>
+            String(product.id) ===
+            String(item.id)
+        );
+
+
+      if (!p) return "";
+
+
+      const qty =
+        Number(item.qty || 1);
+
+
+      const amount =
+        Number(p.price) * qty;
+
+
+      total += amount;
+
+
+      return `
+
+        <div class="cartrow">
+
+          <div class="pic mini">
+
+            ${
+              p.image_url
+                ? `
+                  <img
+                    src="${p.image_url}"
+                    alt="${p.name}"
+                    style="
+                      width:100%;
+                      height:100%;
+                      object-fit:contain;
+                    "
+                  >
+                `
+                : "🛍️"
+            }
+
+          </div>
+
+
+          <div>
+
+            <b>
+              ${p.name}
+            </b>
+
+            <p>
+              ${money(p.price)} × ${qty}
+            </p>
+
+            <p>
+              Subtotal:
+              <b>
+                ${money(amount)}
+              </b>
+            </p>
+
+            <div>
+
+              <button
+                onclick="decreaseQty('${p.id}')">
+                −
+              </button>
+
+              <b style="margin:0 10px;">
+                ${qty}
+              </b>
+
+              <button
+                onclick="increaseQty('${p.id}')">
+                +
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <button
+            onclick="remove('${p.id}')">
+            ❌ Remove
+          </button>
+
+        </div>
+
+      `;
+
+    })
+    .join("");
+
+
+  /* CART HTML */
 
   e.innerHTML = `
 
     <div>
 
-      ${c.map(item => {
-
-        const p =
-          products.find(
-            product =>
-              String(product.id) === String(item.id)
-          );
-
-        if (!p) return "";
-
-        const amount =
-          Number(p.price) * item.qty;
-
-        total += amount;
-
-        return `
-
-          <div class="cartrow">
-
-            <div class="pic mini">
-
-              ${
-                p.image_url
-                ? `<img
-                    src="${p.image_url}"
-                    alt="${p.name}"
-                    style="width:100%;height:100%;object-fit:contain;"
-                  >`
-                : "🛍️"
-              }
-
-            </div>
-
-            <div>
-
-              <b>${p.name}</b>
-
-              <p>
-                ${money(p.price)} × ${item.qty}
-              </p>
-
-              <p>
-                Subtotal:
-                <b>${money(amount)}</b>
-              </p>
-
-            </div>
-
-            <button
-              onclick="remove('${p.id}')">
-              Remove
-            </button>
-
-          </div>
-
-        `;
-
-      }).join("")}
+      ${rows}
 
     </div>
 
+
     <div class="summary">
 
-      <h2>Price Details</h2>
+      <h2>
+        Price Details
+      </h2>
 
       <p>
         Total
-        <b>${money(total)}</b>
+        <b>
+          ${money(total)}
+        </b>
       </p>
 
       <p>
         Delivery
-        <b class="green">FREE</b>
+        <b class="green">
+          FREE
+        </b>
       </p>
 
       <hr>
 
-      <h2>${money(total)}</h2>
+      <h2>
+        ${money(total)}
+      </h2>
 
       <a
         class="goldbtn block"
@@ -552,33 +777,179 @@ async function renderCart() {
 
   `;
 }
+
+
+/* =========================
+   INCREASE QUANTITY
+========================= */
+
+async function increaseQty(id) {
+
+  let c = cart();
+
+  const item =
+    c.find(
+      x =>
+        String(x.id) ===
+        String(id)
+    );
+
+  if (item) {
+
+    item.qty =
+      Number(item.qty || 0) + 1;
+
+  }
+
+  saveCart(c);
+
+  await renderCart();
+
+}
+
+
+/* =========================
+   DECREASE QUANTITY
+========================= */
+
+async function decreaseQty(id) {
+
+  let c = cart();
+
+  const item =
+    c.find(
+      x =>
+        String(x.id) ===
+        String(id)
+    );
+
+  if (!item) return;
+
+
+  item.qty =
+    Number(item.qty || 1) - 1;
+
+
+  if (item.qty <= 0) {
+
+    c =
+      c.filter(
+        x =>
+          String(x.id) !==
+          String(id)
+      );
+
+  }
+
+
+  saveCart(c);
+
+  await renderCart();
+
+}
+
+
 /* =========================
    CHECKOUT SUMMARY
 ========================= */
 
-function summary() {
+async function summary() {
 
-  let e =
+  const e =
     document.querySelector("#summary");
 
   if (!e) return;
 
-  let total =
-    cart().reduce(
-      (s, x) => {
 
-        let p =
-          typeof PRODUCTS !== "undefined"
-          ? PRODUCTS.find(
-              p => p.id == x.id
-            )
-          : null;
+  const c = cart();
 
-        return s +
-          (p?.price || 0) *
-          x.qty;
 
-      },
+  if (!c.length) {
+
+    e.innerHTML = `
+
+      <h2>
+        Order Summary
+      </h2>
+
+      <p>
+        Your cart is empty.
+      </p>
+
+      <a
+        class="goldbtn block"
+        href="products.html">
+        Continue Shopping
+      </a>
+
+    `;
+
+    return;
+
+  }
+
+
+  const ids =
+    c.map(
+      item => item.id
+    );
+
+
+  const {
+    data: products,
+    error
+  } =
+    await supabaseClient
+      .from("products")
+      .select("*")
+      .in("id", ids)
+      .eq("status", "approved");
+
+
+  if (error) {
+
+    console.log(
+      "Checkout summary error:",
+      error
+    );
+
+    e.innerHTML =
+      "<p>Unable to load order summary.</p>";
+
+    return;
+
+  }
+
+
+  let total = 0;
+
+
+  c.forEach(item => {
+
+    const p =
+      products.find(
+        product =>
+          String(product.id) ===
+          String(item.id)
+      );
+
+
+    if (p) {
+
+      total +=
+        Number(p.price) *
+        Number(item.qty || 1);
+
+    }
+
+  });
+
+
+  const items =
+    c.reduce(
+      (sum, item) =>
+        sum +
+        Number(item.qty || 0),
       0
     );
 
@@ -591,32 +962,31 @@ function summary() {
 
     <p>
       Items:
-      ${
-        cart().reduce(
-          (s, x) =>
-            s + x.qty,
-          0
-        )
-      }
+      <b>
+        ${items}
+      </b>
     </p>
+
+    <p>
+      Delivery:
+      <b class="green">
+        FREE
+      </b>
+    </p>
+
+    <hr>
 
     <h2>
       Total:
       ${money(total)}
     </h2>
 
-    <button
-      class="goldbtn block"
-      onclick="alert('Order system will be connected next.')">
-      Place Order
-    </button>
-
   `;
 }
 
 
 /* =========================
-   SUPABASE AUTH FUNCTIONS
+   SIGN UP
 ========================= */
 
 async function signUpUser(
@@ -636,7 +1006,8 @@ async function signUpUser(
 
       options: {
         data: {
-          full_name: fullName
+          full_name:
+            fullName
         }
       }
 
@@ -646,14 +1017,20 @@ async function signUpUser(
   if (error) {
 
     alert(error.message);
+
     return null;
 
   }
+
 
   return data;
 
 }
 
+
+/* =========================
+   PASSWORD LOGIN
+========================= */
 
 async function loginUser(
   email,
@@ -664,43 +1041,58 @@ async function loginUser(
     data,
     error
   } =
-    await supabaseClient.auth.signInWithPassword({
-
-      email,
-      password
-
-    });
+    await supabaseClient
+      .auth
+      .signInWithPassword({
+        email,
+        password
+      });
 
 
   if (error) {
 
     alert(error.message);
+
     return null;
 
   }
 
-  alert("Login successful ✓");
+
+  alert(
+    "Login successful ✓"
+  );
+
 
   return data;
 
 }
 
 
+/* =========================
+   LOGOUT
+========================= */
+
 async function logoutUser() {
 
   const {
     error
   } =
-    await supabaseClient.auth.signOut();
+    await supabaseClient
+      .auth
+      .signOut();
+
 
   if (error) {
 
     alert(error.message);
+
     return;
 
   }
 
-  location.href = "index.html";
+
+  location.href =
+    "index.html";
 }
 
 
@@ -715,11 +1107,66 @@ async function getCurrentUser() {
       user
     }
   } =
-    await supabaseClient.auth.getUser();
+    await supabaseClient
+      .auth
+      .getUser();
+
 
   return user;
 
 }
+
+
+/* =========================
+   LOGIN / PROFILE STATE
+========================= */
+
+async function updateLoginState() {
+
+  const {
+    data: {
+      user
+    }
+  } =
+    await supabaseClient
+      .auth
+      .getUser();
+
+
+  const loginLinks =
+    document.querySelectorAll(
+      'a[href="login.html"]'
+    );
+
+
+  if (user) {
+
+    loginLinks.forEach(link => {
+
+      link.textContent =
+        "👤 Profile";
+
+      link.href =
+        "profile.html";
+
+    });
+
+  }
+
+}
+
+
+/* =========================
+   AUTH STATE CHANGE
+========================= */
+
+supabaseClient.auth.onAuthStateChange(
+  (event, session) => {
+
+    updateLoginState();
+
+  }
+);
 
 
 /* =========================
@@ -737,49 +1184,5 @@ detail();
 renderCart();
 
 summary();
-/* =========================
-   LOGIN STATE
-========================= */
-
-async function updateLoginState() {
-
-  const {
-    data: {
-      user
-    }
-  } = await supabaseClient.auth.getUser();
-
-  const loginLinks =
-    document.querySelectorAll(
-      'a[href="login.html"]'
-    );
-
-  if (user) {
-
-    loginLinks.forEach(link => {
-
-      link.textContent = "👤 Profile";
-
-      link.href = "profile.html";
-
-    });
-
-  }
-
-}
-
-
-/* WATCH LOGIN / LOGOUT */
-
-supabaseClient.auth.onAuthStateChange(
-  (event, session) => {
-
-    updateLoginState();
-
-  }
-);
-
-
-/* CHECK CURRENT SESSION */
 
 updateLoginState();
