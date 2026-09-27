@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Seller Dashboard | PS Mart</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:#f7f1e8;
+      color:#3b2416;
+    }
+
+    header{
+      background:#3b2416;
+      color:white;
+      padding:18px 25px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    header h2{
+      margin:0;
+    }
+
+    .logout{
+      background:#c99a4a;
+      color:white;
+      border:0;
+      padding:9px 15px;
+      border-radius:7px;
+      cursor:pointer;
+    }
+
+    .container{
+      width:92%;
+      max-width:1100px;
+      margin:25px auto;
+    }
+
+    .welcome{
+      background:white;
+      padding:22px;
+      border-radius:12px;
+      box-shadow:0 3px 15px rgba(0,0,0,.08);
+      margin-bottom:20px;
+    }
+
+    .welcome h1{
+      margin-top:0;
+    }
+
+    .status{
+      display:inline-block;
+      padding:7px 12px;
+      border-radius:20px;
+      background:#fff3cd;
+      color:#856404;
+      font-size:14px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+    }
+
+    .card{
+      background:white;
+      padding:22px;
+      border-radius:12px;
+      text-align:center;
+      box-shadow:0 3px 15px rgba(0,0,0,.08);
+    }
+
+    .icon{
+      font-size:35px;
+    }
+
+    .card h3{
+      margin:12px 0 8px;
+    }
+
+    .card p{
+      color:#777;
+      font-size:14px;
+    }
+
+    .card button{
+      border:0;
+      background:#8b5e34;
+      color:white;
+      padding:10px 16px;
+      border-radius:7px;
+      cursor:pointer;
+    }
+
+    #message{
+      text-align:center;
+      margin-top:20px;
+      font-weight:bold;
+    }
+
+    @media(max-width:700px){
+      .grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      header{
+        padding:15px;
+      }
+    }
+
+    @media(max-width:450px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h2>🏪 PS Mart Seller</h2>
+  <button class="logout" onclick="logoutSeller()">Logout</button>
+</header>
+
+<div class="container">
+
+  <div class="welcome">
+    <h1 id="shopName">Seller Dashboard</h1>
+    <p id="sellerEmail">Loading seller information...</p>
+    <span class="status" id="sellerStatus">Checking status...</span>
+  </div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="icon">➕</div>
+      <h3>Add Product</h3>
+      <p>Add a new product to your shop.</p>
+      <button onclick="location.href='seller-add-product.html'">
+        Add Product
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="icon">📦</div>
+      <h3>My Products</h3>
+      <p>View and manage your products.</p>
+      <button onclick="location.href='seller-products.html'">
+        View Products
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="icon">🛒</div>
+      <h3>Orders</h3>
+      <p>Manage customer orders.</p>
+      <button onclick="location.href='seller-orders.html'">
+        View Orders
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="icon">💰</div>
+      <h3>Earnings</h3>
+      <p>Check your sales and earnings.</p>
+      <button onclick="location.href='seller-earnings.html'">
+        View Earnings
+      </button>
+    </div>
+
+  </div>
+
+  <div id="message"></div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://nctscffhnztscczjxhat.supabase.co";
+
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+async function loadSeller(){
+
+  const {
+    data: { user },
+    error: authError
+  } = await supabaseClient.auth.getUser();
+
+  if(authError || !user){
+
+    document.getElementById("message").innerText =
+      "Please login first.";
+
+    return;
+  }
+
+
+  document.getElementById("sellerEmail").innerText =
+    user.email || "";
+
+
+  const { data, error } =
+    await supabaseClient
+      .from("sellers")
+      .select("shop_name,status")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+
+  if(error){
+
+    document.getElementById("message").innerText =
+      error.message;
+
+    return;
+  }
+
+
+  if(!data){
+
+    document.getElementById("shopName").innerText =
+      "Seller account not found";
+
+    document.getElementById("sellerStatus").innerText =
+      "Not Registered";
+
+    return;
+  }
+
+
+  document.getElementById("shopName").innerText =
+    data.shop_name;
+
+  document.getElementById("sellerStatus").innerText =
+    "Status: " + data.status;
+
+}
+
+
+async function logoutSeller(){
+
+  await supabaseClient.auth.signOut();
+
+  location.href = "login.html";
+
+}
+
+
+loadSeller();
+
+</script>
+
+</body>
+</html>
