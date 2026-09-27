@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Wishlist | PS Mart</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+body{
+  background:#f8f3ed;
+}
+
+.wishlist-page{
+  max-width:1200px;
+  margin:30px auto;
+  padding:20px;
+}
+
+.wishlist-title{
+  font-size:28px;
+  color:#4b2e1f;
+  margin-bottom:25px;
+}
+
+.wishlist-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:20px;
+}
+
+.wishlist-card{
+  background:white;
+  border-radius:12px;
+  padding:15px;
+  box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.wishlist-card img{
+  width:100%;
+  height:190px;
+  object-fit:contain;
+  border-radius:8px;
+}
+
+.wishlist-card h3{
+  color:#3d2619;
+  margin:12px 0 8px;
+}
+
+.price{
+  font-size:20px;
+  font-weight:bold;
+  color:#b8860b;
+}
+
+.old-price{
+  text-decoration:line-through;
+  color:#888;
+  margin-left:8px;
+}
+
+.wishlist-buttons{
+  display:flex;
+  gap:8px;
+  margin-top:15px;
+}
+
+.wishlist-buttons button{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:7px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.view-btn{
+  background:#4b2e1f;
+  color:white;
+}
+
+.remove-btn{
+  background:#eee;
+  color:#8b0000;
+}
+
+.empty{
+  text-align:center;
+  padding:60px 20px;
+  color:#777;
+  background:white;
+  border-radius:12px;
+}
+
+.empty h2{
+  color:#4b2e1f;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wishlist-page">
+
+  <h1 class="wishlist-title">❤️ My Wishlist</h1>
+
+  <div id="wishlistContainer">
+    <div class="empty">
+      <h2>Your wishlist is empty</h2>
+      <p>Add products to your wishlist and they will appear here.</p>
+      <a href="products.html">Continue Shopping</a>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://nctscffhnztscczjxhat.supabase.co";
+const SUPABASE_KEY = "YOUR_EXISTING_ANON_KEY";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+async function loadWishlist(){
+
+  const container = document.getElementById("wishlistContainer");
+
+  const { data: userData } =
+    await supabaseClient.auth.getUser();
+
+  const user = userData.user;
+
+  if(!user){
+    container.innerHTML = `
+      <div class="empty">
+        <h2>Please Login</h2>
+        <p>Login to see your wishlist.</p>
+        <a href="login.html">Login</a>
+      </div>
+    `;
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from("wishlist")
+    .select(`
+      id,
+      product_id,
+      products (
+        id,
+        name,
+        price,
+        old_price,
+        image_url
+      )
+    `)
+    .eq("user_id", user.id);
+
+  if(error){
+    console.error(error);
+
+    container.innerHTML = `
+      <div class="empty">
+        <h2>Wishlist setup required</h2>
+        <p>Please create the wishlist table in Supabase first.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+  if(!data || data.length === 0){
+    container.innerHTML = `
+      <div class="empty">
+        <h2>Your wishlist is empty ❤️</h2>
+        <p>Add products to your wishlist.</p>
+        <a href="products.html">Continue Shopping</a>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="wishlist-grid">
+      ${data.map(item => {
+
+        const p = item.products;
+
+        return `
+          <div class="wishlist-card">
+
+            <img src="${p.image_url || 'https://via.placeholder.com/300'}">
+
+            <h3>${p.name}</h3>
+
+            <div>
+              <span class="price">₹${p.price}</span>
+
+              ${
+                p.old_price
+                ? `<span class="old-price">₹${p.old_price}</span>`
+                : ""
+              }
+            </div>
+
+            <div class="wishlist-buttons">
+
+              <button
+                class="view-btn"
+                onclick="viewProduct('${p.id}')">
+                View
+              </button>
+
+              <button
+                class="remove-btn"
+                onclick="removeWishlist('${item.id}')">
+                Remove
+              </button>
+
+            </div>
+
+          </div>
+        `;
+
+      }).join("")}
+    </div>
+  `;
+}
+
+
+function viewProduct(id){
+  window.location.href = "product.html?id=" + id;
+}
+
+
+async function removeWishlist(id){
+
+  const { error } = await supabaseClient
+    .from("wishlist")
+    .delete()
+    .eq("id", id);
+
+  if(error){
+    alert("Unable to remove product.");
+    console.error(error);
+    return;
+  }
+
+  loadWishlist();
+}
+
+
+loadWishlist();
+</script>
+
+</body>
+</html>
