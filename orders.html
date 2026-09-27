@@ -918,6 +918,31 @@ async function loadOrders(){
   }).join("");
 
 }
+   async function cancelOrder(orderId) {
+
+  const confirmCancel = confirm(
+    "Are you sure you want to cancel this order?"
+  );
+
+  if (!confirmCancel) return;
+
+  const { error } = await supabaseClient
+    .from("orders")
+    .update({
+      status: "cancelled"
+    })
+    .eq("id", orderId);
+
+  if (error) {
+    alert("Unable to cancel order ❌");
+    console.log(error);
+    return;
+  }
+
+  alert("Order cancelled successfully ✅");
+
+  loadOrders();
+}
 
 
 loadOrders();
