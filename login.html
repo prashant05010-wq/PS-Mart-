@@ -69,6 +69,12 @@
   background:#333;
 }
 
+.resetbtn{
+  background:transparent;
+  color:#8a641d;
+  border:1px solid #c99a3d;
+}
+
 #message{
   margin-top:15px;
   font-weight:bold;
@@ -95,7 +101,7 @@
 
   <h1>Welcome to PS Mart</h1>
 
-  <p id="subtitle">Login to continue shopping</p>
+  <p>Login to continue shopping</p>
 
 
   <!-- EMAIL -->
@@ -104,6 +110,7 @@
     type="email"
     id="email"
     placeholder="Enter your email"
+    autocomplete="email"
   >
 
 
@@ -113,6 +120,7 @@
     type="password"
     id="password"
     placeholder="Enter password"
+    autocomplete="current-password"
   >
 
 
@@ -123,6 +131,16 @@
     onclick="loginUserNow()"
   >
     Login
+  </button>
+
+
+  <!-- FORGOT PASSWORD -->
+
+  <button
+    class="goldbtn resetbtn"
+    onclick="resetPassword()"
+  >
+    Forgot Password?
   </button>
 
 
@@ -185,7 +203,6 @@ async function loginUserNow(){
       await supabaseClient.auth.signInWithPassword({
 
         email: email,
-
         password: password
 
       });
@@ -269,7 +286,6 @@ async function signupUserNow(){
       await supabaseClient.auth.signUp({
 
         email: email,
-
         password: password
 
       });
@@ -299,12 +315,80 @@ async function signupUserNow(){
       }, 800);
 
     }
+
     else{
 
       message.innerText =
         "Account created. Check your email to verify your account.";
 
     }
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    message.innerText =
+      "Something went wrong.";
+
+  }
+
+}
+
+
+/* FORGOT PASSWORD */
+
+async function resetPassword(){
+
+  const email =
+    document.getElementById("email").value.trim();
+
+  const message =
+    document.getElementById("message");
+
+
+  if(!email){
+
+    message.innerText =
+      "Please enter your email first.";
+
+    return;
+  }
+
+
+  message.innerText =
+    "Sending password reset email...";
+
+
+  try{
+
+    const { error } =
+      await supabaseClient.auth.resetPasswordForEmail(
+
+        email,
+
+        {
+          redirectTo:
+            "https://prashant05010-wq.github.io/PS-Mart-/login.html"
+        }
+
+      );
+
+
+    if(error){
+
+      console.error(error);
+
+      message.innerText =
+        error.message;
+
+      return;
+    }
+
+
+    message.innerText =
+      "Password reset link sent. Check your email.";
 
   }
 
