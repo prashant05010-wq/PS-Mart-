@@ -94,12 +94,24 @@ function card(p) {
     <article class="product">
 
       <a href="product.html?id=${p.id}">
+
         <div class="pic">
-          ${p.icon || "🛍️"}
+
+          ${
+            p.image_url
+            ? `<img
+                src="${p.image_url}"
+                alt="${p.name}"
+                style="width:100%;height:100%;object-fit:contain;"
+              >`
+            : (p.icon || "🛍️")
+          }
+
         </div>
+
       </a>
 
-      <small>${p.brand || ""}</small>
+      <small>${p.brand || "PS Mart Seller"}</small>
 
       <h3>${p.name}</h3>
 
@@ -110,8 +122,8 @@ function card(p) {
       <b>${money(p.price)}</b>
 
       ${
-        p.old
-        ? `<del>${money(p.old)}</del>`
+        p.old_price
+        ? `<del>${money(p.old_price)}</del>`
         : ""
       }
 
