@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Commission Management | PS Mart</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:#f7f3ee;
+      color:#333;
+    }
+
+    header{
+      background:#4b2e1f;
+      color:white;
+      padding:18px 20px;
+      font-size:22px;
+      font-weight:bold;
+    }
+
+    .container{
+      max-width:800px;
+      margin:30px auto;
+      padding:0 15px;
+    }
+
+    .card{
+      background:white;
+      padding:25px;
+      border-radius:12px;
+      box-shadow:0 3px 12px rgba(0,0,0,.08);
+      margin-bottom:20px;
+    }
+
+    label{
+      display:block;
+      margin-top:15px;
+      margin-bottom:7px;
+      font-weight:bold;
+    }
+
+    input{
+      width:100%;
+      box-sizing:border-box;
+      padding:12px;
+      border:1px solid #ccc;
+      border-radius:7px;
+      font-size:16px;
+    }
+
+    button{
+      margin-top:20px;
+      padding:12px 22px;
+      border:none;
+      border-radius:7px;
+      background:#b8860b;
+      color:white;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    button:hover{
+      opacity:.9;
+    }
+
+    .current{
+      font-size:28px;
+      color:#16834a;
+      font-weight:bold;
+    }
+
+    .note{
+      color:#777;
+      font-size:14px;
+      margin-top:12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  ⚙️ PS Mart — Commission Management
+</header>
+
+<div class="container">
+
+  <div class="card">
+
+    <h2>Marketplace Commission</h2>
+
+    <p>
+      Current Commission Rate:
+    </p>
+
+    <div class="current" id="currentRate">
+      Loading...
+    </div>
+
+    <label for="commissionRate">
+      Set Commission Rate (%)
+    </label>
+
+    <input
+      type="number"
+      id="commissionRate"
+      min="0"
+      max="100"
+      step="0.1"
+      placeholder="Example: 10"
+    >
+
+    <button onclick="saveCommission()">
+      💾 Save Commission
+    </button>
+
+    <div class="note">
+      Example: 10 means PS Mart keeps 10% of the seller's sale.
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://nctscffhnztscczjxhat.supabase.co";
+
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
+const supabaseClient =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/*
+  Temporary setting stored in browser.
+  Later we will move this setting
+  into Supabase for all sellers.
+*/
+
+const DEFAULT_RATE = 10;
+
+
+function loadCommission(){
+
+  const savedRate =
+    localStorage.getItem("psmart-commission-rate");
+
+  const rate =
+    savedRate !== null
+      ? Number(savedRate)
+      : DEFAULT_RATE;
+
+
+  document.getElementById("currentRate").innerText =
+    rate + "%";
+
+  document.getElementById("commissionRate").value =
+    rate;
+}
+
+
+function saveCommission(){
+
+  const input =
+    document.getElementById("commissionRate");
+
+  const rate =
+    Number(input.value);
+
+
+  if(
+    isNaN(rate) ||
+    rate < 0 ||
+    rate > 100
+  ){
+
+    alert("Please enter a rate between 0 and 100.");
+    return;
+  }
+
+
+  localStorage.setItem(
+    "psmart-commission-rate",
+    rate
+  );
+
+
+  document.getElementById("currentRate").innerText =
+    rate + "%";
+
+
+  alert(
+    "Commission rate saved successfully ✅"
+  );
+}
+
+
+loadCommission();
+
+</script>
+
+</body>
+</html>
