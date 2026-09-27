@@ -908,7 +908,7 @@ async function loadOrders(){
 
 ${tracking(order)}
 
-${order.status === "placed" ? `
+${String(order.status).toLowerCase() === "placed" ? `
   <div style="margin-top:20px;">
     <button
       onclick="cancelOrder(${order.id})"
