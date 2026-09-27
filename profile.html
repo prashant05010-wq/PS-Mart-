@@ -1,156 +1,467 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>My Profile | PS Mart</title>
+<title>My Account | PS Mart</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+
+*{
+  box-sizing:border-box;
+}
+
 body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:#f7f1e8;
-    color:#3b2416;
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f7f1e8;
+  color:#3b2416;
 }
 
 header{
-    background:#4b2e1f;
-    color:white;
-    padding:18px;
-    text-align:center;
+  background:#4b2e1f;
+  color:white;
+  padding:16px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+header a{
+  color:white;
+  text-decoration:none;
 }
 
 .container{
-    max-width:700px;
-    margin:30px auto;
-    padding:20px;
+  max-width:900px;
+  margin:25px auto;
+  padding:15px;
 }
 
 .card{
-    background:white;
-    border-radius:14px;
-    padding:25px;
-    margin-bottom:20px;
-    box-shadow:0 4px 15px rgba(0,0,0,.12);
+  background:white;
+  border-radius:14px;
+  padding:22px;
+  margin-bottom:18px;
+  box-shadow:0 4px 15px rgba(0,0,0,.10);
+}
+
+.profile-head{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  margin-bottom:20px;
+}
+
+.avatar{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  background:#b8860b;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+  font-weight:bold;
 }
 
 h2{
-    margin-top:0;
-    color:#6b421f;
+  margin-top:0;
+  color:#6b421f;
 }
 
 .info{
-    padding:12px 0;
-    border-bottom:1px solid #eee;
+  padding:13px 0;
+  border-bottom:1px solid #eee;
+}
+
+.info:last-child{
+  border-bottom:none;
+}
+
+.info strong{
+  display:inline-block;
+  width:90px;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin:7px 0;
+  border:1px solid #ccc;
+  border-radius:7px;
+  font-size:15px;
 }
 
 button,
-a.btn{
-    display:block;
-    width:100%;
-    box-sizing:border-box;
-    padding:13px;
-    margin-top:12px;
-    border:none;
-    border-radius:8px;
-    background:#b8860b;
-    color:white;
-    text-align:center;
-    text-decoration:none;
-    cursor:pointer;
-    font-size:16px;
+.btn{
+  display:block;
+  width:100%;
+  padding:13px;
+  margin-top:10px;
+  border:none;
+  border-radius:8px;
+  background:#b8860b;
+  color:white;
+  text-align:center;
+  text-decoration:none;
+  cursor:pointer;
+  font-size:15px;
+}
+
+.secondary{
+  background:#6b421f;
+}
+
+.cancel{
+  background:#777;
 }
 
 .logout{
-    background:#8b2e2e !important;
+  background:#8b2e2e !important;
 }
 
 .hidden{
-    display:none;
+  display:none;
 }
+
+.menu{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.menu a{
+  text-decoration:none;
+  background:#faf6ef;
+  border:1px solid #e5ddd2;
+  border-radius:10px;
+  padding:18px;
+  color:#3b2416;
+  font-weight:bold;
+}
+
+.menu a:hover{
+  background:#f1e7d8;
+}
+
+.message{
+  margin-top:10px;
+  font-weight:bold;
+}
+
+.success{
+  color:green;
+}
+
+.error{
+  color:#c62828;
+}
+
+@media(max-width:600px){
+
+  header{
+    padding:14px;
+  }
+
+  .menu{
+    grid-template-columns:1fr;
+  }
+
+  .info strong{
+    width:75px;
+  }
+
+}
+
 </style>
+
 </head>
+
 
 <body>
 
+
 <header>
-    <h1>👤 My Profile</h1>
+
+  <a href="index.html">
+    🛍️ <b>PS</b> Mart
+  </a>
+
+  <a href="index.html">
+    🏠 Home
+  </a>
+
 </header>
+
 
 <div class="container">
 
-    <div class="card">
 
-        <h2>Account Details</h2>
+<!-- =========================
+     PROFILE
+========================= -->
 
-        <div class="info">
-            <strong>Name:</strong>
-            <span id="name">Loading...</span>
-        </div>
+<div class="card">
 
-        <div class="info">
-            <strong>Email:</strong>
-            <span id="email">Loading...</span>
-        </div>
+  <div class="profile-head">
 
-        <div class="info">
-            <strong>Phone:</strong>
-            <span id="phone">Loading...</span>
-        </div>
+    <div class="avatar" id="avatar">
+      👤
+    </div>
 
-        <div class="info">
-            <strong>Role:</strong>
-            <span id="role">Loading...</span>
-        </div>
+    <div>
+
+      <h2 style="margin-bottom:5px;">
+        My Profile
+      </h2>
+
+      <span id="email">
+        Loading...
+      </span>
 
     </div>
 
-
-    <!-- Seller Section -->
-
-    <div class="card hidden" id="sellerSection">
-
-        <h2>🏪 Seller</h2>
-
-        <a class="btn" href="seller-dashboard.html">
-            Seller Dashboard
-        </a>
-
-    </div>
+  </div>
 
 
-    <!-- Admin Section -->
+  <div class="info">
 
-    <div class="card hidden" id="adminSection">
+    <strong>Name:</strong>
 
-        <h2>⚙️ Admin</h2>
+    <span id="name">
+      Loading...
+    </span>
 
-        <a class="btn" href="admin-dashboard.html">
-            Admin Dashboard
-        </a>
-
-    </div>
+  </div>
 
 
-    <div class="card">
+  <div class="info">
 
-        <a class="btn" href="index.html">
-            🏠 Home
-        </a>
+    <strong>Phone:</strong>
 
-        <button class="logout" onclick="logout()">
-            🚪 Logout
-        </button>
+    <span id="phone">
+      Loading...
+    </span>
 
-    </div>
+  </div>
+
+
+  <div class="info">
+
+    <strong>Role:</strong>
+
+    <span id="role">
+      Loading...
+    </span>
+
+  </div>
+
+
+  <button
+    onclick="showEdit()">
+
+    ✏️ Edit Profile
+
+  </button>
+
+
+</div>
+
+
+<!-- =========================
+     EDIT PROFILE
+========================= -->
+
+<div
+  class="card hidden"
+  id="editCard">
+
+  <h2>
+    ✏️ Edit Profile
+  </h2>
+
+
+  <input
+    id="editName"
+    placeholder="Full name"
+  >
+
+
+  <input
+    id="editPhone"
+    type="tel"
+    placeholder="Mobile number"
+  >
+
+
+  <button
+    onclick="saveProfile()">
+
+    💾 Save Changes
+
+  </button>
+
+
+  <button
+    class="cancel"
+    onclick="hideEdit()">
+
+    Cancel
+
+  </button>
+
+
+  <div
+    id="editMessage"
+    class="message">
+  </div>
+
+</div>
+
+
+<!-- =========================
+     QUICK MENU
+========================= -->
+
+<div class="card">
+
+  <h2>
+    🛍️ My Account
+  </h2>
+
+
+  <div class="menu">
+
+
+    <a href="orders.html">
+
+      📦<br>
+      My Orders
+
+    </a>
+
+
+    <a href="cart.html">
+
+      🛒<br>
+      My Cart
+
+    </a>
+
+
+    <a href="wishlist.html">
+
+      ❤️<br>
+      Wishlist
+
+    </a>
+
+
+    <a href="products.html">
+
+      🔎<br>
+      Continue Shopping
+
+    </a>
+
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     SELLER
+========================= -->
+
+<div
+  class="card"
+  id="sellerSection">
+
+  <h2>
+    🏪 Sell on PS Mart
+  </h2>
+
+  <p>
+    Become a seller and start selling your products.
+  </p>
+
+  <a
+    class="btn"
+    href="seller-register.html">
+
+    Register as Seller
+
+  </a>
+
+
+  <a
+    class="btn secondary"
+    href="seller-dashboard.html">
+
+    Seller Dashboard
+
+  </a>
+
+</div>
+
+
+<!-- =========================
+     ADMIN
+========================= -->
+
+<div
+  class="card hidden"
+  id="adminSection">
+
+  <h2>
+    ⚙️ Admin
+  </h2>
+
+  <a
+    class="btn"
+    href="admin-dashboard.html">
+
+    Admin Dashboard
+
+  </a>
+
+</div>
+
+
+<!-- =========================
+     LOGOUT
+========================= -->
+
+<div class="card">
+
+  <button
+    class="logout"
+    onclick="logout()">
+
+    🚪 Logout
+
+  </button>
+
+</div>
+
 
 </div>
 
 
 <script>
+
+
+/* =========================
+   SUPABASE
+========================= */
 
 const SUPABASE_URL =
 "https://nctscffhnztscczjxhat.supabase.co";
@@ -158,101 +469,332 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
 
-const supabaseClient = window.supabase.createClient(
+
+const supabaseClient =
+window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
 
-
+/* =========================
+   LOAD PROFILE
+========================= */
 
 async function loadProfile(){
 
-    const {
-        data: { user },
-        error
-    } = await supabaseClient.auth.getUser();
-
-
-    if(error || !user){
-
-        window.location.href = "login.html";
-        return;
-
-    }
-
-
-    document.getElementById("email").textContent =
-        user.email || "Not available";
-
-
-   const { data: profile, error: profileError } =
+  const {
+    data:{
+      user
+    },
+    error
+  } =
     await supabaseClient
+    .auth
+    .getUser();
+
+
+  if(error || !user){
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  document.getElementById(
+    "email"
+  ).textContent =
+    user.email || "Not available";
+
+
+  const {
+    data:profile,
+    error:profileError
+  } =
+    await supabaseClient
+
     .from("profiles")
-    .select("full_name, phone, role")
-    .eq("id", user.id)
+
+    .select(
+      "full_name, phone, role"
+    )
+
+    .eq(
+      "id",
+      user.id
+    )
+
     .maybeSingle();
 
-if (profileError) {
-    console.log("Profile error:", profileError);
+
+  if(profileError){
+
+    console.log(
+      "Profile error:",
+      profileError
+    );
+
+  }
+
+
+  const name =
+    profile?.full_name ||
+    "Not added";
+
+
+  const phone =
+    profile?.phone ||
+    "Not added";
+
+
+  const role =
+    profile?.role ||
+    "customer";
+
+
+  document.getElementById(
+    "name"
+  ).textContent = name;
+
+
+  document.getElementById(
+    "phone"
+  ).textContent = phone;
+
+
+  document.getElementById(
+    "role"
+  ).textContent = role;
+
+
+  /* Avatar */
+
+  if(name !== "Not added"){
+
+    document.getElementById(
+      "avatar"
+    ).textContent =
+      name.charAt(0).toUpperCase();
+
+  }
+
+
+  /* Admin */
+
+  if(role === "admin"){
+
+    document
+    .getElementById(
+      "adminSection"
+    )
+    .classList.remove(
+      "hidden"
+    );
+
+  }
+
+
+  /* Seller */
+
+  if(role === "seller"){
+
+    document
+    .getElementById(
+      "sellerSection"
+    )
+    .querySelector(
+      "h2"
+    )
+    .textContent =
+      "🏪 Seller Account";
+
+  }
+
+
+  /* Fill edit fields */
+
+  document.getElementById(
+    "editName"
+  ).value =
+    profile?.full_name || "";
+
+
+  document.getElementById(
+    "editPhone"
+  ).value =
+    profile?.phone || "";
+
 }
 
-if (!profile) {
-    document.getElementById("name").textContent = "Not added";
-    document.getElementById("phone").textContent = "Not added";
-    document.getElementById("role").textContent = "customer";
+
+/* =========================
+   SHOW EDIT
+========================= */
+
+function showEdit(){
+
+  document
+  .getElementById(
+    "editCard"
+  )
+  .classList.remove(
+    "hidden"
+  );
+
+}
+
+
+/* =========================
+   HIDE EDIT
+========================= */
+
+function hideEdit(){
+
+  document
+  .getElementById(
+    "editCard"
+  )
+  .classList.add(
+    "hidden"
+  );
+
+}
+
+
+/* =========================
+   SAVE PROFILE
+========================= */
+
+async function saveProfile(){
+
+  const message =
+    document.getElementById(
+      "editMessage"
+    );
+
+
+  const name =
+    document.getElementById(
+      "editName"
+    ).value.trim();
+
+
+  const phone =
+    document.getElementById(
+      "editPhone"
+    ).value.trim();
+
+
+  if(!name){
+
+    message.textContent =
+      "Please enter your name.";
+
+    message.className =
+      "message error";
+
     return;
-}
+
+  }
 
 
-    if(profile){
-
-        document.getElementById("name").textContent =
-            profile.full_name || "Not added";
-
-        document.getElementById("phone").textContent =
-            profile.phone || "Not added";
-
-        document.getElementById("role").textContent =
-            profile.role || "customer";
-
-
-        if(profile.role === "seller"){
-
-            document
-            .getElementById("sellerSection")
-            .classList.remove("hidden");
-
-        }
-
-
-        if(profile.role === "admin"){
-
-            document
-            .getElementById("adminSection")
-            .classList.remove("hidden");
-
-        }
-
+  const {
+    data:{
+      user
     }
+  } =
+    await supabaseClient
+    .auth
+    .getUser();
+
+
+  if(!user){
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+
+    .from("profiles")
+
+    .update({
+
+      full_name:name,
+      phone:phone
+
+    })
+
+    .eq(
+      "id",
+      user.id
+    );
+
+
+  if(error){
+
+    console.log(error);
+
+    message.textContent =
+      "Profile update failed: " +
+      error.message;
+
+    message.className =
+      "message error";
+
+    return;
+
+  }
+
+
+  message.textContent =
+    "Profile updated successfully ✓";
+
+  message.className =
+    "message success";
+
+
+  await loadProfile();
 
 }
 
+
+/* =========================
+   LOGOUT
+========================= */
 
 async function logout(){
 
-    await supabaseClient.auth.signOut();
+  await supabaseClient
+    .auth
+    .signOut();
 
-    window.location.href = "index.html";
+
+  window.location.href =
+    "index.html";
 
 }
 
 
-setTimeout(() => {
-    loadProfile();
-}, 1000);
+/* =========================
+   START
+========================= */
+
+loadProfile();
 
 </script>
 
+
 </body>
+
 </html>
