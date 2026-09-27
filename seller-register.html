@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Become a Seller | PS Mart</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:#f8f1e7;
+      color:#3b2416;
+    }
+
+    .box{
+      width:90%;
+      max-width:500px;
+      margin:50px auto;
+      background:white;
+      padding:25px;
+      border-radius:15px;
+      box-shadow:0 5px 25px rgba(0,0,0,.12);
+    }
+
+    h1{
+      text-align:center;
+      color:#8b5e34;
+    }
+
+    p{
+      text-align:center;
+      color:#777;
+    }
+
+    label{
+      display:block;
+      margin-top:15px;
+      font-weight:bold;
+    }
+
+    input{
+      width:100%;
+      box-sizing:border-box;
+      padding:12px;
+      margin-top:7px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      font-size:15px;
+    }
+
+    button{
+      width:100%;
+      margin-top:22px;
+      padding:13px;
+      border:0;
+      border-radius:8px;
+      background:#8b5e34;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+    button:hover{
+      background:#6f4728;
+    }
+
+    #message{
+      text-align:center;
+      margin-top:15px;
+      font-weight:bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+
+  <h1>Become a Seller</h1>
+
+  <p>Register your shop on PS Mart</p>
+
+  <label>Shop Name</label>
+  <input type="text" id="shopName" placeholder="Enter shop name">
+
+  <label>Seller Name</label>
+  <input type="text" id="sellerName" placeholder="Enter your name">
+
+  <label>Phone Number</label>
+  <input type="tel" id="phone" placeholder="Enter phone number">
+
+  <button onclick="registerSeller()">Register as Seller</button>
+
+  <div id="message"></div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://nctscffhnztscczjxhat.supabase.co";
+
+const SUPABASE_KEY =
+"PASTE_YOUR_PUBLISHABLE_OR_ANON_KEY_HERE";
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+async function registerSeller(){
+
+  const shopName =
+    document.getElementById("shopName").value.trim();
+
+  const sellerName =
+    document.getElementById("sellerName").value.trim();
+
+  const phone =
+    document.getElementById("phone").value.trim();
+
+  const message =
+    document.getElementById("message");
+
+
+  if(!shopName || !sellerName || !phone){
+
+    message.style.color = "red";
+    message.innerText =
+      "Please fill all details.";
+
+    return;
+  }
+
+
+  const {
+    data: { user },
+    error: authError
+  } = await supabaseClient.auth.getUser();
+
+
+  if(authError || !user){
+
+    message.style.color = "red";
+    message.innerText =
+      "Please login first.";
+
+    return;
+  }
+
+
+  const { error } =
+    await supabaseClient
+      .from("profiles")
+      .upsert({
+        id: user.id,
+        full_name: sellerName,
+        phone: phone,
+        role: "seller"
+      });
+
+
+  if(error){
+
+    message.style.color = "red";
+    message.innerText =
+      error.message;
+
+    return;
+  }
+
+
+  const { error: sellerError } =
+    await supabaseClient
+      .from("sellers")
+      .insert({
+        user_id: user.id,
+        shop_name: shopName,
+        phone: phone,
+        status: "pending"
+      });
+
+
+  if(sellerError){
+
+    message.style.color = "red";
+    message.innerText =
+      sellerError.message;
+
+    return;
+  }
+
+
+  message.style.color = "green";
+  message.innerText =
+    "Seller registration submitted successfully!";
+
+}
+
+</script>
+
+</body>
+</html>
