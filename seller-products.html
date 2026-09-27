@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>My Products | PS Mart</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:#f7f1e8;
+      color:#3b2416;
+    }
+
+    header{
+      background:#3b2416;
+      color:white;
+      padding:18px 25px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    header h2{
+      margin:0;
+    }
+
+    .back{
+      color:white;
+      text-decoration:none;
+      background:#8b5e34;
+      padding:9px 14px;
+      border-radius:7px;
+    }
+
+    .container{
+      width:92%;
+      max-width:1100px;
+      margin:25px auto;
+    }
+
+    .top{
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      margin-bottom:20px;
+      box-shadow:0 3px 15px rgba(0,0,0,.08);
+    }
+
+    .products{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:18px;
+    }
+
+    .product{
+      background:white;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 3px 15px rgba(0,0,0,.08);
+    }
+
+    .product img{
+      width:100%;
+      height:200px;
+      object-fit:cover;
+      background:#eee;
+    }
+
+    .info{
+      padding:16px;
+    }
+
+    .info h3{
+      margin:0 0 8px;
+    }
+
+    .price{
+      font-size:20px;
+      font-weight:bold;
+      color:#8b5e34;
+    }
+
+    .old{
+      text-decoration:line-through;
+      color:#999;
+      margin-left:8px;
+      font-size:14px;
+    }
+
+    .status{
+      display:inline-block;
+      margin-top:10px;
+      padding:6px 10px;
+      border-radius:15px;
+      font-size:12px;
+      background:#fff3cd;
+      color:#856404;
+    }
+
+    .stock{
+      margin-top:8px;
+      color:#666;
+      font-size:14px;
+    }
+
+    .empty{
+      background:white;
+      padding:35px;
+      text-align:center;
+      border-radius:12px;
+    }
+
+    #message{
+      text-align:center;
+      margin:20px 0;
+      font-weight:bold;
+    }
+
+    @media(max-width:800px){
+      .products{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media(max-width:500px){
+      .products{
+        grid-template-columns:1fr;
+      }
+
+      header{
+        padding:15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h2>🏪 My Products</h2>
+  <a class="back" href="seller-dashboard.html">Dashboard</a>
+</header>
+
+<div class="container">
+
+  <div class="top">
+    <h1>My Products</h1>
+    <p>Here you can see products added by your shop.</p>
+  </div>
+
+  <div id="message">Loading products...</div>
+
+  <div class="products" id="products"></div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://nctscffhnztscczjxhat.supabase.co";
+
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+async function loadSellerProducts(){
+
+  const message =
+    document.getElementById("message");
+
+  const productsBox =
+    document.getElementById("products");
+
+
+  const {
+    data: { user },
+    error: authError
+  } = await supabaseClient.auth.getUser();
+
+
+  if(authError || !user){
+
+    message.innerText =
+      "Please login first.";
+
+    return;
+  }
+
+
+  const {
+    data: seller,
+    error: sellerError
+  } = await supabaseClient
+    .from("sellers")
+    .select("id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+
+  if(sellerError){
+
+    message.innerText =
+      sellerError.message;
+
+    return;
+  }
+
+
+  if(!seller){
+
+    message.innerText =
+      "Seller account not found.";
+
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("products")
+    .select(`
+      id,
+      name,
+      description,
+      price,
+      old_price,
+      stock,
+      image_url,
+      status,
+      categories(name)
+    `)
+    .eq("seller_id", seller.id)
+    .order("created_at", {
+      ascending:false
+    });
+
+
+  if(error){
+
+    message.innerText =
+      error.message;
+
+    return;
+  }
+
+
+  message.innerText = "";
+
+
+  if(!data || data.length === 0){
+
+    productsBox.innerHTML = `
+      <div class="empty">
+        <h2>No products yet</h2>
+        <p>Add your first product from the Seller Dashboard.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  productsBox.innerHTML =
+    data.map(product => {
+
+      const image =
+        product.image_url ||
+        "https://via.placeholder.com/500x300?text=PS+Mart";
+
+
+      const oldPrice =
+        product.old_price
+        ? `<span class="old">₹${product.old_price}</span>`
+        : "";
+
+
+      return `
+        <div class="product">
+
+          <img
+            src="${image}"
+            alt="${product.name}"
+            onerror="this.src='https://via.placeholder.com/500x300?text=PS+Mart'"
+          >
+
+          <div class="info">
+
+            <h3>${product.name}</h3>
+
+            <p>
+              ${product.description || ""}
+            </p>
+
+            <div class="price">
+              ₹${product.price}
+              ${oldPrice}
+            </div>
+
+            <div class="stock">
+              Stock: ${product.stock}
+            </div>
+
+            <span class="status">
+              ${product.status}
+            </span>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+}
+
+
+loadSellerProducts();
+
+</script>
+
+</body>
+</html>
