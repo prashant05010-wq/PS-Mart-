@@ -1186,3 +1186,57 @@ renderCart();
 summary();
 
 updateLoginState();
+/* =========================
+   WISHLIST
+========================= */
+
+async function toggleWishlist(productId, button) {
+
+  const { data: userData } =
+    await supabaseClient.auth.getUser();
+
+  const user = userData.user;
+
+  if (!user) {
+    alert("Please login first ❤️");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const { data: existing } =
+    await supabaseClient
+      .from("wishlist")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("product_id", productId)
+      .maybeSingle();
+
+  if (existing) {
+
+    const { error } =
+      await supabaseClient
+        .from("wishlist")
+        .delete()
+        .eq("id", existing.id);
+
+    if (!error) {
+      button.innerHTML = "♡";
+      button.classList.remove("active");
+    }
+
+  } else {
+
+    const { error } =
+      await supabaseClient
+        .from("wishlist")
+        .insert({
+          user_id: user.id,
+          product_id: productId
+        });
+
+    if (!error) {
+      button.innerHTML = "♥";
+      button.classList.add("active");
+    }
+  }
+}
