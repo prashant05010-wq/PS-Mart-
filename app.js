@@ -41,28 +41,25 @@ function updateCount() {
     .forEach(e => e.textContent = n);
 }
 
-function add(id) {
-  let c = cart();
-  let x = c.find(a => a.id == id);
+async function add(id) {
 
-  x ? x.qty++ : c.push({
-    id: Number(id),
-    qty: 1
-  });
+  let c = cart();
+
+  let x = c.find(a => String(a.id) === String(id));
+
+  if (x) {
+    x.qty++;
+  } else {
+    c.push({
+      id: id,
+      qty: 1
+    });
+  }
 
   saveCart(c);
 
   alert("Added to cart ✓");
 }
-
-function remove(id) {
-  saveCart(
-    cart().filter(x => x.id != id)
-  );
-
-  renderCart();
-}
-
 
 /* =========================
    SEARCH
