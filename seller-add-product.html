@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Add Product | PS Mart</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:#f7f1e8;
+      color:#3b2416;
+    }
+
+    header{
+      background:#3b2416;
+      color:white;
+      padding:18px 25px;
+    }
+
+    header h2{
+      margin:0;
+    }
+
+    .box{
+      width:92%;
+      max-width:600px;
+      margin:30px auto;
+      background:white;
+      padding:25px;
+      border-radius:14px;
+      box-shadow:0 4px 18px rgba(0,0,0,.1);
+    }
+
+    h1{
+      margin-top:0;
+      color:#8b5e34;
+    }
+
+    label{
+      display:block;
+      margin-top:15px;
+      font-weight:bold;
+    }
+
+    input,
+    textarea,
+    select{
+      width:100%;
+      padding:12px;
+      margin-top:7px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      font-size:15px;
+    }
+
+    textarea{
+      min-height:100px;
+      resize:vertical;
+    }
+
+    button{
+      width:100%;
+      margin-top:22px;
+      padding:13px;
+      border:0;
+      border-radius:8px;
+      background:#8b5e34;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+    button:hover{
+      background:#6f4728;
+    }
+
+    #message{
+      text-align:center;
+      margin-top:18px;
+      font-weight:bold;
+    }
+
+    .back{
+      display:inline-block;
+      margin-top:15px;
+      color:#8b5e34;
+      text-decoration:none;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h2>🏪 PS Mart — Seller</h2>
+</header>
+
+<div class="box">
+
+  <h1>Add New Product</h1>
+
+  <label>Product Name</label>
+  <input
+    type="text"
+    id="productName"
+    placeholder="Enter product name"
+  >
+
+  <label>Description</label>
+  <textarea
+    id="description"
+    placeholder="Enter product description"
+  ></textarea>
+
+  <label>Category</label>
+  <select id="category">
+    <option value="">Select Category</option>
+    <option value="Mobiles">Mobiles</option>
+    <option value="Electronics">Electronics</option>
+    <option value="Fashion">Fashion</option>
+    <option value="Beauty">Beauty</option>
+    <option value="Home">Home</option>
+    <option value="Grocery">Grocery</option>
+    <option value="Accessories">Accessories</option>
+  </select>
+
+  <label>Price</label>
+  <input
+    type="number"
+    id="price"
+    placeholder="Enter selling price"
+  >
+
+  <label>Old Price</label>
+  <input
+    type="number"
+    id="oldPrice"
+    placeholder="Enter old price"
+  >
+
+  <label>Stock</label>
+  <input
+    type="number"
+    id="stock"
+    placeholder="Enter stock quantity"
+  >
+
+  <label>Product Image URL</label>
+  <input
+    type="url"
+    id="imageUrl"
+    placeholder="Paste image URL"
+  >
+
+  <button onclick="addProduct()">
+    Add Product
+  </button>
+
+  <div id="message"></div>
+
+  <a class="back" href="seller-dashboard.html">
+    ← Back to Seller Dashboard
+  </a>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://nctscffhnztscczjxhat.supabase.co";
+
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+async function addProduct(){
+
+  const message =
+    document.getElementById("message");
+
+
+  const name =
+    document.getElementById("productName").value.trim();
+
+  const description =
+    document.getElementById("description").value.trim();
+
+  const categoryName =
+    document.getElementById("category").value;
+
+  const price =
+    Number(document.getElementById("price").value);
+
+  const oldPriceValue =
+    document.getElementById("oldPrice").value;
+
+  const oldPrice =
+    oldPriceValue ? Number(oldPriceValue) : null;
+
+  const stock =
+    Number(document.getElementById("stock").value);
+
+  const imageUrl =
+    document.getElementById("imageUrl").value.trim();
+
+
+  if(
+    !name ||
+    !categoryName ||
+    !price ||
+    stock < 0
+  ){
+
+    message.style.color = "red";
+    message.innerText =
+      "Please fill all required fields.";
+
+    return;
+  }
+
+
+  const {
+    data: { user },
+    error: authError
+  } = await supabaseClient.auth.getUser();
+
+
+  if(authError || !user){
+
+    message.style.color = "red";
+    message.innerText =
+      "Please login first.";
+
+    return;
+  }
+
+
+  const {
+    data: seller,
+    error: sellerError
+  } = await supabaseClient
+    .from("sellers")
+    .select("id,status")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+
+  if(sellerError){
+
+    message.style.color = "red";
+    message.innerText =
+      sellerError.message;
+
+    return;
+  }
+
+
+  if(!seller){
+
+    message.style.color = "red";
+    message.innerText =
+      "Seller account not found.";
+
+    return;
+  }
+
+
+  if(seller.status !== "approved"){
+
+    message.style.color = "#856404";
+    message.innerText =
+      "Your seller account is pending admin approval.";
+
+    return;
+  }
+
+
+  const {
+    data: category,
+    error: categoryError
+  } = await supabaseClient
+    .from("categories")
+    .select("id")
+    .eq("name", categoryName)
+    .maybeSingle();
+
+
+  if(categoryError){
+
+    message.style.color = "red";
+    message.innerText =
+      categoryError.message;
+
+    return;
+  }
+
+
+  if(!category){
+
+    message.style.color = "red";
+    message.innerText =
+      "Category not found.";
+
+    return;
+  }
+
+
+  const { error } =
+    await supabaseClient
+      .from("products")
+      .insert({
+        seller_id: seller.id,
+        category_id: category.id,
+        name: name,
+        description: description,
+        price: price,
+        old_price: oldPrice,
+        stock: stock,
+        image_url: imageUrl,
+        status: "pending"
+      });
+
+
+  if(error){
+
+    message.style.color = "red";
+    message.innerText =
+      error.message;
+
+    return;
+  }
+
+
+  message.style.color = "green";
+  message.innerText =
+    "Product submitted successfully! Waiting for admin approval.";
+
+  document.getElementById("productName").value = "";
+  document.getElementById("description").value = "";
+  document.getElementById("category").value = "";
+  document.getElementById("price").value = "";
+  document.getElementById("oldPrice").value = "";
+  document.getElementById("stock").value = "";
+  document.getElementById("imageUrl").value = "";
+
+}
+
+</script>
+
+</body>
+</html>
