@@ -9,123 +9,93 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    *{
-      box-sizing:border-box;
-    }
-
     body{
       margin:0;
       font-family:Arial,sans-serif;
-      background:#f7f1e8;
-      color:#3b2416;
+      background:#f7f3ee;
+      color:#333;
     }
 
     header{
-      background:#3b2416;
-      color:white;
-      padding:18px 25px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-    header h2{
-      margin:0;
-    }
-
-    .back{
-      color:white;
-      text-decoration:none;
-      background:#8b5e34;
-      padding:9px 14px;
-      border-radius:7px;
+      background:#4b2e1f;
+      color:#fff;
+      padding:18px 20px;
+      font-size:22px;
+      font-weight:bold;
     }
 
     .container{
-      width:92%;
-      max-width:1100px;
-      margin:25px auto;
-    }
-
-    .top{
-      background:white;
-      padding:20px;
-      border-radius:12px;
-      margin-bottom:20px;
-      box-shadow:0 3px 15px rgba(0,0,0,.08);
-    }
-
-    .cards{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:18px;
-      margin-bottom:25px;
+      max-width:1000px;
+      margin:30px auto;
+      padding:0 15px;
     }
 
     .card{
-      background:white;
-      padding:25px;
+      background:#fff;
+      padding:22px;
+      margin-bottom:20px;
       border-radius:12px;
+      box-shadow:0 3px 12px rgba(0,0,0,.08);
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:15px;
+    }
+
+    .stat{
       text-align:center;
-      box-shadow:0 3px 15px rgba(0,0,0,.08);
-    }
-
-    .icon{
-      font-size:35px;
-    }
-
-    .card h3{
-      margin:12px 0 8px;
-      color:#666;
-    }
-
-    .amount{
-      font-size:27px;
-      font-weight:bold;
-      color:#8b5e34;
-    }
-
-    .tablebox{
-      background:white;
       padding:20px;
+      background:#fff;
       border-radius:12px;
-      overflow-x:auto;
-      box-shadow:0 3px 15px rgba(0,0,0,.08);
+      box-shadow:0 3px 12px rgba(0,0,0,.08);
+    }
+
+    .stat h2{
+      margin:8px 0;
+      color:#b8860b;
+    }
+
+    .earning{
+      font-size:24px;
+      font-weight:bold;
+      color:#16834a;
+    }
+
+    .commission{
+      color:#d32f2f;
     }
 
     table{
       width:100%;
       border-collapse:collapse;
+      margin-top:15px;
     }
 
     th,td{
       padding:12px;
-      border-bottom:1px solid #eee;
+      border-bottom:1px solid #ddd;
       text-align:left;
     }
 
     th{
-      background:#f7f1e8;
+      background:#f1e7dc;
     }
 
     .empty{
       text-align:center;
       padding:30px;
-    }
-
-    #message{
-      text-align:center;
-      margin:20px 0;
-      font-weight:bold;
+      color:#777;
     }
 
     @media(max-width:700px){
-      .cards{
+      .stats{
         grid-template-columns:1fr;
       }
 
-      header{
-        padding:15px;
+      table{
+        font-size:13px;
       }
     }
   </style>
@@ -134,51 +104,41 @@
 <body>
 
 <header>
-  <h2>💰 Seller Earnings</h2>
-  <a class="back" href="seller-dashboard.html">Dashboard</a>
+  💰 PS Mart — Seller Earnings
 </header>
 
 <div class="container">
 
-  <div class="top">
-    <h1>My Earnings</h1>
-    <p>Your sales and commission summary.</p>
+  <div class="card">
+    <h2>Seller Earnings</h2>
+    <p id="sellerInfo">Loading seller information...</p>
   </div>
 
-  <div id="message">Loading earnings...</div>
+  <div class="stats">
 
-  <div class="cards">
-
-    <div class="card">
-      <div class="icon">🧾</div>
-      <h3>Total Orders</h3>
-      <div class="amount" id="totalOrders">0</div>
+    <div class="stat">
+      <div>Total Sales</div>
+      <h2 id="totalSales">₹0</h2>
     </div>
 
-    <div class="card">
-      <div class="icon">💰</div>
-      <h3>Total Sales</h3>
-      <div class="amount" id="totalSales">₹0</div>
+    <div class="stat">
+      <div>Commission</div>
+      <h2 class="commission" id="totalCommission">₹0</h2>
     </div>
 
-    <div class="card">
-      <div class="icon">💵</div>
-      <h3>Commission</h3>
-      <div class="amount" id="totalCommission">₹0</div>
+    <div class="stat">
+      <div>Your Earnings</div>
+      <h2 class="earning" id="yourEarnings">₹0</h2>
     </div>
 
   </div>
 
-  <div class="tablebox">
-
+  <div class="card">
     <h2>Sales Details</h2>
 
-    <div id="salesTable">
-      <div class="empty">
-        No sales yet.
-      </div>
+    <div id="salesBox">
+      Loading...
     </div>
-
   </div>
 
 </div>
@@ -189,180 +149,215 @@ const SUPABASE_URL =
 "https://nctscffhnztscczjxhat.supabase.co";
 
 const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+"YAHAN APNI WAHI SUPABASE ANON KEY PASTE KARO JO app.js ME HAI";
 
 const supabaseClient =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 
 async function loadEarnings(){
 
-  const message =
-    document.getElementById("message");
-
-  const table =
-    document.getElementById("salesTable");
-
-
   const {
-    data: { user },
-    error: authError
+    data:{user}
   } = await supabaseClient.auth.getUser();
 
+  if(!user){
 
-  if(authError || !user){
+    alert("Please login first.");
 
-    message.innerText =
-      "Please login first.";
+    window.location.href="login.html";
 
     return;
   }
 
 
-  const {
-    data: seller,
-    error: sellerError
-  } = await supabaseClient
+  const {data:seller,error:sellerError} =
+    await supabaseClient
     .from("sellers")
-    .select("id")
-    .eq("user_id", user.id)
-    .maybeSingle();
+    .select("*")
+    .eq("user_id",user.id)
+    .single();
 
 
-  if(sellerError){
+  if(sellerError || !seller){
 
-    message.innerText =
-      sellerError.message;
-
-    return;
-  }
-
-
-  if(!seller){
-
-    message.innerText =
+    document.getElementById("sellerInfo").innerText =
       "Seller account not found.";
 
     return;
   }
 
 
-  const {
-    data: commissions,
-    error
-  } = await supabaseClient
-    .from("commissions")
+  document.getElementById("sellerInfo").innerText =
+    "Shop: " + seller.shop_name;
+
+
+  const {data:items,error} =
+    await supabaseClient
+    .from("order_items")
     .select(`
       id,
       order_id,
-      amount,
-      rate
+      quantity,
+      price,
+      seller_id,
+      orders(
+        id,
+        status
+      ),
+      products(
+        name
+      )
     `)
-    .eq("seller_id", seller.id)
-    .order("id", {
-      ascending:false
-    });
+    .eq("seller_id",seller.id);
 
 
   if(error){
 
-    message.innerText =
-      error.message;
+    console.log(error);
+
+    document.getElementById("salesBox").innerHTML =
+      "<p>Unable to load earnings.</p>";
 
     return;
   }
 
 
-  message.innerText = "";
-
-
-  if(!commissions || commissions.length === 0){
-
-    document.getElementById("totalOrders").innerText = "0";
-    document.getElementById("totalSales").innerText = "₹0";
-    document.getElementById("totalCommission").innerText = "₹0";
-
-    table.innerHTML = `
-      <div class="empty">
-        <h3>No sales yet</h3>
-        <p>Your earnings will appear here after orders are completed.</p>
-      </div>
-    `;
-
-    return;
-  }
-
-
-  let totalCommission = 0;
   let totalSales = 0;
+  let totalCommission = 0;
+
+  let html = "";
 
 
-  commissions.forEach(item => {
+  if(!items || items.length === 0){
+
+    document.getElementById("salesBox").innerHTML =
+      '<div class="empty">No sales yet.</div>';
+
+    return;
+  }
+
+
+  html += `
+    <table>
+
+      <tr>
+        <th>Order</th>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Sale</th>
+        <th>Commission</th>
+        <th>Earning</th>
+        <th>Status</th>
+      </tr>
+  `;
+
+
+  items.forEach(item => {
+
+    const order = item.orders;
+
+    const status =
+      order ? order.status : "unknown";
+
+
+    /*
+      Cancelled orders are not counted
+      in seller earnings.
+    */
+
+    if(status === "cancelled"){
+      
+      html += `
+        <tr>
+          <td>#${item.order_id}</td>
+          <td>${item.products?.name || "Product"}</td>
+          <td>${item.quantity}</td>
+          <td>₹${Number(item.price * item.quantity).toFixed(2)}</td>
+          <td>₹0</td>
+          <td>₹0</td>
+          <td>❌ Cancelled</td>
+        </tr>
+      `;
+
+      return;
+    }
+
+
+    const sale =
+      Number(item.price) * Number(item.quantity);
+
+
+    /*
+      Temporary marketplace commission:
+      10%
+    */
 
     const commission =
-      Number(item.amount) || 0;
+      sale * 0.10;
 
-    const rate =
-      Number(item.rate) || 0;
+
+    const earning =
+      sale - commission;
+
+
+    totalSales += sale;
 
     totalCommission += commission;
 
-    if(rate < 100){
 
-      totalSales +=
-        commission / (rate / 100);
+    html += `
+      <tr>
 
-    }
+        <td>#${item.order_id}</td>
+
+        <td>
+          ${item.products?.name || "Product"}
+        </td>
+
+        <td>
+          ${item.quantity}
+        </td>
+
+        <td>
+          ₹${sale.toFixed(2)}
+        </td>
+
+        <td class="commission">
+          ₹${commission.toFixed(2)}
+        </td>
+
+        <td class="earning">
+          ₹${earning.toFixed(2)}
+        </td>
+
+        <td>
+          ${status}
+        </td>
+
+      </tr>
+    `;
 
   });
 
 
-  document.getElementById("totalOrders").innerText =
-    commissions.length;
+  html += `</table>`;
+
+
+  document.getElementById("salesBox").innerHTML =
+    html;
+
 
   document.getElementById("totalSales").innerText =
-    "₹" + Math.round(totalSales);
+    "₹" + totalSales.toFixed(2);
+
 
   document.getElementById("totalCommission").innerText =
-    "₹" + Math.round(totalCommission);
+    "₹" + totalCommission.toFixed(2);
 
 
-  table.innerHTML = `
-    <table>
-
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Commission</th>
-          <th>Rate</th>
-        </tr>
-      </thead>
-
-      <tbody>
-
-        ${commissions.map(item => `
-          <tr>
-
-            <td>#${item.order_id}</td>
-
-            <td>
-              ₹${item.amount}
-            </td>
-
-            <td>
-              ${item.rate}%
-            </td>
-
-          </tr>
-        `).join("")}
-
-      </tbody>
-
-    </table>
-  `;
+  document.getElementById("yourEarnings").innerText =
+    "₹" + (totalSales-totalCommission).toFixed(2);
 
 }
 
