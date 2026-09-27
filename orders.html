@@ -904,13 +904,29 @@ async function loadOrders(){
           </div>
 
 
-          <!-- TRACKING -->
+         <!-- TRACKING -->
 
-          ${tracking(order)}
+${tracking(order)}
 
+${order.status === "placed" ? `
+  <div style="margin-top:20px;">
+    <button
+      onclick="cancelOrder(${order.id})"
+      style="
+        background:#d32f2f;
+        color:white;
+        border:none;
+        padding:12px 22px;
+        border-radius:6px;
+        cursor:pointer;
+        font-weight:bold;
+      ">
+      ❌ Cancel Order
+    </button>
+  </div>
+` : ""}
 
-        </div>
-
+</div>
       </div>
 
     `;
