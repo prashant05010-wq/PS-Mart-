@@ -202,6 +202,20 @@ async function placeOrder() {
     return;
 
   }
+  const {
+  data: profile,
+  error: profileError
+} = await supabaseClient
+  .from("profiles")
+  .select("id, role")
+  .eq("id", user.id)
+  .maybeSingle();
+
+if (profileError || !profile) {
+  console.log("Profile error:", profileError);
+  alert("Customer profile not found.");
+  return;
+}
 
 
   const c = cart();
@@ -288,7 +302,7 @@ async function placeOrder() {
       .from("orders")
       .insert({
 
-        customer_id: user.id,
+       customer_id: profile.id,
 
         total_amount: total,
 
