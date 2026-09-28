@@ -2481,96 +2481,123 @@ function saveDeliveryAddress() {
 
 
   if (!name) {
-
-    alert(
-      "Please enter your full name."
-    );
-
+    alert("Please enter your full name.");
     return;
   }
 
 
   if (!phone) {
-
-    alert(
-      "Please enter your phone number."
-    );
-
+    alert("Please enter your phone number.");
     return;
   }
 
 
   if (!address) {
-
-    alert(
-      "Please enter your address."
-    );
-
+    alert("Please enter your address.");
     return;
   }
 
 
   if (!city) {
-
-    alert(
-      "Please enter your city."
-    );
-
+    alert("Please enter your city.");
     return;
   }
 
 
   if (!pincode) {
-
-    alert(
-      "Please enter your pincode."
-    );
-
+    alert("Please enter your pincode.");
     return;
   }
 
 
   if (!state) {
-
-    alert(
-      "Please enter your state."
-    );
-
+    alert("Please enter your state.");
     return;
   }
 
 
   const savedAddress = {
 
-    name:
-      name,
+    name: name,
 
-    phone:
-      phone,
+    phone: phone,
 
-    address:
-      address,
+    address: address,
 
-    city:
-      city,
+    city: city,
 
-    pincode:
-      pincode,
+    pincode: pincode,
 
-    state:
-      state,
+    state: state,
 
-    type:
-      type
+    type: type
 
   };
 
 
+  /* =========================
+     GET EXISTING ADDRESSES
+  ========================= */
+
+  let addresses = [];
+
+
+  const oldData =
+    localStorage.getItem(
+      "psmart-addresses"
+    );
+
+
+  if (oldData) {
+
+    try {
+
+      addresses =
+        JSON.parse(oldData);
+
+      if (!Array.isArray(addresses)) {
+        addresses = [];
+      }
+
+    } catch (error) {
+
+      addresses = [];
+
+    }
+
+  }
+
+
+  /* =========================
+     ADD NEW ADDRESS
+  ========================= */
+
+  savedAddress.id =
+    Date.now();
+
+
+  addresses.push(
+    savedAddress
+  );
+
+
+  /* =========================
+     SAVE ALL ADDRESSES
+  ========================= */
+
+  localStorage.setItem(
+    "psmart-addresses",
+    JSON.stringify(addresses)
+  );
+
+
+  /* =========================
+     KEEP LATEST ADDRESS ACTIVE
+  ========================= */
+
   localStorage.setItem(
     "psmart-address",
-    JSON.stringify(
-      savedAddress
-    )
+    JSON.stringify(savedAddress)
   );
 
 
@@ -2580,12 +2607,10 @@ function saveDeliveryAddress() {
 
 
   alert(
-    "✓ Delivery address saved successfully!"
+    "✓ Address saved successfully!"
   );
 
 }
-
-
 /* =========================
    UPDATE LOCATION TEXT
 ========================= */
