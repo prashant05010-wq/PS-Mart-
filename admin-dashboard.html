@@ -9,6 +9,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+
 *{
   box-sizing:border-box;
 }
@@ -27,6 +28,9 @@ header{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  position:sticky;
+  top:0;
+  z-index:10;
 }
 
 header h2{
@@ -44,13 +48,9 @@ header h2{
 }
 
 .container{
-  max-width:1100px;
+  max-width:1200px;
   margin:30px auto;
   padding:0 20px;
-}
-
-h1{
-  margin-bottom:25px;
 }
 
 .message{
@@ -58,6 +58,54 @@ h1{
   padding:15px;
   border-radius:10px;
   margin-bottom:20px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  margin-bottom:25px;
+}
+
+.stat{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 4px 15px rgba(0,0,0,.08);
+  text-align:center;
+}
+
+.stat h2{
+  margin:8px 0 0;
+  color:#b8860b;
+  font-size:27px;
+}
+
+.stat p{
+  margin:0;
+  color:#777;
+}
+
+.tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:20px;
+}
+
+.tab{
+  background:#3b2618;
+  color:#f5c76a;
+  border:0;
+  padding:11px 15px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.tab.active{
+  background:#f5c76a;
+  color:#3b2618;
 }
 
 .section{
@@ -107,6 +155,11 @@ button{
   color:#f5c76a;
 }
 
+.gold{
+  background:#b8860b;
+  color:white;
+}
+
 .status{
   display:inline-block;
   padding:5px 9px;
@@ -118,16 +171,100 @@ button{
 
 .empty{
   color:#777;
+  padding:15px;
 }
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+}
+
+th,
+td{
+  border-bottom:1px solid #ddd;
+  padding:11px;
+  text-align:left;
+  font-size:14px;
+}
+
+th{
+  background:#f1e7dc;
+}
+
+.commission{
+  color:#d32f2f;
+  font-weight:bold;
+}
+
+.earning{
+  color:#16834a;
+  font-weight:bold;
+}
+
+.hidden{
+  display:none;
+}
+
+input{
+  padding:12px;
+  border:1px solid #ccc;
+  border-radius:7px;
+  font-size:16px;
+  width:250px;
+}
+
+@media(max-width:900px){
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:600px){
+
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  table{
+    display:block;
+    overflow-x:auto;
+    white-space:nowrap;
+  }
+
+  header{
+    padding:15px;
+  }
+
+  header h2{
+    font-size:18px;
+  }
+
+  .container{
+    padding:0 12px;
+  }
+
+}
+
 </style>
 </head>
 
 <body>
 
 <header>
+
   <h2>👑 PS Mart Admin</h2>
-  <button class="logout" onclick="logoutAdmin()">Logout</button>
+
+  <button
+    class="logout"
+    onclick="logoutAdmin()">
+    Logout
+  </button>
+
 </header>
+
 
 <div class="container">
 
@@ -137,133 +274,391 @@ button{
     Loading...
   </div>
 
-  <div class="section">
-    <h2>👤 Seller Requests</h2>
-    <button class="refresh" onclick="loadSellers()">Refresh Sellers</button>
-    <div id="sellers">Loading sellers...</div>
+
+  <!-- ================= STATS ================= -->
+
+  <div class="stats">
+
+    <div class="stat">
+      <p>👤 Customers</p>
+      <h2 id="totalCustomers">0</h2>
+    </div>
+
+    <div class="stat">
+      <p>🏪 Sellers</p>
+      <h2 id="totalSellers">0</h2>
+    </div>
+
+    <div class="stat">
+      <p>📦 Products</p>
+      <h2 id="totalProducts">0</h2>
+    </div>
+
+    <div class="stat">
+      <p>🛒 Orders</p>
+      <h2 id="totalOrders">0</h2>
+    </div>
+
+    <div class="stat">
+      <p>💰 Total Sales</p>
+      <h2 id="totalSales">₹0</h2>
+    </div>
+
+    <div class="stat">
+      <p>💵 Commission</p>
+      <h2 id="totalCommission">₹0</h2>
+    </div>
+
+    <div class="stat">
+      <p>💸 Seller Earnings</p>
+      <h2 id="sellerEarnings">₹0</h2>
+    </div>
+
+    <div class="stat">
+      <p>⚙️ Commission Rate</p>
+      <h2 id="commissionRate">0%</h2>
+    </div>
+
   </div>
 
-  <div class="section">
-    <h2>📦 Product Requests</h2>
-    <button class="refresh" onclick="loadProducts()">Refresh Products</button>
-    <div id="products">Loading products...</div>
+
+  <!-- ================= TABS ================= -->
+
+  <div class="tabs">
+
+    <button
+      class="tab active"
+      onclick="showSection('sellersSection',this)">
+      🏪 Sellers
+    </button>
+
+    <button
+      class="tab"
+      onclick="showSection('productsSection',this)">
+      📦 Products
+    </button>
+
+    <button
+      class="tab"
+      onclick="showSection('ordersSection',this)">
+      🛒 Orders
+    </button>
+
+    <button
+      class="tab"
+      onclick="showSection('customersSection',this)">
+      👤 Customers
+    </button>
+
+    <button
+      class="tab"
+      onclick="showSection('financeSection',this)">
+      💰 Finance
+    </button>
+
+    <button
+      class="tab"
+      onclick="showSection('settingsSection',this)">
+      ⚙️ Settings
+    </button>
+
+  </div>
+
+
+  <!-- ================= SELLERS ================= -->
+
+  <div
+    id="sellersSection"
+    class="section">
+
+    <h2>🏪 Seller Management</h2>
+
+    <button
+      class="refresh"
+      onclick="loadSellers()">
+      🔄 Refresh Sellers
+    </button>
+
+    <div id="sellers">
+      Loading sellers...
+    </div>
+
+  </div>
+
+
+  <!-- ================= PRODUCTS ================= -->
+
+  <div
+    id="productsSection"
+    class="section hidden">
+
+    <h2>📦 Product Management</h2>
+
+    <button
+      class="refresh"
+      onclick="loadProducts()">
+      🔄 Refresh Products
+    </button>
+
+    <div id="products">
+      Loading products...
+    </div>
+
+  </div>
+
+
+  <!-- ================= ORDERS ================= -->
+
+  <div
+    id="ordersSection"
+    class="section hidden">
+
+    <h2>🛒 Order Management</h2>
+
+    <button
+      class="refresh"
+      onclick="loadOrders()">
+      🔄 Refresh Orders
+    </button>
+
+    <div id="orders">
+      Loading orders...
+    </div>
+
+  </div>
+
+
+  <!-- ================= CUSTOMERS ================= -->
+
+  <div
+    id="customersSection"
+    class="section hidden">
+
+    <h2>👤 Customer Management</h2>
+
+    <button
+      class="refresh"
+      onclick="loadCustomers()">
+      🔄 Refresh Customers
+    </button>
+
+    <div id="customers">
+      Loading customers...
+    </div>
+
+  </div>
+
+
+  <!-- ================= FINANCE ================= -->
+
+  <div
+    id="financeSection"
+    class="section hidden">
+
+    <h2>💰 Finance</h2>
+
+    <div id="finance">
+      Loading finance...
+    </div>
+
+  </div>
+
+
+  <!-- ================= SETTINGS ================= -->
+
+  <div
+    id="settingsSection"
+    class="section hidden">
+
+    <h2>⚙️ Marketplace Settings</h2>
+
+    <p>
+      Current Commission Rate:
+    </p>
+
+    <h2 id="settingsRate">
+      Loading...
+    </h2>
+
+    <label>
+      Set Commission Rate (%)
+    </label>
+
+    <br><br>
+
+    <input
+      type="number"
+      id="newCommissionRate"
+      min="0"
+      max="100"
+      step="0.1"
+      placeholder="Example: 15"
+    >
+
+    <button
+      class="gold"
+      onclick="saveCommission()">
+      💾 Save Commission
+    </button>
+
   </div>
 
 </div>
 
+
 <script>
 
-const SUPABASE_URL = "https://nctscffhnztscczjxhat.supabase.co";
+const SUPABASE_URL =
+"https://nctscffhnztscczjxhat.supabase.co";
 
-/*
-  IMPORTANT:
-  Yahan wahi Supabase anon/public key use karo
-  jo tumne app.js me already use ki hai.
-*/
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
 
 const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 
-// ---------------- LOGIN CHECK ----------------
+/* ================= LOGIN CHECK ================= */
 
 async function checkAdmin(){
 
   const {
     data:{user}
-  } = await supabaseClient.auth.getUser();
+  } =
+  await supabaseClient.auth.getUser();
 
   if(!user){
 
-    document.getElementById("message").innerHTML =
+    document.getElementById("message").innerText =
       "❌ Please login first.";
-
-    document.getElementById("sellers").innerHTML = "";
-    document.getElementById("products").innerHTML = "";
 
     return false;
   }
 
+
   const {data:profile,error} =
     await supabaseClient
-      .from("profiles")
-      .select("role,full_name")
-      .eq("id",user.id)
-      .single();
+    .from("profiles")
+    .select("role,full_name")
+    .eq("id",user.id)
+    .single();
+
 
   if(error){
 
-    document.getElementById("message").innerHTML =
+    console.log(error);
+
+    document.getElementById("message").innerText =
       "❌ Profile not found.";
 
     return false;
   }
 
+
   if(profile.role !== "admin"){
 
-    document.getElementById("message").innerHTML =
+    document.getElementById("message").innerText =
       "❌ Access denied. Admin only.";
-
-    document.getElementById("sellers").innerHTML = "";
-    document.getElementById("products").innerHTML = "";
 
     return false;
   }
 
-  document.getElementById("message").innerHTML =
-    "✅ Welcome Admin " + (profile.full_name || "");
+
+  document.getElementById("message").innerText =
+    "✅ Welcome Admin " +
+    (profile.full_name || "");
 
   return true;
 }
 
 
-// ---------------- SELLERS ----------------
+/* ================= TABS ================= */
+
+function showSection(id,button){
+
+  document
+    .querySelectorAll(".section")
+    .forEach(section => {
+
+      section.classList.add("hidden");
+
+    });
+
+
+  document
+    .querySelectorAll(".tab")
+    .forEach(tab => {
+
+      tab.classList.remove("active");
+
+    });
+
+
+  document
+    .getElementById(id)
+    .classList.remove("hidden");
+
+
+  button.classList.add("active");
+
+}
+
+
+/* ================= SELLERS ================= */
 
 async function loadSellers(){
 
-  const allowed = await checkAdmin();
-
-  if(!allowed) return;
-
   const {data,error} =
     await supabaseClient
-      .from("sellers")
-      .select("*")
-      .order("created_at",{ascending:false});
+    .from("sellers")
+    .select("*");
 
-  const box = document.getElementById("sellers");
+
+  const box =
+    document.getElementById("sellers");
+
 
   if(error){
 
     box.innerHTML =
-      "❌ Error loading sellers: " + error.message;
+      "❌ " + error.message;
 
     return;
   }
+
+
+  document.getElementById("totalSellers").innerText =
+    data?.length || 0;
+
 
   if(!data || data.length === 0){
 
     box.innerHTML =
-      "<p class='empty'>No seller requests found.</p>";
+      "<div class='empty'>No sellers found.</div>";
 
     return;
   }
 
+
   box.innerHTML = "";
+
 
   data.forEach(seller => {
 
-    const card = document.createElement("div");
+    const card =
+      document.createElement("div");
 
     card.className = "card";
 
+
     card.innerHTML = `
 
-      <h3>${seller.shop_name || "No Shop Name"}</h3>
+      <h3>
+        🏪 ${seller.shop_name || "No Shop Name"}
+      </h3>
 
       <p>
         <b>Phone:</b>
@@ -299,6 +694,7 @@ async function loadSellers(){
 
     `;
 
+
     box.appendChild(card);
 
   });
@@ -306,86 +702,106 @@ async function loadSellers(){
 }
 
 
-// ---------------- UPDATE SELLER ----------------
+/* ================= UPDATE SELLER ================= */
 
 async function updateSeller(id,status){
 
   const {error} =
     await supabaseClient
-      .from("sellers")
-      .update({status:status})
-      .eq("id",id);
+    .from("sellers")
+    .update({
+      status:status
+    })
+    .eq("id",id);
+
 
   if(error){
 
-    alert("Error: " + error.message);
+    alert(
+      "Seller update failed:\n" +
+      error.message
+    );
 
     return;
   }
 
+
   alert(
     status === "approved"
-    ? "Seller approved successfully."
-    : "Seller rejected."
+    ?
+    "Seller approved successfully ✅"
+    :
+    "Seller rejected ❌"
   );
 
+
   loadSellers();
+
 }
 
 
-// ---------------- PRODUCTS ----------------
+/* ================= PRODUCTS ================= */
 
 async function loadProducts(){
 
-  const allowed = await checkAdmin();
-
-  if(!allowed) return;
-
   const {data,error} =
     await supabaseClient
-      .from("products")
-      .select(`
-        id,
-        name,
-        description,
-        price,
-        old_price,
-        stock,
-        image_url,
-        status,
-        sellers(shop_name)
-      `)
-      .order("created_at",{ascending:false});
+    .from("products")
+    .select(`
+      id,
+      name,
+      description,
+      price,
+      old_price,
+      stock,
+      image_url,
+      status,
+      sellers(shop_name)
+    `);
 
-  const box = document.getElementById("products");
+
+  const box =
+    document.getElementById("products");
+
 
   if(error){
 
     box.innerHTML =
-      "❌ Error loading products: " + error.message;
+      "❌ " + error.message;
 
     return;
   }
+
+
+  document.getElementById("totalProducts").innerText =
+    data?.length || 0;
+
 
   if(!data || data.length === 0){
 
     box.innerHTML =
-      "<p class='empty'>No product requests found.</p>";
+      "<div class='empty'>No products found.</div>";
 
     return;
   }
 
+
   box.innerHTML = "";
+
 
   data.forEach(product => {
 
-    const card = document.createElement("div");
+    const card =
+      document.createElement("div");
 
     card.className = "card";
 
+
     card.innerHTML = `
 
-      <h3>${product.name || "Unnamed Product"}</h3>
+      <h3>
+        📦 ${product.name || "Unnamed Product"}
+      </h3>
 
       <p>
         <b>Seller:</b>
@@ -394,7 +810,12 @@ async function loadProducts(){
 
       <p>
         <b>Price:</b>
-        ₹${product.price || 0}
+        ₹${Number(product.price || 0).toFixed(2)}
+      </p>
+
+      <p>
+        <b>Old Price:</b>
+        ₹${Number(product.old_price || 0).toFixed(2)}
       </p>
 
       <p>
@@ -412,10 +833,17 @@ async function loadProducts(){
       ${
         product.image_url
         ?
-        `<img
+        `
+        <img
           src="${product.image_url}"
-          style="width:100px;height:100px;object-fit:cover;border-radius:8px;"
-        >`
+          style="
+            width:100px;
+            height:100px;
+            object-fit:cover;
+            border-radius:8px;
+          "
+        >
+        `
         :
         ""
       }
@@ -444,6 +872,7 @@ async function loadProducts(){
 
     `;
 
+
     box.appendChild(card);
 
   });
@@ -451,56 +880,536 @@ async function loadProducts(){
 }
 
 
-// ---------------- UPDATE PRODUCT ----------------
+/* ================= UPDATE PRODUCT ================= */
 
 async function updateProduct(id,status){
 
   const {error} =
     await supabaseClient
-      .from("products")
-      .update({status:status})
-      .eq("id",id);
+    .from("products")
+    .update({
+      status:status
+    })
+    .eq("id",id);
+
 
   if(error){
 
-    alert("Error: " + error.message);
+    alert(
+      "Product update failed:\n" +
+      error.message
+    );
 
     return;
   }
 
+
   alert(
     status === "approved"
-    ? "Product approved successfully."
-    : "Product rejected."
+    ?
+    "Product approved successfully ✅"
+    :
+    "Product rejected ❌"
   );
 
+
   loadProducts();
+
 }
 
 
-// ---------------- LOGOUT ----------------
+/* ================= ORDERS ================= */
+
+async function loadOrders(){
+
+  const box =
+    document.getElementById("orders");
+
+
+  const {data:orders,error} =
+    await supabaseClient
+    .from("orders")
+    .select("*")
+    .order("id",{ascending:false});
+
+
+  if(error){
+
+    box.innerHTML =
+      "❌ " + error.message;
+
+    return;
+  }
+
+
+  document.getElementById("totalOrders").innerText =
+    orders?.length || 0;
+
+
+  if(!orders || orders.length === 0){
+
+    box.innerHTML =
+      "<div class='empty'>No orders found.</div>";
+
+    return;
+  }
+
+
+  let html = `
+
+    <table>
+
+      <tr>
+        <th>Order</th>
+        <th>Customer</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th>Address</th>
+      </tr>
+
+  `;
+
+
+  orders.forEach(order => {
+
+    html += `
+
+      <tr>
+
+        <td>
+          #${order.id}
+        </td>
+
+        <td>
+          ${order.customer_id || "Unknown"}
+        </td>
+
+        <td>
+          ₹${Number(order.total_amount || 0).toFixed(2)}
+        </td>
+
+        <td>
+          <span class="status">
+            ${order.status || "placed"}
+          </span>
+        </td>
+
+        <td>
+          ${order.address || "Not provided"}
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+
+  html += "</table>";
+
+
+  box.innerHTML = html;
+
+}
+
+
+/* ================= CUSTOMERS ================= */
+
+async function loadCustomers(){
+
+  const box =
+    document.getElementById("customers");
+
+
+  const {data,error} =
+    await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("role","customer");
+
+
+  if(error){
+
+    box.innerHTML =
+      "❌ " + error.message;
+
+    return;
+  }
+
+
+  document.getElementById("totalCustomers").innerText =
+    data?.length || 0;
+
+
+  if(!data || data.length === 0){
+
+    box.innerHTML =
+      "<div class='empty'>No customers found.</div>";
+
+    return;
+  }
+
+
+  let html = `
+
+    <table>
+
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Role</th>
+      </tr>
+
+  `;
+
+
+  data.forEach(customer => {
+
+    html += `
+
+      <tr>
+
+        <td>
+          ${customer.full_name || "No Name"}
+        </td>
+
+        <td>
+          ${customer.phone || "Not provided"}
+        </td>
+
+        <td>
+          ${customer.role}
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+
+  html += "</table>";
+
+
+  box.innerHTML = html;
+
+}
+
+
+/* ================= COMMISSION ================= */
+
+async function getCommissionRate(){
+
+  const {data,error} =
+    await supabaseClient
+    .from("marketplace_settings")
+    .select("commission_rate")
+    .limit(1)
+    .single();
+
+
+  if(error){
+
+    console.log(error);
+
+    return 10;
+
+  }
+
+
+  return Number(data.commission_rate);
+
+}
+
+
+/* ================= FINANCE ================= */
+
+async function loadFinance(){
+
+  const rate =
+    await getCommissionRate();
+
+
+  const {data:items,error} =
+    await supabaseClient
+    .from("order_items")
+    .select(`
+      quantity,
+      price,
+      orders(status)
+    `);
+
+
+  if(error){
+
+    document.getElementById("finance").innerHTML =
+      "❌ " + error.message;
+
+    return;
+
+  }
+
+
+  let sales = 0;
+
+
+  (items || []).forEach(item => {
+
+    const status =
+      item.orders?.status;
+
+
+    if(status === "cancelled"){
+      return;
+    }
+
+
+    sales +=
+      Number(item.price || 0) *
+      Number(item.quantity || 0);
+
+  });
+
+
+  const commission =
+    sales * (rate / 100);
+
+
+  const earnings =
+    sales - commission;
+
+
+  document.getElementById("totalSales").innerText =
+    "₹" + sales.toFixed(2);
+
+
+  document.getElementById("totalCommission").innerText =
+    "₹" + commission.toFixed(2);
+
+
+  document.getElementById("sellerEarnings").innerText =
+    "₹" + earnings.toFixed(2);
+
+
+  document.getElementById("commissionRate").innerText =
+    rate + "%";
+
+
+  document.getElementById("settingsRate").innerText =
+    rate + "%";
+
+
+  document.getElementById("finance").innerHTML = `
+
+    <div class="card">
+
+      <h3>💰 Sales Summary</h3>
+
+      <p>
+        <b>Total Sales:</b>
+        ₹${sales.toFixed(2)}
+      </p>
+
+      <p class="commission">
+        <b>PS Mart Commission:</b>
+        ₹${commission.toFixed(2)}
+      </p>
+
+      <p class="earning">
+        <b>Seller Earnings:</b>
+        ₹${earnings.toFixed(2)}
+      </p>
+
+      <p>
+        <b>Commission Rate:</b>
+        ${rate}%
+      </p>
+
+    </div>
+
+  `;
+
+}
+
+
+/* ================= SAVE COMMISSION ================= */
+
+async function saveCommission(){
+
+  const rate =
+    Number(
+      document.getElementById(
+        "newCommissionRate"
+      ).value
+    );
+
+
+  if(
+    isNaN(rate) ||
+    rate < 0 ||
+    rate > 100
+  ){
+
+    alert(
+      "Please enter a commission between 0 and 100."
+    );
+
+    return;
+
+  }
+
+
+  const {data,error} =
+    await supabaseClient
+    .from("marketplace_settings")
+    .select("id")
+    .limit(1)
+    .single();
+
+
+  if(error){
+
+    alert(
+      "Commission setting not found."
+    );
+
+    return;
+
+  }
+
+
+  const {error:updateError} =
+    await supabaseClient
+    .from("marketplace_settings")
+    .update({
+      commission_rate:rate,
+      updated_at:new Date().toISOString()
+    })
+    .eq("id",data.id);
+
+
+  if(updateError){
+
+    alert(
+      "Commission update failed:\n" +
+      updateError.message
+    );
+
+    return;
+
+  }
+
+
+  alert(
+    "Commission rate updated successfully ✅"
+  );
+
+
+  document.getElementById(
+    "settingsRate"
+  ).innerText =
+    rate + "%";
+
+
+  document.getElementById(
+    "commissionRate"
+  ).innerText =
+    rate + "%";
+
+
+  document.getElementById(
+    "newCommissionRate"
+  ).value = "";
+
+
+  loadFinance();
+
+}
+
+
+/* ================= DASHBOARD COUNTS ================= */
+
+async function loadDashboardCounts(){
+
+  const customers =
+    await supabaseClient
+    .from("profiles")
+    .select("id",{count:"exact",head:true})
+    .eq("role","customer");
+
+
+  const sellers =
+    await supabaseClient
+    .from("sellers")
+    .select("id",{count:"exact",head:true});
+
+
+  const products =
+    await supabaseClient
+    .from("products")
+    .select("id",{count:"exact",head:true});
+
+
+  const orders =
+    await supabaseClient
+    .from("orders")
+    .select("id",{count:"exact",head:true});
+
+
+  document.getElementById("totalCustomers").innerText =
+    customers.count || 0;
+
+
+  document.getElementById("totalSellers").innerText =
+    sellers.count || 0;
+
+
+  document.getElementById("totalProducts").innerText =
+    products.count || 0;
+
+
+  document.getElementById("totalOrders").innerText =
+    orders.count || 0;
+
+}
+
+
+/* ================= LOGOUT ================= */
 
 async function logoutAdmin(){
 
   await supabaseClient.auth.signOut();
 
-  window.location.href = "login.html";
+  window.location.href =
+    "login.html";
 
 }
 
 
-// ---------------- START ----------------
+/* ================= START ================= */
 
 (async function(){
 
-  const allowed = await checkAdmin();
+  const allowed =
+    await checkAdmin();
 
-  if(allowed){
 
-    loadSellers();
-    loadProducts();
-
+  if(!allowed){
+    return;
   }
+
+
+  await loadDashboardCounts();
+
+  await loadSellers();
+
+  await loadProducts();
+
+  await loadOrders();
+
+  await loadCustomers();
+
+  await loadFinance();
 
 })();
 
