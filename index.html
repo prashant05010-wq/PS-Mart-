@@ -1,23 +1,1175 @@
-<!doctype html><html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PS Mart | Better Products, Better Life</title><link rel="stylesheet" href="style.css"></head><body>
-<header class="header"><a class="logo" href="index.html">🛍️ <b>PS</b> Mart</a>
-<div class="search"><input id="search" placeholder="Search products, brands and more"><button onclick="search()">⌕</button></div>
-<div class="headlinks"><a href="login.html">♙ Login</a> <a href="seller-register.html">| Sell on PS Mart</a><a href="wishlist.html">|</a><a href="cart.html">🛒 Cart <em id="count">0</em></a></div></header>
-<nav><a href="products.html">☰ All Categories</a>
-  <a href="products.html?cat=Mobiles">Mobiles</a>
-  <a href="products.html?cat=Fashion">Fashion</a>
-  <a href="products.html?cat=Electronics">Electronics</a>
-  <a href="products.html?cat=Home">Home & Kitchen</a>
-  <a href="products.html?cat=Beauty">Beauty</a>
-  <a href="products.html?cat=Toys">Toys</a></nav>
- <main>
-<section class="hero"><div><small>PS MART EXCLUSIVE</small><h1>Top Brands<br><span>Best Deals</span></h1><p>Mobiles • Fashion • Electronics • Home & Kitchen</p><a class="goldbtn" href="products.html">Shop Now →</a></div><div class="heroicons">📱　🎧　⌚<strong>70%<small>OFF</small></strong></div></section>
-<section><div class="sectitle"><h2>Shop by Category</h2><a href="products.html">View All →</a></div><div class="cats">
-<a href="products.html?cat=Mobiles">📱<b>Mobiles</b></a><a href="products.html?cat=Fashion">👕<b>Fashion</b></a><a href="products.html?cat=Electronics">💻<b>Electronics</b></a><a href="products.html?cat=Home">🍳<b>Home & Kitchen</b></a><a href="products.html?cat=Beauty">💄<b>Beauty</b></a><a href="products.html?cat=Toys">🧸<b>Toys & Games</b></a><a href="products.html?cat=Sports">⚽<b>Sports</b></a><a href="products.html?cat=Books">📚<b>Books</b></a></div></section>
-<section><div class="sectitle"><h2>Best Deals For You 🔥</h2><a href="products.html">View All →</a></div><div id="homeProducts" class="grid"></div></section>
-<section class="trust"><div>🚚<b>Fast Delivery</b><span>Reliable delivery</span></div><div>🔒<b>Secure Payment</b><span>Safe checkout</span></div><div>↩️<b>Easy Returns</b><span>Simple returns</span></div><div>☎️<b>Support</b><span>Help when needed</span></div></section>
-</main><footer><b>🛍️ PS Mart</b><span>Better Products | Better Life</span><span>About • Privacy • Terms • Contact</span><small>© 2026 PS Mart</small></footer>
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>PS Mart | Online Shopping</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      background:#f5f6f8;
+      font-family:Arial,Helvetica,sans-serif;
+      color:#212121;
+      padding-bottom:70px;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .ps-header{
+      background:#0d47a1;
+      color:white;
+      padding:12px 4%;
+      display:flex;
+      align-items:center;
+      gap:20px;
+      position:sticky;
+      top:0;
+      z-index:1000;
+    }
+
+    .ps-logo{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      text-decoration:none;
+      color:white;
+      font-size:23px;
+      font-weight:bold;
+      white-space:nowrap;
+    }
+
+    .ps-logo-icon{
+      width:40px;
+      height:40px;
+      border-radius:10px;
+      background:#ffc107;
+      color:#0d47a1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+      font-weight:bold;
+    }
+
+    .ps-search{
+      flex:1;
+      max-width:700px;
+      display:flex;
+      background:white;
+      border-radius:5px;
+      overflow:hidden;
+    }
+
+    .ps-search input{
+      flex:1;
+      border:0;
+      outline:0;
+      padding:13px 16px;
+      font-size:15px;
+    }
+
+    .ps-search button{
+      width:55px;
+      border:0;
+      background:#ffc107;
+      color:#111;
+      font-size:22px;
+      cursor:pointer;
+    }
+
+    .ps-headlinks{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      white-space:nowrap;
+    }
+
+    .ps-headlinks a{
+      color:white;
+      text-decoration:none;
+      font-weight:bold;
+    }
+
+    #count{
+      background:#ffc107;
+      color:#111;
+      padding:2px 6px;
+      border-radius:10px;
+      font-size:11px;
+    }
+
+
+    /* =========================
+       LOCATION
+    ========================= */
+
+    .location-bar{
+      background:#e3f2fd;
+      padding:10px 5%;
+      color:#222;
+      font-size:14px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .location-bar a{
+      color:#0d47a1;
+      font-weight:bold;
+      text-decoration:none;
+    }
+
+
+    /* =========================
+       CATEGORIES
+    ========================= */
+
+    .category-scroll{
+      background:white;
+      display:flex;
+      gap:30px;
+      overflow-x:auto;
+      padding:14px 5%;
+      border-bottom:1px solid #ddd;
+      scrollbar-width:none;
+    }
+
+    .category-scroll::-webkit-scrollbar{
+      display:none;
+    }
+
+    .category-item{
+      min-width:75px;
+      text-align:center;
+      text-decoration:none;
+      color:#333;
+      font-size:13px;
+      flex-shrink:0;
+    }
+
+    .category-icon{
+      width:55px;
+      height:55px;
+      border-radius:50%;
+      background:#f1f5f9;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin:auto auto 7px;
+      font-size:27px;
+    }
+
+    .category-item:hover .category-icon{
+      background:#e3f2fd;
+    }
+
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .ps-main{
+      max-width:1400px;
+      margin:auto;
+      padding:18px 4%;
+    }
+
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero-banner{
+      min-height:270px;
+      border-radius:16px;
+      overflow:hidden;
+      background:
+        linear-gradient(
+          120deg,
+          #0d47a1,
+          #1565c0,
+          #42a5f5
+        );
+      color:white;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:35px 7%;
+      position:relative;
+    }
+
+    .hero-content small{
+      font-weight:bold;
+      letter-spacing:2px;
+      color:#ffc107;
+    }
+
+    .hero-content h1{
+      font-size:42px;
+      margin:10px 0;
+      line-height:1.1;
+    }
+
+    .hero-content h1 span{
+      color:#ffc107;
+    }
+
+    .hero-content p{
+      font-size:17px;
+      margin-bottom:25px;
+    }
+
+    .shop-btn{
+      display:inline-block;
+      background:#ffc107;
+      color:#111;
+      padding:13px 25px;
+      border-radius:6px;
+      text-decoration:none;
+      font-weight:bold;
+    }
+
+    .hero-products{
+      display:flex;
+      align-items:center;
+      gap:20px;
+      font-size:70px;
+    }
+
+    .discount-circle{
+      width:125px;
+      height:125px;
+      border-radius:50%;
+      background:#ffc107;
+      color:#111;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      font-size:30px;
+      font-weight:bold;
+    }
+
+    .discount-circle small{
+      font-size:14px;
+    }
+
+
+    /* =========================
+       OFFER CARDS
+    ========================= */
+
+    .offer-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:18px;
+      margin:22px 0;
+    }
+
+    .offer-card{
+      min-height:150px;
+      border-radius:14px;
+      padding:20px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      text-decoration:none;
+      color:#111;
+      overflow:hidden;
+    }
+
+    .offer-card:nth-child(1){
+      background:#fff3cd;
+    }
+
+    .offer-card:nth-child(2){
+      background:#e3f2fd;
+    }
+
+    .offer-card:nth-child(3){
+      background:#f3e5f5;
+    }
+
+    .offer-card h3{
+      margin:0 0 8px;
+      font-size:20px;
+    }
+
+    .offer-card p{
+      margin:0;
+      font-size:14px;
+    }
+
+    .offer-icon{
+      font-size:60px;
+    }
+
+
+    /* =========================
+       SECTION TITLE
+    ========================= */
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin:28px 0 15px;
+    }
+
+    .section-head h2{
+      margin:0;
+      font-size:24px;
+    }
+
+    .section-head a{
+      color:#0d47a1;
+      text-decoration:none;
+      font-weight:bold;
+    }
+
+
+    /* =========================
+       PRODUCT AREA
+    ========================= */
+
+    #homeProducts{
+      min-height:100px;
+    }
+
+
+    /* =========================
+       TRUST
+    ========================= */
+
+    .trust-section{
+      background:white;
+      border-radius:12px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      margin-top:30px;
+      padding:22px;
+      gap:20px;
+    }
+
+    .trust-box{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .trust-icon{
+      font-size:30px;
+    }
+
+    .trust-box b{
+      display:block;
+      margin-bottom:4px;
+    }
+
+    .trust-box span{
+      font-size:12px;
+      color:#777;
+    }
+
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    .ps-footer{
+      background:#172337;
+      color:white;
+      margin-top:35px;
+      padding:35px 6%;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:25px;
+    }
+
+    .ps-footer h3{
+      margin-top:0;
+      color:#ffc107;
+    }
+
+    .ps-footer a{
+      color:#ddd;
+      text-decoration:none;
+      display:block;
+      margin:8px 0;
+      font-size:14px;
+    }
+
+    .footer-bottom{
+      background:#0d47a1;
+      color:white;
+      text-align:center;
+      padding:15px;
+      font-size:13px;
+    }
+
+
+    /* =========================
+       MOBILE BOTTOM NAV
+    ========================= */
+
+    .mobile-nav{
+      display:none;
+    }
+
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media(max-width:700px){
+
+      body{
+        padding-bottom:70px;
+      }
+
+      .ps-header{
+        padding:10px 12px;
+        display:grid;
+        grid-template-columns:auto 1fr auto;
+        gap:10px;
+      }
+
+      .ps-logo{
+        font-size:0;
+      }
+
+      .ps-logo-icon{
+        width:40px;
+        height:40px;
+      }
+
+      .ps-search{
+        width:100%;
+      }
+
+      .ps-search input{
+        padding:11px 10px;
+        font-size:14px;
+      }
+
+      .ps-search button{
+        width:45px;
+      }
+
+      .ps-headlinks{
+        display:none;
+      }
+
+      .location-bar{
+        padding:10px 15px;
+        white-space:nowrap;
+        overflow:hidden;
+      }
+
+      .category-scroll{
+        gap:18px;
+        padding:12px 15px;
+      }
+
+      .category-icon{
+        width:50px;
+        height:50px;
+        font-size:24px;
+      }
+
+      .ps-main{
+        padding:10px;
+      }
+
+      .hero-banner{
+        min-height:230px;
+        padding:25px 20px;
+        border-radius:12px;
+      }
+
+      .hero-content h1{
+        font-size:30px;
+      }
+
+      .hero-content p{
+        font-size:13px;
+      }
+
+      .hero-products{
+        font-size:38px;
+        flex-direction:column;
+        gap:5px;
+      }
+
+      .discount-circle{
+        width:75px;
+        height:75px;
+        font-size:20px;
+      }
+
+      .discount-circle small{
+        font-size:10px;
+      }
+
+      .offer-grid{
+        grid-template-columns:repeat(3,1fr);
+        gap:8px;
+      }
+
+      .offer-card{
+        min-height:120px;
+        padding:10px;
+        flex-direction:column;
+        text-align:center;
+        justify-content:center;
+      }
+
+      .offer-card h3{
+        font-size:13px;
+      }
+
+      .offer-card p{
+        font-size:10px;
+      }
+
+      .offer-icon{
+        font-size:35px;
+      }
+
+      .section-head{
+        margin:22px 4px 12px;
+      }
+
+      .section-head h2{
+        font-size:19px;
+      }
+
+      .section-head a{
+        font-size:12px;
+      }
+
+      .trust-section{
+        grid-template-columns:repeat(2,1fr);
+        padding:15px;
+        gap:15px;
+      }
+
+      .trust-icon{
+        font-size:24px;
+      }
+
+      .trust-box b{
+        font-size:12px;
+      }
+
+      .trust-box span{
+        font-size:10px;
+      }
+
+      .ps-footer{
+        display:none;
+      }
+
+      .mobile-nav{
+        position:fixed;
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        bottom:0;
+        left:0;
+        right:0;
+        height:65px;
+        background:white;
+        border-top:1px solid #ddd;
+        z-index:2000;
+        box-shadow:0 -2px 10px rgba(0,0,0,.12);
+      }
+
+      .mobile-nav a{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        color:#555;
+        text-decoration:none;
+        font-size:11px;
+        gap:3px;
+      }
+
+      .mobile-nav a:first-child{
+        color:#0d47a1;
+        font-weight:bold;
+      }
+
+      .mobile-nav span{
+        font-size:24px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header class="ps-header">
+
+  <a class="ps-logo" href="index.html">
+
+    <span class="ps-logo-icon">
+      PS
+    </span>
+
+    <span>
+      PS Mart
+    </span>
+
+  </a>
+
+
+  <div class="ps-search">
+
+    <input
+      id="search"
+      type="text"
+      placeholder="Search for Products, Brands and More"
+      onkeydown="if(event.key==='Enter') search()"
+    >
+
+    <button onclick="search()">
+      🔍
+    </button>
+
+  </div>
+
+
+  <div class="ps-headlinks">
+
+    <a href="login.html">
+      👤 Login
+    </a>
+
+    <a href="seller-register.html">
+      Sell on PS Mart
+    </a>
+
+    <a href="wishlist.html">
+      ♡
+    </a>
+
+    <a href="cart.html">
+      🛒 Cart
+      <em id="count">0</em>
+    </a>
+
+  </div>
+
+</header>
+
+
+<!-- =========================
+     LOCATION
+========================= -->
+
+<div class="location-bar">
+
+  📍
+
+  <span>
+    Delivery location
+  </span>
+
+  <a href="profile.html">
+    Select your location →
+  </a>
+
+</div>
+
+
+<!-- =========================
+     CATEGORY SCROLL
+========================= -->
+
+<div class="category-scroll">
+
+  <a class="category-item" href="products.html">
+    <div class="category-icon">🛍️</div>
+    <b>For You</b>
+  </a>
+
+  <a class="category-item" href="products.html?cat=Mobiles">
+    <div class="category-icon">📱</div>
+    <b>Mobiles</b>
+  </a>
+
+  <a class="category-item" href="products.html?cat=Fashion">
+    <div class="category-icon">👕</div>
+    <b>Fashion</b>
+  </a>
+
+  <a class="category-item" href="products.html?cat=Electronics">
+    <div class="category-icon">💻</div>
+    <b>Electronics</b>
+  </a>
+
+  <a class="category-item" href="products.html?cat=Beauty">
+    <div class="category-icon">💄</div>
+    <b>Beauty</b>
+  </a>
+
+  <a class="category-item" href="products.html?cat=Home">
+    <div class="category-icon">🏠</div>
+    <b>Home</b>
+  </a>
+
+  <a class="category-item" href="products.html?cat=Grocery">
+    <div class="category-icon">🛒</div>
+    <b>Grocery</b>
+  </a>
+
+  <a class="category-item" href="products.html?cat=Accessories">
+    <div class="category-icon">🎧</div>
+    <b>Accessories</b>
+  </a>
+
+</div>
+
+
+<main class="ps-main">
+
+
+  <!-- =========================
+       HERO BANNER
+  ========================= -->
+
+  <section class="hero-banner">
+
+    <div class="hero-content">
+
+      <small>
+        PS MART EXCLUSIVE
+      </small>
+
+      <h1>
+        Big Deals
+        <br>
+        <span>Every Day</span>
+      </h1>
+
+      <p>
+        Mobiles • Fashion • Electronics • Home
+      </p>
+
+      <a
+        href="products.html"
+        class="shop-btn"
+      >
+        Shop Now →
+      </a>
+
+    </div>
+
+
+    <div class="hero-products">
+
+      📱 🎧 ⌚
+
+      <div class="discount-circle">
+
+        70%
+
+        <small>
+          OFF
+        </small>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       OFFER CARDS
+  ========================= -->
+
+  <div class="offer-grid">
+
+    <a
+      class="offer-card"
+      href="products.html?cat=Electronics"
+    >
+
+      <div>
+
+        <h3>
+          Electronics Sale
+        </h3>
+
+        <p>
+          Best deals on gadgets
+        </p>
+
+      </div>
+
+      <div class="offer-icon">
+        💻
+      </div>
+
+    </a>
+
+
+    <a
+      class="offer-card"
+      href="products.html?cat=Fashion"
+    >
+
+      <div>
+
+        <h3>
+          Fashion Deals
+        </h3>
+
+        <p>
+          Style at better prices
+        </p>
+
+      </div>
+
+      <div class="offer-icon">
+        👕
+      </div>
+
+    </a>
+
+
+    <a
+      class="offer-card"
+      href="products.html?cat=Home"
+    >
+
+      <div>
+
+        <h3>
+          Home Essentials
+        </h3>
+
+        <p>
+          Upgrade your home
+        </p>
+
+      </div>
+
+      <div class="offer-icon">
+        🏠
+      </div>
+
+    </a>
+
+  </div>
+
+
+  <!-- =========================
+       BEST DEALS
+  ========================= -->
+
+  <section>
+
+    <div class="section-head">
+
+      <h2>
+        Best Deals For You 🔥
+      </h2>
+
+      <a href="products.html">
+        View All →
+      </a>
+
+    </div>
+
+
+    <div
+      id="homeProducts"
+      class="grid"
+    ></div>
+
+  </section>
+
+
+  <!-- =========================
+       TRUST
+  ========================= -->
+
+  <section class="trust-section">
+
+    <div class="trust-box">
+
+      <div class="trust-icon">
+        🚚
+      </div>
+
+      <div>
+
+        <b>
+          Fast Delivery
+        </b>
+
+        <span>
+          Reliable delivery
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div class="trust-box">
+
+      <div class="trust-icon">
+        🔒
+      </div>
+
+      <div>
+
+        <b>
+          Secure Payment
+        </b>
+
+        <span>
+          Safe checkout
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div class="trust-box">
+
+      <div class="trust-icon">
+        ↩️
+      </div>
+
+      <div>
+
+        <b>
+          Easy Returns
+        </b>
+
+        <span>
+          Simple returns
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div class="trust-box">
+
+      <div class="trust-icon">
+        ☎️
+      </div>
+
+      <div>
+
+        <b>
+          Customer Support
+        </b>
+
+        <span>
+          Help when needed
+        </span>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+</main>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer class="ps-footer">
+
+  <div>
+
+    <h3>
+      PS Mart
+    </h3>
+
+    <a href="index.html">
+      Home
+    </a>
+
+    <a href="products.html">
+      All Products
+    </a>
+
+    <a href="wishlist.html">
+      Wishlist
+    </a>
+
+  </div>
+
+
+  <div>
+
+    <h3>
+      Customer
+    </h3>
+
+    <a href="profile.html">
+      My Account
+    </a>
+
+    <a href="orders.html">
+      My Orders
+    </a>
+
+    <a href="cart.html">
+      My Cart
+    </a>
+
+  </div>
+
+
+  <div>
+
+    <h3>
+      Seller
+    </h3>
+
+    <a href="seller-register.html">
+      Sell on PS Mart
+    </a>
+
+    <a href="seller-dashboard.html">
+      Seller Dashboard
+    </a>
+
+  </div>
+
+
+  <div>
+
+    <h3>
+      Support
+    </h3>
+
+    <a href="#">
+      About Us
+    </a>
+
+    <a href="#">
+      Privacy
+    </a>
+
+    <a href="#">
+      Terms
+    </a>
+
+    <a href="#">
+      Contact
+    </a>
+
+  </div>
+
+</footer>
+
+
+<div class="footer-bottom">
+
+  © 2026 PS Mart • Better Products, Better Life
+
+</div>
+
+
+<!-- =========================
+     MOBILE NAV
+========================= -->
+
+<nav class="mobile-nav">
+
+  <a href="index.html">
+
+    <span>
+      🏠
+    </span>
+
+    Home
+
+  </a>
+
+
+  <a href="products.html">
+
+    <span>
+      ▦
+    </span>
+
+    Categories
+
+  </a>
+
+
+  <a href="profile.html">
+
+    <span>
+      👤
+    </span>
+
+    Account
+
+  </a>
+
+
+  <a href="cart.html">
+
+    <span>
+      🛒
+    </span>
+
+    Cart
+
+  </a>
+
+</nav>
+
+
+<!-- =========================
+     SCRIPTS
+========================= -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="data.js"></script>
+
 <script src="app.js"></script>
+
+
+</body>
+</html>
