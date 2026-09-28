@@ -4,7 +4,7 @@
 
 const SUPABASE_URL = "https://nctscffhnztscczjxhat.supabase.co";
 
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2NjehatIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
@@ -105,7 +105,6 @@ async function remove(id) {
   saveCart(c);
 
   await renderCart();
-
 }
 
 
@@ -132,10 +131,6 @@ function search() {
   }
 }
 
-
-/* =========================
-   PRODUCT CARD
-========================= */
 
 /* =========================
    PRODUCT CARD
@@ -229,6 +224,8 @@ function card(p) {
     </article>
   `;
 }
+
+
 /* =========================
    LOAD APPROVED PRODUCTS
 ========================= */
@@ -287,10 +284,6 @@ async function renderProducts() {
     await loadProductsFromSupabase();
 
 
-  /* =========================
-     SEARCH / CATEGORY FILTER
-  ========================= */
-
   let filtered =
     products.filter(p => {
 
@@ -310,10 +303,6 @@ async function renderProducts() {
 
     });
 
-
-  /* =========================
-     SORT
-  ========================= */
 
   const sort =
     document.querySelector("#sort")
@@ -342,10 +331,6 @@ async function renderProducts() {
   }
 
 
-  /* =========================
-     TITLE
-  ========================= */
-
   const title =
     document.querySelector("#title");
 
@@ -370,10 +355,6 @@ async function renderProducts() {
 
   }
 
-
-  /* =========================
-     SHOW PRODUCTS
-  ========================= */
 
   el.innerHTML =
     filtered.length
@@ -429,12 +410,15 @@ async function renderHome() {
 
 async function detail() {
 
-  const e = document.querySelector("#detail");
+  const e =
+    document.querySelector("#detail");
 
   if (!e) return;
 
   const id =
-    new URLSearchParams(location.search).get("id");
+    new URLSearchParams(
+      location.search
+    ).get("id");
 
   if (!id) {
 
@@ -445,19 +429,16 @@ async function detail() {
   }
 
 
-  /* =========================
-     GET PRODUCT
-  ========================= */
-
   const {
     data: p,
     error
-  } = await supabaseClient
-    .from("products")
-    .select("*")
-    .eq("id", id)
-    .eq("status", "approved")
-    .maybeSingle();
+  } =
+    await supabaseClient
+      .from("products")
+      .select("*")
+      .eq("id", id)
+      .eq("status", "approved")
+      .maybeSingle();
 
 
   if (error || !p) {
@@ -473,10 +454,6 @@ async function detail() {
     return;
   }
 
-
-  /* =========================
-     DISCOUNT
-  ========================= */
 
   let discount = 0;
 
@@ -495,16 +472,9 @@ async function detail() {
   }
 
 
-  /* =========================
-     PRODUCT DETAIL UI
-  ========================= */
-
   e.innerHTML = `
 
     <div class="detail-top">
-
-
-      <!-- PRODUCT IMAGE -->
 
       <div>
 
@@ -537,19 +507,15 @@ async function detail() {
       </div>
 
 
-      <!-- PRODUCT INFORMATION -->
-
       <div class="detail-info">
 
         <small>
           PS Mart Seller
         </small>
 
-
         <h1>
           ${p.name}
         </h1>
-
 
         <div class="detail-rating">
           ★ 4.0
@@ -559,8 +525,6 @@ async function detail() {
           100+ Ratings & Reviews
         </span>
 
-
-        <!-- PRICE -->
 
         <div class="detail-price">
 
@@ -594,8 +558,6 @@ async function detail() {
         </p>
 
 
-        <!-- OFFERS -->
-
         <div class="offer-box">
 
           <h3>
@@ -621,8 +583,6 @@ async function detail() {
         </div>
 
 
-        <!-- DELIVERY -->
-
         <div class="delivery-box">
 
           <h3>
@@ -634,7 +594,8 @@ async function detail() {
           </p>
 
           <a
-            href="profile.html"
+            href="#"
+            onclick="openLocation(); return false;"
             style="
               color:#9b681b;
               font-weight:bold;
@@ -646,8 +607,6 @@ async function detail() {
 
         </div>
 
-
-        <!-- STOCK -->
 
         <p>
 
@@ -678,8 +637,6 @@ async function detail() {
         </p>
 
 
-        <!-- DESCRIPTION -->
-
         <p>
 
           ${
@@ -689,8 +646,6 @@ async function detail() {
 
         </p>
 
-
-        <!-- BUTTONS -->
 
         <div class="action-buttons">
 
@@ -722,8 +677,6 @@ async function detail() {
         </div>
 
 
-        <!-- PRODUCT DESCRIPTION -->
-
         <div class="info-section">
 
           <h2>
@@ -743,10 +696,6 @@ async function detail() {
 
     </div>
 
-
-    <!-- =========================
-         SPECIFICATIONS
-    ========================= -->
 
     <div class="info-section">
 
@@ -787,10 +736,6 @@ async function detail() {
     </div>
 
 
-    <!-- =========================
-         SELLER
-    ========================= -->
-
     <div class="info-section">
 
       <h2>
@@ -819,10 +764,6 @@ async function detail() {
 
     </div>
 
-
-    <!-- =========================
-         REVIEWS
-    ========================= -->
 
     <div class="info-section">
 
@@ -896,6 +837,8 @@ function buyNow(id) {
   window.location.href =
     "checkout.html";
 }
+
+
 /* =========================
    CART PAGE
 ========================= */
@@ -910,8 +853,6 @@ async function renderCart() {
 
   const c = cart();
 
-
-  /* EMPTY CART */
 
   if (!c.length) {
 
@@ -936,15 +877,11 @@ async function renderCart() {
   }
 
 
-  /* PRODUCT IDS */
-
   const ids =
     c.map(
       item => item.id
     );
 
-
-  /* FETCH PRODUCTS */
 
   const {
     data: products,
@@ -1079,8 +1016,6 @@ async function renderCart() {
     .join("");
 
 
-  /* CART HTML */
-
   e.innerHTML = `
 
     <div>
@@ -1153,7 +1088,6 @@ async function increaseQty(id) {
   saveCart(c);
 
   await renderCart();
-
 }
 
 
@@ -1194,7 +1128,6 @@ async function decreaseQty(id) {
   saveCart(c);
 
   await renderCart();
-
 }
 
 
@@ -1373,7 +1306,6 @@ async function signUpUser(
 
 
   return data;
-
 }
 
 
@@ -1413,7 +1345,6 @@ async function loginUser(
 
 
   return data;
-
 }
 
 
@@ -1462,7 +1393,6 @@ async function getCurrentUser() {
 
 
   return user;
-
 }
 
 
@@ -1535,6 +1465,8 @@ renderCart();
 summary();
 
 updateLoginState();
+
+
 /* =========================
    WISHLIST
 ========================= */
@@ -1547,10 +1479,15 @@ async function toggleWishlist(productId, button) {
   const user = userData.user;
 
   if (!user) {
+
     alert("Please login first ❤️");
-    window.location.href = "login.html";
+
+    window.location.href =
+      "login.html";
+
     return;
   }
+
 
   const { data: existing } =
     await supabaseClient
@@ -1559,6 +1496,7 @@ async function toggleWishlist(productId, button) {
       .eq("user_id", user.id)
       .eq("product_id", productId)
       .maybeSingle();
+
 
   if (existing) {
 
@@ -1569,8 +1507,13 @@ async function toggleWishlist(productId, button) {
         .eq("id", existing.id);
 
     if (!error) {
+
       button.innerHTML = "♡";
-      button.classList.remove("active");
+
+      button.classList.remove(
+        "active"
+      );
+
     }
 
   } else {
@@ -1584,11 +1527,20 @@ async function toggleWishlist(productId, button) {
         });
 
     if (!error) {
+
       button.innerHTML = "♥";
-      button.classList.add("active");
+
+      button.classList.add(
+        "active"
+      );
+
     }
+
   }
+
 }
+
+
 /* =========================
    PS MART DELIVERY LOCATION
 ========================= */
@@ -1596,13 +1548,18 @@ async function toggleWishlist(productId, button) {
 function openLocation() {
 
   const oldPopup =
-    document.getElementById("locationPopup");
+    document.getElementById(
+      "locationPopup"
+    );
 
   if (oldPopup) {
     oldPopup.remove();
   }
 
-  document.body.insertAdjacentHTML("beforeend", `
+
+  document.body.insertAdjacentHTML(
+    "beforeend",
+    `
 
     <div id="locationPopup"
       style="
@@ -1627,6 +1584,7 @@ function openLocation() {
           border-radius:12px;
           box-shadow:0 10px 40px rgba(0,0,0,.3);
         ">
+
 
         <!-- HEADER -->
 
@@ -1665,7 +1623,10 @@ function openLocation() {
 
         <!-- SEARCH -->
 
-        <div style="padding:18px 20px 10px;">
+        <div
+          style="
+            padding:18px 20px 10px;
+          ">
 
           <div
             style="
@@ -1705,105 +1666,434 @@ function openLocation() {
 
         <!-- CURRENT LOCATION -->
 
-       function useCurrentLocation() {
+        <button
+          onclick="useCurrentLocation(this)"
+          style="
+            width:calc(100% - 40px);
+            margin:8px 20px 15px;
+            padding:13px;
+            border:1px solid #e2a938;
+            background:#fff8e6;
+            color:#8b5a16;
+            border-radius:7px;
+            font-weight:bold;
+            cursor:pointer;
+          ">
+
+          📍 Use My Current Location
+
+        </button>
+
+
+        <!-- ADDRESS FORM -->
+
+        <div
+          style="
+            padding:5px 20px 20px;
+          ">
+
+          <input
+            id="addressName"
+            class="location-input"
+            type="text"
+            placeholder="Full Name"
+          >
+
+          <input
+            id="addressPhone"
+            class="location-input"
+            type="tel"
+            placeholder="Phone Number"
+          >
+
+          <input
+            id="addressLine"
+            class="location-input"
+            type="text"
+            placeholder="Address Line"
+          >
+
+          <input
+            id="addressCity"
+            class="location-input"
+            type="text"
+            placeholder="City"
+          >
+
+          <input
+            id="addressPincode"
+            class="location-input"
+            type="text"
+            placeholder="Pincode"
+          >
+
+          <input
+            id="addressState"
+            class="location-input"
+            type="text"
+            placeholder="State"
+          >
+
+          <select
+            id="addressType"
+            class="location-input">
+
+            <option value="Home">
+              Home
+            </option>
+
+            <option value="Work">
+              Work
+            </option>
+
+            <option value="Other">
+              Other
+            </option>
+
+          </select>
+
+
+          <button
+            onclick="saveDeliveryAddress()"
+            style="
+              width:100%;
+              padding:14px;
+              background:linear-gradient(
+                135deg,
+                #f0c256,
+                #bb7719
+              );
+              color:#281507;
+              border:0;
+              border-radius:7px;
+              font-weight:bold;
+              font-size:15px;
+              cursor:pointer;
+            ">
+
+            Save & Continue
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    `
+  );
+
+
+  /* =========================
+     INPUT STYLE
+  ========================= */
+
+  document
+    .querySelectorAll(
+      ".location-input"
+    )
+    .forEach(input => {
+
+      input.style.width =
+        "100%";
+
+      input.style.boxSizing =
+        "border-box";
+
+      input.style.padding =
+        "12px";
+
+      input.style.marginBottom =
+        "10px";
+
+      input.style.border =
+        "1px solid #d5d5d5";
+
+      input.style.borderRadius =
+        "6px";
+
+      input.style.outline =
+        "none";
+
+      input.style.fontSize =
+        "14px";
+
+    });
+
+
+  /* =========================
+     LOAD SAVED ADDRESS
+  ========================= */
+
+  const saved =
+    JSON.parse(
+      localStorage.getItem(
+        "psmart-address"
+      ) || "null"
+    );
+
+
+  if (saved) {
+
+    const name =
+      document.getElementById(
+        "addressName"
+      );
+
+    const phone =
+      document.getElementById(
+        "addressPhone"
+      );
+
+    const address =
+      document.getElementById(
+        "addressLine"
+      );
+
+    const city =
+      document.getElementById(
+        "addressCity"
+      );
+
+    const pincode =
+      document.getElementById(
+        "addressPincode"
+      );
+
+    const state =
+      document.getElementById(
+        "addressState"
+      );
+
+    const type =
+      document.getElementById(
+        "addressType"
+      );
+
+
+    if (name)
+      name.value =
+        saved.name || "";
+
+    if (phone)
+      phone.value =
+        saved.phone || "";
+
+    if (address)
+      address.value =
+        saved.address || "";
+
+    if (city)
+      city.value =
+        saved.city || "";
+
+    if (pincode)
+      pincode.value =
+        saved.pincode || "";
+
+    if (state)
+      state.value =
+        saved.state || "";
+
+    if (type)
+      type.value =
+        saved.type || "Home";
+
+  }
+
+}
+
+
+/* =========================
+   CLOSE LOCATION
+========================= */
+
+function closeLocation() {
+
+  const popup =
+    document.getElementById(
+      "locationPopup"
+    );
+
+  if (popup) {
+    popup.remove();
+  }
+
+}
+
+
+/* =========================
+   CURRENT LOCATION
+========================= */
+
+function useCurrentLocation(button) {
 
   if (!navigator.geolocation) {
-    alert("Your browser does not support location.");
+
+    alert(
+      "Your browser does not support location."
+    );
+
     return;
   }
+
+
+  if (button) {
+
+    button.disabled = true;
+
+    button.textContent =
+      "📍 Detecting location...";
+
+  }
+
 
   navigator.geolocation.getCurrentPosition(
 
     async function(position) {
 
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-
-      console.log("GPS:", lat, lon);
-
       try {
 
-        const url =
-          "https://nominatim.openstreetmap.org/reverse" +
-          "?format=json" +
-          "&lat=" + lat +
-          "&lon=" + lon +
-          "&zoom=18" +
-          "&addressdetails=1";
+        const lat =
+          position.coords.latitude;
 
-        const response = await fetch(url);
+        const lon =
+          position.coords.longitude;
+
+
+        const response =
+          await fetch(
+            "https://nominatim.openstreetmap.org/reverse" +
+            "?format=jsonv2" +
+            "&lat=" +
+            encodeURIComponent(lat) +
+            "&lon=" +
+            encodeURIComponent(lon) +
+            "&zoom=18" +
+            "&addressdetails=1",
+            {
+              headers: {
+                "Accept":
+                  "application/json"
+              }
+            }
+          );
+
 
         if (!response.ok) {
-          throw new Error("Address API error");
+
+          throw new Error(
+            "Address service failed"
+          );
+
         }
 
-        const data = await response.json();
 
-        console.log("Address data:", data);
+        const data =
+          await response.json();
 
-        const a = data.address || {};
 
-        const road =
-          a.road ||
-          a.pedestrian ||
-          "";
+        const a =
+          data.address || {};
+
 
         const area =
           a.neighbourhood ||
           a.suburb ||
+          a.quarter ||
+          a.residential ||
           a.village ||
           "";
+
+
+        const road =
+          a.road ||
+          a.street ||
+          a.pedestrian ||
+          "";
+
 
         const city =
           a.city ||
           a.town ||
+          a.village ||
           a.municipality ||
           a.county ||
           "";
 
+
         const state =
           a.state ||
           "";
+
 
         const pincode =
           a.postcode ||
           "";
 
 
-        const addressText =
+        const addressLine =
           [road, area]
             .filter(Boolean)
             .join(", ");
 
 
         const addressInput =
-          document.getElementById("addressLine");
+          document.getElementById(
+            "addressLine"
+          );
 
         const cityInput =
-          document.getElementById("addressCity");
+          document.getElementById(
+            "addressCity"
+          );
 
         const stateInput =
-          document.getElementById("addressState");
+          document.getElementById(
+            "addressState"
+          );
 
         const pincodeInput =
-          document.getElementById("addressPincode");
+          document.getElementById(
+            "addressPincode"
+          );
 
 
-        if (addressInput)
-          addressInput.value = addressText;
+        if (addressInput) {
 
-        if (cityInput)
-          cityInput.value = city;
+          addressInput.value =
+            addressLine;
 
-        if (stateInput)
-          stateInput.value = state;
+        }
 
-        if (pincodeInput)
-          pincodeInput.value = pincode;
+
+        if (cityInput) {
+
+          cityInput.value =
+            city;
+
+        }
+
+
+        if (stateInput) {
+
+          stateInput.value =
+            state;
+
+        }
+
+
+        if (pincodeInput) {
+
+          pincodeInput.value =
+            pincode;
+
+        }
 
 
         if (
-          addressText ||
+          addressLine ||
           city ||
           state ||
           pincode
@@ -1817,241 +2107,8 @@ function openLocation() {
         } else {
 
           alert(
-            "Location detected, but the address could not be converted automatically.\n\n" +
-            "Please enter your address manually."
-          );
-
-        }
-
-      } catch (error) {
-
-        console.error(
-          "Reverse geocoding error:",
-          error
-        );
-
-        alert(
-          "GPS location detected, but address lookup failed.\n\n" +
-          "Please enter your address manually."
-        );
-
-      }
-
-    },
-
-    function(error) {
-
-      console.error(
-        "GPS error:",
-        error
-      );
-
-      alert(
-        "Unable to get your current location. " +
-        "Please allow location permission and try again."
-      );
-
-    },
-
-    {
-      enableHighAccuracy: true,
-      timeout: 20000,
-      maximumAge: 0
-    }
-
-  );
-
-}
-
-  /* INPUT STYLE */
-
-  document
-    .querySelectorAll(".location-input")
-    .forEach(input => {
-
-      input.style.width = "100%";
-      input.style.boxSizing = "border-box";
-      input.style.padding = "12px";
-      input.style.marginBottom = "10px";
-      input.style.border = "1px solid #d5d5d5";
-      input.style.borderRadius = "6px";
-      input.style.outline = "none";
-      input.style.fontSize = "14px";
-
-    });
-
-
-  /* LOAD SAVED ADDRESS */
-
-  const saved =
-    JSON.parse(
-      localStorage.getItem("psmart-address")
-    );
-
-  if (saved) {
-
-    document.getElementById("addressName").value =
-      saved.name || "";
-
-    document.getElementById("addressPhone").value =
-      saved.phone || "";
-
-    document.getElementById("addressLine").value =
-      saved.address || "";
-
-    document.getElementById("addressCity").value =
-      saved.city || "";
-
-    document.getElementById("addressPincode").value =
-      saved.pincode || "";
-
-    document.getElementById("addressState").value =
-      saved.state || "";
-
-    document.getElementById("addressType").value =
-      saved.type || "Home";
-
-  }
-
-}
-
-
-/* CLOSE POPUP */
-
-function closeLocation() {
-
-  const popup =
-    document.getElementById("locationPopup");
-
-  if (popup) {
-    popup.remove();
-  }
-
-}
-
-
-/* CURRENT LOCATION */
-function useCurrentLocation() {
-
-  if (!navigator.geolocation) {
-    alert("Your browser does not support location.");
-    return;
-  }
-
-  const button = event?.currentTarget;
-
-  if (button) {
-    button.disabled = true;
-    button.textContent = "📍 Detecting location...";
-  }
-
-  navigator.geolocation.getCurrentPosition(
-
-    async function(position) {
-
-      try {
-
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-
-        const response = await fetch(
-          "https://nominatim.openstreetmap.org/reverse" +
-          "?format=jsonv2" +
-          "&lat=" + encodeURIComponent(lat) +
-          "&lon=" + encodeURIComponent(lon) +
-          "&zoom=18" +
-          "&addressdetails=1",
-          {
-            headers: {
-              "Accept": "application/json"
-            }
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Address service failed");
-        }
-
-        const data = await response.json();
-
-        const a = data.address || {};
-
-        const area =
-          a.neighbourhood ||
-          a.suburb ||
-          a.quarter ||
-          a.residential ||
-          "";
-
-        const road =
-          a.road ||
-          a.street ||
-          "";
-
-        const city =
-          a.city ||
-          a.town ||
-          a.village ||
-          a.municipality ||
-          a.county ||
-          "";
-
-        const state =
-          a.state ||
-          "";
-
-        const pincode =
-          a.postcode ||
-          "";
-
-
-        const addressLine =
-          [road, area]
-            .filter(Boolean)
-            .join(", ");
-
-
-        const cityInput =
-          document.getElementById("addressCity");
-
-        const stateInput =
-          document.getElementById("addressState");
-
-        const pincodeInput =
-          document.getElementById("addressPincode");
-
-        const addressInput =
-          document.getElementById("addressLine");
-
-
-        if (addressInput) {
-          addressInput.value = addressLine;
-        }
-
-        if (cityInput) {
-          cityInput.value = city;
-        }
-
-        if (stateInput) {
-          stateInput.value = state;
-        }
-
-        if (pincodeInput) {
-          pincodeInput.value = pincode;
-        }
-
-
-        if (!city && !state && !pincode) {
-
-          alert(
-            "Location detected, but complete address could not be found. Please enter it manually."
-          );
-
-        } else {
-
-          alert(
-            "✓ Current location detected.\n\n" +
-            "Please check the address and click Save & Continue."
+            "Location detected, but complete address could not be found.\n\n" +
+            "Please enter the address manually."
           );
 
         }
@@ -2064,34 +2121,26 @@ function useCurrentLocation() {
         );
 
         alert(
-          "Location detected, but address could not be loaded. Please enter the address manually."
+          "Location detected, but address could not be loaded.\n\n" +
+          "Please enter the address manually."
         );
 
       } finally {
 
-        const buttons =
-          document.querySelectorAll(
-            "#locationPopup button"
-          );
+        if (button) {
 
-        buttons.forEach(function(btn) {
+          button.disabled =
+            false;
 
-          if (
-            btn.textContent.includes("Detecting")
-          ) {
+          button.textContent =
+            "📍 Use My Current Location";
 
-            btn.disabled = false;
-
-            btn.textContent =
-              "📍 Use My Current Location";
-
-          }
-
-        });
+        }
 
       }
 
     },
+
 
     function(error) {
 
@@ -2100,12 +2149,12 @@ function useCurrentLocation() {
         error
       );
 
+
       if (error.code === 1) {
 
         alert(
           "Location permission denied.\n\n" +
-          "Please click the 🔒 icon near the website address, " +
-          "allow Location, and try again."
+          "Please click the 🔒 icon near the website address, allow Location, and try again."
         );
 
       } else if (error.code === 2) {
@@ -2128,7 +2177,19 @@ function useCurrentLocation() {
 
       }
 
+
+      if (button) {
+
+        button.disabled =
+          false;
+
+        button.textContent =
+          "📍 Use My Current Location";
+
+      }
+
     },
+
 
     {
       enableHighAccuracy: true,
@@ -2139,3 +2200,204 @@ function useCurrentLocation() {
   );
 
 }
+
+
+/* =========================
+   SAVE DELIVERY ADDRESS
+========================= */
+
+function saveDeliveryAddress() {
+
+  const name =
+    document.getElementById(
+      "addressName"
+    )?.value.trim() || "";
+
+  const phone =
+    document.getElementById(
+      "addressPhone"
+    )?.value.trim() || "";
+
+  const address =
+    document.getElementById(
+      "addressLine"
+    )?.value.trim() || "";
+
+  const city =
+    document.getElementById(
+      "addressCity"
+    )?.value.trim() || "";
+
+  const pincode =
+    document.getElementById(
+      "addressPincode"
+    )?.value.trim() || "";
+
+  const state =
+    document.getElementById(
+      "addressState"
+    )?.value.trim() || "";
+
+  const type =
+    document.getElementById(
+      "addressType"
+    )?.value || "Home";
+
+
+  if (!name) {
+
+    alert(
+      "Please enter your full name."
+    );
+
+    return;
+  }
+
+
+  if (!phone) {
+
+    alert(
+      "Please enter your phone number."
+    );
+
+    return;
+  }
+
+
+  if (!address) {
+
+    alert(
+      "Please enter your address."
+    );
+
+    return;
+  }
+
+
+  if (!city) {
+
+    alert(
+      "Please enter your city."
+    );
+
+    return;
+  }
+
+
+  if (!pincode) {
+
+    alert(
+      "Please enter your pincode."
+    );
+
+    return;
+  }
+
+
+  if (!state) {
+
+    alert(
+      "Please enter your state."
+    );
+
+    return;
+  }
+
+
+  const savedAddress = {
+
+    name:
+      name,
+
+    phone:
+      phone,
+
+    address:
+      address,
+
+    city:
+      city,
+
+    pincode:
+      pincode,
+
+    state:
+      state,
+
+    type:
+      type
+
+  };
+
+
+  localStorage.setItem(
+    "psmart-address",
+    JSON.stringify(
+      savedAddress
+    )
+  );
+
+
+  closeLocation();
+
+  updateLocationText();
+
+
+  alert(
+    "✓ Delivery address saved successfully!"
+  );
+
+}
+
+
+/* =========================
+   UPDATE LOCATION TEXT
+========================= */
+
+function updateLocationText() {
+
+  const saved =
+    JSON.parse(
+      localStorage.getItem(
+        "psmart-address"
+      ) || "null"
+    );
+
+
+  const links =
+    document.querySelectorAll(
+      ".location-bar a"
+    );
+
+
+  links.forEach(link => {
+
+    if (
+      saved &&
+      saved.city &&
+      saved.pincode
+    ) {
+
+      link.textContent =
+        saved.city +
+        " - " +
+        saved.pincode +
+        " →";
+
+    } else {
+
+      link.textContent =
+        "Select your location →";
+
+    }
+
+  });
+
+}
+
+
+/* =========================
+   UPDATE LOCATION ON LOAD
+========================= */
+
+updateLocationText();
