@@ -1,12 +1,25 @@
 <!doctype html>
 <html lang="en">
+
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1">
+
 <title>Product | PS Mart</title>
+
 <link rel="stylesheet" href="style.css">
 
 <style>
+
+/* =========================
+   PS MART PRODUCT PAGE
+   ORIGINAL BROWN + GOLD THEME
+========================= */
+
 .product-detail-page{
   max-width:1400px;
   margin:auto;
@@ -20,19 +33,25 @@
   padding:25px;
 }
 
+/* PRODUCT TOP */
+
 .detail-top{
   display:grid;
   grid-template-columns:42% 58%;
   gap:35px;
 }
 
+/* IMAGE */
+
 .detail-image-box{
   min-height:450px;
   background:#f8f3e9;
   border-radius:10px;
+
   display:flex;
   align-items:center;
   justify-content:center;
+
   padding:20px;
 }
 
@@ -42,164 +61,281 @@
   object-fit:contain;
 }
 
+/* PRODUCT INFO */
+
 .detail-info h1{
   font-size:28px;
   margin:8px 0 12px;
+  color:#21170f;
 }
 
 .detail-rating{
   display:inline-block;
-  background:#087f23;
+
+  background:#8b5a16;
   color:white;
+
   padding:5px 9px;
   border-radius:5px;
+
   font-size:13px;
+
   margin-bottom:12px;
 }
 
 .detail-price{
   font-size:30px;
   font-weight:bold;
+
   margin:10px 0;
+
+  color:#21170f;
 }
 
 .detail-price del{
   font-size:15px;
   color:#777;
+
   margin-left:10px;
+
   font-weight:normal;
 }
 
 .discount{
-  color:#168a38;
+  color:#23833d;
+
   font-size:14px;
+
   margin-left:8px;
 }
 
+/* OFFERS */
+
 .offer-box{
   background:#fff8e6;
+
   border:1px solid #f0d58a;
+
   border-radius:8px;
+
   padding:15px;
+
   margin:18px 0;
 }
 
 .offer-box h3{
   margin-top:0;
+
+  color:#6b4515;
 }
 
 .offer{
   padding:7px 0;
 }
 
+/* DELIVERY */
+
 .delivery-box{
-  border-top:1px solid #eee;
-  border-bottom:1px solid #eee;
+  border-top:1px solid #eadfc9;
+  border-bottom:1px solid #eadfc9;
+
   padding:18px 0;
+
   margin:15px 0;
 }
 
+/* BUTTONS */
+
 .action-buttons{
   display:flex;
+
   gap:12px;
+
   margin:20px 0;
 }
 
 .action-buttons button,
 .action-buttons a{
+
   flex:1;
+
   text-align:center;
+
   padding:15px;
+
   border:0;
+
   border-radius:6px;
+
   font-weight:bold;
+
   text-decoration:none;
+
   cursor:pointer;
 }
 
 .cart-btn{
-  background:#ff9f00;
-  color:white;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f0c256,
+      #bb7719
+    );
+
+  color:#281507;
 }
 
 .buy-btn{
-  background:#fb641b;
-  color:white;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f0c256,
+      #bb7719
+    );
+
+  color:#281507;
 }
 
+/* INFORMATION */
+
 .info-section{
+
   margin-top:25px;
-  border-top:1px solid #ddd;
+
+  border-top:1px solid #eadfc9;
+
   padding-top:20px;
 }
 
+.info-section h2{
+  color:#21170f;
+}
+
+/* SPECIFICATIONS */
+
 .spec-table{
+
   width:100%;
+
   border-collapse:collapse;
 }
 
 .spec-table td{
-  border:1px solid #eee;
+
+  border:1px solid #eadfc9;
+
   padding:12px;
 }
 
 .spec-table td:first-child{
+
   width:30%;
-  color:#666;
+
+  color:#6f6255;
+
+  background:#fbf6ea;
 }
 
+/* SELLER */
+
 .seller-box{
-  background:#fafafa;
-  border:1px solid #eee;
+
+  background:#fff;
+
+  border:1px solid #eadfc9;
+
   border-radius:8px;
+
   padding:18px;
 }
 
+/* REVIEWS */
+
 .review-box{
-  border:1px solid #eee;
+
+  background:#fff;
+
+  border:1px solid #eadfc9;
+
   border-radius:8px;
+
   padding:15px;
+
   margin-top:12px;
 }
+
+/* MOBILE */
 
 @media(max-width:750px){
 
   .detail-top{
+
     grid-template-columns:1fr;
+
   }
 
   .detail-image-box{
+
     min-height:320px;
+
   }
 
   .detail-image-box img{
+
     height:300px;
+
   }
 
   .detail-info h1{
+
     font-size:22px;
+
   }
 
   .detail-price{
+
     font-size:26px;
+
   }
 
   .action-buttons{
+
     flex-direction:column;
+
   }
 
 }
+
 </style>
+
 </head>
+
 
 <body>
 
+
+<!-- =========================
+     HEADER
+========================= -->
+
 <header class="ps-header">
 
-  <a class="ps-logo" href="index.html">
-    <span class="ps-logo-icon">PS</span>
-    <span>PS Mart</span>
+  <a
+    class="ps-logo"
+    href="index.html">
+
+    <span class="ps-logo-icon">
+      PS
+    </span>
+
+    <span>
+      PS Mart
+    </span>
+
   </a>
+
 
   <div class="ps-search">
 
@@ -207,16 +343,23 @@
       id="search"
       type="text"
       placeholder="Search for Products, Brands and More"
-      onkeydown="if(event.key==='Enter') search()"
-    >
+      onkeydown="if(event.key==='Enter') search()">
 
-    <button onclick="search()">🔍</button>
+    <button
+      onclick="search()">
+
+      🔍
+
+    </button>
 
   </div>
 
+
   <div class="ps-headlinks">
 
-    <a href="login.html">👤 Login</a>
+    <a href="login.html">
+      👤 Login
+    </a>
 
     <a href="seller-register.html">
       Sell on PS Mart
@@ -227,8 +370,13 @@
     </a>
 
     <a href="cart.html">
+
       🛒 Cart
-      <em id="count">0</em>
+
+      <em id="count">
+        0
+      </em>
+
     </a>
 
   </div>
@@ -236,10 +384,17 @@
 </header>
 
 
+<!-- =========================
+     LOCATION
+========================= -->
+
 <div class="location-bar">
 
   📍
-  <span>Delivery location</span>
+
+  <span>
+    Delivery location
+  </span>
 
   <a href="profile.html">
     Select your location →
@@ -248,51 +403,95 @@
 </div>
 
 
+<!-- =========================
+     PRODUCT
+========================= -->
+
 <main class="product-detail-page">
 
   <div
     id="detail"
     class="product-detail-card">
+
   </div>
 
 </main>
 
 
+<!-- =========================
+     FOOTER
+========================= -->
+
 <footer class="ps-footer">
 
   <div>
-    <b>PS Mart</b>
+
+    <b>
+      PS Mart
+    </b>
+
     <p>
       Better Products • Better Life
     </p>
+
   </div>
 
-  <div>
-    <b>Quick Links</b>
-    <p>
-      <a href="index.html">Home</a>
-    </p>
-    <p>
-      <a href="products.html">Products</a>
-    </p>
-  </div>
 
   <div>
-    <b>Customer</b>
+
+    <b>
+      Quick Links
+    </b>
+
     <p>
-      <a href="cart.html">Cart</a>
+      <a href="index.html">
+        Home
+      </a>
     </p>
+
     <p>
-      <a href="orders.html">My Orders</a>
+      <a href="products.html">
+        Products
+      </a>
     </p>
+
+  </div>
+
+
+  <div>
+
+    <b>
+      Customer
+    </b>
+
+    <p>
+      <a href="cart.html">
+        Cart
+      </a>
+    </p>
+
+    <p>
+      <a href="orders.html">
+        My Orders
+      </a>
+    </p>
+
   </div>
 
 </footer>
 
 
+<!-- =========================
+     SCRIPTS
+========================= -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="data.js"></script>
+
 <script src="app.js"></script>
 
+
 </body>
+
 </html>
