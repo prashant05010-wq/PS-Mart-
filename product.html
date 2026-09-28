@@ -307,6 +307,106 @@
   }
 
 }
+  /* =========================
+   PRODUCT PAGE HEADER FIX
+========================= */
+
+.ps-header{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  padding:12px 4%;
+  box-sizing:border-box;
+}
+
+.ps-logo{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+
+.ps-search{
+  flex:1;
+  min-width:0;
+  max-width:650px;
+  display:flex;
+  margin:0 auto;
+}
+
+.ps-search input{
+  flex:1;
+  min-width:0;
+  height:42px;
+  box-sizing:border-box;
+}
+
+.ps-search button{
+  width:48px;
+  height:42px;
+  flex:0 0 48px;
+  border:0;
+  cursor:pointer;
+}
+
+.ps-headlinks{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  gap:15px;
+  white-space:nowrap;
+}
+
+.ps-headlinks a{
+  text-decoration:none;
+}
+
+/* MOBILE */
+
+@media(max-width:850px){
+
+  .ps-header{
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  .ps-logo{
+    order:1;
+  }
+
+  .ps-headlinks{
+    order:2;
+    margin-left:auto;
+  }
+
+  .ps-search{
+    order:3;
+    flex:0 0 100%;
+    max-width:none;
+  }
+
+}
+
+@media(max-width:500px){
+
+  .ps-headlinks a:nth-child(2){
+    display:none;
+  }
+
+  .ps-headlinks{
+    gap:8px;
+  }
+
+  .ps-search input{
+    height:40px;
+    font-size:13px;
+  }
+
+  .ps-search button{
+    height:40px;
+    width:44px;
+    flex-basis:44px;
+  }
+
+}
 
 </style>
 
