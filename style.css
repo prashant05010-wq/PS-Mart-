@@ -5,8 +5,8 @@
 body{
   margin:0;
   font-family:Arial,sans-serif;
-  background:#f5f6f8;
-  color:#212121;
+  background:#fbf6ea;
+  color:#21170f;
 }
 
 /* =========================
@@ -54,6 +54,7 @@ body{
   width:52px;
   border:0;
   background:#e2a938;
+  color:#281507;
   font-size:20px;
   cursor:pointer;
 }
@@ -239,16 +240,16 @@ main{
 
 .product{
   background:#fff;
-  border:1px solid #e1e5eb;
+  border:1px solid #eadfc9;
   border-radius:10px;
   padding:12px;
-  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  box-shadow:0 4px 15px rgba(59,33,13,.08);
   transition:.2s;
 }
 
 .product:hover{
   transform:translateY(-2px);
-  box-shadow:0 5px 15px rgba(0,0,0,.10);
+  box-shadow:0 6px 18px rgba(59,33,13,.14);
 }
 
 .product a{
@@ -257,7 +258,7 @@ main{
 
 .pic{
   height:155px;
-  background:#f8f9fa;
+  background:#f8f3e9;
   border-radius:8px;
   display:flex;
   align-items:center;
@@ -268,10 +269,11 @@ main{
 .product h3{
   font-size:15px;
   margin:6px 0;
+  color:#21170f;
 }
 
 .product small{
-  color:#777;
+  color:#8c7865;
 }
 
 .rating{
@@ -576,10 +578,6 @@ footer small{
 
 /* =========================
    PS MART NEW HOME
-========================= */
-
-/* =========================
-   PS MART NEW HOME
    ORIGINAL PS MART THEME
 ========================= */
 
@@ -599,6 +597,10 @@ footer small{
 
 .ps-search{
   background:#fff;
+}
+
+.ps-search input{
+  color:#21170f;
 }
 
 .ps-search button{
@@ -636,6 +638,14 @@ footer small{
   color:#fff;
 }
 
+.hero-content h1{
+  color:#fff;
+}
+
+.hero-content p{
+  color:#eadfc9;
+}
+
 .shop-btn{
   background:
     linear-gradient(
@@ -664,18 +674,44 @@ footer small{
   background:#fff;
   border:1px solid #eadfc9;
 }
+
+.trust-box b{
+  color:#43250f;
+}
+
+.trust-box span{
+  color:#827466;
+}
+
+
 /* =========================
-   PRODUCT CARD - NEW LOOK
+   NEW HOME PRODUCT CARDS
 ========================= */
 
 #homeProducts .product{
-  border:1px solid #e1e5eb;
-  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  border:1px solid #eadfc9;
+  box-shadow:0 4px 15px rgba(59,33,13,.08);
+  background:#fff;
 }
 
-#homeProducts .product button{
-  background:#ffc107;
-  color:#111;
+#homeProducts .product:hover{
+  box-shadow:0 6px 18px rgba(59,33,13,.14);
+}
+
+#homeProducts .pic{
+  background:#f8f3e9;
+}
+
+#homeProducts .product h3{
+  color:#21170f;
+}
+
+#homeProducts .product small{
+  color:#8c7865;
+}
+
+#homeProducts .rating{
+  color:#c8881c;
 }
 
 
@@ -698,9 +734,9 @@ footer small{
     right:0;
     height:65px;
     background:#fff;
-    border-top:1px solid #ddd;
+    border-top:1px solid #eadfc9;
     z-index:2000;
-    box-shadow:0 -2px 10px rgba(0,0,0,.12);
+    box-shadow:0 -2px 10px rgba(59,33,13,.12);
   }
 
   .mobile-nav a{
@@ -708,14 +744,14 @@ footer small{
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    color:#555;
+    color:#6f6257;
     text-decoration:none;
     font-size:11px;
     gap:3px;
   }
 
   .mobile-nav a:first-child{
-    color:#0d47a1;
+    color:#9b681b;
     font-weight:bold;
   }
 
@@ -784,6 +820,7 @@ footer small{
 
   .ps-main{
     padding:10px;
+    background:#fbf6ea;
   }
 
   .hero-banner{
@@ -810,6 +847,8 @@ footer small{
     width:75px;
     height:75px;
     font-size:20px;
+    background:#f0bd50;
+    color:#281507;
   }
 
   .discount-circle small{
@@ -847,10 +886,12 @@ footer small{
 
   .section-head h2{
     font-size:19px;
+    color:#43250f;
   }
 
   .section-head a{
     font-size:12px;
+    color:#9b681b;
   }
 
   .trust-section{
