@@ -578,54 +578,92 @@ footer small{
    PS MART NEW HOME
 ========================= */
 
+/* =========================
+   PS MART NEW HOME
+   ORIGINAL PS MART THEME
+========================= */
+
 .ps-header{
-  background:#0d47a1;
+  background:linear-gradient(
+    90deg,
+    #180c04,
+    #43250f
+  );
+  color:#fff;
 }
 
 .ps-logo-icon{
-  background:#ffc107;
-  color:#0d47a1;
+  background:#f0bd50;
+  color:#281507;
 }
 
 .ps-search{
-  background:white;
+  background:#fff;
 }
 
 .ps-search button{
-  background:#ffc107;
+  background:#e2a938;
+  color:#281507;
 }
 
 .location-bar{
-  background:#e3f2fd;
+  background:#fbf6ea;
+  color:#43250f;
+  border-bottom:1px solid #eadfc9;
+}
+
+.location-bar a{
+  color:#9b681b;
 }
 
 .category-scroll{
-  background:#fff;
+  background:#2a1609;
+  color:#fff;
+}
+
+.category-scroll a{
+  color:#fff;
 }
 
 .hero-banner{
   background:
-    linear-gradient(
-      120deg,
-      #0d47a1,
-      #1565c0,
-      #42a5f5
+    radial-gradient(
+      circle at 70%,
+      #744716,
+      #2b1407 55%,
+      #160a03
     );
+  color:#fff;
 }
 
 .shop-btn{
-  background:#ffc107;
+  background:
+    linear-gradient(
+      135deg,
+      #f0c256,
+      #bb7719
+    );
+  color:#281507;
 }
 
 .offer-card{
+  background:#fff;
+  border:1px solid #eadfc9;
   border-radius:14px;
+}
+
+.offer-card h3{
+  color:#43250f;
+}
+
+.offer-card p{
+  color:#827466;
 }
 
 .trust-section{
   background:#fff;
+  border:1px solid #eadfc9;
 }
-
-
 /* =========================
    PRODUCT CARD - NEW LOOK
 ========================= */
