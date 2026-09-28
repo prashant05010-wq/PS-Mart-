@@ -2785,3 +2785,20 @@ function updateLocationText() {
 ========================= */
 
 updateLocationText();
+/* =========================
+   OPEN NEW ADDRESS FORM
+========================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get("addAddress") === "1") {
+    setTimeout(() => {
+      if (typeof openLocation === "function") {
+        openLocation(true);
+      }
+    }, 300);
+  }
+
+});
