@@ -2442,42 +2442,39 @@ function useCurrentLocation(button) {
    SAVE DELIVERY ADDRESS
 ========================= */
 
+/* =========================
+   SAVE DELIVERY ADDRESS
+========================= */
+
 function saveDeliveryAddress() {
 
   const name =
-    document.getElementById(
-      "addressName"
-    )?.value.trim() || "";
+    document.getElementById("addressName")
+    ?.value.trim() || "";
 
   const phone =
-    document.getElementById(
-      "addressPhone"
-    )?.value.trim() || "";
+    document.getElementById("addressPhone")
+    ?.value.trim() || "";
 
   const address =
-    document.getElementById(
-      "addressLine"
-    )?.value.trim() || "";
+    document.getElementById("addressLine")
+    ?.value.trim() || "";
 
   const city =
-    document.getElementById(
-      "addressCity"
-    )?.value.trim() || "";
+    document.getElementById("addressCity")
+    ?.value.trim() || "";
 
   const pincode =
-    document.getElementById(
-      "addressPincode"
-    )?.value.trim() || "";
+    document.getElementById("addressPincode")
+    ?.value.trim() || "";
 
   const state =
-    document.getElementById(
-      "addressState"
-    )?.value.trim() || "";
+    document.getElementById("addressState")
+    ?.value.trim() || "";
 
   const type =
-    document.getElementById(
-      "addressType"
-    )?.value || "Home";
+    document.getElementById("addressType")
+    ?.value || "Home";
 
 
   if (!name) {
@@ -2485,30 +2482,25 @@ function saveDeliveryAddress() {
     return;
   }
 
-
   if (!phone) {
     alert("Please enter your phone number.");
     return;
   }
-
 
   if (!address) {
     alert("Please enter your address.");
     return;
   }
 
-
   if (!city) {
     alert("Please enter your city.");
     return;
   }
 
-
   if (!pincode) {
     alert("Please enter your pincode.");
     return;
   }
-
 
   if (!state) {
     alert("Please enter your state.");
@@ -2516,7 +2508,13 @@ function saveDeliveryAddress() {
   }
 
 
+  /* =========================
+     NEW ADDRESS OBJECT
+  ========================= */
+
   const savedAddress = {
+
+    id: Date.now(),
 
     name: name,
 
@@ -2533,6 +2531,132 @@ function saveDeliveryAddress() {
     type: type
 
   };
+
+
+  /* =========================
+     GET ALL OLD ADDRESSES
+  ========================= */
+
+  let addresses = [];
+
+  const oldAddresses =
+    localStorage.getItem(
+      "psmart-addresses"
+    );
+
+
+  if (oldAddresses) {
+
+    try {
+
+      const parsed =
+        JSON.parse(oldAddresses);
+
+      if (Array.isArray(parsed)) {
+        addresses = parsed;
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Address list error:",
+        error
+      );
+
+    }
+
+  }
+
+
+  /* =========================
+     OLD SINGLE ADDRESS
+     → CONVERT TO LIST
+  ========================= */
+
+  if (addresses.length === 0) {
+
+    const oldSingle =
+      localStorage.getItem(
+        "psmart-address"
+      );
+
+
+    if (oldSingle) {
+
+      try {
+
+        const oldAddress =
+          JSON.parse(oldSingle);
+
+
+        if (
+          oldAddress &&
+          oldAddress.name
+        ) {
+
+          oldAddress.id =
+            oldAddress.id ||
+            Date.now() - 1;
+
+          addresses.push(
+            oldAddress
+          );
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Old address error:",
+          error
+        );
+
+      }
+
+    }
+
+  }
+
+
+  /* =========================
+     ADD NEW ADDRESS
+  ========================= */
+
+  addresses.push(
+    savedAddress
+  );
+
+
+  /* =========================
+     SAVE ALL ADDRESSES
+  ========================= */
+
+  localStorage.setItem(
+    "psmart-addresses",
+    JSON.stringify(addresses)
+  );
+
+
+  /* =========================
+     MAKE NEW ADDRESS ACTIVE
+  ========================= */
+
+  localStorage.setItem(
+    "psmart-address",
+    JSON.stringify(savedAddress)
+  );
+
+
+  closeLocation();
+
+  updateLocationText();
+
+
+  alert(
+    "✓ New address saved successfully!"
+  );
+
+}
 
 
   /* =========================
