@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,8 +21,6 @@ body{
   background:#f7f1e8;
   color:#3b2416;
 }
-
-/* HEADER */
 
 header{
   background:#3b2416;
@@ -63,15 +62,11 @@ header{
   background:#c99a4a;
 }
 
-/* CONTAINER */
-
 .container{
   width:92%;
   max-width:1150px;
   margin:25px auto;
 }
-
-/* PROFILE */
 
 .profile{
   background:white;
@@ -117,8 +112,6 @@ header{
   cursor:pointer;
 }
 
-/* PROFILE DETAILS */
-
 .profile-details{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -141,8 +134,6 @@ header{
 .detail strong{
   word-break:break-word;
 }
-
-/* DASHBOARD */
 
 .section-title{
   margin:25px 0 15px;
@@ -189,8 +180,6 @@ header{
   background:#c99a4a;
 }
 
-/* EDIT PROFILE */
-
 .edit-box{
   display:none;
   background:white;
@@ -233,8 +222,6 @@ header{
   font-weight:bold;
 }
 
-/* MOBILE */
-
 @media(max-width:800px){
 
   .grid{
@@ -276,8 +263,6 @@ header{
 
 <body>
 
-<!-- HEADER -->
-
 <header>
 
   <div class="logo">
@@ -316,6 +301,7 @@ header{
     <div class="profile-top">
 
       <div>
+
         <h1 id="shopName">
           Loading shop...
         </h1>
@@ -329,6 +315,7 @@ header{
           id="sellerStatus">
           Checking status...
         </span>
+
       </div>
 
       <button
@@ -343,18 +330,35 @@ header{
     <div class="profile-details">
 
       <div class="detail">
+
         <small>Seller Name</small>
-        <strong id="sellerName">Loading...</strong>
+
+        <strong id="sellerName">
+          Loading...
+        </strong>
+
       </div>
 
+
       <div class="detail">
+
         <small>Phone</small>
-        <strong id="sellerPhone">Loading...</strong>
+
+        <strong id="sellerPhone">
+          Loading...
+        </strong>
+
       </div>
 
+
       <div class="detail">
+
         <small>Shop Name</small>
-        <strong id="sellerShop">Loading...</strong>
+
+        <strong id="sellerShop">
+          Loading...
+        </strong>
+
       </div>
 
     </div>
@@ -418,8 +422,6 @@ header{
 
   <div class="grid">
 
-    <!-- ADD PRODUCT -->
-
     <div class="card">
 
       <div class="icon">➕</div>
@@ -437,8 +439,6 @@ header{
 
     </div>
 
-
-    <!-- PRODUCTS -->
 
     <div class="card">
 
@@ -458,8 +458,6 @@ header{
     </div>
 
 
-    <!-- ORDERS -->
-
     <div class="card">
 
       <div class="icon">🛒</div>
@@ -477,8 +475,6 @@ header{
 
     </div>
 
-
-    <!-- EARNINGS -->
 
     <div class="card">
 
@@ -498,8 +494,6 @@ header{
     </div>
 
 
-    <!-- PROFILE -->
-
     <div class="card">
 
       <div class="icon">👤</div>
@@ -517,8 +511,6 @@ header{
 
     </div>
 
-
-    <!-- HOME -->
 
     <div class="card">
 
@@ -550,11 +542,6 @@ header{
 const SUPABASE_URL =
 "https://nctscffhnztscczjxhat.supabase.co";
 
-/*
-  IMPORTANT:
-  Yahan wahi existing Supabase ANON/PUBLIC key use karo
-  jo tumhare current working login/app.js me hai.
-*/
 
 const SUPABASE_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
@@ -574,8 +561,344 @@ let currentUser = null;
 
 async function loadSeller(){
 
+  try{
+
+    const {
+      data: { user },
+      error: authError
+    } =
+      await supabaseClient.auth.getUser();
+
+
+    console.log("CURRENT USER:", user);
+
+
+    if(authError){
+
+      console.error("AUTH ERROR:", authError);
+
+      document.getElementById("message").innerText =
+        authError.message;
+
+      return;
+    }
+
+
+    if(!user){
+
+      document.getElementById("message").innerText =
+        "Please login first.";
+
+      setTimeout(() => {
+        location.href = "login.html";
+      }, 1000);
+
+      return;
+    }
+
+
+    currentUser = user;
+
+
+    /* EMAIL */
+
+    document.getElementById("sellerEmail").innerText =
+      user.email || "Not available";
+
+
+    /* PROFILE */
+
+    const {
+      data: profile,
+      error: profileError
+    } =
+      await supabaseClient
+        .from("profiles")
+        .select("full_name,phone,role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+
+    if(profileError){
+
+      console.error(
+        "PROFILE ERROR:",
+        profileError
+      );
+
+    }
+
+
+    /* SELLER */
+
+    const {
+      data: seller,
+      error: sellerError
+    } =
+      await supabaseClient
+        .from("sellers")
+        .select("shop_name,phone,status")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+
+    if(sellerError){
+
+      console.error(
+        "SELLER ERROR:",
+        sellerError
+      );
+
+      document.getElementById("message").innerText =
+        sellerError.message;
+
+      return;
+    }
+
+
+    if(!seller){
+
+      document.getElementById("shopName").innerText =
+        "Seller account not found";
+
+      document.getElementById("sellerShop").innerText =
+        "Not available";
+
+      document.getElementById("sellerName").innerText =
+        profile?.full_name || "Not available";
+
+      document.getElementById("sellerPhone").innerText =
+        profile?.phone || "Not available";
+
+      document.getElementById("sellerStatus").innerText =
+        "Not Registered";
+
+      return;
+    }
+
+
+    /* SHOP */
+
+    document.getElementById("shopName").innerText =
+      seller.shop_name || "My Shop";
+
+
+    document.getElementById("sellerShop").innerText =
+      seller.shop_name || "Not available";
+
+
+    /* NAME */
+
+    document.getElementById("sellerName").innerText =
+      profile?.full_name || "Not available";
+
+
+    /* PHONE */
+
+    document.getElementById("sellerPhone").innerText =
+      seller.phone ||
+      profile?.phone ||
+      "Not available";
+
+
+    /* STATUS */
+
+    document.getElementById("sellerStatus").innerText =
+      "Status: " +
+      (seller.status || "pending");
+
+
+    /* EDIT FIELDS */
+
+    document.getElementById("editName").value =
+      profile?.full_name || "";
+
+
+    document.getElementById("editPhone").value =
+      seller.phone ||
+      profile?.phone ||
+      "";
+
+
+    document.getElementById("editShop").value =
+      seller.shop_name || "";
+
+
+  }
+
+  catch(error){
+
+    console.error(
+      "LOAD SELLER ERROR:",
+      error
+    );
+
+    document.getElementById("message").innerText =
+      "Unable to load seller information.";
+
+  }
+
+}
+
+
+/* EDIT PROFILE */
+
+function toggleEdit(){
+
+  const box =
+    document.getElementById("editBox");
+
+
+  if(box.style.display === "block"){
+
+    box.style.display = "none";
+
+  }
+  else{
+
+    box.style.display = "block";
+
+  }
+
+}
+
+
+/* SAVE PROFILE */
+
+async function saveProfile(){
+
+  if(!currentUser){
+
+    alert("Please login first.");
+
+    return;
+  }
+
+
+  const name =
+    document
+      .getElementById("editName")
+      .value
+      .trim();
+
+
+  const phone =
+    document
+      .getElementById("editPhone")
+      .value
+      .trim();
+
+
+  const shop =
+    document
+      .getElementById("editShop")
+      .value
+      .trim();
+
+
+  if(!name){
+
+    alert("Please enter seller name.");
+
+    return;
+  }
+
+
+  if(!shop){
+
+    alert("Please enter shop name.");
+
+    return;
+  }
+
+
   const {
-    data: { user },
-    error: authError
-  } = await supabas
+    error: profileError
+  } =
+    await supabaseClient
+      .from("profiles")
+      .update({
+        full_name:name,
+        phone:phone
+      })
+      .eq("id", currentUser.id);
+
+
+  if(profileError){
+
+    console.error(
+      "PROFILE UPDATE ERROR:",
+      profileError
+    );
+
+    alert(
+      "Profile update failed: " +
+      profileError.message
+    );
+
+    return;
+  }
+
+
+  const {
+    error: sellerError
+  } =
+    await supabaseClient
+      .from("sellers")
+      .update({
+        shop_name:shop,
+        phone:phone
+      })
+      .eq("user_id", currentUser.id);
+
+
+  if(sellerError){
+
+    console.error(
+      "SELLER UPDATE ERROR:",
+      sellerError
+    );
+
+    alert(
+      "Shop update failed: " +
+      sellerError.message
+    );
+
+    return;
+  }
+
+
+  alert(
+    "Profile updated successfully ✅"
+  );
+
+
+  document.getElementById("editBox")
+    .style.display = "none";
+
+
+  await loadSeller();
+
+}
+
+
+/* LOGOUT */
+
+async function logoutSeller(){
+
+  await supabaseClient.auth.signOut();
+
+  location.href = "login.html";
+
+}
+
+
+/* START */
+
+loadSeller();
+
+</script>
+
+</body>
+</html>
 ```
