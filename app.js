@@ -1544,7 +1544,7 @@ async function toggleWishlist(productId, button) {
 /* =========================
    PS MART DELIVERY LOCATION
 ========================= */
-function openLocation() {
+function openLocation(isNewAddress = false) {
 
   const oldPopup =
     document.getElementById(
@@ -2069,7 +2069,7 @@ if (locationSearch) {
     );
 
 
-if (saved) {
+if (saved && !isNewAddress) {
 
     const name =
       document.getElementById(
@@ -2658,8 +2658,39 @@ function saveDeliveryAddress() {
 }
 
 
- 
- 
+  /* =========================
+     GET EXISTING ADDRESSES
+  ========================= */
+
+  let addresses = [];
+
+
+  const oldData =
+    localStorage.getItem(
+      "psmart-addresses"
+    );
+
+
+  if (oldData) {
+
+    try {
+
+      addresses =
+        JSON.parse(oldData);
+
+      if (!Array.isArray(addresses)) {
+        addresses = [];
+      }
+
+    } catch (error) {
+
+      addresses = [];
+
+    }
+
+  }
+
+
   /* =========================
      ADD NEW ADDRESS
   ========================= */
@@ -2754,4 +2785,3 @@ function updateLocationText() {
 ========================= */
 
 updateLocationText();
-
