@@ -1544,7 +1544,7 @@ async function toggleWishlist(productId, button) {
 /* =========================
    PS MART DELIVERY LOCATION
 ========================= */
-function openLocation() {
+function openLocation(isNewAddress = false) {
 
   const oldPopup =
     document.getElementById(
@@ -2069,7 +2069,7 @@ if (locationSearch) {
     );
 
 
-if (saved) {
+if (saved && !isNewAddress) {
 
     const name =
       document.getElementById(
