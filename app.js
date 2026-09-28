@@ -1914,176 +1914,110 @@ function closeLocation() {
 
 
 /* CURRENT LOCATION */
-
 function useCurrentLocation() {
 
   if (!navigator.geolocation) {
-
-    alert(
-      "Your browser does not support location."
-    );
-
+    alert("Your browser does not support location.");
     return;
   }
 
-
   navigator.geolocation.getCurrentPosition(
 
-    function(position) {
+    async function(position) {
 
-      const lat =
-        position.coords.latitude;
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
 
-      const lon =
-        position.coords.longitude;
+      try {
 
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+        );
 
-      alert(
-        "Current location detected.\n\n" +
-        "Latitude: " + lat.toFixed(5) +
-        "\nLongitude: " + lon.toFixed(5) +
-        "\n\nPlease enter your complete address below."
-      );
+        const data = await response.json();
+
+        const address = data.address || {};
+
+        const city =
+          address.city ||
+          address.town ||
+          address.village ||
+          address.municipality ||
+          "";
+
+        const state =
+          address.state || "";
+
+        const pincode =
+          address.postcode || "";
+
+        const road =
+          address.road || "";
+
+        const area =
+          address.suburb ||
+          address.neighbourhood ||
+          address.residential ||
+          "";
+
+        document.getElementById("addressCity").value =
+          city;
+
+        document.getElementById("addressState").value =
+          state;
+
+        document.getElementById("addressPincode").value =
+          pincode;
+
+        document.getElementById("addressLine").value =
+          [road, area]
+            .filter(Boolean)
+            .join(", ");
+
+        alert(
+          "✓ Current location detected.\n\n" +
+          "Please check the address and click Save & Continue."
+        );
+
+      } catch (error) {
+
+        console.log(
+          "Location address error:",
+          error
+        );
+
+        alert(
+          "Location detected, but address could not be loaded. Please enter it manually."
+        );
+
+      }
 
     },
 
-    function() {
+    function(error) {
 
-      alert(
-        "Location permission denied. " +
-        "Please enter your address manually."
-      );
+      if (error.code === 1) {
 
+        alert(
+          "Location permission denied. Please allow location access in your browser."
+        );
+
+      } else {
+
+        alert(
+          "Unable to detect your current location. Please enter the address manually."
+        );
+
+      }
+
+    },
+
+    {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 0
     }
 
   );
 
 }
-
-
-/* SAVE ADDRESS */
-
-function saveDeliveryAddress() {
-
-  const data = {
-
-    name:
-      document.getElementById("addressName").value.trim(),
-
-    phone:
-      document.getElementById("addressPhone").value.trim(),
-
-    address:
-      document.getElementById("addressLine").value.trim(),
-
-    city:
-      document.getElementById("addressCity").value.trim(),
-
-    pincode:
-      document.getElementById("addressPincode").value.trim(),
-
-    state:
-      document.getElementById("addressState").value.trim(),
-
-    type:
-      document.getElementById("addressType").value
-
-  };
-
-
-  if (
-    !data.name ||
-    !data.phone ||
-    !data.address ||
-    !data.city ||
-    !data.pincode ||
-    !data.state
-  ) {
-
-    alert(
-      "Please fill all address details."
-    );
-
-    return;
-  }
-
-
-  if (!/^[0-9]{10}$/.test(data.phone)) {
-
-    alert(
-      "Please enter a valid 10-digit mobile number."
-    );
-
-    return;
-  }
-
-
-  if (!/^[0-9]{6}$/.test(data.pincode)) {
-
-    alert(
-      "Please enter a valid 6-digit pincode."
-    );
-
-    return;
-  }
-
-
-  localStorage.setItem(
-    "psmart-address",
-    JSON.stringify(data)
-  );
-
-
-  closeLocation();
-
-
-  updateLocationText();
-
-  alert(
-    "✓ Delivery address saved successfully!"
-  );
-
-}
-
-
-/* UPDATE LOCATION BAR */
-
-function updateLocationText() {
-
-  const saved =
-    JSON.parse(
-      localStorage.getItem("psmart-address")
-    );
-
-  const link =
-    document.querySelector(
-      ".location-bar a"
-    );
-
-  if (!link) return;
-
-
-  if (saved) {
-
-    link.textContent =
-      saved.city +
-      " - " +
-      saved.pincode +
-      " →";
-
-  } else {
-
-    link.textContent =
-      "Select your location →";
-
-  }
-
-}
-
-
-/* LOAD LOCATION */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  updateLocationText
-);
