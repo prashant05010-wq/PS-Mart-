@@ -1705,146 +1705,163 @@ function openLocation() {
 
         <!-- CURRENT LOCATION -->
 
-        <button
-          onclick="useCurrentLocation()"
-          style="
-            width:calc(100% - 40px);
-            margin:8px 20px 15px;
-            padding:13px;
-            border:1px solid #e2a938;
-            background:#fff8e6;
-            color:#8b5a16;
-            border-radius:7px;
-            font-weight:bold;
-            cursor:pointer;
-          ">
+       function useCurrentLocation() {
 
-          📍 Use My Current Location
+  if (!navigator.geolocation) {
+    alert("Your browser does not support location.");
+    return;
+  }
 
-        </button>
+  navigator.geolocation.getCurrentPosition(
 
+    async function(position) {
 
-        <!-- ADDRESS FORM -->
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
 
-        <div
-          style="
-            padding:0 20px 20px;
-          ">
+      console.log("GPS:", lat, lon);
 
-          <h3
-            style="
-              margin:10px 0 15px;
-              color:#21170f;
-              font-size:16px;
-            ">
-            Enter Delivery Address
-          </h3>
+      try {
 
+        const url =
+          "https://nominatim.openstreetmap.org/reverse" +
+          "?format=json" +
+          "&lat=" + lat +
+          "&lon=" + lon +
+          "&zoom=18" +
+          "&addressdetails=1";
 
-          <input
-            id="addressName"
-            type="text"
-            placeholder="Full Name"
-            class="location-input"
-          >
+        const response = await fetch(url);
 
-          <input
-            id="addressPhone"
-            type="tel"
-            placeholder="10-digit Mobile Number"
-            class="location-input"
-          >
+        if (!response.ok) {
+          throw new Error("Address API error");
+        }
 
-          <textarea
-            id="addressLine"
-            placeholder="House No., Building, Street, Area"
-            class="location-input"
-            style="height:75px;resize:none;"
-          ></textarea>
+        const data = await response.json();
 
+        console.log("Address data:", data);
 
-          <div
-            style="
-              display:grid;
-              grid-template-columns:1fr 1fr;
-              gap:10px;
-            ">
+        const a = data.address || {};
 
-            <input
-              id="addressCity"
-              type="text"
-              placeholder="City"
-              class="location-input"
-            >
+        const road =
+          a.road ||
+          a.pedestrian ||
+          "";
 
-            <input
-              id="addressPincode"
-              type="text"
-              placeholder="Pincode"
-              maxlength="6"
-              class="location-input"
-            >
+        const area =
+          a.neighbourhood ||
+          a.suburb ||
+          a.village ||
+          "";
 
-          </div>
+        const city =
+          a.city ||
+          a.town ||
+          a.municipality ||
+          a.county ||
+          "";
+
+        const state =
+          a.state ||
+          "";
+
+        const pincode =
+          a.postcode ||
+          "";
 
 
-          <input
-            id="addressState"
-            type="text"
-            placeholder="State"
-            class="location-input"
-          >
+        const addressText =
+          [road, area]
+            .filter(Boolean)
+            .join(", ");
 
 
-          <select
-            id="addressType"
-            class="location-input">
+        const addressInput =
+          document.getElementById("addressLine");
 
-            <option value="Home">
-              Home
-            </option>
+        const cityInput =
+          document.getElementById("addressCity");
 
-            <option value="Work">
-              Work
-            </option>
+        const stateInput =
+          document.getElementById("addressState");
 
-            <option value="Other">
-              Other
-            </option>
-
-          </select>
+        const pincodeInput =
+          document.getElementById("addressPincode");
 
 
-          <button
-            onclick="saveDeliveryAddress()"
-            style="
-              width:100%;
-              padding:14px;
-              border:0;
-              border-radius:7px;
-              background:linear-gradient(
-                135deg,
-                #f0c256,
-                #bb7719
-              );
-              color:#281507;
-              font-weight:bold;
-              font-size:15px;
-              cursor:pointer;
-              margin-top:8px;
-            ">
+        if (addressInput)
+          addressInput.value = addressText;
 
-            Save & Continue
+        if (cityInput)
+          cityInput.value = city;
 
-          </button>
+        if (stateInput)
+          stateInput.value = state;
 
-        </div>
+        if (pincodeInput)
+          pincodeInput.value = pincode;
 
-      </div>
 
-    </div>
-  `);
+        if (
+          addressText ||
+          city ||
+          state ||
+          pincode
+        ) {
 
+          alert(
+            "✓ Location detected!\n\n" +
+            "Please check the address and click Save & Continue."
+          );
+
+        } else {
+
+          alert(
+            "Location detected, but the address could not be converted automatically.\n\n" +
+            "Please enter your address manually."
+          );
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Reverse geocoding error:",
+          error
+        );
+
+        alert(
+          "GPS location detected, but address lookup failed.\n\n" +
+          "Please enter your address manually."
+        );
+
+      }
+
+    },
+
+    function(error) {
+
+      console.error(
+        "GPS error:",
+        error
+      );
+
+      alert(
+        "Unable to get your current location. " +
+        "Please allow location permission and try again."
+      );
+
+    },
+
+    {
+      enableHighAccuracy: true,
+      timeout: 20000,
+      maximumAge: 0
+    }
+
+  );
+
+}
 
   /* INPUT STYLE */
 
