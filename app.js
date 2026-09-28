@@ -429,15 +429,12 @@ async function renderHome() {
 
 async function detail() {
 
-  const e =
-    document.querySelector("#detail");
+  const e = document.querySelector("#detail");
 
   if (!e) return;
 
   const id =
-    new URLSearchParams(
-      location.search
-    ).get("id");
+    new URLSearchParams(location.search).get("id");
 
   if (!id) {
 
@@ -445,20 +442,22 @@ async function detail() {
       "<div class='empty'>Product not found.</div>";
 
     return;
-
   }
 
+
+  /* =========================
+     GET PRODUCT
+  ========================= */
 
   const {
     data: p,
     error
-  } =
-    await supabaseClient
-      .from("products")
-      .select("*")
-      .eq("id", id)
-      .eq("status", "approved")
-      .maybeSingle();
+  } = await supabaseClient
+    .from("products")
+    .select("*")
+    .eq("id", id)
+    .eq("status", "approved")
+    .maybeSingle();
 
 
   if (error || !p) {
@@ -472,108 +471,431 @@ async function detail() {
       "<div class='empty'>Product not found.</div>";
 
     return;
+  }
+
+
+  /* =========================
+     DISCOUNT
+  ========================= */
+
+  let discount = 0;
+
+  if (
+    p.old_price &&
+    Number(p.old_price) > Number(p.price)
+  ) {
+
+    discount = Math.round(
+      (
+        (Number(p.old_price) - Number(p.price)) /
+        Number(p.old_price)
+      ) * 100
+    );
 
   }
 
 
+  /* =========================
+     PRODUCT DETAIL UI
+  ========================= */
+
   e.innerHTML = `
 
-    <div class="bigpic">
+    <div class="detail-top">
 
-      ${
-        p.image_url
-          ? `
-            <img
-              src="${p.image_url}"
-              alt="${p.name}"
-              style="
-                width:100%;
-                height:100%;
-                object-fit:contain;
-              "
-            >
-          `
-          : "🛍️"
-      }
+
+      <!-- PRODUCT IMAGE -->
+
+      <div>
+
+        <div class="detail-image-box">
+
+          ${
+            p.image_url
+              ? `
+                <img
+                  src="${p.image_url}"
+                  alt="${p.name}"
+                >
+              `
+              : `
+                <div style="
+                  font-size:120px;
+                  display:flex;
+                  align-items:center;
+                  justify-content:center;
+                  width:100%;
+                  height:100%;
+                ">
+                  🛍️
+                </div>
+              `
+          }
+
+        </div>
+
+      </div>
+
+
+      <!-- PRODUCT INFORMATION -->
+
+      <div class="detail-info">
+
+        <small>
+          PS Mart Seller
+        </small>
+
+
+        <h1>
+          ${p.name}
+        </h1>
+
+
+        <div class="detail-rating">
+          ★ 4.0
+        </div>
+
+        <span style="color:#777;font-size:13px;">
+          100+ Ratings & Reviews
+        </span>
+
+
+        <!-- PRICE -->
+
+        <div class="detail-price">
+
+          ${money(p.price)}
+
+          ${
+            p.old_price
+              ? `
+                <del>
+                  ${money(p.old_price)}
+                </del>
+              `
+              : ""
+          }
+
+          ${
+            discount > 0
+              ? `
+                <span class="discount">
+                  ${discount}% off
+                </span>
+              `
+              : ""
+          }
+
+        </div>
+
+
+        <p style="color:#777;">
+          Inclusive of all taxes
+        </p>
+
+
+        <!-- OFFERS -->
+
+        <div class="offer-box">
+
+          <h3>
+            🎁 Available Offers
+          </h3>
+
+          <div class="offer">
+            🏷️ Special price available on PS Mart
+          </div>
+
+          <div class="offer">
+            💳 Secure payment on all orders
+          </div>
+
+          <div class="offer">
+            🚚 Free delivery available
+          </div>
+
+          <div class="offer">
+            🔄 Easy return available
+          </div>
+
+        </div>
+
+
+        <!-- DELIVERY -->
+
+        <div class="delivery-box">
+
+          <h3>
+            🚚 Delivery
+          </h3>
+
+          <p>
+            Enter your location to check delivery availability.
+          </p>
+
+          <a
+            href="profile.html"
+            style="
+              color:#9b681b;
+              font-weight:bold;
+              text-decoration:none;
+            "
+          >
+            Select Delivery Location →
+          </a>
+
+        </div>
+
+
+        <!-- STOCK -->
+
+        <p>
+
+          ${
+            Number(p.stock || 0) > 0
+              ? `
+                <span class="green">
+                  ✓ In Stock
+                </span>
+
+                ${
+                  Number(p.stock) <= 5
+                    ? `
+                      <span style="color:#d28a00;">
+                        Only ${p.stock} left
+                      </span>
+                    `
+                    : ""
+                }
+              `
+              : `
+                <span style="color:#d32f2f;">
+                  ✕ Out of Stock
+                </span>
+              `
+          }
+
+        </p>
+
+
+        <!-- DESCRIPTION -->
+
+        <p>
+
+          ${
+            p.description ||
+            "Premium quality product available on PS Mart."
+          }
+
+        </p>
+
+
+        <!-- BUTTONS -->
+
+        <div class="action-buttons">
+
+          <button
+            class="cart-btn"
+            onclick="add('${p.id}')"
+            ${
+              Number(p.stock || 0) <= 0
+                ? "disabled"
+                : ""
+            }
+          >
+            🛒 Add to Cart
+          </button>
+
+
+          <button
+            class="buy-btn"
+            onclick="buyNow('${p.id}')"
+            ${
+              Number(p.stock || 0) <= 0
+                ? "disabled"
+                : ""
+            }
+          >
+            ⚡ Buy Now
+          </button>
+
+        </div>
+
+
+        <!-- PRODUCT DESCRIPTION -->
+
+        <div class="info-section">
+
+          <h2>
+            Product Description
+          </h2>
+
+          <p>
+            ${
+              p.description ||
+              "Product details will appear here."
+            }
+          </p>
+
+        </div>
+
+      </div>
 
     </div>
 
 
-    <div>
+    <!-- =========================
+         SPECIFICATIONS
+    ========================= -->
 
-      <small>
-        PS Mart Seller
-      </small>
-
-      <h1>
-        ${p.name}
-      </h1>
-
-      <div class="rating">
-        ★ 4.0 / 5
-      </div>
+    <div class="info-section">
 
       <h2>
-        ${money(p.price)}
-
-        ${
-          p.old_price
-            ? `
-              <del>
-                ${money(p.old_price)}
-              </del>
-            `
-            : ""
-        }
-
+        Specifications
       </h2>
 
-      <p class="green">
-        ✓ Available
-        &nbsp;
-        ✓ Secure Payment
-        &nbsp;
-        ✓ Easy Returns
-      </p>
+      <table class="spec-table">
 
-      <p>
-        ${
-          p.description ||
-          "Premium quality product available on PS Mart."
-        }
-      </p>
+        <tr>
+          <td>Product Name</td>
+          <td>${p.name}</td>
+        </tr>
 
-      <button
-        class="goldbtn"
-        onclick="add('${p.id}')">
-        🛒 Add to Cart
-      </button>
+        <tr>
+          <td>Category</td>
+          <td>${p.category_id || "General"}</td>
+        </tr>
 
-      <a
-        class="buy"
-        href="cart.html">
-        Buy Now
-      </a>
+        <tr>
+          <td>Availability</td>
+          <td>
+            ${
+              Number(p.stock || 0) > 0
+                ? "In Stock"
+                : "Out of Stock"
+            }
+          </td>
+        </tr>
 
-      <hr>
+        <tr>
+          <td>Seller</td>
+          <td>PS Mart Seller</td>
+        </tr>
 
-      <h3>
-        Description
-      </h3>
+      </table>
 
-      <p>
-        ${
-          p.description ||
-          "Product details will appear here."
-        }
-      </p>
+    </div>
+
+
+    <!-- =========================
+         SELLER
+    ========================= -->
+
+    <div class="info-section">
+
+      <h2>
+        Seller Information
+      </h2>
+
+      <div class="seller-box">
+
+        <h3>
+          🏪 PS Mart Seller
+        </h3>
+
+        <p>
+          ✓ Verified product seller
+        </p>
+
+        <p>
+          ✓ Secure packaging
+        </p>
+
+        <p>
+          ✓ Reliable delivery
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         REVIEWS
+    ========================= -->
+
+    <div class="info-section">
+
+      <h2>
+        Ratings & Reviews
+      </h2>
+
+      <div class="review-box">
+
+        <b>
+          ★ 4.0 / 5
+        </b>
+
+        <p>
+          Customer reviews will appear here.
+        </p>
+
+      </div>
+
+      <div class="review-box">
+
+        <b>
+          No reviews yet
+        </b>
+
+        <p>
+          Be the first customer to review this product.
+        </p>
+
+      </div>
 
     </div>
 
   `;
+
 }
 
 
+/* =========================
+   BUY NOW
+========================= */
+
+function buyNow(id) {
+
+  let c = cart();
+
+  const existing =
+    c.find(
+      item =>
+        String(item.id) === String(id)
+    );
+
+
+  if (existing) {
+
+    existing.qty =
+      Number(existing.qty || 0) + 1;
+
+  } else {
+
+    c.push({
+      id: id,
+      qty: 1
+    });
+
+  }
+
+
+  saveCart(c);
+
+  window.location.href =
+    "checkout.html";
+}
 /* =========================
    CART PAGE
 ========================= */
