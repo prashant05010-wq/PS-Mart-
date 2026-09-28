@@ -1921,74 +1921,156 @@ function useCurrentLocation() {
     return;
   }
 
+  const button = event?.currentTarget;
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "📍 Detecting location...";
+  }
+
   navigator.geolocation.getCurrentPosition(
 
     async function(position) {
 
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-
       try {
 
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+          "https://nominatim.openstreetmap.org/reverse" +
+          "?format=jsonv2" +
+          "&lat=" + encodeURIComponent(lat) +
+          "&lon=" + encodeURIComponent(lon) +
+          "&zoom=18" +
+          "&addressdetails=1",
+          {
+            headers: {
+              "Accept": "application/json"
+            }
+          }
         );
+
+        if (!response.ok) {
+          throw new Error("Address service failed");
+        }
 
         const data = await response.json();
 
-        const address = data.address || {};
+        const a = data.address || {};
+
+        const area =
+          a.neighbourhood ||
+          a.suburb ||
+          a.quarter ||
+          a.residential ||
+          "";
+
+        const road =
+          a.road ||
+          a.street ||
+          "";
 
         const city =
-          address.city ||
-          address.town ||
-          address.village ||
-          address.municipality ||
+          a.city ||
+          a.town ||
+          a.village ||
+          a.municipality ||
+          a.county ||
           "";
 
         const state =
-          address.state || "";
-
-        const pincode =
-          address.postcode || "";
-
-        const road =
-          address.road || "";
-
-        const area =
-          address.suburb ||
-          address.neighbourhood ||
-          address.residential ||
+          a.state ||
           "";
 
-        document.getElementById("addressCity").value =
-          city;
+        const pincode =
+          a.postcode ||
+          "";
 
-        document.getElementById("addressState").value =
-          state;
 
-        document.getElementById("addressPincode").value =
-          pincode;
-
-        document.getElementById("addressLine").value =
+        const addressLine =
           [road, area]
             .filter(Boolean)
             .join(", ");
 
-        alert(
-          "✓ Current location detected.\n\n" +
-          "Please check the address and click Save & Continue."
-        );
+
+        const cityInput =
+          document.getElementById("addressCity");
+
+        const stateInput =
+          document.getElementById("addressState");
+
+        const pincodeInput =
+          document.getElementById("addressPincode");
+
+        const addressInput =
+          document.getElementById("addressLine");
+
+
+        if (addressInput) {
+          addressInput.value = addressLine;
+        }
+
+        if (cityInput) {
+          cityInput.value = city;
+        }
+
+        if (stateInput) {
+          stateInput.value = state;
+        }
+
+        if (pincodeInput) {
+          pincodeInput.value = pincode;
+        }
+
+
+        if (!city && !state && !pincode) {
+
+          alert(
+            "Location detected, but complete address could not be found. Please enter it manually."
+          );
+
+        } else {
+
+          alert(
+            "✓ Current location detected.\n\n" +
+            "Please check the address and click Save & Continue."
+          );
+
+        }
 
       } catch (error) {
 
-        console.log(
-          "Location address error:",
+        console.error(
+          "Current location error:",
           error
         );
 
         alert(
-          "Location detected, but address could not be loaded. Please enter it manually."
+          "Location detected, but address could not be loaded. Please enter the address manually."
         );
+
+      } finally {
+
+        const buttons =
+          document.querySelectorAll(
+            "#locationPopup button"
+          );
+
+        buttons.forEach(function(btn) {
+
+          if (
+            btn.textContent.includes("Detecting")
+          ) {
+
+            btn.disabled = false;
+
+            btn.textContent =
+              "📍 Use My Current Location";
+
+          }
+
+        });
 
       }
 
@@ -1996,16 +2078,35 @@ function useCurrentLocation() {
 
     function(error) {
 
+      console.error(
+        "Geolocation error:",
+        error
+      );
+
       if (error.code === 1) {
 
         alert(
-          "Location permission denied. Please allow location access in your browser."
+          "Location permission denied.\n\n" +
+          "Please click the 🔒 icon near the website address, " +
+          "allow Location, and try again."
+        );
+
+      } else if (error.code === 2) {
+
+        alert(
+          "Your current location could not be detected. Please try again."
+        );
+
+      } else if (error.code === 3) {
+
+        alert(
+          "Location request timed out. Please try again."
         );
 
       } else {
 
         alert(
-          "Unable to detect your current location. Please enter the address manually."
+          "Unable to detect your location. Please enter the address manually."
         );
 
       }
@@ -2014,7 +2115,7 @@ function useCurrentLocation() {
 
     {
       enableHighAccuracy: true,
-      timeout: 15000,
+      timeout: 20000,
       maximumAge: 0
     }
 
