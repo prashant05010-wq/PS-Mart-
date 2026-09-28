@@ -1589,3 +1589,501 @@ async function toggleWishlist(productId, button) {
     }
   }
 }
+/* =========================
+   PS MART DELIVERY LOCATION
+========================= */
+
+function openLocation() {
+
+  const oldPopup =
+    document.getElementById("locationPopup");
+
+  if (oldPopup) {
+    oldPopup.remove();
+  }
+
+  document.body.insertAdjacentHTML("beforeend", `
+
+    <div id="locationPopup"
+      style="
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.55);
+        z-index:99999;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:15px;
+        box-sizing:border-box;
+      ">
+
+      <div
+        style="
+          width:100%;
+          max-width:520px;
+          max-height:90vh;
+          overflow:auto;
+          background:#fff;
+          border-radius:12px;
+          box-shadow:0 10px 40px rgba(0,0,0,.3);
+        ">
+
+        <!-- HEADER -->
+
+        <div
+          style="
+            padding:18px 20px;
+            border-bottom:1px solid #eadfc9;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+          ">
+
+          <h2
+            style="
+              margin:0;
+              color:#21170f;
+              font-size:20px;
+            ">
+            Select Delivery Address
+          </h2>
+
+          <button
+            onclick="closeLocation()"
+            style="
+              border:0;
+              background:none;
+              font-size:25px;
+              cursor:pointer;
+              color:#555;
+            ">
+            ×
+          </button>
+
+        </div>
+
+
+        <!-- SEARCH -->
+
+        <div style="padding:18px 20px 10px;">
+
+          <div
+            style="
+              display:flex;
+              border:1px solid #cfcfcf;
+              border-radius:7px;
+              overflow:hidden;
+              height:46px;
+            ">
+
+            <span
+              style="
+                display:flex;
+                align-items:center;
+                padding:0 12px;
+                font-size:18px;
+              ">
+              🔍
+            </span>
+
+            <input
+              id="locationSearch"
+              type="text"
+              placeholder="Search area, street, city..."
+              style="
+                flex:1;
+                border:0;
+                outline:0;
+                font-size:14px;
+              "
+            >
+
+          </div>
+
+        </div>
+
+
+        <!-- CURRENT LOCATION -->
+
+        <button
+          onclick="useCurrentLocation()"
+          style="
+            width:calc(100% - 40px);
+            margin:8px 20px 15px;
+            padding:13px;
+            border:1px solid #e2a938;
+            background:#fff8e6;
+            color:#8b5a16;
+            border-radius:7px;
+            font-weight:bold;
+            cursor:pointer;
+          ">
+
+          📍 Use My Current Location
+
+        </button>
+
+
+        <!-- ADDRESS FORM -->
+
+        <div
+          style="
+            padding:0 20px 20px;
+          ">
+
+          <h3
+            style="
+              margin:10px 0 15px;
+              color:#21170f;
+              font-size:16px;
+            ">
+            Enter Delivery Address
+          </h3>
+
+
+          <input
+            id="addressName"
+            type="text"
+            placeholder="Full Name"
+            class="location-input"
+          >
+
+          <input
+            id="addressPhone"
+            type="tel"
+            placeholder="10-digit Mobile Number"
+            class="location-input"
+          >
+
+          <textarea
+            id="addressLine"
+            placeholder="House No., Building, Street, Area"
+            class="location-input"
+            style="height:75px;resize:none;"
+          ></textarea>
+
+
+          <div
+            style="
+              display:grid;
+              grid-template-columns:1fr 1fr;
+              gap:10px;
+            ">
+
+            <input
+              id="addressCity"
+              type="text"
+              placeholder="City"
+              class="location-input"
+            >
+
+            <input
+              id="addressPincode"
+              type="text"
+              placeholder="Pincode"
+              maxlength="6"
+              class="location-input"
+            >
+
+          </div>
+
+
+          <input
+            id="addressState"
+            type="text"
+            placeholder="State"
+            class="location-input"
+          >
+
+
+          <select
+            id="addressType"
+            class="location-input">
+
+            <option value="Home">
+              Home
+            </option>
+
+            <option value="Work">
+              Work
+            </option>
+
+            <option value="Other">
+              Other
+            </option>
+
+          </select>
+
+
+          <button
+            onclick="saveDeliveryAddress()"
+            style="
+              width:100%;
+              padding:14px;
+              border:0;
+              border-radius:7px;
+              background:linear-gradient(
+                135deg,
+                #f0c256,
+                #bb7719
+              );
+              color:#281507;
+              font-weight:bold;
+              font-size:15px;
+              cursor:pointer;
+              margin-top:8px;
+            ">
+
+            Save & Continue
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  `);
+
+
+  /* INPUT STYLE */
+
+  document
+    .querySelectorAll(".location-input")
+    .forEach(input => {
+
+      input.style.width = "100%";
+      input.style.boxSizing = "border-box";
+      input.style.padding = "12px";
+      input.style.marginBottom = "10px";
+      input.style.border = "1px solid #d5d5d5";
+      input.style.borderRadius = "6px";
+      input.style.outline = "none";
+      input.style.fontSize = "14px";
+
+    });
+
+
+  /* LOAD SAVED ADDRESS */
+
+  const saved =
+    JSON.parse(
+      localStorage.getItem("psmart-address")
+    );
+
+  if (saved) {
+
+    document.getElementById("addressName").value =
+      saved.name || "";
+
+    document.getElementById("addressPhone").value =
+      saved.phone || "";
+
+    document.getElementById("addressLine").value =
+      saved.address || "";
+
+    document.getElementById("addressCity").value =
+      saved.city || "";
+
+    document.getElementById("addressPincode").value =
+      saved.pincode || "";
+
+    document.getElementById("addressState").value =
+      saved.state || "";
+
+    document.getElementById("addressType").value =
+      saved.type || "Home";
+
+  }
+
+}
+
+
+/* CLOSE POPUP */
+
+function closeLocation() {
+
+  const popup =
+    document.getElementById("locationPopup");
+
+  if (popup) {
+    popup.remove();
+  }
+
+}
+
+
+/* CURRENT LOCATION */
+
+function useCurrentLocation() {
+
+  if (!navigator.geolocation) {
+
+    alert(
+      "Your browser does not support location."
+    );
+
+    return;
+  }
+
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position) {
+
+      const lat =
+        position.coords.latitude;
+
+      const lon =
+        position.coords.longitude;
+
+
+      alert(
+        "Current location detected.\n\n" +
+        "Latitude: " + lat.toFixed(5) +
+        "\nLongitude: " + lon.toFixed(5) +
+        "\n\nPlease enter your complete address below."
+      );
+
+    },
+
+    function() {
+
+      alert(
+        "Location permission denied. " +
+        "Please enter your address manually."
+      );
+
+    }
+
+  );
+
+}
+
+
+/* SAVE ADDRESS */
+
+function saveDeliveryAddress() {
+
+  const data = {
+
+    name:
+      document.getElementById("addressName").value.trim(),
+
+    phone:
+      document.getElementById("addressPhone").value.trim(),
+
+    address:
+      document.getElementById("addressLine").value.trim(),
+
+    city:
+      document.getElementById("addressCity").value.trim(),
+
+    pincode:
+      document.getElementById("addressPincode").value.trim(),
+
+    state:
+      document.getElementById("addressState").value.trim(),
+
+    type:
+      document.getElementById("addressType").value
+
+  };
+
+
+  if (
+    !data.name ||
+    !data.phone ||
+    !data.address ||
+    !data.city ||
+    !data.pincode ||
+    !data.state
+  ) {
+
+    alert(
+      "Please fill all address details."
+    );
+
+    return;
+  }
+
+
+  if (!/^[0-9]{10}$/.test(data.phone)) {
+
+    alert(
+      "Please enter a valid 10-digit mobile number."
+    );
+
+    return;
+  }
+
+
+  if (!/^[0-9]{6}$/.test(data.pincode)) {
+
+    alert(
+      "Please enter a valid 6-digit pincode."
+    );
+
+    return;
+  }
+
+
+  localStorage.setItem(
+    "psmart-address",
+    JSON.stringify(data)
+  );
+
+
+  closeLocation();
+
+
+  updateLocationText();
+
+  alert(
+    "✓ Delivery address saved successfully!"
+  );
+
+}
+
+
+/* UPDATE LOCATION BAR */
+
+function updateLocationText() {
+
+  const saved =
+    JSON.parse(
+      localStorage.getItem("psmart-address")
+    );
+
+  const link =
+    document.querySelector(
+      ".location-bar a"
+    );
+
+  if (!link) return;
+
+
+  if (saved) {
+
+    link.textContent =
+      saved.city +
+      " - " +
+      saved.pincode +
+      " →";
+
+  } else {
+
+    link.textContent =
+      "Select your location →";
+
+  }
+
+}
+
+
+/* LOAD LOCATION */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  updateLocationText
+);
