@@ -59,7 +59,24 @@ h2{
   background:#faf6ef;
   border-radius:10px;
   padding:18px;
+  margin-bottom:15px;
   line-height:1.7;
+}
+
+.address-title{
+  font-size:18px;
+  font-weight:bold;
+  color:#6b421f;
+  margin-bottom:8px;
+}
+
+.address-name{
+  font-size:16px;
+  font-weight:bold;
+}
+
+.active{
+  border:2px solid #b8860b;
 }
 
 .empty{
@@ -72,7 +89,7 @@ h2{
   display:block;
   width:100%;
   padding:13px;
-  margin-top:15px;
+  margin-top:10px;
   border:none;
   border-radius:8px;
   background:#b8860b;
@@ -87,8 +104,8 @@ h2{
   background:#8b2e2e;
 }
 
-.hidden{
-  display:none;
+.select-btn{
+  background:#6b421f;
 }
 
 </style>
@@ -97,6 +114,7 @@ h2{
 
 
 <body>
+
 
 <header>
 
@@ -119,15 +137,14 @@ h2{
       📍 Saved Addresses
     </h2>
 
-    <div
-      id="addressContainer">
+    <div id="addressContainer">
     </div>
 
     <a
       href="index.html"
       class="btn">
 
-      ➕ Add / Change Address
+      ➕ Add New Address
 
     </a>
 
@@ -139,15 +156,10 @@ h2{
 <script>
 
 /* =========================
-   LOAD SAVED ADDRESS
+   LOAD SAVED ADDRESSES
 ========================= */
 
 function loadAddress(){
-
-  const saved =
-    localStorage.getItem(
-      "psmart-address"
-    );
 
   const container =
     document.getElementById(
@@ -155,15 +167,88 @@ function loadAddress(){
     );
 
 
-  if(!saved){
+  let addresses = [];
+
+
+  /* NEW MULTIPLE ADDRESS LIST */
+
+  const multipleData =
+    localStorage.getItem(
+      "psmart-addresses"
+    );
+
+
+  if(multipleData){
+
+    try{
+
+      const parsed =
+        JSON.parse(multipleData);
+
+      if(Array.isArray(parsed)){
+
+        addresses = parsed;
+
+      }
+
+    }catch(error){
+
+      console.error(error);
+
+    }
+
+  }
+
+
+  /* OLD SINGLE ADDRESS SUPPORT */
+
+  if(addresses.length === 0){
+
+    const oldData =
+      localStorage.getItem(
+        "psmart-address"
+      );
+
+
+    if(oldData){
+
+      try{
+
+        const oldAddress =
+          JSON.parse(oldData);
+
+        addresses = [
+          oldAddress
+        ];
+
+      }catch(error){
+
+        console.error(error);
+
+      }
+
+    }
+
+  }
+
+
+  if(addresses.length === 0){
 
     container.innerHTML = `
+
       <div class="empty">
+
         📍<br><br>
+
         No saved address found.
-        <br>
-        Add your delivery address from the location option.
+
+        <br><br>
+
+        Add your delivery address
+        from the location option.
+
       </div>
+
     `;
 
     return;
@@ -171,70 +256,237 @@ function loadAddress(){
   }
 
 
-  try{
+  /* =========================
+     CURRENT ACTIVE ADDRESS
+  ========================= */
 
-    const address =
-      JSON.parse(saved);
+  let activeAddress = null;
 
 
-    container.innerHTML = `
+  const activeData =
+    localStorage.getItem(
+      "psmart-address"
+    );
 
-      <div class="address-box">
 
-        <strong>
-          ${address.fullName || "Customer"}
-        </strong>
+  if(activeData){
+
+    try{
+
+      activeAddress =
+        JSON.parse(activeData);
+
+    }catch(error){
+
+      activeAddress = null;
+
+    }
+
+  }
+
+
+  container.innerHTML = "";
+
+
+  addresses.forEach(
+    function(address,index){
+
+      const box =
+        document.createElement(
+          "div"
+        );
+
+
+      box.className =
+        "address-box";
+
+
+      /* Check active address */
+
+      if(
+        activeAddress &&
+        address.id &&
+        activeAddress.id === address.id
+      ){
+
+        box.classList.add(
+          "active"
+        );
+
+      }
+
+
+      const type =
+        address.type ||
+        "Other";
+
+
+      box.innerHTML = `
+
+        <div class="address-title">
+
+          ${
+            type === "Home"
+            ? "🏠"
+            : type === "Work"
+            ? "🏢"
+            : "📍"
+          }
+
+          ${type}
+
+        </div>
+
+
+        <div class="address-name">
+
+          👤 ${address.name || "Customer"}
+
+        </div>
+
+
+        <div>
+
+          📞 ${address.phone || "Not added"}
+
+        </div>
+
 
         <br>
 
-        📞 ${address.phone || "Not added"}
 
-        <br><br>
+        <div>
 
-        ${address.address || address.addressLine || ""}
+          ${address.address || ""}
 
-        <br>
+          <br>
 
-        ${address.city || ""}
+          ${address.city || ""}
 
-        ${address.pincode || address.postcode || ""}
+          ${address.pincode || ""}
 
-        <br>
+          <br>
 
-        ${address.state || ""}
+          ${address.state || ""}
+
+        </div>
+
 
         ${
-          address.type
-          ? "<br><strong>Type:</strong> " +
-            address.type
-          : ""
+          activeAddress &&
+          address.id &&
+          activeAddress.id === address.id
+
+          ? `
+
+            <button
+              class="btn"
+              disabled
+              style="opacity:.7;">
+
+              ✓ Selected Address
+
+            </button>
+
+          `
+
+          : `
+
+            <button
+              class="btn select-btn"
+              onclick="selectAddress(${index})">
+
+              ✓ Use This Address
+
+            </button>
+
+          `
         }
 
-      </div>
 
-      <button
-        class="btn delete-btn"
-        onclick="deleteAddress()">
+        <button
+          class="btn delete-btn"
+          onclick="deleteAddress(${index})">
 
-        🗑️ Remove Address
+          🗑️ Remove Address
 
-      </button>
+        </button>
 
-    `;
+      `;
+
+
+      container.appendChild(
+        box
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================
+   SELECT ADDRESS
+========================= */
+
+function selectAddress(index){
+
+  const data =
+    localStorage.getItem(
+      "psmart-addresses"
+    );
+
+
+  if(!data){
+
+    return;
 
   }
 
-  catch(error){
 
-    console.error(error);
+  let addresses;
 
-    container.innerHTML = `
-      <div class="empty">
-        Unable to load saved address.
-      </div>
-    `;
+
+  try{
+
+    addresses =
+      JSON.parse(data);
+
+  }catch(error){
+
+    return;
 
   }
+
+
+  if(
+    !Array.isArray(addresses) ||
+    !addresses[index]
+  ){
+
+    return;
+
+  }
+
+
+  const selected =
+    addresses[index];
+
+
+  localStorage.setItem(
+    "psmart-address",
+    JSON.stringify(
+      selected
+    )
+  );
+
+
+  alert(
+    "✓ Delivery address selected!"
+  );
+
+
+  loadAddress();
 
 }
 
@@ -243,7 +495,7 @@ function loadAddress(){
    DELETE ADDRESS
 ========================= */
 
-function deleteAddress(){
+function deleteAddress(index){
 
   const confirmDelete =
     confirm(
@@ -258,9 +510,91 @@ function deleteAddress(){
   }
 
 
-  localStorage.removeItem(
-    "psmart-address"
+  let addresses = [];
+
+
+  const data =
+    localStorage.getItem(
+      "psmart-addresses"
+    );
+
+
+  if(data){
+
+    try{
+
+      addresses =
+        JSON.parse(data);
+
+    }catch(error){
+
+      addresses = [];
+
+    }
+
+  }
+
+
+  if(!Array.isArray(addresses)){
+
+    addresses = [];
+
+  }
+
+
+  const deleted =
+    addresses[index];
+
+
+  addresses.splice(
+    index,
+    1
   );
+
+
+  localStorage.setItem(
+    "psmart-addresses",
+    JSON.stringify(
+      addresses
+    )
+  );
+
+
+  /* If deleted address was active */
+
+  const activeData =
+    localStorage.getItem(
+      "psmart-address"
+    );
+
+
+  if(activeData){
+
+    try{
+
+      const active =
+        JSON.parse(activeData);
+
+
+      if(
+        deleted &&
+        active.id &&
+        deleted.id === active.id
+      ){
+
+        localStorage.removeItem(
+          "psmart-address"
+        );
+
+      }
+
+    }catch(error){
+
+      console.error(error);
+
+    }
+
+  }
 
 
   loadAddress();
@@ -275,6 +609,7 @@ function deleteAddress(){
 loadAddress();
 
 </script>
+
 
 </body>
 
