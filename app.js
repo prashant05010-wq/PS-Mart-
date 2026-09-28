@@ -1788,7 +1788,243 @@ function openLocation() {
   /* =========================
      INPUT STYLE
   ========================= */
+/* =========================
+   LOCATION SEARCH AUTOCOMPLETE
+========================= */
 
+const locationSearch =
+  document.getElementById("locationSearch");
+
+if (locationSearch) {
+
+  const suggestionBox =
+    document.createElement("div");
+
+  suggestionBox.id =
+    "locationSuggestions";
+
+  suggestionBox.style.position =
+    "relative";
+
+  suggestionBox.style.background =
+    "#fff";
+
+  suggestionBox.style.border =
+    "1px solid #ddd";
+
+  suggestionBox.style.borderTop =
+    "0";
+
+  suggestionBox.style.maxHeight =
+    "220px";
+
+  suggestionBox.style.overflowY =
+    "auto";
+
+  suggestionBox.style.zIndex =
+    "100000";
+
+  locationSearch.parentElement
+    .parentElement
+    .appendChild(suggestionBox);
+
+
+  let searchTimer;
+
+
+  locationSearch.addEventListener(
+    "input",
+    function () {
+
+      const query =
+        this.value.trim();
+
+      clearTimeout(searchTimer);
+
+      suggestionBox.innerHTML = "";
+
+      if (query.length < 2) {
+        return;
+      }
+
+
+      searchTimer =
+        setTimeout(async function () {
+
+          try {
+
+            const response =
+              await fetch(
+                "https://nominatim.openstreetmap.org/search" +
+                "?format=jsonv2" +
+                "&q=" +
+                encodeURIComponent(query) +
+                "&countrycodes=in" +
+                "&addressdetails=1" +
+                "&limit=6",
+                {
+                  headers: {
+                    "Accept":
+                      "application/json"
+                  }
+                }
+              );
+
+
+            if (!response.ok) {
+              return;
+            }
+
+
+            const results =
+              await response.json();
+
+
+            suggestionBox.innerHTML = "";
+
+
+            results.forEach(function(place) {
+
+              const item =
+                document.createElement("div");
+
+              item.textContent =
+                place.display_name;
+
+              item.style.padding =
+                "12px";
+
+              item.style.cursor =
+                "pointer";
+
+              item.style.borderBottom =
+                "1px solid #eee";
+
+              item.style.fontSize =
+                "13px";
+
+
+              item.addEventListener(
+                "click",
+                function () {
+
+                  locationSearch.value =
+                    place.display_name;
+
+                  const a =
+                    place.address || {};
+
+
+                  const area =
+                    a.neighbourhood ||
+                    a.suburb ||
+                    a.quarter ||
+                    a.residential ||
+                    a.village ||
+                    "";
+
+
+                  const road =
+                    a.road ||
+                    a.street ||
+                    a.pedestrian ||
+                    "";
+
+
+                  const city =
+                    a.city ||
+                    a.town ||
+                    a.municipality ||
+                    a.county ||
+                    a.village ||
+                    "";
+
+
+                  const state =
+                    a.state || "";
+
+
+                  const pincode =
+                    a.postcode || "";
+
+
+                  const addressInput =
+                    document.getElementById(
+                      "addressLine"
+                    );
+
+                  const cityInput =
+                    document.getElementById(
+                      "addressCity"
+                    );
+
+                  const stateInput =
+                    document.getElementById(
+                      "addressState"
+                    );
+
+                  const pincodeInput =
+                    document.getElementById(
+                      "addressPincode"
+                    );
+
+
+                  if (addressInput) {
+                    addressInput.value =
+                      [road, area]
+                        .filter(Boolean)
+                        .join(", ");
+                  }
+
+
+                  if (cityInput) {
+                    cityInput.value =
+                      city;
+                  }
+
+
+                  if (stateInput) {
+                    stateInput.value =
+                      state;
+                  }
+
+
+                  if (pincodeInput) {
+                    pincodeInput.value =
+                      pincode;
+                  }
+
+
+                  suggestionBox.innerHTML =
+                    "";
+
+                }
+              );
+
+
+              suggestionBox.appendChild(
+                item
+              );
+
+            });
+
+          }
+
+          catch(error) {
+
+            console.error(
+              "Location search error:",
+              error
+            );
+
+          }
+
+        }, 400);
+
+    }
+  );
+
+}
   document
     .querySelectorAll(
       ".location-input"
