@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Saved Addresses | PS Mart</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f7f1e8;
+  color:#3b2416;
+}
+
+header{
+  background:#4b2e1f;
+  color:white;
+  padding:16px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+header a{
+  color:white;
+  text-decoration:none;
+}
+
+.container{
+  max-width:900px;
+  margin:25px auto;
+  padding:15px;
+}
+
+.card{
+  background:white;
+  border-radius:14px;
+  padding:22px;
+  margin-bottom:18px;
+  box-shadow:0 4px 15px rgba(0,0,0,.10);
+}
+
+h2{
+  margin-top:0;
+  color:#6b421f;
+}
+
+.address-box{
+  border:1px solid #e5ddd2;
+  background:#faf6ef;
+  border-radius:10px;
+  padding:18px;
+  line-height:1.7;
+}
+
+.empty{
+  text-align:center;
+  padding:25px;
+  color:#777;
+}
+
+.btn{
+  display:block;
+  width:100%;
+  padding:13px;
+  margin-top:15px;
+  border:none;
+  border-radius:8px;
+  background:#b8860b;
+  color:white;
+  text-align:center;
+  text-decoration:none;
+  cursor:pointer;
+  font-size:15px;
+}
+
+.delete-btn{
+  background:#8b2e2e;
+}
+
+.hidden{
+  display:none;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<header>
+
+  <a href="profile.html">
+    👤 My Profile
+  </a>
+
+  <a href="index.html">
+    🏠 Home
+  </a>
+
+</header>
+
+
+<div class="container">
+
+  <div class="card">
+
+    <h2>
+      📍 Saved Addresses
+    </h2>
+
+    <div
+      id="addressContainer">
+    </div>
+
+    <a
+      href="index.html"
+      class="btn">
+
+      ➕ Add / Change Address
+
+    </a>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   LOAD SAVED ADDRESS
+========================= */
+
+function loadAddress(){
+
+  const saved =
+    localStorage.getItem(
+      "psmart-address"
+    );
+
+  const container =
+    document.getElementById(
+      "addressContainer"
+    );
+
+
+  if(!saved){
+
+    container.innerHTML = `
+      <div class="empty">
+        📍<br><br>
+        No saved address found.
+        <br>
+        Add your delivery address from the location option.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  try{
+
+    const address =
+      JSON.parse(saved);
+
+
+    container.innerHTML = `
+
+      <div class="address-box">
+
+        <strong>
+          ${address.fullName || "Customer"}
+        </strong>
+
+        <br>
+
+        📞 ${address.phone || "Not added"}
+
+        <br><br>
+
+        ${address.address || address.addressLine || ""}
+
+        <br>
+
+        ${address.city || ""}
+
+        ${address.pincode || address.postcode || ""}
+
+        <br>
+
+        ${address.state || ""}
+
+        ${
+          address.type
+          ? "<br><strong>Type:</strong> " +
+            address.type
+          : ""
+        }
+
+      </div>
+
+      <button
+        class="btn delete-btn"
+        onclick="deleteAddress()">
+
+        🗑️ Remove Address
+
+      </button>
+
+    `;
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    container.innerHTML = `
+      <div class="empty">
+        Unable to load saved address.
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =========================
+   DELETE ADDRESS
+========================= */
+
+function deleteAddress(){
+
+  const confirmDelete =
+    confirm(
+      "Are you sure you want to remove this address?"
+    );
+
+
+  if(!confirmDelete){
+
+    return;
+
+  }
+
+
+  localStorage.removeItem(
+    "psmart-address"
+  );
+
+
+  loadAddress();
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadAddress();
+
+</script>
+
+</body>
+
+</html>
