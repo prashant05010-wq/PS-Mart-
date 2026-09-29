@@ -588,20 +588,13 @@
 
 <script>
 
-/* =========================
-   SELECT LANGUAGE
-========================= */
+<script>
 
 const languageButtons =
-  document.querySelectorAll(
-    ".language-item"
-  );
-
+  document.querySelectorAll(".language-item");
 
 const savedLanguage =
-  localStorage.getItem(
-    "psmart-language"
-  );
+  localStorage.getItem("psmart-language");
 
 
 languageButtons.forEach(button => {
@@ -612,51 +605,47 @@ languageButtons.forEach(button => {
 
   if(language === savedLanguage){
 
-    button.classList.add(
-      "selected"
-    );
+    button.classList.add("selected");
 
   }
 
 
-  button.addEventListener(
-    "click",
-    function(){
+  button.addEventListener("click", function(){
 
-      const selectedLanguage =
-        this.dataset.language;
+    const selectedLanguage =
+      this.dataset.language;
 
 
-      localStorage.setItem(
-        "psmart-language",
-        selectedLanguage
-      );
+    /* Save selected language */
+    localStorage.setItem(
+      "psmart-language",
+      selectedLanguage
+    );
 
 
-      languageButtons.forEach(btn => {
+    /* Selected design */
+    languageButtons.forEach(btn => {
 
-        btn.classList.remove(
-          "selected"
-        );
+      btn.classList.remove("selected");
 
-      });
+    });
 
-
-      this.classList.add(
-        "selected"
-      );
+    this.classList.add("selected");
 
 
-      alert(
-        "Language selected: " +
-        selectedLanguage
-      );
+    /* Go to home page */
+    setTimeout(function(){
 
-    }
-  );
+      window.location.href =
+        "index.html";
+
+    }, 300);
+
+  });
 
 });
 
+</script>
 </script>
 
 
