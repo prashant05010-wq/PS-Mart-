@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Settings | PS Mart</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     * {
@@ -168,8 +171,13 @@
       font-size: 14px;
     }
 
-    @media (max-width: 600px) {
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: #777;
+    }
 
+    @media (max-width: 600px) {
       .header h1 {
         font-size: 19px;
       }
@@ -187,21 +195,26 @@
 
 <body>
 
-  <header class="header">
-    <h1>⚙️ Settings</h1>
+<header class="header">
+  <h1>⚙️ Settings</h1>
 
-    <a href="profile.html" class="back">
-      ← Profile
-    </a>
-  </header>
-
-
-  <main class="container">
+  <a href="profile.html" class="back">
+    ← Profile
+  </a>
+</header>
 
 
-    <!-- =========================
-         NOTIFICATION SETTINGS
-    ========================== -->
+<main class="container">
+
+  <div id="loading" class="loading">
+    🔄 Loading settings...
+  </div>
+
+
+  <div id="settingsArea" style="display:none;">
+
+
+    <!-- NOTIFICATIONS -->
 
     <div class="section">
 
@@ -214,16 +227,13 @@
 
         <div class="setting-info">
           <h3>Order Updates</h3>
-          <p>Get updates about order confirmation, shipping and delivery.</p>
+          <p>Order confirmation, shipping and delivery updates.</p>
         </div>
 
         <label class="switch">
-          <input
-            type="checkbox"
-            id="orderNotifications"
-            checked
-            onchange="saveSetting('orderNotifications', this.checked)"
-          >
+          <input type="checkbox"
+                 id="order_notifications"
+                 onchange="saveSetting('order_notifications', this.checked)">
           <span class="slider"></span>
         </label>
 
@@ -234,16 +244,13 @@
 
         <div class="setting-info">
           <h3>Payment & Refunds</h3>
-          <p>Receive payment, refund and transaction updates.</p>
+          <p>Payment, refund and transaction updates.</p>
         </div>
 
         <label class="switch">
-          <input
-            type="checkbox"
-            id="paymentNotifications"
-            checked
-            onchange="saveSetting('paymentNotifications', this.checked)"
-          >
+          <input type="checkbox"
+                 id="payment_notifications"
+                 onchange="saveSetting('payment_notifications', this.checked)">
           <span class="slider"></span>
         </label>
 
@@ -254,16 +261,13 @@
 
         <div class="setting-info">
           <h3>Offers & Discounts</h3>
-          <p>Receive new offers, deals and discount notifications.</p>
+          <p>Deals, offers and discount notifications.</p>
         </div>
 
         <label class="switch">
-          <input
-            type="checkbox"
-            id="offerNotifications"
-            checked
-            onchange="saveSetting('offerNotifications', this.checked)"
-          >
+          <input type="checkbox"
+                 id="offer_notifications"
+                 onchange="saveSetting('offer_notifications', this.checked)">
           <span class="slider"></span>
         </label>
 
@@ -274,16 +278,13 @@
 
         <div class="setting-info">
           <h3>Wishlist Alerts</h3>
-          <p>Get alerts about wishlist products and price changes.</p>
+          <p>Wishlist and product price-change alerts.</p>
         </div>
 
         <label class="switch">
-          <input
-            type="checkbox"
-            id="wishlistNotifications"
-            checked
-            onchange="saveSetting('wishlistNotifications', this.checked)"
-          >
+          <input type="checkbox"
+                 id="wishlist_notifications"
+                 onchange="saveSetting('wishlist_notifications', this.checked)">
           <span class="slider"></span>
         </label>
 
@@ -294,16 +295,13 @@
 
         <div class="setting-info">
           <h3>Coupons & Rewards</h3>
-          <p>Get updates about coupons, rewards and special benefits.</p>
+          <p>Coupons, rewards and special benefits.</p>
         </div>
 
         <label class="switch">
-          <input
-            type="checkbox"
-            id="rewardNotifications"
-            checked
-            onchange="saveSetting('rewardNotifications', this.checked)"
-          >
+          <input type="checkbox"
+                 id="reward_notifications"
+                 onchange="saveSetting('reward_notifications', this.checked)">
           <span class="slider"></span>
         </label>
 
@@ -314,16 +312,13 @@
 
         <div class="setting-info">
           <h3>General Notifications</h3>
-          <p>Receive important announcements and PS Mart updates.</p>
+          <p>Important PS Mart announcements and updates.</p>
         </div>
 
         <label class="switch">
-          <input
-            type="checkbox"
-            id="generalNotifications"
-            checked
-            onchange="saveSetting('generalNotifications', this.checked)"
-          >
+          <input type="checkbox"
+                 id="general_notifications"
+                 onchange="saveSetting('general_notifications', this.checked)">
           <span class="slider"></span>
         </label>
 
@@ -332,9 +327,7 @@
     </div>
 
 
-    <!-- =========================
-         PRIVACY
-    ========================== -->
+    <!-- PRIVACY -->
 
     <div class="section">
 
@@ -347,7 +340,7 @@
 
         <div class="setting-info">
           <h3>Account Privacy</h3>
-          <p>Manage how your account information is handled.</p>
+          <p>Manage your account information and privacy.</p>
         </div>
 
         <span class="arrow">›</span>
@@ -371,17 +364,22 @@
 
         <div class="setting-info">
           <h3>Personalized Recommendations</h3>
-          <p>Allow PS Mart to use your shopping activity for recommendations.</p>
+          <p>Use shopping activity for personalized recommendations.</p>
         </div>
 
         <label class="switch">
+
           <input
             type="checkbox"
-            id="recommendations"
-            checked
-            onchange="saveSetting('recommendations', this.checked)"
+            id="personalized_recommendations"
+            onchange="saveSetting(
+              'personalized_recommendations',
+              this.checked
+            )"
           >
+
           <span class="slider"></span>
+
         </label>
 
       </div>
@@ -389,9 +387,7 @@
     </div>
 
 
-    <!-- =========================
-         SHOPPING SETTINGS
-    ========================== -->
+    <!-- SHOPPING -->
 
     <div class="section">
 
@@ -408,13 +404,18 @@
         </div>
 
         <label class="switch">
+
           <input
             type="checkbox"
-            id="priceDrop"
-            checked
-            onchange="saveSetting('priceDrop', this.checked)"
+            id="price_drop_alerts"
+            onchange="saveSetting(
+              'price_drop_alerts',
+              this.checked
+            )"
           >
+
           <span class="slider"></span>
+
         </label>
 
       </div>
@@ -424,17 +425,22 @@
 
         <div class="setting-info">
           <h3>Back-in-Stock Alerts</h3>
-          <p>Get notified when an unavailable product is available again.</p>
+          <p>Get notified when unavailable products are available again.</p>
         </div>
 
         <label class="switch">
+
           <input
             type="checkbox"
-            id="stockAlerts"
-            checked
-            onchange="saveSetting('stockAlerts', this.checked)"
+            id="stock_alerts"
+            onchange="saveSetting(
+              'stock_alerts',
+              this.checked
+            )"
           >
+
           <span class="slider"></span>
+
         </label>
 
       </div>
@@ -444,17 +450,22 @@
 
         <div class="setting-info">
           <h3>Review Reminders</h3>
-          <p>Receive reminders to review products you purchased.</p>
+          <p>Get reminders to review purchased products.</p>
         </div>
 
         <label class="switch">
+
           <input
             type="checkbox"
-            id="reviewReminders"
-            checked
-            onchange="saveSetting('reviewReminders', this.checked)"
+            id="review_reminders"
+            onchange="saveSetting(
+              'review_reminders',
+              this.checked
+            )"
           >
+
           <span class="slider"></span>
+
         </label>
 
       </div>
@@ -462,9 +473,7 @@
     </div>
 
 
-    <!-- =========================
-         LANGUAGE
-    ========================== -->
+    <!-- LANGUAGE -->
 
     <div class="section">
 
@@ -490,9 +499,7 @@
     </div>
 
 
-    <!-- =========================
-         DATA
-    ========================== -->
+    <!-- DATA -->
 
     <div class="section">
 
@@ -505,17 +512,22 @@
 
         <div class="setting-info">
           <h3>Save Shopping Activity</h3>
-          <p>Keep your cart, wishlist and shopping preferences saved.</p>
+          <p>Keep cart, wishlist and shopping preferences saved.</p>
         </div>
 
         <label class="switch">
+
           <input
             type="checkbox"
-            id="shoppingActivity"
-            checked
-            onchange="saveSetting('shoppingActivity', this.checked)"
+            id="shopping_activity"
+            onchange="saveSetting(
+              'shopping_activity',
+              this.checked
+            )"
           >
+
           <span class="slider"></span>
+
         </label>
 
       </div>
@@ -528,8 +540,15 @@
       >
 
         <div class="setting-info">
-          <h3 class="danger">Clear Local Data</h3>
-          <p>Clear locally saved shopping preferences and temporary data.</p>
+
+          <h3 class="danger">
+            Clear Local Data
+          </h3>
+
+          <p>
+            Clear locally saved shopping preferences and temporary data.
+          </p>
+
         </div>
 
         <span class="arrow">›</span>
@@ -539,16 +558,13 @@
     </div>
 
 
-    <!-- =========================
-         DANGER ZONE
-    ========================== -->
+    <!-- ACCOUNT -->
 
     <div class="section danger-section">
 
       <div class="section-title">
         ⚠️ Account
       </div>
-
 
       <button
         class="danger-button"
@@ -559,302 +575,422 @@
 
     </div>
 
-
-  </main>
-
-
-  <div
-    class="status"
-    id="status"
-  >
-    Setting saved
   </div>
 
+</main>
 
-  <script>
 
-    const SETTINGS_KEY =
-      "psmart-settings";
+<div class="status" id="status">
+  ✓ Setting saved
+</div>
 
 
-    /* =========================
-       DEFAULT SETTINGS
-    ========================== */
+<script>
 
-    const defaultSettings = {
+  /* =========================
+     SUPABASE
+  ========================= */
 
-      orderNotifications: true,
+  const SUPABASE_URL =
+    "https://nctscffhnztscczjxhat.supabase.co";
 
-      paymentNotifications: true,
+  const SUPABASE_ANON_KEY =
+    "YOUR_EXISTING_SUPABASE_ANON_KEY";
 
-      offerNotifications: true,
 
-      wishlistNotifications: true,
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
 
-      rewardNotifications: true,
 
-      generalNotifications: true,
+  let currentUser = null;
 
-      recommendations: true,
 
-      priceDrop: true,
+  /* =========================
+     DEFAULT VALUES
+  ========================= */
 
-      stockAlerts: true,
+  const defaultSettings = {
 
-      reviewReminders: true,
+    order_notifications: true,
+    payment_notifications: true,
+    offer_notifications: true,
+    wishlist_notifications: true,
+    reward_notifications: true,
+    general_notifications: true,
 
-      shoppingActivity: true
+    personalized_recommendations: true,
 
-    };
+    price_drop_alerts: true,
+    stock_alerts: true,
+    review_reminders: true,
 
+    shopping_activity: true
 
-    /* =========================
-       LOAD SETTINGS
-    ========================== */
+  };
 
-    function getSettings() {
 
-      const saved =
-        localStorage.getItem(
-          SETTINGS_KEY
-        );
+  /* =========================
+     GET USER
+  ========================= */
 
+  async function getCurrentUser() {
 
-      if (!saved) {
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.getUser();
 
-        localStorage.setItem(
-          SETTINGS_KEY,
-          JSON.stringify(defaultSettings)
-        );
 
-        return {
-          ...defaultSettings
-        };
-      }
+    if (error || !data.user) {
 
-
-      try {
-
-        return {
-          ...defaultSettings,
-          ...JSON.parse(saved)
-        };
-
-      } catch (error) {
-
-        return {
-          ...defaultSettings
-        };
-
-      }
-
-    }
-
-
-    /* =========================
-       APPLY SETTINGS
-    ========================== */
-
-    function loadSettings() {
-
-      const settings =
-        getSettings();
-
-
-      Object.keys(settings)
-        .forEach(key => {
-
-          const element =
-            document.getElementById(key);
-
-
-          if (
-            element &&
-            element.type === "checkbox"
-          ) {
-
-            element.checked =
-              settings[key];
-
-          }
-
-        });
-
-    }
-
-
-    /* =========================
-       SAVE SETTING
-    ========================== */
-
-    function saveSetting(
-      key,
-      value
-    ) {
-
-      const settings =
-        getSettings();
-
-
-      settings[key] =
-        value;
-
-
-      localStorage.setItem(
-        SETTINGS_KEY,
-        JSON.stringify(settings)
-      );
-
-
-      showStatus(
-        "✓ Setting saved"
-      );
-
-    }
-
-
-    /* =========================
-       STATUS MESSAGE
-    ========================== */
-
-    function showStatus(message) {
-
-      const status =
-        document.getElementById(
-          "status"
-        );
-
-
-      status.textContent =
-        message;
-
-
-      status.style.display =
-        "block";
-
-
-      setTimeout(() => {
-
-        status.style.display =
-          "none";
-
-      }, 1800);
-
-    }
-
-
-    /* =========================
-       CLEAR LOCAL DATA
-    ========================== */
-
-    function clearLocalData() {
-
-      const confirmClear =
-        confirm(
-          "Clear locally saved PS Mart data?"
-        );
-
-
-      if (!confirmClear)
-        return;
-
-
-      localStorage.removeItem(
-        "psmart-cart"
-      );
-
-      localStorage.removeItem(
-        "psmart-wishlist"
-      );
-
-      localStorage.removeItem(
-        "psmart-address"
-      );
-
-      localStorage.removeItem(
-        "psmart-addresses"
-      );
-
-      localStorage.removeItem(
-        "psmart-settings"
-      );
-
-      showStatus(
-        "✓ Local data cleared"
-      );
-
-      setTimeout(() => {
-        loadSettings();
-      }, 500);
-
-    }
-
-
-    /* =========================
-       LOGOUT
-    ========================== */
-
-    async function logoutUser() {
-
-      const confirmLogout =
-        confirm(
-          "Are you sure you want to logout?"
-        );
-
-
-      if (!confirmLogout)
-        return;
-
-
-      /*
-       * PS Mart currently uses
-       * Supabase authentication.
-       *
-       * If Supabase session exists,
-       * sign out from it.
-       */
-
-      try {
-
-        if (
-          window.supabase &&
-          window.supabase.createClient
-        ) {
-
-          const SUPABASE_URL =
-            "https://nctscffhnztscczjxhat.supabase.co";
-
-          /*
-           * IMPORTANT:
-           * Login/session is handled by
-           * the existing PS Mart pages.
-           *
-           * Clear local session-related
-           * data and return to login.
-           */
-
-        }
-
-      } catch (error) {
-
-        console.log(error);
-
-      }
-
+      alert("Please login first.");
 
       window.location.href =
         "login.html";
 
+      return false;
     }
 
 
-    /* =========================
-       START
-    ========================== */
+    currentUser =
+      data.user;
 
-    loadSettings();
+    return true;
+  }
 
-  </script>
+
+  /* =========================
+     LOAD SETTINGS
+  ========================= */
+
+  async function loadSettings() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("user_settings")
+        .select("*")
+        .eq(
+          "user_id",
+          currentUser.id
+        )
+        .maybeSingle();
+
+
+    if (error) {
+
+      console.error(
+        "Settings load error:",
+        error
+      );
+
+      alert(
+        "Unable to load settings."
+      );
+
+      return;
+
+    }
+
+
+    /*
+     * First login:
+     * Create default settings.
+     */
+
+    if (!data) {
+
+      const newSettings = {
+
+        user_id:
+          currentUser.id,
+
+        ...defaultSettings
+
+      };
+
+
+      const {
+        error: insertError
+      } =
+        await supabaseClient
+          .from("user_settings")
+          .insert(newSettings);
+
+
+      if (insertError) {
+
+        console.error(
+          "Settings insert error:",
+          insertError
+        );
+
+        alert(
+          "Unable to create your settings."
+        );
+
+        return;
+
+      }
+
+
+      applySettings(
+        defaultSettings
+      );
+
+    } else {
+
+      applySettings(
+        {
+          ...defaultSettings,
+          ...data
+        }
+      );
+
+    }
+
+
+    document.getElementById(
+      "loading"
+    ).style.display =
+      "none";
+
+
+    document.getElementById(
+      "settingsArea"
+    ).style.display =
+      "block";
+  }
+
+
+  /* =========================
+     APPLY SETTINGS
+  ========================= */
+
+  function applySettings(settings) {
+
+    Object.keys(
+      defaultSettings
+    ).forEach(key => {
+
+      const element =
+        document.getElementById(key);
+
+
+      if (element) {
+
+        element.checked =
+          Boolean(settings[key]);
+
+      }
+
+    });
+
+  }
+
+
+  /* =========================
+     SAVE SETTING
+  ========================= */
+
+  async function saveSetting(
+    key,
+    value
+  ) {
+
+    if (!currentUser)
+      return;
+
+
+    const updateData = {
+
+      [key]: value,
+
+      updated_at:
+        new Date().toISOString()
+
+    };
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("user_settings")
+        .update(updateData)
+        .eq(
+          "user_id",
+          currentUser.id
+        );
+
+
+    if (error) {
+
+      console.error(
+        "Save setting error:",
+        error
+      );
+
+      showStatus(
+        "❌ Could not save"
+      );
+
+      return;
+    }
+
+
+    showStatus(
+      "✓ Setting saved"
+    );
+
+  }
+
+
+  /* =========================
+     STATUS
+  ========================= */
+
+  function showStatus(message) {
+
+    const status =
+      document.getElementById(
+        "status"
+      );
+
+
+    status.textContent =
+      message;
+
+
+    status.style.display =
+      "block";
+
+
+    setTimeout(() => {
+
+      status.style.display =
+        "none";
+
+    }, 1800);
+
+  }
+
+
+  /* =========================
+     CLEAR LOCAL DATA
+  ========================= */
+
+  function clearLocalData() {
+
+    const confirmClear =
+      confirm(
+        "Clear locally saved PS Mart data?"
+      );
+
+
+    if (!confirmClear)
+      return;
+
+
+    localStorage.removeItem(
+      "psmart-cart"
+    );
+
+    localStorage.removeItem(
+      "psmart-wishlist"
+    );
+
+    localStorage.removeItem(
+      "psmart-address"
+    );
+
+    localStorage.removeItem(
+      "psmart-addresses"
+    );
+
+    localStorage.removeItem(
+      "psmart-notifications"
+    );
+
+    showStatus(
+      "✓ Local data cleared"
+    );
+
+  }
+
+
+  /* =========================
+     LOGOUT
+  ========================= */
+
+  async function logoutUser() {
+
+    const confirmLogout =
+      confirm(
+        "Are you sure you want to logout?"
+      );
+
+
+    if (!confirmLogout)
+      return;
+
+
+    const {
+      error
+    } =
+      await supabaseClient.auth.signOut();
+
+
+    if (error) {
+
+      console.error(
+        "Logout error:",
+        error
+      );
+
+      alert(
+        "Logout failed."
+      );
+
+      return;
+    }
+
+
+    window.location.href =
+      "login.html";
+
+  }
+
+
+  /* =========================
+     START
+  ========================= */
+
+  async function init() {
+
+    const loggedIn =
+      await getCurrentUser();
+
+
+    if (!loggedIn)
+      return;
+
+
+    await loadSettings();
+
+  }
+
+
+  init();
+
+</script>
 
 </body>
 </html>
+```
