@@ -648,7 +648,25 @@ languageButtons.forEach(button => {
 </script>
 </script>
 
+<script>
+document.querySelectorAll(".language-item").forEach(function(button) {
 
+  button.addEventListener("click", function() {
+
+    const language = this.getAttribute("data-language");
+
+    localStorage.setItem("psmart-language", language);
+
+    alert(language + " selected");
+
+    setTimeout(function() {
+      window.location.href = "index.html";
+    }, 500);
+
+  });
+
+});
+</script>
 </body>
 
   </html>
