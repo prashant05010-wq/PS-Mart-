@@ -1020,55 +1020,59 @@ const PS_TRANSLATIONS = {
    TRANSLATE CURRENT PAGE
 ===================================================== */
 
-function translatePage(){
+/* =====================================================
+   PS MART - TRANSLATION ENGINE
+===================================================== */
 
-  const language =
-    localStorage.getItem("psmart-language");
+function translatePage() {
 
-  /* English = original website language */
-  if(!language || language === "English"){
+  const language = localStorage.getItem("psmart-language");
+
+  // English = original
+  if (!language || language === "English") {
     return;
   }
 
-  const translations =
-    PS_TRANSLATIONS[language];
+  const translations = PS_TRANSLATIONS[language];
 
-  if(!translations){
+  if (!translations) {
+    console.log("Translation not found:", language);
     return;
   }
 
+  /* -----------------------------
+     TEXT TRANSLATION
+  ----------------------------- */
 
-  /* Translate normal text */
-  const walker =
-    document.createTreeWalker(
-      document.body,
-      NodeFilter.SHOW_TEXT
-    );
+  const walker = document.createTreeWalker(
+    document.body,
+    NodeFilter.SHOW_TEXT
+  );
 
-  const textNodes = [];
+  const nodes = [];
 
   let node;
 
-  while(node = walker.nextNode()){
-    textNodes.push(node);
+  while ((node = walker.nextNode())) {
+    nodes.push(node);
   }
 
+  nodes.forEach(function(textNode) {
 
-  textNodes.forEach(textNode => {
+    const originalText = textNode.nodeValue;
 
-    const original =
-      textNode.nodeValue.trim();
-
-    if(!original){
+    if (!originalText || !originalText.trim()) {
       return;
     }
 
-    if(translations[original]){
+    const cleanText = originalText.trim();
+
+    if (translations[cleanText]) {
 
       textNode.nodeValue =
-        textNode.nodeValue.replace(
-          original,
-          translations[original]
+        originalText.replace(
+          cleanText,
+          translations[cleanText]
         );
 
     }
@@ -1076,39 +1080,79 @@ function translatePage(){
   });
 
 
-  /* Translate placeholders */
-  document
-    .querySelectorAll("input[placeholder]")
-    .forEach(input => {
+  /* -----------------------------
+     PLACEHOLDER TRANSLATION
+  ----------------------------- */
 
-      const original =
-        input.getAttribute("placeholder");
+  document.querySelectorAll(
+    "input[placeholder], textarea[placeholder]"
+  ).forEach(function(input) {
 
-      if(translations[original]){
+    const original = input.getAttribute("placeholder");
 
-        input.setAttribute(
-          "placeholder",
-          translations[original]
-        );
+    if (translations[original]) {
 
-      }
+      input.setAttribute(
+        "placeholder",
+        translations[original]
+      );
 
-    });
+    }
+
+  });
 
 
-  /* Set HTML language */
+  /* -----------------------------
+     HTML LANGUAGE
+  ----------------------------- */
+
+  const languageCodes = {
+    Hindi: "hi",
+    Bengali: "bn",
+    Marathi: "mr",
+    Telugu: "te",
+    Tamil: "ta",
+    Gujarati: "gu",
+    Kannada: "kn",
+    Malayalam: "ml",
+    Punjabi: "pa",
+    Urdu: "ur",
+    Odia: "or",
+    Assamese: "as",
+    French: "fr",
+    German: "de",
+    Spanish: "es",
+    Italian: "it",
+    Japanese: "ja",
+    Chinese: "zh",
+    Korean: "ko"
+  };
+
   document.documentElement.lang =
-    language;
+    languageCodes[language] || "en";
 
 }
 
 
 /* =====================================================
-   START TRANSLATION
+   RUN AFTER PAGE LOAD
 ===================================================== */
 
 document.addEventListener(
   "DOMContentLoaded",
-  translatePage
+  function() {
+
+    // First translation
+    translatePage();
+
+    // App.js ke dynamic content ke liye
+    setTimeout(function() {
+      translatePage();
+    }, 500);
+
+    setTimeout(function() {
+      translatePage();
+    }, 1500);
+
+  }
 );
-```
