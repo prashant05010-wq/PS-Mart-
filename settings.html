@@ -1,996 +1,542 @@
-html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Settings | PS Mart</title>
+<meta charset="utf-8">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+<title>Login | PS Mart</title>
 
-    body {
-      background: #f8f3eb;
-      color: #3b2414;
-    }
+<link rel="stylesheet" href="style.css">
 
-    .header {
-      background: linear-gradient(135deg, #3b1f0f, #6b3d1e);
-      color: white;
-      padding: 18px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.18);
-    }
 
-    .header h1 {
-      font-size: 22px;
-    }
+<style>
 
-    .back {
-      color: white;
-      text-decoration: none;
-      font-size: 14px;
-    }
+.loginwrap{
+  min-height:75vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:30px 15px;
+}
 
-    .container {
-      max-width: 850px;
-      margin: 20px auto;
-      padding: 0 15px;
-    }
+.loginbox{
+  width:100%;
+  max-width:420px;
+  background:#fffaf0;
+  padding:30px;
+  border-radius:18px;
+  box-shadow:0 10px 35px rgba(0,0,0,.12);
+  text-align:center;
+  box-sizing:border-box;
+}
 
-    .section {
-      background: #fff;
-      border-radius: 15px;
-      margin-bottom: 15px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-      overflow: hidden;
-    }
+.loginbox h1{
+  margin-bottom:8px;
+}
 
-    .section-title {
-      padding: 16px 18px;
-      border-bottom: 1px solid #eee;
-      font-size: 18px;
-      font-weight: 700;
-    }
+.loginbox p{
+  color:#666;
+}
 
-    .setting {
-      padding: 16px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-      border-bottom: 1px solid #f0f0f0;
-    }
+.loginbox input{
+  width:100%;
+  box-sizing:border-box;
+  padding:14px;
+  margin:10px 0;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:16px;
+}
 
-    .setting:last-child {
-      border-bottom: none;
-    }
+.goldbtn{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border:0;
+  border-radius:10px;
+  background:#c99a3d;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    .setting-info {
-      flex: 1;
-    }
+.goldbtn:hover{
+  opacity:.9;
+}
 
-    .setting-info h3 {
-      font-size: 15px;
-      margin-bottom: 5px;
-    }
+#message{
+  margin-top:15px;
+  font-weight:bold;
+}
 
-    .setting-info p {
-      font-size: 13px;
-      color: #777;
-      line-height: 1.4;
-    }
+.hidden{
+  display:none;
+}
 
-    .arrow {
-      font-size: 20px;
-      color: #999;
-    }
+</style>
 
-    .switch {
-      position: relative;
-      width: 48px;
-      height: 26px;
-      flex-shrink: 0;
-    }
-
-    .switch input {
-      display: none;
-    }
-
-    .slider {
-      position: absolute;
-      inset: 0;
-      background: #ccc;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: 0.25s;
-    }
-
-    .slider:before {
-      content: "";
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      left: 3px;
-      top: 3px;
-      background: white;
-      border-radius: 50%;
-      transition: 0.25s;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    }
-
-    .switch input:checked + .slider {
-      background: #d8a84e;
-    }
-
-    .switch input:checked + .slider:before {
-      transform: translateX(22px);
-    }
-
-    .danger {
-      color: #c62828;
-    }
-
-    .danger-section {
-      margin-bottom: 30px;
-    }
-
-    .danger-button {
-      width: 100%;
-      padding: 14px;
-      background: #fff;
-      border: none;
-      color: #c62828;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: left;
-    }
-
-    .status {
-      position: fixed;
-      left: 50%;
-      bottom: 25px;
-      transform: translateX(-50%);
-      background: #3b1f0f;
-      color: white;
-      padding: 12px 18px;
-      border-radius: 10px;
-      display: none;
-      z-index: 999;
-      font-size: 14px;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 30px;
-      color: #777;
-    }
-
-    @media (max-width: 600px) {
-      .header h1 {
-        font-size: 19px;
-      }
-
-      .section-title {
-        font-size: 17px;
-      }
-
-      .setting {
-        padding: 15px;
-      }
-    }
-  </style>
 </head>
+
 
 <body>
 
-<header class="header">
-  <h1>⚙️ Settings</h1>
 
-  <a href="profile.html" class="back">
-    ← Profile
+<header class="header">
+
+  <a
+    class="logo"
+    href="index.html"
+  >
+    🛍️ <b>PS</b> Mart
   </a>
+
 </header>
 
 
-<main class="container">
 
-  <div id="loading" class="loading">
-    🔄 Loading settings...
-  </div>
+<main class="loginwrap">
 
+  <div class="loginbox">
 
-  <div id="settingsArea" style="display:none;">
+    <h1>
+      Welcome to PS Mart
+    </h1>
 
+    <p id="subtitle">
+      Enter your email to continue
+    </p>
 
-    <!-- NOTIFICATIONS -->
 
-    <div class="section">
+    <!-- EMAIL -->
 
-      <div class="section-title">
-        🔔 Notification Settings
-      </div>
+    <input
+      type="email"
+      id="email"
+      placeholder="Enter your email"
+      autocomplete="email"
+    >
 
 
-      <div class="setting">
+    <!-- SEND OTP -->
 
-        <div class="setting-info">
-          <h3>Order Updates</h3>
-          <p>Order confirmation, shipping and delivery updates.</p>
-        </div>
+    <button
+      class="goldbtn"
+      id="sendOtpBtn"
+      onclick="sendOTP()"
+    >
+      Send OTP
+    </button>
 
-        <label class="switch">
-          <input type="checkbox"
-                 id="order_notifications"
-                 onchange="saveSetting('order_notifications', this.checked)">
-          <span class="slider"></span>
-        </label>
 
-      </div>
+    <!-- OTP -->
 
+    <div
+      id="otpBox"
+      class="hidden"
+    >
 
-      <div class="setting">
-
-        <div class="setting-info">
-          <h3>Payment & Refunds</h3>
-          <p>Payment, refund and transaction updates.</p>
-        </div>
-
-        <label class="switch">
-          <input type="checkbox"
-                 id="payment_notifications"
-                 onchange="saveSetting('payment_notifications', this.checked)">
-          <span class="slider"></span>
-        </label>
-
-      </div>
-
-
-      <div class="setting">
-
-        <div class="setting-info">
-          <h3>Offers & Discounts</h3>
-          <p>Deals, offers and discount notifications.</p>
-        </div>
-
-        <label class="switch">
-          <input type="checkbox"
-                 id="offer_notifications"
-                 onchange="saveSetting('offer_notifications', this.checked)">
-          <span class="slider"></span>
-        </label>
-
-      </div>
-
-
-      <div class="setting">
-
-        <div class="setting-info">
-          <h3>Wishlist Alerts</h3>
-          <p>Wishlist and product price-change alerts.</p>
-        </div>
-
-        <label class="switch">
-          <input type="checkbox"
-                 id="wishlist_notifications"
-                 onchange="saveSetting('wishlist_notifications', this.checked)">
-          <span class="slider"></span>
-        </label>
-
-      </div>
-
-
-      <div class="setting">
-
-        <div class="setting-info">
-          <h3>Coupons & Rewards</h3>
-          <p>Coupons, rewards and special benefits.</p>
-        </div>
-
-        <label class="switch">
-          <input type="checkbox"
-                 id="reward_notifications"
-                 onchange="saveSetting('reward_notifications', this.checked)">
-          <span class="slider"></span>
-        </label>
-
-      </div>
-
-
-      <div class="setting">
-
-        <div class="setting-info">
-          <h3>General Notifications</h3>
-          <p>Important PS Mart announcements and updates.</p>
-        </div>
-
-        <label class="switch">
-          <input type="checkbox"
-                 id="general_notifications"
-                 onchange="saveSetting('general_notifications', this.checked)">
-          <span class="slider"></span>
-        </label>
-
-      </div>
-
-    </div>
-
-
-    <!-- PRIVACY -->
-
-    <div class="section">
-
-      <div class="section-title">
-        🔐 Privacy & Security
-      </div>
-
-
-      <div class="setting">
-
-        <div class="setting-info">
-          <h3>Account Privacy</h3>
-          <p>Manage your account information and privacy.</p>
-        </div>
-
-        <span class="arrow">›</span>
-
-      </div>
-
-
-      <div class="setting">
-
-        <div class="setting-info">
-          <h3>Login Security</h3>
-          <p>Manage your account login and security preferences.</p>
-        </div>
-
-        <span class="arrow">›</span>
-
-      </div>
-
-
-      <div class="setting">
-
-        <div class="setting-info">
-          <h3>Personalized Recommendations</h3>
-          <p>Use shopping activity for personalized recommendations.</p>
-        </div>
-
-        <label class="switch">
-
-          <input
-            type="checkbox"
-            id="personalized_recommendations"
-            onchange="saveSetting(
-              'personalized_recommendations',
-              this.checked
-            )"
-          >
-
-          <span class="slider"></span>
-
-        </label>
-
-      </div>
-
-    </div>
-
-
-    <!-- SHOPPING -->
-
-    <div class="section">
-
-      <div class="section-title">
-        🛒 Shopping Preferences
-      </div>
-
-
-      <div class="setting">
-
-        <div class="setting-info">
-          <h3>Price Drop Alerts</h3>
-          <p>Get notified when saved products become cheaper.</p>
-        </div>
-
-        <label class="switch">
-
-          <input
-            type="checkbox"
-            id="price_drop_alerts"
-            onchange="saveSetting(
-              'price_drop_alerts',
-              this.checked
-            )"
-          >
-
-          <span class="slider"></span>
-
-        </label>
-
-      </div>
-
-
-      <div class="setting">
-
-        <div class="setting-info">
-          <h3>Back-in-Stock Alerts</h3>
-          <p>Get notified when unavailable products are available again.</p>
-        </div>
-
-        <label class="switch">
-
-          <input
-            type="checkbox"
-            id="stock_alerts"
-            onchange="saveSetting(
-              'stock_alerts',
-              this.checked
-            )"
-          >
-
-          <span class="slider"></span>
-
-        </label>
-
-      </div>
-
-
-      <div class="setting">
-
-        <div class="setting-info">
-          <h3>Review Reminders</h3>
-          <p>Get reminders to review purchased products.</p>
-        </div>
-
-        <label class="switch">
-
-          <input
-            type="checkbox"
-            id="review_reminders"
-            onchange="saveSetting(
-              'review_reminders',
-              this.checked
-            )"
-          >
-
-          <span class="slider"></span>
-
-        </label>
-
-      </div>
-
-    </div>
-
-
-    <!-- LANGUAGE -->
-
-    <div class="section">
-
-      <div class="section-title">
-        🌐 Language
-      </div>
-
-      <div
-        class="setting"
-        onclick="window.location.href='language.html'"
-        style="cursor:pointer;"
+      <input
+        type="text"
+        id="otp"
+        placeholder="Enter 8-digit OTP"
+        inputmode="numeric"
+        maxlength="8"
+        autocomplete="one-time-code"
       >
 
-        <div class="setting-info">
-          <h3>Select Language</h3>
-          <p>Change the language used on PS Mart.</p>
-        </div>
-
-        <span class="arrow">›</span>
-
-      </div>
-
-    </div>
-
-
-    <!-- DATA -->
-
-    <div class="section">
-
-      <div class="section-title">
-        🗃️ Data & Storage
-      </div>
-
-
-      <div class="setting">
-
-        <div class="setting-info">
-          <h3>Save Shopping Activity</h3>
-          <p>Keep cart, wishlist and shopping preferences saved.</p>
-        </div>
-
-        <label class="switch">
-
-          <input
-            type="checkbox"
-            id="shopping_activity"
-            onchange="saveSetting(
-              'shopping_activity',
-              this.checked
-            )"
-          >
-
-          <span class="slider"></span>
-
-        </label>
-
-      </div>
-
-
-      <div
-        class="setting"
-        onclick="clearLocalData()"
-        style="cursor:pointer;"
-      >
-
-        <div class="setting-info">
-
-          <h3 class="danger">
-            Clear Local Data
-          </h3>
-
-          <p>
-            Clear locally saved shopping preferences and temporary data.
-          </p>
-
-        </div>
-
-        <span class="arrow">›</span>
-
-      </div>
-
-    </div>
-
-
-    <!-- ACCOUNT -->
-
-    <div class="section danger-section">
-
-      <div class="section-title">
-        ⚠️ Account
-      </div>
 
       <button
-        class="danger-button"
-        onclick="logoutUser()"
+        class="goldbtn"
+        onclick="verifyOTP()"
       >
-        🚪 Logout
+        Verify OTP & Login
       </button>
 
     </div>
+
+
+    <div id="message"></div>
 
   </div>
 
 </main>
 
 
-<div class="status" id="status">
-  ✓ Setting saved
-</div>
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<!-- EXISTING FILES -->
+
+<script src="data.js"></script>
+
+<script src="app.js"></script>
+
 
 
 <script>
 
-  /* =========================
-     SUPABASE
-  ========================= */
+/* =====================================================
+   PS MART LOGIN SUPABASE CLIENT
+===================================================== */
 
-  const SUPABASE_URL =
-    "https://nctscffhnztscczjxhat.supabase.co";
+const psLoginClient =
+  window.supabase.createClient(
 
-  const SUPABASE_ANON_KEY =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+    "https://nctscffhnztscczjxhat.supabase.co",
+
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw"
+
+  );
 
 
-  const supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
+/* =====================================================
+   SEND OTP
+===================================================== */
+
+async function sendOTP(){
+
+  const email =
+    document
+      .getElementById("email")
+      .value
+      .trim();
+
+
+  const message =
+    document.getElementById(
+      "message"
     );
 
 
-  let currentUser = null;
+  const sendButton =
+    document.getElementById(
+      "sendOtpBtn"
+    );
 
 
-  /* =========================
-     DEFAULT VALUES
-  ========================= */
+  if(!email){
 
-  const defaultSettings = {
+    message.innerText =
+      "Please enter your email.";
 
-    order_notifications: true,
-    payment_notifications: true,
-    offer_notifications: true,
-    wishlist_notifications: true,
-    reward_notifications: true,
-    general_notifications: true,
+    return;
 
-    personalized_recommendations: true,
-
-    price_drop_alerts: true,
-    stock_alerts: true,
-    review_reminders: true,
-
-    shopping_activity: true
-
-  };
-
-
-  /* =========================
-     GET USER
-  ========================= */
-
-  async function getCurrentUser() {
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth.getUser();
-
-
-    if (error || !data.user) {
-
-      alert("Please login first.");
-
-      window.location.href =
-        "login.html";
-
-      return false;
-    }
-
-
-    currentUser =
-      data.user;
-
-    return true;
   }
 
 
-  /* =========================
-     LOAD SETTINGS
-  ========================= */
+  message.innerText =
+    "Sending OTP...";
 
-  async function loadSettings() {
+
+  sendButton.disabled =
+    true;
+
+
+  try{
 
     const {
-      data,
       error
     } =
-      await supabaseClient
-        .from("user_settings")
-        .select("*")
-        .eq(
-          "user_id",
-          currentUser.id
-        )
-        .maybeSingle();
+      await psLoginClient
+        .auth
+        .signInWithOtp({
+
+          email: email,
+
+          options: {
+
+            shouldCreateUser: true
+
+          }
+
+        });
 
 
-    if (error) {
+    if(error){
 
       console.error(
-        "Settings load error:",
+        "OTP ERROR:",
         error
       );
 
-      alert(
-        "Unable to load settings."
-      );
+      message.innerText =
+        error.message;
+
+      sendButton.disabled =
+        false;
 
       return;
 
     }
 
 
-    /*
-     * First login:
-     * Create default settings.
-     */
+    message.innerText =
+      "OTP sent! Check your email.";
 
-    if (!data) {
 
-      const newSettings = {
+    document
+      .getElementById("otpBox")
+      .classList
+      .remove("hidden");
 
-        user_id:
-          currentUser.id,
 
-        ...defaultSettings
+    sendButton.innerText =
+      "Resend OTP";
 
-      };
 
+    sendButton.disabled =
+      false;
+
+  }
+
+
+  catch(error){
+
+    console.error(
+      "OTP SEND ERROR:",
+      error
+    );
+
+
+    message.innerText =
+      "Something went wrong. Please try again.";
+
+
+    sendButton.disabled =
+      false;
+
+  }
+
+}
+
+
+
+/* =====================================================
+   VERIFY OTP
+===================================================== */
+
+async function verifyOTP(){
+
+  const email =
+    document
+      .getElementById("email")
+      .value
+      .trim();
+
+
+  const otp =
+    document
+      .getElementById("otp")
+      .value
+      .trim();
+
+
+  const message =
+    document.getElementById(
+      "message"
+    );
+
+
+  if(!email){
+
+    message.innerText =
+      "Please enter your email.";
+
+    return;
+
+  }
+
+
+  if(!otp || otp.length !== 8){
+
+    message.innerText =
+      "Please enter the 8-digit OTP.";
+
+    return;
+
+  }
+
+
+  message.innerText =
+    "Verifying OTP...";
+
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+      await psLoginClient
+        .auth
+        .verifyOtp({
+
+          email: email,
+
+          token: otp,
+
+          type: "email"
+
+        });
+
+
+    if(error){
+
+      console.error(
+        "VERIFY OTP ERROR:",
+        error
+      );
+
+      message.innerText =
+        error.message;
+
+      return;
+
+    }
+
+
+    if(data.session){
+
+      message.innerText =
+        "Login successful!";
+
+
+      /* =========================
+         GET LOGGED-IN USER
+      ========================= */
+
+      const user =
+        data.session.user;
+
+
+      /* =========================
+         GET USER ROLE
+      ========================= */
 
       const {
-        error: insertError
+        data: profile,
+        error: profileError
       } =
-        await supabaseClient
-          .from("user_settings")
-          .insert(newSettings);
+        await psLoginClient
+
+          .from("profiles")
+
+          .select("role")
+
+          .eq("id", user.id)
+
+          .single();
 
 
-      if (insertError) {
+      /* =========================
+         PROFILE ERROR
+      ========================= */
+
+      if(profileError){
 
         console.error(
-          "Settings insert error:",
-          insertError
+          "PROFILE ERROR:",
+          profileError
         );
 
-        alert(
-          "Unable to create your settings."
-        );
+
+        setTimeout(() => {
+
+          window.location.href =
+            "index.html";
+
+        },700);
+
 
         return;
 
       }
 
 
-      applySettings(
-        defaultSettings
-      );
+      const role =
+        profile.role;
 
-    } else {
 
-      applySettings(
-        {
-          ...defaultSettings,
-          ...data
+      /* =========================
+         ROLE BASED REDIRECT
+      ========================= */
+
+      setTimeout(() => {
+
+
+        /* ADMIN */
+
+        if(role === "admin"){
+
+          window.location.href =
+            "index.html";
+
         }
-      );
+
+
+        /* SELLER */
+
+        else if(role === "seller"){
+
+          window.location.href =
+            "seller-dashboard.html";
+
+        }
+
+
+        /* CUSTOMER */
+
+        else{
+
+          window.location.href =
+            "index.html";
+
+        }
+
+
+      },700);
 
     }
 
 
-    document.getElementById(
-      "loading"
-    ).style.display =
-      "none";
+    else{
 
+      message.innerText =
+        "OTP verified. Please try again.";
 
-    document.getElementById(
-      "settingsArea"
-    ).style.display =
-      "block";
-  }
-
-
-  /* =========================
-     APPLY SETTINGS
-  ========================= */
-
-  function applySettings(settings) {
-
-    Object.keys(
-      defaultSettings
-    ).forEach(key => {
-
-      const element =
-        document.getElementById(key);
-
-
-      if (element) {
-
-        element.checked =
-          Boolean(settings[key]);
-
-      }
-
-    });
+    }
 
   }
 
 
-  /* =========================
-     SAVE SETTING
-  ========================= */
+  catch(error){
 
-  async function saveSetting(
-    key,
-    value
-  ) {
-
-    if (!currentUser)
-      return;
-
-
-    const updateData = {
-
-      [key]: value,
-
-      updated_at:
-        new Date().toISOString()
-
-    };
-
-
-    const {
+    console.error(
+      "VERIFY ERROR:",
       error
-    } =
-      await supabaseClient
-        .from("user_settings")
-        .update(updateData)
-        .eq(
-          "user_id",
-          currentUser.id
-        );
-
-
-    if (error) {
-
-      console.error(
-        "Save setting error:",
-        error
-      );
-
-      showStatus(
-        "❌ Could not save"
-      );
-
-      return;
-    }
-
-
-    showStatus(
-      "✓ Setting saved"
     );
+
+
+    message.innerText =
+      "Something went wrong. Please try again.";
 
   }
 
-
-  /* =========================
-     STATUS
-  ========================= */
-
-  function showStatus(message) {
-
-    const status =
-      document.getElementById(
-        "status"
-      );
-
-
-    status.textContent =
-      message;
-
-
-    status.style.display =
-      "block";
-
-
-    setTimeout(() => {
-
-      status.style.display =
-        "none";
-
-    }, 1800);
-
-  }
-
-
-  /* =========================
-     CLEAR LOCAL DATA
-  ========================= */
-
-  function clearLocalData() {
-
-    const confirmClear =
-      confirm(
-        "Clear locally saved PS Mart data?"
-      );
-
-
-    if (!confirmClear)
-      return;
-
-
-    localStorage.removeItem(
-      "psmart-cart"
-    );
-
-    localStorage.removeItem(
-      "psmart-wishlist"
-    );
-
-    localStorage.removeItem(
-      "psmart-address"
-    );
-
-    localStorage.removeItem(
-      "psmart-addresses"
-    );
-
-    localStorage.removeItem(
-      "psmart-notifications"
-    );
-
-    showStatus(
-      "✓ Local data cleared"
-    );
-
-  }
-
-
-  /* =========================
-     LOGOUT
-  ========================= */
-
-  async function logoutUser() {
-
-    const confirmLogout =
-      confirm(
-        "Are you sure you want to logout?"
-      );
-
-
-    if (!confirmLogout)
-      return;
-
-
-    const {
-      error
-    } =
-      await supabaseClient.auth.signOut();
-
-
-    if (error) {
-
-      console.error(
-        "Logout error:",
-        error
-      );
-
-      alert(
-        "Logout failed."
-      );
-
-      return;
-    }
-
-
-    window.location.href =
-      "login.html";
-
-  }
-
-
-  /* =========================
-     START
-  ========================= */
-
-  async function init() {
-
-    const loggedIn =
-      await getCurrentUser();
-
-
-    if (!loggedIn)
-      return;
-
-
-    await loadSettings();
-
-  }
-
-
-  init();
+}
 
 </script>
 
+
 </body>
+
 </html>
-```
