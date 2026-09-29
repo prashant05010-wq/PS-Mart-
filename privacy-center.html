@@ -16,7 +16,7 @@
 }
 
 body{
-  font-family:Arial, sans-serif;
+  font-family:Arial,sans-serif;
   background:#f7f1e7;
   color:#3b2414;
   line-height:1.5;
@@ -125,12 +125,6 @@ header{
   font-size:13px;
   color:#765d48;
   margin-top:3px;
-}
-
-.value{
-  font-size:13px;
-  color:#6c5039;
-  word-break:break-word;
 }
 
 button,
@@ -300,13 +294,8 @@ footer{
   color:#4b3827;
 }
 
-.loading{
-  text-align:center;
-  padding:30px;
-  color:#765d48;
-}
-
 @media(max-width:600px){
+
   header{
     padding:13px 12px;
   }
@@ -352,383 +341,520 @@ footer{
 
 <header>
 
-  <a class="logo" href="index.html">
-    🛍️ <span>PS</span> Mart
-  </a>
+<a class="logo" href="index.html">
+  🛍️ <span>PS</span> Mart
+</a>
 
-  <a class="back-btn" href="profile.html">
-    ← Profile
-  </a>
+<a class="back-btn" href="profile.html">
+  ← Profile
+</a>
 
 </header>
 
 <div class="container">
 
-  <h1 class="page-title">🔒 Privacy Center</h1>
+<h1 class="page-title">🔒 Privacy Center</h1>
 
-  <p class="subtitle">
-    Manage your privacy, personal information and shopping data.
-  </p>
+<p class="subtitle">
+Manage your privacy, personal information and shopping data.
+</p>
 
-  <div id="statusBox" class="status"></div>
+<div id="statusBox" class="status"></div>
 
-  <div class="notice">
-    <strong>🔐 Your privacy matters</strong><br>
-    This page lets you review and manage privacy-related settings used by PS Mart.
-    Some account-level actions require secure server-side processing.
-  </div>
+<div class="notice">
+<strong>🔐 Your privacy matters</strong><br>
+Your privacy preferences are securely stored with your PS Mart account.
+</div>
 
-  <!-- ACCOUNT -->
-  <div class="card">
 
-    <div class="card-header">
-      <h2>👤 Your Account</h2>
-      <p>Information associated with your PS Mart account.</p>
-    </div>
+<!-- ACCOUNT -->
 
-    <div class="user-box">
+<div class="card">
 
-      <div class="user-email" id="userEmail">
-        Loading...
-      </div>
+<div class="card-header">
+<h2>👤 Your Account</h2>
+<p>Information associated with your PS Mart account.</p>
+</div>
 
-      <div class="small">
-        Logged-in account
-      </div>
+<div class="user-box">
 
-    </div>
+<div class="user-email" id="userEmail">
+Loading...
+</div>
 
-  </div>
+<div class="small">
+Logged-in account
+</div>
 
+</div>
 
-  <!-- PERSONAL INFORMATION -->
-  <div class="card">
+</div>
 
-    <div class="card-header">
-      <h2>📋 Personal Information</h2>
-      <p>Review the information currently associated with your account.</p>
-    </div>
 
-    <div class="row">
+<!-- PERSONAL INFORMATION -->
 
-      <div class="row-info">
-        <div class="row-title">Profile Information</div>
-        <div class="row-desc">
-          Manage your name and phone number.
-        </div>
-      </div>
+<div class="card">
 
-      <a href="profile.html" class="action-btn gold-btn">
-        View
-      </a>
+<div class="card-header">
+<h2>📋 Personal Information</h2>
+<p>Review information associated with your account.</p>
+</div>
 
-    </div>
+<div class="row">
 
-  </div>
+<div class="row-info">
 
+<div class="row-title">
+Profile Information
+</div>
 
-  <!-- SHOPPING DATA -->
-  <div class="card">
+<div class="row-desc">
+Manage your name and phone number.
+</div>
 
-    <div class="card-header">
-      <h2>🛍️ Shopping Data</h2>
-      <p>Manage shopping information stored on this device.</p>
-    </div>
+</div>
 
-    <div class="row">
+<a href="profile.html" class="action-btn gold-btn">
+View
+</a>
 
-      <div class="row-info">
-        <div class="row-title">Shopping Activity</div>
-        <div class="row-desc">
-          Allow PS Mart to remember shopping-related preferences on this device.
-        </div>
-      </div>
+</div>
 
-      <label class="toggle">
-        <input type="checkbox" id="shoppingActivity">
-        <span class="slider"></span>
-      </label>
+</div>
 
-    </div>
 
-    <div class="row">
+<!-- SHOPPING DATA -->
 
-      <div class="row-info">
-        <div class="row-title">Personalized Recommendations</div>
-        <div class="row-desc">
-          Use your shopping preferences to improve product recommendations.
-        </div>
-      </div>
+<div class="card">
 
-      <label class="toggle">
-        <input type="checkbox" id="personalizedRecommendations">
-        <span class="slider"></span>
-      </label>
+<div class="card-header">
 
-    </div>
+<h2>🛍️ Shopping Data</h2>
 
-  </div>
+<p>
+These preferences are saved to your PS Mart account.
+</p>
 
+</div>
 
-  <!-- LOCAL DATA -->
-  <div class="card">
 
-    <div class="card-header">
-      <h2>💾 Data & Storage</h2>
-      <p>Manage shopping data saved locally in your browser.</p>
-    </div>
+<div class="row">
 
-    <div class="row">
+<div class="row-info">
 
-      <div class="row-info">
-        <div class="row-title">Clear Local Shopping Data</div>
-        <div class="row-desc">
-          Clears cart, wishlist, saved addresses and local notifications from this browser.
-        </div>
-      </div>
+<div class="row-title">
+Shopping Activity
+</div>
 
-      <button class="danger-btn" onclick="openClearModal()">
-        Clear
-      </button>
+<div class="row-desc">
+Allow PS Mart to remember shopping-related preferences.
+</div>
 
-    </div>
+</div>
 
-  </div>
+<label class="toggle">
 
+<input type="checkbox" id="shoppingActivity">
 
-  <!-- NOTIFICATIONS -->
-  <div class="card">
+<span class="slider"></span>
 
-    <div class="card-header">
-      <h2>🔔 Notifications</h2>
-      <p>Control notification preferences.</p>
-    </div>
+</label>
 
-    <div class="row">
+</div>
 
-      <div class="row-info">
-        <div class="row-title">Order Notifications</div>
-        <div class="row-desc">
-          Updates related to your orders.
-        </div>
-      </div>
 
-      <label class="toggle">
-        <input type="checkbox" id="orderNotifications">
-        <span class="slider"></span>
-      </label>
+<div class="row">
 
-    </div>
+<div class="row-info">
 
-    <div class="row">
+<div class="row-title">
+Personalized Recommendations
+</div>
 
-      <div class="row-info">
-        <div class="row-title">Offers & Promotions</div>
-        <div class="row-desc">
-          Receive promotional information when enabled.
-        </div>
-      </div>
+<div class="row-desc">
+Use shopping preferences to improve recommendations.
+</div>
 
-      <label class="toggle">
-        <input type="checkbox" id="offerNotifications">
-        <span class="slider"></span>
-      </label>
+</div>
 
-    </div>
+<label class="toggle">
 
-  </div>
+<input type="checkbox" id="personalizedRecommendations">
 
+<span class="slider"></span>
 
-  <!-- ADDRESSES -->
-  <div class="card">
+</label>
 
-    <div class="card-header">
-      <h2>📍 Saved Addresses</h2>
-      <p>Manage addresses saved for shopping and delivery.</p>
-    </div>
+</div>
 
-    <div class="row">
+</div>
 
-      <div class="row-info">
-        <div class="row-title">Saved Addresses</div>
-        <div class="row-desc">
-          View or manage your saved delivery addresses.
-        </div>
-      </div>
 
-      <a href="saved-address.html" class="action-btn gold-btn">
-        Manage
-      </a>
+<!-- LOCAL DATA -->
 
-    </div>
+<div class="card">
 
-  </div>
+<div class="card-header">
 
+<h2>💾 Data & Storage</h2>
 
-  <!-- ORDERS -->
-  <div class="card">
+<p>
+Manage shopping data saved in this browser.
+</p>
 
-    <div class="card-header">
-      <h2>📦 Orders & Purchases</h2>
-      <p>View your order-related information.</p>
-    </div>
+</div>
 
-    <div class="row">
+<div class="row">
 
-      <div class="row-info">
-        <div class="row-title">My Orders</div>
-        <div class="row-desc">
-          View your previous and current orders.
-        </div>
-      </div>
+<div class="row-info">
 
-      <a href="orders.html" class="action-btn gold-btn">
-        View Orders
-      </a>
+<div class="row-title">
+Clear Local Shopping Data
+</div>
 
-    </div>
+<div class="row-desc">
+Clears cart, wishlist, saved addresses and local notifications.
+</div>
 
-  </div>
+</div>
 
+<button class="danger-btn" onclick="openClearModal()">
+Clear
+</button>
 
-  <!-- SECURITY -->
-  <div class="card">
+</div>
 
-    <div class="card-header">
-      <h2>🔐 Security</h2>
-      <p>Manage account access and security settings.</p>
-    </div>
+</div>
 
-    <div class="row">
 
-      <div class="row-info">
-        <div class="row-title">Login Security</div>
-        <div class="row-desc">
-          Manage login-related settings from your account settings.
-        </div>
-      </div>
+<!-- NOTIFICATIONS -->
 
-      <a href="settings.html" class="action-btn gold-btn">
-        Settings
-      </a>
+<div class="card">
 
-    </div>
+<div class="card-header">
 
-  </div>
+<h2>🔔 Notifications</h2>
 
+<p>
+Notification preferences are saved to your PS Mart account.
+</p>
 
-  <!-- DATA REQUEST -->
-  <div class="card">
+</div>
 
-    <div class="card-header">
-      <h2>📥 Your Data</h2>
-      <p>Understand and manage your account data.</p>
-    </div>
 
-    <div class="row">
+<div class="row">
 
-      <div class="row-info">
-        <div class="row-title">Request My Data</div>
-        <div class="row-desc">
-          A complete account-data export requires secure server-side processing.
-        </div>
-      </div>
+<div class="row-info">
 
-      <button class="gold-btn" onclick="requestData()">
-        Request
-      </button>
+<div class="row-title">
+Order Notifications
+</div>
 
-    </div>
+<div class="row-desc">
+Receive updates related to your orders.
+</div>
 
-  </div>
+</div>
 
+<label class="toggle">
 
-  <!-- ACCOUNT DELETION -->
-  <div class="card">
+<input type="checkbox" id="orderNotifications">
 
-    <div class="card-header">
-      <h2>🗑️ Delete Account</h2>
-      <p>Permanently deleting an account is an irreversible action.</p>
-    </div>
+<span class="slider"></span>
 
-    <div class="row">
+</label>
 
-      <div class="row-info">
-        <div class="row-title">Delete My PS Mart Account</div>
-        <div class="row-desc">
-          Account deletion requires secure backend processing to safely remove
-          authentication and associated records.
-        </div>
-      </div>
+</div>
 
-      <button class="danger-btn" onclick="requestAccountDeletion()">
-        Delete
-      </button>
 
-    </div>
+<div class="row">
 
-  </div>
+<div class="row-info">
 
+<div class="row-title">
+Offers & Promotions
+</div>
 
-  <!-- PRIVACY INFORMATION -->
-  <div class="card">
+<div class="row-desc">
+Receive promotional information when enabled.
+</div>
 
-    <div class="card-header">
-      <h2>📜 Privacy Information</h2>
-      <p>Information about privacy and data handling.</p>
-    </div>
+</div>
 
-    <div class="row">
+<label class="toggle">
 
-      <div class="row-info">
-        <div class="row-title">Privacy Policy</div>
-        <div class="row-desc">
-          Read PS Mart's privacy information.
-        </div>
-      </div>
+<input type="checkbox" id="offerNotifications">
 
-      <button class="gold-btn" onclick="privacyInfo()">
-        View
-      </button>
+<span class="slider"></span>
 
-    </div>
+</label>
 
-  </div>
+</div>
+
+</div>
+
+
+<!-- ADDRESSES -->
+
+<div class="card">
+
+<div class="card-header">
+
+<h2>📍 Saved Addresses</h2>
+
+<p>
+Manage your saved delivery addresses.
+</p>
+
+</div>
+
+<div class="row">
+
+<div class="row-info">
+
+<div class="row-title">
+Saved Addresses
+</div>
+
+<div class="row-desc">
+View or manage your delivery addresses.
+</div>
+
+</div>
+
+<a href="saved-address.html" class="action-btn gold-btn">
+Manage
+</a>
+
+</div>
+
+</div>
+
+
+<!-- ORDERS -->
+
+<div class="card">
+
+<div class="card-header">
+
+<h2>📦 Orders & Purchases</h2>
+
+<p>
+View your order-related information.
+</p>
+
+</div>
+
+<div class="row">
+
+<div class="row-info">
+
+<div class="row-title">
+My Orders
+</div>
+
+<div class="row-desc">
+View your current and previous orders.
+</div>
+
+</div>
+
+<a href="orders.html" class="action-btn gold-btn">
+View Orders
+</a>
+
+</div>
+
+</div>
+
+
+<!-- SECURITY -->
+
+<div class="card">
+
+<div class="card-header">
+
+<h2>🔐 Security</h2>
+
+<p>
+Manage account access and security.
+</p>
+
+</div>
+
+<div class="row">
+
+<div class="row-info">
+
+<div class="row-title">
+Login Security
+</div>
+
+<div class="row-desc">
+Manage login-related settings.
+</div>
+
+</div>
+
+<a href="settings.html" class="action-btn gold-btn">
+Settings
+</a>
+
+</div>
+
+</div>
+
+
+<!-- DATA REQUEST -->
+
+<div class="card">
+
+<div class="card-header">
+
+<h2>📥 Your Data</h2>
+
+<p>
+Request information related to your PS Mart account.
+</p>
+
+</div>
+
+<div class="row">
+
+<div class="row-info">
+
+<div class="row-title">
+Request My Data
+</div>
+
+<div class="row-desc">
+A complete account export will require secure backend processing.
+</div>
+
+</div>
+
+<button class="gold-btn" onclick="requestData()">
+Request
+</button>
+
+</div>
+
+</div>
+
+
+<!-- ACCOUNT DELETION -->
+
+<div class="card">
+
+<div class="card-header">
+
+<h2>🗑️ Delete Account</h2>
+
+<p>
+Account deletion is an irreversible action.
+</p>
+
+</div>
+
+<div class="row">
+
+<div class="row-info">
+
+<div class="row-title">
+Delete My PS Mart Account
+</div>
+
+<div class="row-desc">
+Secure backend processing is required for permanent account deletion.
+</div>
+
+</div>
+
+<button class="danger-btn" onclick="requestAccountDeletion()">
+Delete
+</button>
+
+</div>
+
+</div>
+
+
+<!-- PRIVACY INFORMATION -->
+
+<div class="card">
+
+<div class="card-header">
+
+<h2>📜 Privacy Information</h2>
+
+<p>
+Information about privacy and data handling.
+</p>
+
+</div>
+
+<div class="row">
+
+<div class="row-info">
+
+<div class="row-title">
+Privacy Policy
+</div>
+
+<div class="row-desc">
+Read PS Mart privacy information.
+</div>
+
+</div>
+
+<button class="gold-btn" onclick="privacyInfo()">
+View
+</button>
+
+</div>
+
+</div>
 
 </div>
 
 
 <footer>
-  © 2026 PS Mart • Privacy Center
+© 2026 PS Mart • Privacy Center
 </footer>
 
 
-<!-- CLEAR DATA MODAL -->
+<!-- CLEAR MODAL -->
 
 <div class="modal" id="clearModal">
 
-  <div class="modal-box">
+<div class="modal-box">
 
-    <h3>Clear Local Data?</h3>
+<h3>
+Clear Local Data?
+</h3>
 
-    <p>
-      This will remove cart, wishlist, saved addresses and local
-      notification data from this browser.
-    </p>
+<p>
+This will remove cart, wishlist, saved addresses and local
+notification data from this browser.
+</p>
 
-    <div class="modal-buttons">
+<div class="modal-buttons">
 
-      <button class="cancel-btn action-btn" onclick="closeClearModal()">
-        Cancel
-      </button>
+<button
+class="cancel-btn action-btn"
+onclick="closeClearModal()">
+Cancel
+</button>
 
-      <button class="danger-btn action-btn" onclick="clearLocalData()">
-        Clear Data
-      </button>
+<button
+class="danger-btn action-btn"
+onclick="clearLocalData()">
+Clear Data
+</button>
 
-    </div>
+</div>
 
-  </div>
+</div>
 
 </div>
 
@@ -740,6 +866,7 @@ const SUPABASE_URL =
 
 const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
 
 const supabaseClient =
 window.supabase.createClient(
@@ -763,8 +890,10 @@ function showStatus(message,type="success"){
   box.className =
     "status " + type;
 
-  setTimeout(()=>{
+  setTimeout(function(){
+
     box.className="status";
+
   },5000);
 
 }
@@ -774,135 +903,282 @@ function showStatus(message,type="success"){
 
 async function loadUser(){
 
-  const {
-    data,
-    error
-  } = await supabaseClient.auth.getUser();
+  const result =
+    await supabaseClient.auth.getUser();
 
-  if(error || !data.user){
+  if(result.error || !result.data.user){
 
     window.location.href="login.html";
+
+    return false;
+  }
+
+  currentUser =
+    result.data.user;
+
+  document.getElementById("userEmail")
+    .textContent =
+    currentUser.email ||
+    "Email not available";
+
+  return true;
+}
+
+
+/* LOAD PRIVACY SETTINGS FROM SUPABASE */
+
+async function loadPrivacyPreferences(){
+
+  const result =
+    await supabaseClient
+      .from("privacy_preferences")
+      .select("*")
+      .eq("user_id",currentUser.id)
+      .maybeSingle();
+
+
+  if(result.error){
+
+    console.error(
+      "Privacy settings load error:",
+      result.error
+    );
+
+    showStatus(
+      "Privacy settings could not be loaded.",
+      "error"
+    );
 
     return;
   }
 
-  currentUser = data.user;
 
-  document.getElementById("userEmail").textContent =
-    currentUser.email || "Email not available";
+  if(!result.data){
+
+    const defaultSettings = {
+
+      user_id:currentUser.id,
+
+      shopping_activity:true,
+
+      personalized_recommendations:true,
+
+      order_notifications:true,
+
+      offer_notifications:true
+
+    };
+
+
+    const insertResult =
+      await supabaseClient
+        .from("privacy_preferences")
+        .insert(defaultSettings)
+        .select()
+        .single();
+
+
+    if(insertResult.error){
+
+      console.error(
+        "Privacy settings create error:",
+        insertResult.error
+      );
+
+      showStatus(
+        "Privacy settings could not be created.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    applyPrivacySettings(
+      insertResult.data
+    );
+
+    return;
+  }
+
+
+  applyPrivacySettings(
+    result.data
+  );
 
 }
 
 
-/* LOCAL SETTINGS */
+/* APPLY SETTINGS */
 
-function loadLocalSettings(){
+function applyPrivacySettings(settings){
 
-  const shopping =
-    localStorage.getItem("psmart-shopping-activity");
-
-  const recommendations =
-    localStorage.getItem("psmart-personalized-recommendations");
-
-  const orders =
-    localStorage.getItem("psmart-order-notifications");
-
-  const offers =
-    localStorage.getItem("psmart-offer-notifications");
+  document.getElementById(
+    "shoppingActivity"
+  ).checked =
+    settings.shopping_activity;
 
 
-  document.getElementById("shoppingActivity").checked =
-    shopping !== "false";
+  document.getElementById(
+    "personalizedRecommendations"
+  ).checked =
+    settings.personalized_recommendations;
 
-  document.getElementById("personalizedRecommendations").checked =
-    recommendations !== "false";
 
-  document.getElementById("orderNotifications").checked =
-    orders !== "false";
+  document.getElementById(
+    "orderNotifications"
+  ).checked =
+    settings.order_notifications;
 
-  document.getElementById("offerNotifications").checked =
-    offers !== "false";
+
+  document.getElementById(
+    "offerNotifications"
+  ).checked =
+    settings.offer_notifications;
 
 }
 
 
-/* SAVE LOCAL SETTINGS */
+/* SAVE ONE PRIVACY SETTING */
 
-document.getElementById("shoppingActivity")
-.addEventListener("change",function(){
+async function savePrivacySetting(
+  column,
+  value
+){
 
-  localStorage.setItem(
-    "psmart-shopping-activity",
-    this.checked
-  );
+  if(!currentUser){
 
-  showStatus("Shopping activity preference updated.");
+    showStatus(
+      "Please login again.",
+      "error"
+    );
 
-});
+    return;
+  }
 
 
-document.getElementById("personalizedRecommendations")
-.addEventListener("change",function(){
+  const updateData = {};
 
-  localStorage.setItem(
-    "psmart-personalized-recommendations",
-    this.checked
-  );
+  updateData[column] = value;
+
+
+  const result =
+    await supabaseClient
+      .from("privacy_preferences")
+      .update(updateData)
+      .eq("user_id",currentUser.id);
+
+
+  if(result.error){
+
+    console.error(
+      "Privacy setting save error:",
+      result.error
+    );
+
+    showStatus(
+      "Could not save privacy setting.",
+      "error"
+    );
+
+    return;
+  }
+
 
   showStatus(
-    "Recommendation preference updated."
+    "Privacy preference saved to your account."
   );
 
-});
+}
 
 
-document.getElementById("orderNotifications")
-.addEventListener("change",function(){
+/* TOGGLES */
 
-  localStorage.setItem(
-    "psmart-order-notifications",
-    this.checked
-  );
+document.getElementById(
+  "shoppingActivity"
+)
+.addEventListener(
+  "change",
+  function(){
 
-  showStatus(
-    "Order notification preference updated."
-  );
+    savePrivacySetting(
+      "shopping_activity",
+      this.checked
+    );
 
-});
-
-
-document.getElementById("offerNotifications")
-.addEventListener("change",function(){
-
-  localStorage.setItem(
-    "psmart-offer-notifications",
-    this.checked
-  );
-
-  showStatus(
-    "Offer notification preference updated."
-  );
-
-});
+  }
+);
 
 
-/* CLEAR DATA */
+document.getElementById(
+  "personalizedRecommendations"
+)
+.addEventListener(
+  "change",
+  function(){
+
+    savePrivacySetting(
+      "personalized_recommendations",
+      this.checked
+    );
+
+  }
+);
+
+
+document.getElementById(
+  "orderNotifications"
+)
+.addEventListener(
+  "change",
+  function(){
+
+    savePrivacySetting(
+      "order_notifications",
+      this.checked
+    );
+
+  }
+);
+
+
+document.getElementById(
+  "offerNotifications"
+)
+.addEventListener(
+  "change",
+  function(){
+
+    savePrivacySetting(
+      "offer_notifications",
+      this.checked
+    );
+
+  }
+);
+
+
+/* CLEAR MODAL */
 
 function openClearModal(){
 
-  document.getElementById("clearModal")
-    .style.display="flex";
+  document.getElementById(
+    "clearModal"
+  ).style.display="flex";
 
 }
 
 
 function closeClearModal(){
 
-  document.getElementById("clearModal")
-    .style.display="none";
+  document.getElementById(
+    "clearModal"
+  ).style.display="none";
 
 }
 
+
+/* CLEAR LOCAL DATA */
 
 function clearLocalData(){
 
@@ -916,11 +1192,16 @@ function clearLocalData(){
 
   ];
 
-  keys.forEach(key=>{
+
+  keys.forEach(function(key){
+
     localStorage.removeItem(key);
+
   });
 
+
   closeClearModal();
+
 
   showStatus(
     "Local shopping data has been cleared."
@@ -934,8 +1215,7 @@ function clearLocalData(){
 function requestData(){
 
   showStatus(
-    "Your data request has been recorded locally. A complete account export requires secure backend processing.",
-    "success"
+    "A complete data export requires secure backend processing."
   );
 
 }
@@ -946,7 +1226,7 @@ function requestData(){
 function requestAccountDeletion(){
 
   showStatus(
-    "Account deletion requires secure server-side processing. No account data has been deleted.",
+    "No account data was deleted. Secure backend processing is required for permanent deletion.",
     "error"
   );
 
@@ -962,23 +1242,29 @@ function privacyInfo(){
 
 PS Mart may use account information, order information, shopping preferences and saved data to provide shopping services.
 
-You can manage several device-level preferences from this Privacy Center.
+Your privacy preferences are stored securely with your PS Mart account.
 
-Local browser data can be cleared using the Data & Storage section.
+Local browser data can be cleared from the Data & Storage section.
 
-Account-level deletion and complete data export should be handled through secure server-side processing.`
+Account deletion and complete data export require secure backend processing.`
   );
 
 }
 
 
-/* INITIALIZE */
+/* INIT */
 
 async function init(){
 
-  await loadUser();
+  const loggedIn =
+    await loadUser();
 
-  loadLocalSettings();
+  if(!loggedIn){
+
+    return;
+  }
+
+  await loadPrivacyPreferences();
 
 }
 
