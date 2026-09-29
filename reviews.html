@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Reviews | PS Mart</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial, sans-serif;
+  background:#f7f1e8;
+  color:#3b2415;
+}
+
+header{
+  background:#3b2112;
+  color:#ffd66b;
+  padding:16px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:0 2px 10px rgba(0,0,0,.2);
+}
+
+.logo{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.back{
+  color:#ffd66b;
+  text-decoration:none;
+  font-size:14px;
+}
+
+.container{
+  max-width:1000px;
+  margin:25px auto;
+  padding:0 15px;
+}
+
+h1{
+  font-size:28px;
+  margin-bottom:8px;
+}
+
+.subtitle{
+  color:#765b45;
+  margin-bottom:25px;
+}
+
+.review-box{
+  background:white;
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 4px 15px rgba(80,40,10,.10);
+  border:1px solid #ead7bd;
+}
+
+.review-top{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.product-name{
+  font-size:19px;
+  font-weight:bold;
+}
+
+.verified{
+  display:inline-block;
+  margin-top:6px;
+  color:#247a35;
+  font-size:13px;
+  font-weight:bold;
+}
+
+.stars{
+  color:#e0a400;
+  font-size:20px;
+  letter-spacing:2px;
+}
+
+.review-title{
+  font-size:17px;
+  font-weight:bold;
+  margin-top:15px;
+}
+
+.review-text{
+  margin-top:8px;
+  line-height:1.6;
+  color:#5c4634;
+}
+
+.date{
+  color:#8a7765;
+  font-size:12px;
+  margin-top:12px;
+}
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:18px;
+}
+
+button{
+  border:none;
+  padding:9px 14px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.helpful{
+  background:#fff2cf;
+  color:#805900;
+}
+
+.edit{
+  background:#ead9b9;
+  color:#4b2d17;
+}
+
+.delete{
+  background:#f8dddd;
+  color:#9b2222;
+}
+
+.write-btn{
+  display:inline-block;
+  background:#b8860b;
+  color:white;
+  padding:12px 18px;
+  border-radius:9px;
+  text-decoration:none;
+  font-weight:bold;
+  margin-bottom:25px;
+}
+
+.empty{
+  text-align:center;
+  padding:45px 20px;
+  color:#765b45;
+}
+
+.seller-reply{
+  margin-top:18px;
+  padding:14px;
+  background:#faf3e6;
+  border-left:4px solid #b8860b;
+  border-radius:8px;
+}
+
+.reply-title{
+  font-weight:bold;
+  margin-bottom:6px;
+  color:#6b451f;
+}
+
+@media(max-width:600px){
+
+  header{
+    padding:14px;
+  }
+
+  .logo{
+    font-size:19px;
+  }
+
+  .container{
+    margin-top:20px;
+  }
+
+  h1{
+    font-size:24px;
+  }
+
+  .review-top{
+    flex-direction:column;
+  }
+
+  .stars{
+    font-size:18px;
+  }
+
+  .actions button{
+    flex:1;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">PS MART</div>
+
+  <a href="profile.html" class="back">
+    ← Profile
+  </a>
+</header>
+
+<div class="container">
+
+  <h1>My Reviews ⭐</h1>
+
+  <p class="subtitle">
+    Share your experience and help other customers.
+  </p>
+
+  <a href="#" class="write-btn" onclick="writeReview()">
+    ✍ Write a Review
+  </a>
+
+  <!-- Review 1 -->
+  <div class="review-box">
+
+    <div class="review-top">
+
+      <div>
+        <div class="product-name">
+          Product Name
+        </div>
+
+        <div class="verified">
+          ✓ Verified Purchase
+        </div>
+      </div>
+
+      <div class="stars">
+        ★★★★★
+      </div>
+
+    </div>
+
+    <div class="review-title">
+      Great Product
+    </div>
+
+    <div class="review-text">
+      This is an example review. Your real reviews will appear here after
+      the review system is connected with PS Mart.
+    </div>
+
+    <div class="date">
+      Reviewed on 29 September 2026
+    </div>
+
+    <div class="actions">
+
+      <button class="helpful" onclick="helpfulReview()">
+        👍 Helpful <span id="helpfulCount">0</span>
+      </button>
+
+      <button class="edit" onclick="editReview()">
+        ✏ Edit
+      </button>
+
+      <button class="delete" onclick="deleteReview()">
+        🗑 Delete
+      </button>
+
+    </div>
+
+    <!-- Seller Reply -->
+
+    <div class="seller-reply">
+
+      <div class="reply-title">
+        Seller Reply
+      </div>
+
+      <div>
+        Thank you for your valuable feedback!
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- Empty State -->
+
+  <div class="review-box empty">
+
+    <h2>No more reviews</h2>
+
+    <p>
+      Your future product reviews will appear here.
+    </p>
+
+  </div>
+
+</div>
+
+
+<script>
+
+function writeReview(){
+
+  alert(
+    "Review form will be connected after the Reviews database is added."
+  );
+
+}
+
+function helpfulReview(){
+
+  const count =
+    document.getElementById("helpfulCount");
+
+  count.innerText =
+    Number(count.innerText) + 1;
+
+}
+
+function editReview(){
+
+  alert(
+    "Edit Review will be connected after the database setup."
+  );
+
+}
+
+function deleteReview(){
+
+  const confirmDelete =
+    confirm("Do you want to delete this review?");
+
+  if(confirmDelete){
+
+    alert(
+      "Delete will be connected after the database setup."
+    );
+
+  }
+
+}
+
+</script>
+
+</body>
+</html>
