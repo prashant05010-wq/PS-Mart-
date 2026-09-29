@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Settings | PS Mart</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f8f3eb;
+      color: #3b2414;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #3b1f0f, #6b3d1e);
+      color: white;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.18);
+    }
+
+    .header h1 {
+      font-size: 22px;
+    }
+
+    .back {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .section {
+      background: #fff;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    .section-title {
+      padding: 16px 18px;
+      border-bottom: 1px solid #eee;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .setting {
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .setting:last-child {
+      border-bottom: none;
+    }
+
+    .setting-info {
+      flex: 1;
+    }
+
+    .setting-info h3 {
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+
+    .setting-info p {
+      font-size: 13px;
+      color: #777;
+      line-height: 1.4;
+    }
+
+    .arrow {
+      font-size: 20px;
+      color: #999;
+    }
+
+    .switch {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      display: none;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: #ccc;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.25s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+
+    .switch input:checked + .slider {
+      background: #d8a84e;
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    .danger {
+      color: #c62828;
+    }
+
+    .danger-section {
+      margin-bottom: 30px;
+    }
+
+    .danger-button {
+      width: 100%;
+      padding: 14px;
+      background: #fff;
+      border: none;
+      color: #c62828;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .status {
+      position: fixed;
+      left: 50%;
+      bottom: 25px;
+      transform: translateX(-50%);
+      background: #3b1f0f;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 10px;
+      display: none;
+      z-index: 999;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+
+      .header h1 {
+        font-size: 19px;
+      }
+
+      .section-title {
+        font-size: 17px;
+      }
+
+      .setting {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <h1>⚙️ Settings</h1>
+
+    <a href="profile.html" class="back">
+      ← Profile
+    </a>
+  </header>
+
+
+  <main class="container">
+
+
+    <!-- =========================
+         NOTIFICATION SETTINGS
+    ========================== -->
+
+    <div class="section">
+
+      <div class="section-title">
+        🔔 Notification Settings
+      </div>
+
+
+      <div class="setting">
+
+        <div class="setting-info">
+          <h3>Order Updates</h3>
+          <p>Get updates about order confirmation, shipping and delivery.</p>
+        </div>
+
+        <label class="switch">
+          <input
+            type="checkbox"
+            id="orderNotifications"
+            checked
+            onchange="saveSetting('orderNotifications', this.checked)"
+          >
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+
+      <div class="setting">
+
+        <div class="setting-info">
+          <h3>Payment & Refunds</h3>
+          <p>Receive payment, refund and transaction updates.</p>
+        </div>
+
+        <label class="switch">
+          <input
+            type="checkbox"
+            id="paymentNotifications"
+            checked
+            onchange="saveSetting('paymentNotifications', this.checked)"
+          >
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+
+      <div class="setting">
+
+        <div class="setting-info">
+          <h3>Offers & Discounts</h3>
+          <p>Receive new offers, deals and discount notifications.</p>
+        </div>
+
+        <label class="switch">
+          <input
+            type="checkbox"
+            id="offerNotifications"
+            checked
+            onchange="saveSetting('offerNotifications', this.checked)"
+          >
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+
+      <div class="setting">
+
+        <div class="setting-info">
+          <h3>Wishlist Alerts</h3>
+          <p>Get alerts about wishlist products and price changes.</p>
+        </div>
+
+        <label class="switch">
+          <input
+            type="checkbox"
+            id="wishlistNotifications"
+            checked
+            onchange="saveSetting('wishlistNotifications', this.checked)"
+          >
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+
+      <div class="setting">
+
+        <div class="setting-info">
+          <h3>Coupons & Rewards</h3>
+          <p>Get updates about coupons, rewards and special benefits.</p>
+        </div>
+
+        <label class="switch">
+          <input
+            type="checkbox"
+            id="rewardNotifications"
+            checked
+            onchange="saveSetting('rewardNotifications', this.checked)"
+          >
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+
+      <div class="setting">
+
+        <div class="setting-info">
+          <h3>General Notifications</h3>
+          <p>Receive important announcements and PS Mart updates.</p>
+        </div>
+
+        <label class="switch">
+          <input
+            type="checkbox"
+            id="generalNotifications"
+            checked
+            onchange="saveSetting('generalNotifications', this.checked)"
+          >
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         PRIVACY
+    ========================== -->
+
+    <div class="section">
+
+      <div class="section-title">
+        🔐 Privacy & Security
+      </div>
+
+
+      <div class="setting">
+
+        <div class="setting-info">
+          <h3>Account Privacy</h3>
+          <p>Manage how your account information is handled.</p>
+        </div>
+
+        <span class="arrow">›</span>
+
+      </div>
+
+
+      <div class="setting">
+
+        <div class="setting-info">
+          <h3>Login Security</h3>
+          <p>Manage your account login and security preferences.</p>
+        </div>
+
+        <span class="arrow">›</span>
+
+      </div>
+
+
+      <div class="setting">
+
+        <div class="setting-info">
+          <h3>Personalized Recommendations</h3>
+          <p>Allow PS Mart to use your shopping activity for recommendations.</p>
+        </div>
+
+        <label class="switch">
+          <input
+            type="checkbox"
+            id="recommendations"
+            checked
+            onchange="saveSetting('recommendations', this.checked)"
+          >
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         SHOPPING SETTINGS
+    ========================== -->
+
+    <div class="section">
+
+      <div class="section-title">
+        🛒 Shopping Preferences
+      </div>
+
+
+      <div class="setting">
+
+        <div class="setting-info">
+          <h3>Price Drop Alerts</h3>
+          <p>Get notified when saved products become cheaper.</p>
+        </div>
+
+        <label class="switch">
+          <input
+            type="checkbox"
+            id="priceDrop"
+            checked
+            onchange="saveSetting('priceDrop', this.checked)"
+          >
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+
+      <div class="setting">
+
+        <div class="setting-info">
+          <h3>Back-in-Stock Alerts</h3>
+          <p>Get notified when an unavailable product is available again.</p>
+        </div>
+
+        <label class="switch">
+          <input
+            type="checkbox"
+            id="stockAlerts"
+            checked
+            onchange="saveSetting('stockAlerts', this.checked)"
+          >
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+
+      <div class="setting">
+
+        <div class="setting-info">
+          <h3>Review Reminders</h3>
+          <p>Receive reminders to review products you purchased.</p>
+        </div>
+
+        <label class="switch">
+          <input
+            type="checkbox"
+            id="reviewReminders"
+            checked
+            onchange="saveSetting('reviewReminders', this.checked)"
+          >
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         LANGUAGE
+    ========================== -->
+
+    <div class="section">
+
+      <div class="section-title">
+        🌐 Language
+      </div>
+
+      <div
+        class="setting"
+        onclick="window.location.href='language.html'"
+        style="cursor:pointer;"
+      >
+
+        <div class="setting-info">
+          <h3>Select Language</h3>
+          <p>Change the language used on PS Mart.</p>
+        </div>
+
+        <span class="arrow">›</span>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         DATA
+    ========================== -->
+
+    <div class="section">
+
+      <div class="section-title">
+        🗃️ Data & Storage
+      </div>
+
+
+      <div class="setting">
+
+        <div class="setting-info">
+          <h3>Save Shopping Activity</h3>
+          <p>Keep your cart, wishlist and shopping preferences saved.</p>
+        </div>
+
+        <label class="switch">
+          <input
+            type="checkbox"
+            id="shoppingActivity"
+            checked
+            onchange="saveSetting('shoppingActivity', this.checked)"
+          >
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+
+      <div
+        class="setting"
+        onclick="clearLocalData()"
+        style="cursor:pointer;"
+      >
+
+        <div class="setting-info">
+          <h3 class="danger">Clear Local Data</h3>
+          <p>Clear locally saved shopping preferences and temporary data.</p>
+        </div>
+
+        <span class="arrow">›</span>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         DANGER ZONE
+    ========================== -->
+
+    <div class="section danger-section">
+
+      <div class="section-title">
+        ⚠️ Account
+      </div>
+
+
+      <button
+        class="danger-button"
+        onclick="logoutUser()"
+      >
+        🚪 Logout
+      </button>
+
+    </div>
+
+
+  </main>
+
+
+  <div
+    class="status"
+    id="status"
+  >
+    Setting saved
+  </div>
+
+
+  <script>
+
+    const SETTINGS_KEY =
+      "psmart-settings";
+
+
+    /* =========================
+       DEFAULT SETTINGS
+    ========================== */
+
+    const defaultSettings = {
+
+      orderNotifications: true,
+
+      paymentNotifications: true,
+
+      offerNotifications: true,
+
+      wishlistNotifications: true,
+
+      rewardNotifications: true,
+
+      generalNotifications: true,
+
+      recommendations: true,
+
+      priceDrop: true,
+
+      stockAlerts: true,
+
+      reviewReminders: true,
+
+      shoppingActivity: true
+
+    };
+
+
+    /* =========================
+       LOAD SETTINGS
+    ========================== */
+
+    function getSettings() {
+
+      const saved =
+        localStorage.getItem(
+          SETTINGS_KEY
+        );
+
+
+      if (!saved) {
+
+        localStorage.setItem(
+          SETTINGS_KEY,
+          JSON.stringify(defaultSettings)
+        );
+
+        return {
+          ...defaultSettings
+        };
+      }
+
+
+      try {
+
+        return {
+          ...defaultSettings,
+          ...JSON.parse(saved)
+        };
+
+      } catch (error) {
+
+        return {
+          ...defaultSettings
+        };
+
+      }
+
+    }
+
+
+    /* =========================
+       APPLY SETTINGS
+    ========================== */
+
+    function loadSettings() {
+
+      const settings =
+        getSettings();
+
+
+      Object.keys(settings)
+        .forEach(key => {
+
+          const element =
+            document.getElementById(key);
+
+
+          if (
+            element &&
+            element.type === "checkbox"
+          ) {
+
+            element.checked =
+              settings[key];
+
+          }
+
+        });
+
+    }
+
+
+    /* =========================
+       SAVE SETTING
+    ========================== */
+
+    function saveSetting(
+      key,
+      value
+    ) {
+
+      const settings =
+        getSettings();
+
+
+      settings[key] =
+        value;
+
+
+      localStorage.setItem(
+        SETTINGS_KEY,
+        JSON.stringify(settings)
+      );
+
+
+      showStatus(
+        "✓ Setting saved"
+      );
+
+    }
+
+
+    /* =========================
+       STATUS MESSAGE
+    ========================== */
+
+    function showStatus(message) {
+
+      const status =
+        document.getElementById(
+          "status"
+        );
+
+
+      status.textContent =
+        message;
+
+
+      status.style.display =
+        "block";
+
+
+      setTimeout(() => {
+
+        status.style.display =
+          "none";
+
+      }, 1800);
+
+    }
+
+
+    /* =========================
+       CLEAR LOCAL DATA
+    ========================== */
+
+    function clearLocalData() {
+
+      const confirmClear =
+        confirm(
+          "Clear locally saved PS Mart data?"
+        );
+
+
+      if (!confirmClear)
+        return;
+
+
+      localStorage.removeItem(
+        "psmart-cart"
+      );
+
+      localStorage.removeItem(
+        "psmart-wishlist"
+      );
+
+      localStorage.removeItem(
+        "psmart-address"
+      );
+
+      localStorage.removeItem(
+        "psmart-addresses"
+      );
+
+      localStorage.removeItem(
+        "psmart-settings"
+      );
+
+      showStatus(
+        "✓ Local data cleared"
+      );
+
+      setTimeout(() => {
+        loadSettings();
+      }, 500);
+
+    }
+
+
+    /* =========================
+       LOGOUT
+    ========================== */
+
+    async function logoutUser() {
+
+      const confirmLogout =
+        confirm(
+          "Are you sure you want to logout?"
+        );
+
+
+      if (!confirmLogout)
+        return;
+
+
+      /*
+       * PS Mart currently uses
+       * Supabase authentication.
+       *
+       * If Supabase session exists,
+       * sign out from it.
+       */
+
+      try {
+
+        if (
+          window.supabase &&
+          window.supabase.createClient
+        ) {
+
+          const SUPABASE_URL =
+            "https://nctscffhnztscczjxhat.supabase.co";
+
+          /*
+           * IMPORTANT:
+           * Login/session is handled by
+           * the existing PS Mart pages.
+           *
+           * Clear local session-related
+           * data and return to login.
+           */
+
+        }
+
+      } catch (error) {
+
+        console.log(error);
+
+      }
+
+
+      window.location.href =
+        "login.html";
+
+    }
+
+
+    /* =========================
+       START
+    ========================== */
+
+    loadSettings();
+
+  </script>
+
+</body>
+</html>
