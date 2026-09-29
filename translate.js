@@ -1,4 +1,4 @@
-```javascript
+javascript
 /* =====================================================
    PS MART - MULTI LANGUAGE TRANSLATION SYSTEM
    20 LANGUAGES
