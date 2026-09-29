@@ -6,6 +6,9 @@
 
   <title>Notifications | PS Mart</title>
 
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -166,7 +169,22 @@
       margin-bottom: 12px;
     }
 
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #777;
+    }
+
+    .error {
+      background: #fff;
+      color: #b42318;
+      padding: 20px;
+      border-radius: 14px;
+      text-align: center;
+    }
+
     @media (max-width: 600px) {
+
       .header h1 {
         font-size: 19px;
       }
@@ -203,201 +221,457 @@
   <main class="container">
 
     <div class="top-card">
+
       <h2>All Notifications</h2>
-      <p id="unreadText">You have 0 unread notifications</p>
+
+      <p id="unreadText">
+        Loading notifications...
+      </p>
 
       <div class="actions">
-        <button class="read-btn" onclick="markAllRead()">
+
+        <button
+          class="read-btn"
+          onclick="markAllRead()"
+        >
           ✓ Mark all as read
         </button>
 
-        <button class="clear-btn" onclick="clearAll()">
+        <button
+          class="clear-btn"
+          onclick="clearAll()"
+        >
           🗑 Clear all
         </button>
+
       </div>
+
     </div>
 
-    <div id="notificationsList"></div>
+    <div id="notificationsList">
+
+      <div class="loading">
+        🔄 Loading notifications...
+      </div>
+
+    </div>
 
   </main>
 
+
   <script>
-    const STORAGE_KEY = "psmart-notifications";
 
-    const defaultNotifications = [
-      {
-        id: 1,
-        icon: "📦",
-        title: "Order Placed",
-        message: "Your order has been placed successfully.",
-        time: "Just now",
-        unread: true,
-        link: "orders.html"
-      },
-      {
-        id: 2,
-        icon: "💳",
-        title: "Payment Update",
-        message: "Your payment status has been updated.",
-        time: "Today",
-        unread: true,
-        link: "orders.html"
-      },
-      {
-        id: 3,
-        icon: "🔥",
-        title: "New Offers",
-        message: "New discounts and special offers are available.",
-        time: "Today",
-        unread: true,
-        link: "index.html"
-      },
-      {
-        id: 4,
-        icon: "❤️",
-        title: "Wishlist Alert",
-        message: "A product in your wishlist may have a price update.",
-        time: "Yesterday",
-        unread: false,
-        link: "wishlist.html"
-      },
-      {
-        id: 5,
-        icon: "🎁",
-        title: "Coupons & Rewards",
-        message: "Check your available coupons and rewards.",
-        time: "Yesterday",
-        unread: false,
-        link: "index.html"
+    /* =========================
+       SUPABASE CONFIG
+    ========================= */
+
+    const SUPABASE_URL =
+      "https://nctscffhnztscczjxhat.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+      "YOUR_EXISTING_SUPABASE_ANON_KEY";
+
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      );
+
+
+    let currentUser = null;
+
+
+    /* =========================
+       CHECK LOGIN
+    ========================= */
+
+    async function checkUser() {
+
+      const {
+        data,
+        error
+      } = await supabaseClient.auth.getUser();
+
+      if (error || !data.user) {
+
+        alert("Please login first.");
+
+        window.location.href = "login.html";
+
+        return false;
       }
-    ];
 
-    function getNotifications() {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      currentUser = data.user;
 
-      if (!saved) {
-        localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify(defaultNotifications)
+      return true;
+    }
+
+
+    /* =========================
+       LOAD NOTIFICATIONS
+    ========================= */
+
+    async function loadNotifications() {
+
+      if (!currentUser) return;
+
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("notifications")
+        .select("*")
+        .eq("user_id", currentUser.id)
+        .order("created_at", {
+          ascending: false
+        });
+
+
+      if (error) {
+
+        console.error(
+          "Notification error:",
+          error
         );
 
-        return defaultNotifications;
-      }
-
-      try {
-        return JSON.parse(saved);
-      } catch (error) {
-        return [];
-      }
-    }
-
-    function saveNotifications(data) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }
-
-    function renderNotifications() {
-
-      const list = document.getElementById("notificationsList");
-      const notifications = getNotifications();
-
-      const unreadCount = notifications.filter(
-        n => n.unread
-      ).length;
-
-      document.getElementById("unreadText").textContent =
-        `You have ${unreadCount} unread notification${unreadCount === 1 ? "" : "s"}`;
-
-      if (notifications.length === 0) {
-
-        list.innerHTML = `
-          <div class="empty">
-            <div class="empty-icon">🔕</div>
-            <h3>No Notifications</h3>
-            <p>You're all caught up!</p>
+        document.getElementById(
+          "notificationsList"
+        ).innerHTML = `
+          <div class="error">
+            ❌ Unable to load notifications.
           </div>
         `;
 
         return;
       }
 
-      list.innerHTML = notifications.map(n => `
 
-        <div
-          class="notification ${n.unread ? "unread" : ""}"
-          onclick="openNotification(${n.id})"
-        >
-
-          <div class="icon">
-            ${n.icon}
-          </div>
-
-          <div class="content">
-
-            <h3>${n.title}</h3>
-
-            <p>${n.message}</p>
-
-            <span class="time">
-              ${n.time}
-            </span>
-
-          </div>
-
-          ${n.unread ? '<div class="dot"></div>' : ''}
-
-        </div>
-
-      `).join("");
+      renderNotifications(data || []);
     }
 
-    function openNotification(id) {
 
-      const notifications = getNotifications();
+    /* =========================
+       RENDER
+    ========================= */
 
-      const notification = notifications.find(
-        n => n.id === id
-      );
+    function renderNotifications(notifications) {
 
-      if (!notification) return;
+      const list =
+        document.getElementById(
+          "notificationsList"
+        );
 
-      notification.unread = false;
 
-      saveNotifications(notifications);
+      const unreadCount =
+        notifications.filter(
+          n => !n.is_read
+        ).length;
 
-      renderNotifications();
 
-      if (notification.link) {
-        window.location.href = notification.link;
+      document.getElementById(
+        "unreadText"
+      ).textContent =
+        `You have ${unreadCount} unread notification${unreadCount === 1 ? "" : "s"}`;
+
+
+      if (notifications.length === 0) {
+
+        list.innerHTML = `
+          <div class="empty">
+
+            <div class="empty-icon">
+              🔕
+            </div>
+
+            <h3>
+              No Notifications
+            </h3>
+
+            <p>
+              You're all caught up!
+            </p>
+
+          </div>
+        `;
+
+        return;
       }
+
+
+      list.innerHTML =
+        notifications.map(n => {
+
+          const time =
+            formatTime(n.created_at);
+
+
+          return `
+
+            <div
+              class="notification ${n.is_read ? "" : "unread"}"
+              onclick="openNotification('${n.id}')"
+            >
+
+              <div class="icon">
+                ${n.icon || "🔔"}
+              </div>
+
+
+              <div class="content">
+
+                <h3>
+                  ${escapeHTML(n.title)}
+                </h3>
+
+                <p>
+                  ${escapeHTML(n.message)}
+                </p>
+
+                <span class="time">
+                  ${time}
+                </span>
+
+              </div>
+
+
+              ${
+                !n.is_read
+                ? '<div class="dot"></div>'
+                : ''
+              }
+
+            </div>
+
+          `;
+
+        }).join("");
     }
 
-    function markAllRead() {
 
-      const notifications = getNotifications();
+    /* =========================
+       OPEN NOTIFICATION
+    ========================= */
 
-      notifications.forEach(n => {
-        n.unread = false;
-      });
+    async function openNotification(id) {
 
-      saveNotifications(notifications);
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("notifications")
+        .select("*")
+        .eq("id", id)
+        .eq("user_id", currentUser.id)
+        .single();
 
-      renderNotifications();
+
+      if (error || !data) return;
+
+
+      if (!data.is_read) {
+
+        await supabaseClient
+          .from("notifications")
+          .update({
+            is_read: true
+          })
+          .eq("id", id)
+          .eq("user_id", currentUser.id);
+
+      }
+
+
+      if (data.link) {
+
+        window.location.href =
+          data.link;
+
+        return;
+      }
+
+
+      await loadNotifications();
     }
 
-    function clearAll() {
 
-      const confirmClear = confirm(
-        "Are you sure you want to clear all notifications?"
-      );
+    /* =========================
+       MARK ALL READ
+    ========================= */
+
+    async function markAllRead() {
+
+      if (!currentUser) return;
+
+
+      const {
+        error
+      } = await supabaseClient
+        .from("notifications")
+        .update({
+          is_read: true
+        })
+        .eq("user_id", currentUser.id);
+
+
+      if (error) {
+
+        alert(
+          "Unable to mark notifications as read."
+        );
+
+        console.error(error);
+
+        return;
+      }
+
+
+      await loadNotifications();
+    }
+
+
+    /* =========================
+       CLEAR ALL
+    ========================= */
+
+    async function clearAll() {
+
+      if (!currentUser) return;
+
+
+      const confirmClear =
+        confirm(
+          "Are you sure you want to clear all notifications?"
+        );
+
 
       if (!confirmClear) return;
 
-      saveNotifications([]);
 
-      renderNotifications();
+      const {
+        error
+      } = await supabaseClient
+        .from("notifications")
+        .delete()
+        .eq("user_id", currentUser.id);
+
+
+      if (error) {
+
+        alert(
+          "Unable to clear notifications."
+        );
+
+        console.error(error);
+
+        return;
+      }
+
+
+      await loadNotifications();
     }
 
-    renderNotifications();
+
+    /* =========================
+       FORMAT TIME
+    ========================= */
+
+    function formatTime(dateString) {
+
+      if (!dateString) return "";
+
+
+      const date =
+        new Date(dateString);
+
+
+      const now =
+        new Date();
+
+
+      const diff =
+        Math.floor(
+          (now - date) / 1000
+        );
+
+
+      if (diff < 60) {
+        return "Just now";
+      }
+
+
+      if (diff < 3600) {
+
+        const minutes =
+          Math.floor(diff / 60);
+
+        return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+      }
+
+
+      if (diff < 86400) {
+
+        const hours =
+          Math.floor(diff / 3600);
+
+        return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+      }
+
+
+      if (diff < 604800) {
+
+        const days =
+          Math.floor(diff / 86400);
+
+        return `${days} day${days === 1 ? "" : "s"} ago`;
+      }
+
+
+      return date.toLocaleDateString(
+        "en-IN",
+        {
+          day: "numeric",
+          month: "short",
+          year: "numeric"
+        }
+      );
+    }
+
+
+    /* =========================
+       SECURITY
+    ========================= */
+
+    function escapeHTML(value) {
+
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+
+    /* =========================
+       START
+    ========================= */
+
+    async function init() {
+
+      const loggedIn =
+        await checkUser();
+
+
+      if (!loggedIn) return;
+
+
+      await loadNotifications();
+    }
+
+
+    init();
+
   </script>
 
 </body>
