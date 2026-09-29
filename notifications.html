@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Notifications | PS Mart</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f8f3eb;
+      color: #3b2414;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #3b1f0f, #6b3d1e);
+      color: #fff;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.18);
+    }
+
+    .header h1 {
+      font-size: 22px;
+    }
+
+    .back {
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .top-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      margin-bottom: 15px;
+    }
+
+    .top-card h2 {
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    .top-card p {
+      color: #777;
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .read-btn {
+      background: #d8a84e;
+      color: #fff;
+    }
+
+    .clear-btn {
+      background: #eee;
+      color: #3b2414;
+    }
+
+    .notification {
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .notification:hover {
+      transform: translateY(-2px);
+    }
+
+    .notification.unread {
+      background: #fff8e8;
+      border-left: 4px solid #d8a84e;
+    }
+
+    .icon {
+      width: 46px;
+      height: 46px;
+      min-width: 46px;
+      border-radius: 50%;
+      background: #f0dfc0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .content {
+      flex: 1;
+    }
+
+    .content h3 {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .content p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .time {
+      display: block;
+      margin-top: 7px;
+      font-size: 12px;
+      color: #999;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      background: #d8a84e;
+      border-radius: 50%;
+      margin-top: 5px;
+    }
+
+    .empty {
+      text-align: center;
+      background: #fff;
+      padding: 45px 20px;
+      border-radius: 14px;
+      color: #777;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+    }
+
+    .empty-icon {
+      font-size: 45px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 19px;
+      }
+
+      .notification {
+        padding: 13px;
+      }
+
+      .icon {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        font-size: 19px;
+      }
+
+      .content h3 {
+        font-size: 15px;
+      }
+
+      .content p {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <h1>🔔 Notifications</h1>
+    <a href="profile.html" class="back">← Profile</a>
+  </header>
+
+  <main class="container">
+
+    <div class="top-card">
+      <h2>All Notifications</h2>
+      <p id="unreadText">You have 0 unread notifications</p>
+
+      <div class="actions">
+        <button class="read-btn" onclick="markAllRead()">
+          ✓ Mark all as read
+        </button>
+
+        <button class="clear-btn" onclick="clearAll()">
+          🗑 Clear all
+        </button>
+      </div>
+    </div>
+
+    <div id="notificationsList"></div>
+
+  </main>
+
+  <script>
+    const STORAGE_KEY = "psmart-notifications";
+
+    const defaultNotifications = [
+      {
+        id: 1,
+        icon: "📦",
+        title: "Order Placed",
+        message: "Your order has been placed successfully.",
+        time: "Just now",
+        unread: true,
+        link: "orders.html"
+      },
+      {
+        id: 2,
+        icon: "💳",
+        title: "Payment Update",
+        message: "Your payment status has been updated.",
+        time: "Today",
+        unread: true,
+        link: "orders.html"
+      },
+      {
+        id: 3,
+        icon: "🔥",
+        title: "New Offers",
+        message: "New discounts and special offers are available.",
+        time: "Today",
+        unread: true,
+        link: "index.html"
+      },
+      {
+        id: 4,
+        icon: "❤️",
+        title: "Wishlist Alert",
+        message: "A product in your wishlist may have a price update.",
+        time: "Yesterday",
+        unread: false,
+        link: "wishlist.html"
+      },
+      {
+        id: 5,
+        icon: "🎁",
+        title: "Coupons & Rewards",
+        message: "Check your available coupons and rewards.",
+        time: "Yesterday",
+        unread: false,
+        link: "index.html"
+      }
+    ];
+
+    function getNotifications() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+
+      if (!saved) {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(defaultNotifications)
+        );
+
+        return defaultNotifications;
+      }
+
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveNotifications(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function renderNotifications() {
+
+      const list = document.getElementById("notificationsList");
+      const notifications = getNotifications();
+
+      const unreadCount = notifications.filter(
+        n => n.unread
+      ).length;
+
+      document.getElementById("unreadText").textContent =
+        `You have ${unreadCount} unread notification${unreadCount === 1 ? "" : "s"}`;
+
+      if (notifications.length === 0) {
+
+        list.innerHTML = `
+          <div class="empty">
+            <div class="empty-icon">🔕</div>
+            <h3>No Notifications</h3>
+            <p>You're all caught up!</p>
+          </div>
+        `;
+
+        return;
+      }
+
+      list.innerHTML = notifications.map(n => `
+
+        <div
+          class="notification ${n.unread ? "unread" : ""}"
+          onclick="openNotification(${n.id})"
+        >
+
+          <div class="icon">
+            ${n.icon}
+          </div>
+
+          <div class="content">
+
+            <h3>${n.title}</h3>
+
+            <p>${n.message}</p>
+
+            <span class="time">
+              ${n.time}
+            </span>
+
+          </div>
+
+          ${n.unread ? '<div class="dot"></div>' : ''}
+
+        </div>
+
+      `).join("");
+    }
+
+    function openNotification(id) {
+
+      const notifications = getNotifications();
+
+      const notification = notifications.find(
+        n => n.id === id
+      );
+
+      if (!notification) return;
+
+      notification.unread = false;
+
+      saveNotifications(notifications);
+
+      renderNotifications();
+
+      if (notification.link) {
+        window.location.href = notification.link;
+      }
+    }
+
+    function markAllRead() {
+
+      const notifications = getNotifications();
+
+      notifications.forEach(n => {
+        n.unread = false;
+      });
+
+      saveNotifications(notifications);
+
+      renderNotifications();
+    }
+
+    function clearAll() {
+
+      const confirmClear = confirm(
+        "Are you sure you want to clear all notifications?"
+      );
+
+      if (!confirmClear) return;
+
+      saveNotifications([]);
+
+      renderNotifications();
+    }
+
+    renderNotifications();
+  </script>
+
+</body>
+</html>
