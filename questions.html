@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PS MART | Questions & Answers</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f7f1e8;
+  color:#3b2112;
+}
+
+header{
+  background:#3b2112;
+  color:#fff;
+  padding:16px 22px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+.logo{
+  font-size:23px;
+  font-weight:bold;
+  letter-spacing:1px;
+  color:#e5b84b;
+}
+
+.back{
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.container{
+  max-width:900px;
+  margin:30px auto;
+  padding:0 18px;
+}
+
+h1{
+  margin-bottom:6px;
+}
+
+.subtitle{
+  color:#765f4d;
+  margin-top:0;
+}
+
+.top-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:22px 0;
+}
+
+button{
+  font-family:inherit;
+}
+
+.primary{
+  border:0;
+  background:#b8860b;
+  color:white;
+  padding:12px 18px;
+  border-radius:9px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.secondary{
+  border:1px solid #c9ae8a;
+  background:white;
+  color:#3b2112;
+  padding:11px 17px;
+  border-radius:9px;
+  cursor:pointer;
+}
+
+.search{
+  width:100%;
+  padding:13px;
+  border:1px solid #d6c3ad;
+  border-radius:9px;
+  margin-bottom:20px;
+  font-size:15px;
+  outline:none;
+}
+
+.question-card{
+  background:white;
+  border:1px solid #eadbc8;
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:18px;
+  box-shadow:0 4px 14px rgba(60,30,10,.06);
+}
+
+.product-name{
+  font-size:13px;
+  color:#a06d00;
+  font-weight:bold;
+  margin-bottom:9px;
+}
+
+.question-text{
+  font-size:18px;
+  font-weight:bold;
+  line-height:1.5;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+
+.meta{
+  color:#806c5b;
+  font-size:13px;
+  margin-top:10px;
+}
+
+.actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+
+.action-btn{
+  border:1px solid #ddcbb5;
+  background:#fffaf4;
+  color:#4a2b18;
+  padding:7px 11px;
+  border-radius:7px;
+  cursor:pointer;
+}
+
+.delete-btn{
+  color:#a52a2a;
+}
+
+.answer-section{
+  margin-top:20px;
+  padding-top:18px;
+  border-top:1px solid #eadbc8;
+}
+
+.answer-title{
+  font-weight:bold;
+  margin-bottom:12px;
+}
+
+.answer-card{
+  background:#fffaf5;
+  border:1px solid #eadbc8;
+  border-radius:10px;
+  padding:14px;
+  margin-top:10px;
+}
+
+.answer-text{
+  line-height:1.55;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+
+.answer-meta{
+  color:#806c5b;
+  font-size:12px;
+  margin-top:9px;
+}
+
+.helpful{
+  margin-top:11px;
+  border:1px solid #d8c2a7;
+  background:white;
+  color:#4a2b18;
+  padding:7px 11px;
+  border-radius:7px;
+  cursor:pointer;
+}
+
+.helpful.active{
+  background:#b8860b;
+  color:white;
+  border-color:#b8860b;
+}
+
+.answer-actions{
+  display:flex;
+  gap:7px;
+  margin-top:9px;
+}
+
+.answer-box{
+  margin-top:14px;
+}
+
+.answer-input{
+  width:100%;
+  min-height:90px;
+  resize:vertical;
+  padding:11px;
+  border:1px solid #d6c3ad;
+  border-radius:8px;
+  font-size:14px;
+}
+
+.loading,
+.empty,
+.error{
+  background:white;
+  border-radius:12px;
+  padding:25px;
+  text-align:center;
+  border:1px solid #eadbc8;
+}
+
+.error{
+  color:#a52a2a;
+}
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.58);
+  z-index:1000;
+  overflow:auto;
+  padding:25px 15px;
+}
+
+.modal-box{
+  max-width:560px;
+  margin:40px auto;
+  background:white;
+  border-radius:15px;
+  padding:23px;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.close{
+  width:35px;
+  height:35px;
+  border:0;
+  border-radius:50%;
+  background:#eee;
+  font-size:20px;
+  cursor:pointer;
+}
+
+label{
+  display:block;
+  font-weight:bold;
+  margin-bottom:7px;
+}
+
+input,
+textarea{
+  width:100%;
+  padding:12px;
+  border:1px solid #d6c3ad;
+  border-radius:8px;
+  margin-bottom:16px;
+  font-size:15px;
+  font-family:inherit;
+}
+
+textarea{
+  min-height:120px;
+  resize:vertical;
+}
+
+.modal-submit{
+  width:100%;
+  border:0;
+  background:#b8860b;
+  color:white;
+  padding:13px;
+  border-radius:9px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+#message{
+  display:none;
+  position:fixed;
+  left:50%;
+  bottom:20px;
+  transform:translateX(-50%);
+  background:#3b2112;
+  color:white;
+  padding:12px 18px;
+  border-radius:9px;
+  z-index:2000;
+  max-width:90%;
+  text-align:center;
+}
+
+@media(max-width:600px){
+
+  header{
+    padding:14px 15px;
+  }
+
+  .logo{
+    font-size:19px;
+  }
+
+  .container{
+    margin-top:20px;
+  }
+
+  .question-text{
+    font-size:16px;
+  }
+
+  .question-card{
+    padding:15px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <div class="logo">
+    PS MART
+  </div>
+
+  <a href="profile.html" class="back">
+    ← Profile
+  </a>
+
+</header>
+
+
+<div class="container">
+
+  <h1>Questions & Answers ❓</h1>
+
+  <p class="subtitle">
+    Ask questions about products and help other customers.
+  </p>
+
+
+  <div class="top-actions">
+
+    <button
+      class="primary"
+      onclick="openQuestionModal()">
+      + Ask a Question
+    </button>
+
+    <button
+      class="secondary"
+      onclick="loadQuestions()">
+      ↻ Refresh
+    </button>
+
+  </div>
+
+
+  <input
+    id="searchInput"
+    class="search"
+    type="search"
+    placeholder="Search questions or products..."
+    oninput="filterQuestions()"
+  >
+
+
+  <div id="questionsList">
+
+    <div class="loading">
+      Loading questions...
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- QUESTION MODAL -->
+
+<div
+  id="questionModal"
+  class="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h2 id="questionModalTitle">
+        Ask a Question
+      </h2>
+
+      <button
+        class="close"
+        onclick="closeQuestionModal()">
+        ×
+      </button>
+
+    </div>
+
+
+    <label>
+      Product Name
+    </label>
+
+    <input
+      id="productName"
+      type="text"
+      maxlength="150"
+      placeholder="Enter product name"
+    >
+
+
+    <label>
+      Your Question
+    </label>
+
+    <textarea
+      id="questionText"
+      maxlength="2000"
+      placeholder="Write your question..."
+    ></textarea>
+
+
+    <button
+      id="questionSubmitBtn"
+      class="modal-submit"
+      onclick="submitQuestion()">
+      Post Question
+    </button>
+
+  </div>
+
+</div>
+
+
+<div id="message"></div>
+
+
+<script>
+
+/* =========================================
+   SUPABASE
+========================================= */
+
+const SUPABASE_URL =
+"https://nctscffhnztscczjxhat.supabase.co";
+
+const SUPABASE_ANON_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+
+/* =========================================
+   VARIABLES
+========================================= */
+
+let currentUser = null;
+
+let allQuestions = [];
+
+let editingQuestionId = null;
+
+
+/* =========================================
+   START
+========================================= */
+
+async function start(){
+
+  const {
+    data:{
+      user
+    }
+  } =
+  await supabaseClient.auth.getUser();
+
+  currentUser = user || null;
+
+  loadQuestions();
+
+}
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+function showMessage(text){
+
+  const box =
+    document.getElementById("message");
+
+  box.textContent = text;
+
+  box.style.display = "block";
+
+  setTimeout(function(){
+
+    box.style.display = "none";
+
+  },3000);
+
+}
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHTML(value){
+
+  const div =
+    document.createElement("div");
+
+  div.textContent =
+    value == null ? "" : String(value);
+
+  return div.innerHTML;
+
+}
+
+
+/* =========================================
+   DATE
+========================================= */
+
+function formatDate(date){
+
+  if(!date){
+    return "";
+  }
+
+  return new Date(date)
+    .toLocaleString("en-IN",{
+      dateStyle:"medium",
+      timeStyle:"short"
+    });
+
+}
+
+
+/* =========================================
+   LOAD QUESTIONS
+========================================= */
+
+async function loadQuestions(){
+
+  const list =
+    document.getElementById("questionsList");
+
+  list.innerHTML =
+    '<div class="loading">Loading questions...</div>';
+
+  const {
+    data,
+    error
+  } =
+  await supabaseClient
+    .from("product_questions")
+    .select("*")
+    .order("created_at",{
+      ascending:false
+    });
+
+  if(error){
+
+    console.error(error);
+
+    list.innerHTML =
+      '<div class="error">Unable to load questions. Please refresh.</div>';
+
+    return;
+
+  }
+
+  allQuestions =
+    data || [];
+
+  renderQuestions(
+    allQuestions
+  );
+
+}
+
+
+/* =========================================
+   RENDER QUESTIONS
+========================================= */
+
+async function renderQuestions(questions){
+
+  const list =
+    document.getElementById("questionsList");
+
+  if(!questions.length){
+
+    list.innerHTML = `
+      <div class="empty">
+        <h2>No questions yet</h2>
+        <p>Be the first customer to ask a question.</p>
+      </div>
+    `;
+
+    return;
+
+  }
+
+  list.innerHTML = "";
+
+  for(
+    const question
+    of questions
+  ){
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "question-card";
+
+    const product =
+      document.createElement("div");
+
+    product.className =
+      "product-name";
+
+    product.textContent =
+      "Product: " +
+      (question.product_name || "Product");
+
+    card.appendChild(product);
+
+
+    const questionText =
+      document.createElement("div");
+
+    questionText.className =
+      "question-text";
+
+    questionText.textContent =
+      question.question;
+
+    card.appendChild(questionText);
+
+
+    const meta =
+      document.createElement("div");
+
+    meta.className =
+      "meta";
+
+    meta.textContent =
+      "Asked on " +
+      formatDate(question.created_at);
+
+    card.appendChild(meta);
+
+
+    if(
+      currentUser &&
+      question.user_id === currentUser.id
+    ){
+
+      const actions =
+        document.createElement("div");
+
+      actions.className =
+        "actions";
+
+
+      const edit =
+        document.createElement("button");
+
+      edit.className =
+        "action-btn";
+
+      edit.textContent =
+        "✏ Edit";
+
+      edit.onclick =
+        function(){
+
+          editQuestion(
+            question.id
+          );
+
+        };
+
+      actions.appendChild(edit);
+
+
+      const del =
+        document.createElement("button");
+
+      del.className =
+        "action-btn delete-btn";
+
+      del.textContent =
+        "🗑 Delete";
+
+      del.onclick =
+        function(){
+
+          deleteQuestion(
+            question.id
+          );
+
+        };
+
+      actions.appendChild(del);
+
+      card.appendChild(actions);
+
+    }
+
+
+    const answerSection =
+      document.createElement("div");
+
+    answerSection.className =
+      "answer-section";
+
+
+    const answerTitle =
+      document.createElement("div");
+
+    answerTitle.className =
+      "answer-title";
+
+    answerTitle.textContent =
+      "Answers";
+
+    answerSection.appendChild(
+      answerTitle
+    );
+
+
+    const answersContainer =
+      document.createElement("div");
+
+    answersContainer.id =
+      "answers-" + question.id;
+
+    answersContainer.innerHTML =
+      '<div class="meta">Loading answers...</div>';
+
+    answerSection.appendChild(
+      answersContainer
+    );
+
+
+    if(currentUser){
+
+      const answerBox =
+        document.createElement("div");
+
+      answerBox.className =
+        "answer-box";
+
+
+      const answerInput =
+        document.createElement("textarea");
+
+      answerInput.className =
+        "answer-input";
+
+      answerInput.id =
+        "answer-input-" + question.id;
+
+      answerInput.maxLength =
+        2000;
+
+      answerInput.placeholder =
+        "Write an answer to help this customer...";
+
+
+      const answerButton =
+        document.createElement("button");
+
+      answerButton.className =
+        "primary";
+
+      answerButton.style.marginTop =
+        "8px";
+
+      answerButton.textContent =
+        "Post Answer";
+
+      answerButton.onclick =
+        function(){
+
+          submitAnswer(
+            question.id
+          );
+
+        };
+
+
+      answerBox.appendChild(
+        answerInput
+      );
+
+      answerBox.appendChild(
+        answerButton
+      );
+
+      answerSection.appendChild(
+        answerBox
+      );
+
+    }
+
+    else{
+
+      const loginText =
+        document.createElement("div");
+
+      loginText.className =
+        "meta";
+
+      loginText.style.marginTop =
+        "12px";
+
+      loginText.textContent =
+        "Login to answer this question.";
+
+      answerSection.appendChild(
+        loginText
+      );
+
+    }
+
+
+    card.appendChild(
+      answerSection
+    );
+
+    list.appendChild(card);
+
+
+    loadAnswers(
+      question.id
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   LOAD ANSWERS
+========================================= */
+
+async function loadAnswers(
+  questionId
+){
+
+  const container =
+    document.getElementById(
+      "answers-" + questionId
+    );
+
+  if(!container){
+    return;
+  }
+
+
+  const {
+    data:answers,
+    error
+  } =
+  await supabaseClient
+    .from("question_answers")
+    .select("*")
+    .eq("question_id",questionId)
+    .order("created_at",{
+      ascending:true
+    });
+
+
+  if(error){
+
+    console.error(error);
+
+    container.innerHTML =
+      '<div class="meta">Unable to load answers.</div>';
+
+    return;
+
+  }
+
+
+  if(!answers || !answers.length){
+
+    container.innerHTML =
+      '<div class="meta">No answers yet.</div>';
+
+    return;
+
+  }
+
+
+  container.innerHTML = "";
+
+
+  for(
+    const answer
+    of answers
+  ){
+
+    const box =
+      document.createElement("div");
+
+    box.className =
+      "answer-card";
+
+
+    const text =
+      document.createElement("div");
+
+    text.className =
+      "answer-text";
+
+    text.textContent =
+      answer.answer;
+
+    box.appendChild(text);
+
+
+    const meta =
+      document.createElement("div");
+
+    meta.className =
+      "answer-meta";
+
+    meta.textContent =
+      "Answered on " +
+      formatDate(answer.created_at);
+
+    box.appendChild(meta);
+
+
+    const helpfulButton =
+      document.createElement("button");
+
+    helpfulButton.className =
+      "helpful";
+
+    helpfulButton.textContent =
+      "👍 Helpful";
+
+    box.appendChild(
+      helpfulButton
+    );
+
+
+    const {
+      data:vote
+    } =
+    currentUser
+    ?
+    await supabaseClient
+      .from("answer_helpful_votes")
+      .select("id")
+      .eq("answer_id",answer.id)
+      .eq("user_id",currentUser.id)
+      .maybeSingle()
+    :
+    {data:null};
+
+
+    if(vote){
+
+      helpfulButton.classList.add(
+        "active"
+      );
+
+    }
+
+
+    helpfulButton.onclick =
+      function(){
+
+        toggleHelpful(
+          answer.id,
+          helpfulButton
+        );
+
+      };
+
+
+    if(
+      currentUser &&
+      answer.user_id === currentUser.id
+    ){
+
+      const actions =
+        document.createElement("div");
+
+      actions.className =
+        "answer-actions";
+
+
+      const edit =
+        document.createElement("button");
+
+      edit.className =
+        "action-btn";
+
+      edit.textContent =
+        "✏ Edit";
+
+      edit.onclick =
+        function(){
+
+          editAnswer(
+            answer.id,
+            answer.question_id,
+            answer.answer
+          );
+
+        };
+
+
+      const del =
+        document.createElement("button");
+
+      del.className =
+        "action-btn delete-btn";
+
+      del.textContent =
+        "🗑 Delete";
+
+      del.onclick =
+        function(){
+
+          deleteAnswer(
+            answer.id
+          );
+
+        };
+
+
+      actions.appendChild(edit);
+
+      actions.appendChild(del);
+
+      box.appendChild(actions);
+
+    }
+
+
+    container.appendChild(box);
+
+  }
+
+}
+
+
+/* =========================================
+   OPEN QUESTION MODAL
+========================================= */
+
+function openQuestionModal(){
+
+  if(!currentUser){
+
+    alert(
+      "Please login first."
+    );
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  editingQuestionId =
+    null;
+
+
+  document.getElementById(
+    "questionModalTitle"
+  ).textContent =
+    "Ask a Question";
+
+
+  document.getElementById(
+    "questionSubmitBtn"
+  ).textContent =
+    "Post Question";
+
+
+  document.getElementById(
+    "productName"
+  ).value = "";
+
+
+  document.getElementById(
+    "questionText"
+  ).value = "";
+
+
+  document.getElementById(
+    "questionModal"
+  ).style.display =
+    "block";
+
+}
+
+
+/* =========================================
+   CLOSE QUESTION MODAL
+========================================= */
+
+function closeQuestionModal(){
+
+  document.getElementById(
+    "questionModal"
+  ).style.display =
+    "none";
+
+}
+
+
+/* =========================================
+   SUBMIT QUESTION
+========================================= */
+
+async function submitQuestion(){
+
+  if(!currentUser){
+
+    alert(
+      "Please login first."
+    );
+
+    return;
+
+  }
+
+
+  const productName =
+    document.getElementById(
+      "productName"
+    ).value.trim();
+
+
+  const question =
+    document.getElementById(
+      "questionText"
+    ).value.trim();
+
+
+  if(!productName){
+
+    showMessage(
+      "Please enter product name."
+    );
+
+    return;
+
+  }
+
+
+  if(!question){
+
+    showMessage(
+      "Please enter your question."
+    );
+
+    return;
+
+  }
+
+
+  if(question.length < 5){
+
+    showMessage(
+      "Question is too short."
+    );
+
+    return;
+
+  }
+
+
+  const button =
+    document.getElementById(
+      "questionSubmitBtn"
+    );
+
+  button.disabled =
+    true;
+
+
+  button.textContent =
+    editingQuestionId
+    ? "Updating..."
+    : "Posting...";
+
+
+  let result;
+
+
+  if(editingQuestionId){
+
+    result =
+      await supabaseClient
+        .from("product_questions")
+        .update({
+          product_name:
+            productName,
+          question:
+            question
+        })
+        .eq("id",editingQuestionId)
+        .eq("user_id",currentUser.id);
+
+  }
+
+  else{
+
+    result =
+      await supabaseClient
+        .from("product_questions")
+        .insert({
+
+          user_id:
+            currentUser.id,
+
+          product_name:
+            productName,
+
+          question:
+            question
+
+        });
+
+  }
+
+
+  if(result.error){
+
+    console.error(
+      result.error
+    );
+
+    showMessage(
+      "Unable to save question."
+    );
+
+  }
+
+  else{
+
+    showMessage(
+      editingQuestionId
+      ? "Question updated."
+      : "Question posted."
+    );
+
+    closeQuestionModal();
+
+    editingQuestionId =
+      null;
+
+    await loadQuestions();
+
+  }
+
+
+  button.disabled =
+    false;
+
+}
+
+
+/* =========================================
+   EDIT QUESTION
+========================================= */
+
+async function editQuestion(
+  id
+){
+
+  if(!currentUser){
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+  await supabaseClient
+    .from("product_questions")
+    .select("*")
+    .eq("id",id)
+    .eq("user_id",currentUser.id)
+    .single();
+
+
+  if(error || !data){
+
+    showMessage(
+      "Question not found."
+    );
+
+    return;
+
+  }
+
+
+  editingQuestionId =
+    id;
+
+
+  document.getElementById(
+    "questionModalTitle"
+  ).textContent =
+    "Edit Question";
+
+
+  document.getElementById(
+    "questionSubmitBtn"
+  ).textContent =
+    "Update Question";
+
+
+  document.getElementById(
+    "productName"
+  ).value =
+    data.product_name || "";
+
+
+  document.getElementById(
+    "questionText"
+  ).value =
+    data.question || "";
+
+
+  document.getElementById(
+    "questionModal"
+  ).style.display =
+    "block";
+
+}
+
+
+/* =========================================
+   DELETE QUESTION
+========================================= */
+
+async function deleteQuestion(
+  id
+){
+
+  if(!currentUser){
+    return;
+  }
+
+
+  const confirmed =
+    confirm(
+      "Delete this question?"
+    );
+
+
+  if(!confirmed){
+    return;
+  }
+
+
+  const {
+    error
+  } =
+  await supabaseClient
+    .from("product_questions")
+    .delete()
+    .eq("id",id)
+    .eq("user_id",currentUser.id);
+
+
+  if(error){
+
+    console.error(error);
+
+    showMessage(
+      "Unable to delete question."
+    );
+
+    return;
+
+  }
+
+
+  showMessage(
+    "Question deleted."
+  );
+
+  loadQuestions();
+
+}
+
+
+/* =========================================
+   SUBMIT ANSWER
+========================================= */
+
+async function submitAnswer(
+  questionId
+){
+
+  if(!currentUser){
+
+    alert(
+      "Please login first."
+    );
+
+    return;
+
+  }
+
+
+  const input =
+    document.getElementById(
+      "answer-input-" + questionId
+    );
+
+
+  if(!input){
+    return;
+  }
+
+
+  const answer =
+    input.value.trim();
+
+
+  if(!answer){
+
+    showMessage(
+      "Please write an answer."
+    );
+
+    return;
+
+  }
+
+
+  if(answer.length < 2){
+
+    showMessage(
+      "Answer is too short."
+    );
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+  await supabaseClient
+    .from("question_answers")
+    .insert({
+
+      question_id:
+        questionId,
+
+      user_id:
+        currentUser.id,
+
+      answer:
+        answer
+
+    });
+
+
+  if(error){
+
+    console.error(error);
+
+    showMessage(
+      "Unable to post answer."
+    );
+
+    return;
+
+  }
+
+
+  input.value = "";
+
+  showMessage(
+    "Answer posted."
+  );
+
+
+  loadAnswers(
+    questionId
+  );
+
+}
+
+
+/* =========================================
+   EDIT ANSWER
+========================================= */
+
+async function editAnswer(
+  answerId,
+  questionId,
+  oldAnswer
+){
+
+  if(!currentUser){
+    return;
+  }
+
+
+  const newAnswer =
+    prompt(
+      "Edit your answer:",
+      oldAnswer
+    );
+
+
+  if(newAnswer === null){
+    return;
+  }
+
+
+  const answer =
+    newAnswer.trim();
+
+
+  if(!answer){
+
+    showMessage(
+      "Answer cannot be empty."
+    );
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+  await supabaseClient
+    .from("question_answers")
+    .update({
+      answer:answer
+    })
+    .eq("id",answerId)
+    .eq("user_id",currentUser.id);
+
+
+  if(error){
+
+    console.error(error);
+
+    showMessage(
+      "Unable to update answer."
+    );
+
+    return;
+
+  }
+
+
+  showMessage(
+    "Answer updated."
+  );
+
+
+  loadAnswers(
+    questionId
+  );
+
+}
+
+
+/* =========================================
+   DELETE ANSWER
+========================================= */
+
+async function deleteAnswer(
+  answerId
+){
+
+  if(!currentUser){
+    return;
+  }
+
+
+  const confirmed =
+    confirm(
+      "Delete this answer?"
+    );
+
+
+  if(!confirmed){
+    return;
+  }
+
+
+  const {
+    error
+  } =
+  await supabaseClient
+    .from("question_answers")
+    .delete()
+    .eq("id",answerId)
+    .eq("user_id",currentUser.id);
+
+
+  if(error){
+
+    console.error(error);
+
+    showMessage(
+      "Unable to delete answer."
+    );
+
+    return;
+
+  }
+
+
+  showMessage(
+    "Answer deleted."
+  );
+
+
+  loadQuestions();
+
+}
+
+
+/* =========================================
+   HELPFUL
+========================================= */
+
+async function toggleHelpful(
+  answerId,
+  button
+){
+
+  if(!currentUser){
+
+    alert(
+      "Please login to mark an answer helpful."
+    );
+
+    return;
+
+  }
+
+
+  const {
+    data:existing,
+    error:checkError
+  } =
+  await supabaseClient
+    .from("answer_helpful_votes")
+    .select("id")
+    .eq("answer_id",answerId)
+    .eq("user_id",currentUser.id)
+    .maybeSingle();
+
+
+  if(checkError){
+
+    console.error(
+      checkError
+    );
+
+    showMessage(
+      "Unable to update helpful vote."
+    );
+
+    return;
+
+  }
+
+
+  if(existing){
+
+    const {
+      error
+    } =
+    await supabaseClient
+      .from("answer_helpful_votes")
+      .delete()
+      .eq("id",existing.id)
+      .eq("user_id",currentUser.id);
+
+
+    if(error){
+
+      console.error(error);
+
+      showMessage(
+        "Unable to remove helpful vote."
+      );
+
+      return;
+
+    }
+
+
+    button.classList.remove(
+      "active"
+    );
+
+    showMessage(
+      "Helpful vote removed."
+    );
+
+  }
+
+  else{
+
+    const {
+      error
+    } =
+    await supabaseClient
+      .from("answer_helpful_votes")
+      .insert({
+
+        answer_id:
+          answerId,
+
+        user_id:
+          currentUser.id
+
+      });
+
+
+    if(error){
+
+      console.error(error);
+
+      showMessage(
+        "Unable to mark helpful."
+      );
+
+      return;
+
+    }
+
+
+    button.classList.add(
+      "active"
+    );
+
+    showMessage(
+      "Marked as helpful."
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+function filterQuestions(){
+
+  const search =
+    document.getElementById(
+      "searchInput"
+    ).value
+    .trim()
+    .toLowerCase();
+
+
+  if(!search){
+
+    renderQuestions(
+      allQuestions
+    );
+
+    return;
+
+  }
+
+
+  const filtered =
+    allQuestions.filter(
+      function(item){
+
+        return (
+
+          String(
+            item.question || ""
+          )
+          .toLowerCase()
+          .includes(search)
+
+          ||
+
+          String(
+            item.product_name || ""
+          )
+          .toLowerCase()
+          .includes(search)
+
+        );
+
+      }
+    );
+
+
+  renderQuestions(
+    filtered
+  );
+
+}
+
+
+/* =========================================
+   CLOSE MODAL ON OUTSIDE CLICK
+========================================= */
+
+window.addEventListener(
+  "click",
+  function(event){
+
+    const modal =
+      document.getElementById(
+        "questionModal"
+      );
+
+    if(event.target === modal){
+
+      closeQuestionModal();
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   START
+========================================= */
+
+start();
+
+</script>
+
+</body>
+</html>
