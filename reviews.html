@@ -778,10 +778,9 @@ async function submitReview(){
   document.getElementById("reviewTitle").value = "";
   document.getElementById("reviewText").value = "";
   document.getElementById("rating").value = "5";
-
-  document.querySelector(
-    "#reviewModal button[type='submit']"
-  ).textContent = "Submit Review";
+document.querySelector(
+  "#reviewModal .submit"
+).textContent = "Submit Review";
 
   closeForm();
 
@@ -884,9 +883,8 @@ async function editReview(id){
     data.rating || 5;
 
   document.querySelector(
-    "#reviewModal button[type='submit']"
-  ).textContent = "Update Review";
-
+  "#reviewModal .submit"
+).textContent = "Update Review";
   document.getElementById("reviewModal").style.display =
     "flex";
 }
