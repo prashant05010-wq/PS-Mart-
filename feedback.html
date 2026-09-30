@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>PS MART | Feedback</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5eee3;
+      color: #3b2815;
+    }
+
+    header {
+      background: linear-gradient(135deg, #4b2e12, #8f5d1c);
+      color: white;
+      padding: 18px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 25px;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 30px auto;
+      padding: 0 16px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 5px 20px rgba(80,50,20,0.12);
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #704615;
+    }
+
+    .subtitle {
+      color: #777;
+      line-height: 1.5;
+    }
+
+    .stars {
+      display: flex;
+      gap: 8px;
+      margin: 15px 0 20px;
+    }
+
+    .star {
+      font-size: 35px;
+      cursor: pointer;
+      color: #ccc;
+      transition: 0.2s;
+    }
+
+    .star.active {
+      color: #d89a22;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 130px;
+      resize: vertical;
+      border: 1px solid #d6c2a5;
+      border-radius: 9px;
+      padding: 13px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: #9b681b;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 15px;
+      border: none;
+      border-radius: 9px;
+      padding: 13px;
+      background: linear-gradient(135deg, #8f5d1c, #b77b25);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.92;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .success {
+      display: block;
+      background: #e8f7e8;
+      color: #267326;
+    }
+
+    .error {
+      display: block;
+      background: #fdeaea;
+      color: #a12626;
+    }
+
+    .feedback-item {
+      border-top: 1px solid #eee;
+      padding: 18px 0;
+    }
+
+    .feedback-item:first-child {
+      border-top: none;
+    }
+
+    .feedback-stars {
+      color: #d89a22;
+      font-size: 20px;
+      letter-spacing: 2px;
+    }
+
+    .feedback-text {
+      margin-top: 8px;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    .date {
+      margin-top: 7px;
+      font-size: 12px;
+      color: #999;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 18px;
+      color: #704615;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .login-box {
+      text-align: center;
+      padding: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🛍️ PS MART</h1>
+</header>
+
+<div class="container">
+
+  <a href="profile.html" class="back">← Back to Profile</a>
+
+  <div class="card">
+
+    <h2>💬 Share Your Feedback</h2>
+
+    <p class="subtitle">
+      Tell us about your experience with PS MART.
+      Your feedback helps us improve the platform.
+    </p>
+
+    <div id="loginBox" class="login-box" style="display:none;">
+      <p>Please login first to submit feedback.</p>
+
+      <button onclick="window.location.href='login.html'">
+        Login
+      </button>
+    </div>
+
+    <div id="feedbackForm" style="display:none;">
+
+      <label><b>Your Rating</b></label>
+
+      <div class="stars">
+        <span class="star" data-rating="1">★</span>
+        <span class="star" data-rating="2">★</span>
+        <span class="star" data-rating="3">★</span>
+        <span class="star" data-rating="4">★</span>
+        <span class="star" data-rating="5">★</span>
+      </div>
+
+      <textarea
+        id="feedbackMessage"
+        placeholder="Write your feedback here..."
+      ></textarea>
+
+      <button id="submitBtn" onclick="submitFeedback()">
+        Submit Feedback
+      </button>
+
+      <div id="messageBox" class="message"></div>
+
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <h2>⭐ User Feedback</h2>
+
+    <div id="feedbackList">
+      Loading feedback...
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+  "https://nctscffhnztscczjxhat.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+let currentUser = null;
+let selectedRating = 0;
+
+
+/* =========================
+   START
+========================= */
+
+async function start() {
+
+  const {
+    data: { user }
+  } = await supabaseClient.auth.getUser();
+
+  currentUser = user;
+
+  if (currentUser) {
+
+    document.getElementById("feedbackForm")
+      .style.display = "block";
+
+    document.getElementById("loginBox")
+      .style.display = "none";
+
+  } else {
+
+    document.getElementById("feedbackForm")
+      .style.display = "none";
+
+    document.getElementById("loginBox")
+      .style.display = "block";
+  }
+
+  loadFeedback();
+}
+
+
+/* =========================
+   STAR RATING
+========================= */
+
+document.querySelectorAll(".star").forEach(star => {
+
+  star.addEventListener("click", () => {
+
+    selectedRating =
+      Number(star.dataset.rating);
+
+    updateStars();
+
+  });
+
+});
+
+
+function updateStars() {
+
+  document.querySelectorAll(".star")
+    .forEach(star => {
+
+      const rating =
+        Number(star.dataset.rating);
+
+      star.classList.toggle(
+        "active",
+        rating <= selectedRating
+      );
+
+    });
+
+}
+
+
+/* =========================
+   SUBMIT FEEDBACK
+========================= */
+
+async function submitFeedback() {
+
+  if (!currentUser) {
+
+    showMessage(
+      "Please login first.",
+      "error"
+    );
+
+    return;
+  }
+
+  const message =
+    document.getElementById("feedbackMessage")
+      .value.trim();
+
+  if (selectedRating === 0) {
+
+    showMessage(
+      "Please select a rating.",
+      "error"
+    );
+
+    return;
+  }
+
+  if (!message) {
+
+    showMessage(
+      "Please write your feedback.",
+      "error"
+    );
+
+    return;
+  }
+
+  const button =
+    document.getElementById("submitBtn");
+
+  button.disabled = true;
+  button.textContent = "Submitting...";
+
+
+  const { error } =
+    await supabaseClient
+      .from("feedback")
+      .insert({
+        user_id: currentUser.id,
+        rating: selectedRating,
+        message: message
+      });
+
+
+  if (error) {
+
+    console.error(error);
+
+    showMessage(
+      "Feedback submit nahi ho paya. Please try again.",
+      "error"
+    );
+
+    button.disabled = false;
+    button.textContent = "Submit Feedback";
+
+    return;
+  }
+
+
+  document.getElementById("feedbackMessage")
+    .value = "";
+
+  selectedRating = 0;
+
+  updateStars();
+
+  showMessage(
+    "✅ Thank you! Your feedback has been submitted.",
+    "success"
+  );
+
+  button.disabled = false;
+  button.textContent = "Submit Feedback";
+
+  loadFeedback();
+}
+
+
+/* =========================
+   LOAD FEEDBACK
+========================= */
+
+async function loadFeedback() {
+
+  const list =
+    document.getElementById("feedbackList");
+
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("feedback")
+    .select("*")
+    .order("created_at", {
+      ascending: false
+    });
+
+
+  if (error) {
+
+    console.error(error);
+
+    list.innerHTML =
+      "<p>Unable to load feedback.</p>";
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    list.innerHTML =
+      "<p>No feedback yet. Be the first to share your experience!</p>";
+
+    return;
+  }
+
+
+  list.innerHTML =
+    data.map(item => {
+
+      const stars =
+        "★".repeat(item.rating || 0) +
+        "☆".repeat(5 - (item.rating || 0));
+
+      const date =
+        item.created_at
+          ? new Date(item.created_at)
+              .toLocaleDateString()
+          : "";
+
+
+      return `
+        <div class="feedback-item">
+
+          <div class="feedback-stars">
+            ${stars}
+          </div>
+
+          <div class="feedback-text">
+            ${escapeHTML(item.message)}
+          </div>
+
+          <div class="date">
+            ${date}
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(text, type) {
+
+  const box =
+    document.getElementById("messageBox");
+
+  box.textContent = text;
+
+  box.className =
+    "message " + type;
+
+}
+
+
+/* =========================
+   SECURITY
+========================= */
+
+function escapeHTML(text) {
+
+  const div =
+    document.createElement("div");
+
+  div.textContent = text;
+
+  return div.innerHTML;
+}
+
+
+start();
+
+</script>
+
+</body>
+</html>
