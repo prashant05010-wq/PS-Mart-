@@ -494,7 +494,12 @@ let currentUser = null;
 let allQuestions = [];
 
 let editingQuestionId = null;
+const urlParams = new URLSearchParams(window.location.search);
 
+const productIdFromURL = urlParams.get("id");
+
+const productNameFromURL =
+  urlParams.get("name") || "";
 
 /* =========================================
    START
@@ -1365,11 +1370,9 @@ async function editQuestion(
     "Update Question";
 
 
-  document.getElementById(
-    "productName"
-  ).value =
-    data.product_name || "";
-
+document.getElementById(
+  "productName"
+).value = productNameFromURL;
 
   document.getElementById(
     "questionText"
