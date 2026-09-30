@@ -796,7 +796,30 @@ async function detail() {
       </div>
 
     </div>
+<div class="info-section">
 
+  <h2>❓ Questions & Answers</h2>
+
+  <p style="color:#777;">
+    Have a question about this product?
+  </p>
+
+  <a
+    <a href="questions.html?id=${encodeURIComponent(p.id)}&name=${encodeURIComponent(p.name)}"
+    style="
+      display:inline-block;
+      background:#9b681b;
+      color:white;
+      padding:12px 20px;
+      border-radius:8px;
+      text-decoration:none;
+      font-weight:bold;
+    "
+  >
+    ❓ Ask a Question
+  </a>
+
+</div>
   `;
 
 }
