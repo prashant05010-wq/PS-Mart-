@@ -398,7 +398,7 @@ window.supabase.createClient(
 ========================= */
 
 let currentUser = null;
-
+let editingReviewId = null;
 
 /* =========================
    START
@@ -677,149 +677,116 @@ function setRating(value){
 async function submitReview(){
 
   const productName =
-    document.getElementById(
-      "productName"
-    ).value.trim();
-
+    document.getElementById("productName").value.trim();
 
   const rating =
-    Number(
-      document.getElementById(
-        "rating"
-      ).value
-    );
-
+    document.getElementById("rating").value;
 
   const title =
-    document.getElementById(
-      "reviewTitle"
-    ).value.trim();
-
+    document.getElementById("reviewTitle").value.trim();
 
   const reviewText =
-    document.getElementById(
-      "reviewText"
-    ).value.trim();
-
+    document.getElementById("reviewText").value.trim();
 
   if(!productName){
 
-    showMessage(
-      "Please enter product name."
-    );
+    showMessage("Please enter product name.");
 
     return;
-
   }
 
+  if(!rating){
 
-  if(rating < 1){
-
-    showMessage(
-      "Please select a rating."
-    );
+    showMessage("Please select a rating.");
 
     return;
-
   }
-
-
-  if(!title){
-
-    showMessage(
-      "Please enter review title."
-    );
-
-    return;
-
-  }
-
 
   if(!reviewText){
 
-    showMessage(
-      "Please write your review."
-    );
+    showMessage("Please write your review.");
 
     return;
+  }
+
+  /* EDIT EXISTING REVIEW */
+
+  if(editingReviewId){
+
+    const {
+      error
+    } = await supabaseClient
+      .from("reviews")
+      .update({
+
+        product_name: productName,
+        rating: Number(rating),
+        title: title,
+        review_text: reviewText
+
+      })
+      .eq("id", editingReviewId)
+      .eq("user_id", currentUser.id);
+
+    if(error){
+
+      console.error(error);
+
+      showMessage("Review could not be updated.");
+
+      return;
+    }
+
+    showMessage("Review updated successfully.");
+
+    editingReviewId = null;
 
   }
 
+  /* ADD NEW REVIEW */
 
-  const {
-    error
-  } =
-  await supabaseClient
+  else{
 
-    .from("reviews")
+    const {
+      error
+    } = await supabaseClient
+      .from("reviews")
+      .insert({
 
-    .insert({
+        user_id: currentUser.id,
+        product_name: productName,
+        rating: Number(rating),
+        title: title,
+        review_text: reviewText
 
-      user_id:
-        currentUser.id,
+      });
 
-      product_name:
-        productName,
+    if(error){
 
-      rating:
-        rating,
+      console.error(error);
 
-      title:
-        title,
+      showMessage("Review could not be submitted.");
 
-      review_text:
-        reviewText
+      return;
+    }
 
-    });
-
-
-  if(error){
-
-    console.error(error);
-
-    showMessage(
-      "Review could not be saved."
-    );
-
-    return;
+    showMessage("Review submitted successfully.");
 
   }
 
+  document.getElementById("productName").value = "";
+  document.getElementById("reviewTitle").value = "";
+  document.getElementById("reviewText").value = "";
+  document.getElementById("rating").value = "5";
 
-  showMessage(
-    "Review submitted successfully!"
-  );
-
-
-  document.getElementById(
-    "productName"
-  ).value = "";
-
-
-  document.getElementById(
-    "rating"
-  ).value = 0;
-
-
-  document.getElementById(
-    "reviewTitle"
-  ).value = "";
-
-
-  document.getElementById(
-    "reviewText"
-  ).value = "";
-
-
-  setRating(0);
+  document.querySelector(
+    "#reviewModal button[type='submit']"
+  ).textContent = "Submit Review";
 
   closeForm();
 
   loadReviews();
-
 }
-
-
 /* =========================
    DELETE
 ========================= */
@@ -881,14 +848,48 @@ async function deleteReview(id){
    EDIT
 ========================= */
 
-function editReview(){
+async function editReview(id){
 
-  showMessage(
-    "Edit will be added after the first save test."
-  );
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("reviews")
+    .select("*")
+    .eq("id", id)
+    .eq("user_id", currentUser.id)
+    .single();
 
+  if(error){
+
+    console.error(error);
+
+    showMessage("Review could not be loaded.");
+
+    return;
+  }
+
+  editingReviewId = id;
+
+  document.getElementById("productName").value =
+    data.product_name || "";
+
+  document.getElementById("reviewTitle").value =
+    data.title || "";
+
+  document.getElementById("reviewText").value =
+    data.review_text || "";
+
+  document.getElementById("rating").value =
+    data.rating || 5;
+
+  document.querySelector(
+    "#reviewModal button[type='submit']"
+  ).textContent = "Update Review";
+
+  document.getElementById("reviewModal").style.display =
+    "flex";
 }
-
 
 /* =========================
    HTML SECURITY
