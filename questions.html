@@ -591,17 +591,16 @@ async function loadQuestions(){
   list.innerHTML =
     '<div class="loading">Loading questions...</div>';
 
-  const {
-    data,
-    error
-  } =
-  await supabaseClient
-    .from("product_questions")
-    .select("*")
-    .order("created_at",{
-      ascending:false
-    });
+ let query = supabaseClient
+  .from("product_questions")
+  .select("*")
+  .order("created_at", { ascending: false });
 
+if (productIdFromURL) {
+  query = query.eq("product_id", productIdFromURL);
+}
+
+const { data, error } = await query;
   if(error){
 
     console.error(error);
@@ -1266,18 +1265,14 @@ async function submitQuestion(){
     result =
       await supabaseClient
         .from("product_questions")
-        .insert({
-
-          user_id:
-            currentUser.id,
-
-          product_name:
-            productName,
-
-          question:
-            question
-
-        });
+        .insert(
+          {
+  user_id: currentUser.id,
+  product_id: productIdFromURL || null,
+  product_name: productName,
+  question: question
+}
+);
 
   }
 
