@@ -6,6 +6,8 @@
 
 <title>Reviews | PS Mart</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{
   box-sizing:border-box;
@@ -19,8 +21,6 @@ body{
   color:#3b2415;
 }
 
-/* HEADER */
-
 header{
   background:#3b2112;
   color:#ffd66b;
@@ -28,40 +28,32 @@ header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  box-shadow:0 2px 12px rgba(0,0,0,.2);
 }
 
 .logo{
   font-size:22px;
   font-weight:bold;
-  letter-spacing:.5px;
 }
 
 .back{
   color:#ffd66b;
   text-decoration:none;
-  font-size:14px;
 }
 
-/* MAIN */
-
 .container{
-  max-width:1000px;
+  max-width:950px;
   margin:25px auto;
   padding:0 15px;
 }
 
-.page-title{
-  font-size:28px;
-  margin-bottom:6px;
+h1{
+  margin-bottom:7px;
 }
 
 .subtitle{
   color:#765b45;
-  margin-bottom:22px;
+  margin-bottom:20px;
 }
-
-/* BUTTON */
 
 .write-btn{
   display:inline-block;
@@ -71,28 +63,21 @@ header{
   border-radius:9px;
   text-decoration:none;
   font-weight:bold;
-  margin-bottom:22px;
+  margin-bottom:20px;
 }
-
-.write-btn:hover{
-  background:#956f08;
-}
-
-/* REVIEW CARD */
 
 .review-box{
-  background:#fff;
+  background:white;
+  border:1px solid #ead7bd;
   border-radius:14px;
   padding:20px;
   margin-bottom:18px;
-  box-shadow:0 4px 15px rgba(80,40,10,.10);
-  border:1px solid #ead7bd;
+  box-shadow:0 4px 15px rgba(80,40,10,.1);
 }
 
 .review-top{
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
   gap:15px;
 }
 
@@ -101,19 +86,17 @@ header{
   font-weight:bold;
 }
 
-.verified{
-  display:inline-block;
-  margin-top:7px;
-  color:#247a35;
-  font-size:13px;
-  font-weight:bold;
-}
-
 .stars{
   color:#e0a400;
   font-size:20px;
   letter-spacing:2px;
-  white-space:nowrap;
+}
+
+.verified{
+  color:#247a35;
+  font-size:13px;
+  font-weight:bold;
+  margin-top:7px;
 }
 
 .review-title{
@@ -131,32 +114,26 @@ header{
 .date{
   color:#8a7765;
   font-size:12px;
-  margin-top:12px;
+  margin-top:10px;
 }
 
 .actions{
   display:flex;
-  flex-wrap:wrap;
   gap:9px;
-  margin-top:17px;
+  margin-top:16px;
+  flex-wrap:wrap;
 }
 
 .actions button{
-  border:none;
+  border:0;
   padding:9px 13px;
   border-radius:8px;
   cursor:pointer;
   font-weight:bold;
 }
 
-.helpful{
-  background:#fff2cf;
-  color:#805900;
-}
-
 .edit{
   background:#ead9b9;
-  color:#4b2d17;
 }
 
 .delete{
@@ -164,31 +141,16 @@ header{
   color:#9b2222;
 }
 
-/* SELLER REPLY */
-
-.seller-reply{
-  margin-top:18px;
-  padding:14px;
-  background:#faf3e6;
-  border-left:4px solid #b8860b;
-  border-radius:8px;
+.helpful{
+  background:#fff2cf;
+  color:#805900;
 }
-
-.reply-title{
-  font-weight:bold;
-  margin-bottom:6px;
-  color:#6b451f;
-}
-
-/* EMPTY */
 
 .empty{
   text-align:center;
-  padding:35px 20px;
+  padding:35px;
   color:#765b45;
 }
-
-/* MODAL */
 
 .modal{
   display:none;
@@ -196,123 +158,74 @@ header{
   inset:0;
   background:rgba(0,0,0,.65);
   z-index:9999;
-  padding:20px;
+  padding:15px;
   overflow:auto;
 }
 
 .modal-box{
-  max-width:560px;
+  max-width:550px;
   margin:35px auto;
   background:white;
-  padding:25px;
-  border-radius:16px;
-  box-shadow:0 10px 35px rgba(0,0,0,.3);
+  padding:24px;
+  border-radius:15px;
 }
 
-.modal-header{
+.modal-head{
   display:flex;
   justify-content:space-between;
   align-items:center;
   margin-bottom:20px;
 }
 
-.modal-header h2{
-  font-size:22px;
-}
-
-.close-btn{
-  border:none;
+.close{
+  border:0;
   background:#eee;
-  color:#333;
-  font-size:22px;
-  width:38px;
-  height:38px;
   border-radius:50%;
+  width:35px;
+  height:35px;
+  font-size:20px;
   cursor:pointer;
 }
 
-/* FORM */
-
-.form-group{
-  margin-bottom:17px;
-}
-
-.form-group label{
+label{
   display:block;
   font-weight:bold;
   margin-bottom:7px;
 }
 
-.form-group input,
-.form-group textarea,
-.form-group select{
+input,textarea{
   width:100%;
   padding:12px;
   border:1px solid #d9c8b4;
   border-radius:8px;
+  margin-bottom:17px;
   font-size:15px;
-  outline:none;
 }
 
-.form-group input:focus,
-.form-group textarea:focus{
-  border-color:#b8860b;
-}
-
-.form-group textarea{
+textarea{
   min-height:130px;
   resize:vertical;
-}
-
-/* STAR SELECTOR */
-
-.rating-title{
-  font-weight:bold;
-  margin-bottom:7px;
 }
 
 .rating-stars{
   display:flex;
   gap:4px;
-  font-size:34px;
-  cursor:pointer;
+  font-size:35px;
+  margin-bottom:5px;
 }
 
 .rating-stars span{
   color:#d7d7d7;
-  transition:.15s;
+  cursor:pointer;
 }
 
 .rating-stars span.active{
   color:#e0a400;
 }
 
-.rating-text{
-  font-size:13px;
-  color:#765b45;
-  margin-top:5px;
-}
-
-/* CHECKBOX */
-
-.checkbox-row{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-bottom:18px;
-  color:#5c4634;
-}
-
-.checkbox-row input{
-  width:17px;
-  height:17px;
-}
-
-/* SUBMIT */
-
-.submit-btn{
+.submit{
   width:100%;
-  border:none;
+  border:0;
   background:#b8860b;
   color:white;
   padding:13px;
@@ -322,79 +235,26 @@ header{
   cursor:pointer;
 }
 
-.submit-btn:hover{
-  background:#956f08;
-}
-
-/* PHOTO */
-
-.photo-note{
-  font-size:12px;
-  color:#8a7765;
-  margin-top:5px;
-}
-
-/* TOAST */
-
-.toast{
+#message{
   display:none;
   position:fixed;
+  bottom:20px;
   left:50%;
-  bottom:25px;
   transform:translateX(-50%);
   background:#3b2112;
   color:white;
-  padding:13px 18px;
+  padding:12px 18px;
   border-radius:9px;
   z-index:10000;
-  box-shadow:0 5px 20px rgba(0,0,0,.25);
-  max-width:90%;
-  text-align:center;
 }
 
-/* MOBILE */
-
 @media(max-width:600px){
-
-  header{
-    padding:14px;
-  }
-
-  .logo{
-    font-size:19px;
-  }
-
-  .container{
-    margin-top:20px;
-  }
-
-  .page-title{
-    font-size:24px;
-  }
-
   .review-top{
     flex-direction:column;
   }
 
-  .stars{
-    font-size:18px;
-  }
-
-  .modal{
-    padding:10px;
-  }
-
-  .modal-box{
-    margin:15px auto;
-    padding:20px;
-  }
-
-  .rating-stars{
-    font-size:30px;
-  }
-
-  .actions button{
-    flex:1;
+  .container{
+    margin-top:20px;
   }
 }
 </style>
@@ -415,252 +275,93 @@ header{
 </header>
 
 
-<main class="container">
+<div class="container">
 
-  <h1 class="page-title">
-    My Reviews ⭐
-  </h1>
+  <h1>My Reviews ⭐</h1>
 
   <p class="subtitle">
-    Share your shopping experience and help other customers.
+    Share your shopping experience with other customers.
   </p>
-
 
   <a href="javascript:void(0)"
      class="write-btn"
-     onclick="openReviewForm()">
+     onclick="openForm()">
     ✍ Write a Review
   </a>
 
+  <div id="reviewsList"></div>
 
-  <!-- SAMPLE REVIEW -->
-
-  <div class="review-box">
-
-    <div class="review-top">
-
-      <div>
-
-        <div class="product-name">
-          Product Name
-        </div>
-
-        <div class="verified">
-          ✓ Verified Purchase
-        </div>
-
-      </div>
-
-      <div class="stars">
-        ★★★★★
-      </div>
-
-    </div>
+</div>
 
 
-    <div class="review-title">
-      Great Product
-    </div>
-
-
-    <div class="review-text">
-      Your real reviews will appear here after the PS Mart
-      review database is connected.
-    </div>
-
-
-    <div class="date">
-      Reviewed on 29 September 2026
-    </div>
-
-
-    <div class="actions">
-
-      <button class="helpful"
-              onclick="markHelpful(this)">
-        👍 Helpful <span>0</span>
-      </button>
-
-      <button class="edit"
-              onclick="editReview()">
-        ✏ Edit
-      </button>
-
-      <button class="delete"
-              onclick="deleteReview()">
-        🗑 Delete
-      </button>
-
-    </div>
-
-
-    <div class="seller-reply">
-
-      <div class="reply-title">
-        Seller Reply
-      </div>
-
-      <div>
-        Thank you for your valuable feedback!
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- EMPTY INFORMATION -->
-
-  <div class="review-box empty">
-
-    <h2>No more reviews</h2>
-
-    <p style="margin-top:8px;">
-      Your future product reviews will appear here.
-    </p>
-
-  </div>
-
-</main>
-
-
-<!-- WRITE REVIEW MODAL -->
+<!-- REVIEW FORM -->
 
 <div id="reviewModal" class="modal">
 
   <div class="modal-box">
 
-    <div class="modal-header">
+    <div class="modal-head">
 
-      <h2>
-        Write a Review ⭐
-      </h2>
+      <h2>Write a Review ⭐</h2>
 
-      <button class="close-btn"
-              onclick="closeReviewForm()">
+      <button class="close"
+              onclick="closeForm()">
         ×
       </button>
 
     </div>
 
 
-    <div class="form-group">
+    <label>Product Name</label>
 
-      <label>
-        Product
-      </label>
-
-      <input
-        type="text"
-        id="reviewProduct"
-        placeholder="Enter product name"
-        maxlength="150"
-      >
-
-    </div>
+    <input
+      id="productName"
+      type="text"
+      placeholder="Enter product name"
+      maxlength="150"
+    >
 
 
-    <div class="form-group">
+    <label>Your Rating</label>
 
-      <div class="rating-title">
-        Your Rating
-      </div>
+    <div class="rating-stars"
+         id="ratingStars">
 
-      <div class="rating-stars"
-           id="ratingStars">
-
-        <span onclick="selectRating(1)">★</span>
-        <span onclick="selectRating(2)">★</span>
-        <span onclick="selectRating(3)">★</span>
-        <span onclick="selectRating(4)">★</span>
-        <span onclick="selectRating(5)">★</span>
-
-      </div>
-
-      <div class="rating-text"
-           id="ratingText">
-        Select your rating
-      </div>
-
-      <input
-        type="hidden"
-        id="reviewRating"
-        value="0"
-      >
+      <span onclick="setRating(1)">★</span>
+      <span onclick="setRating(2)">★</span>
+      <span onclick="setRating(3)">★</span>
+      <span onclick="setRating(4)">★</span>
+      <span onclick="setRating(5)">★</span>
 
     </div>
 
-
-    <div class="form-group">
-
-      <label>
-        Review Title
-      </label>
-
-      <input
-        type="text"
-        id="reviewTitle"
-        placeholder="Example: Excellent product"
-        maxlength="100"
-      >
-
-    </div>
+    <input
+      type="hidden"
+      id="rating"
+      value="0"
+    >
 
 
-    <div class="form-group">
+    <label>Review Title</label>
 
-      <label>
-        Your Review
-      </label>
-
-      <textarea
-        id="reviewText"
-        placeholder="Tell other customers about your experience..."
-        maxlength="2000"
-      ></textarea>
-
-      <div class="photo-note">
-        Maximum 2000 characters.
-      </div>
-
-    </div>
+    <input
+      id="reviewTitle"
+      type="text"
+      placeholder="Example: Very good product"
+      maxlength="100"
+    >
 
 
-    <div class="form-group">
+    <label>Your Review</label>
 
-      <label>
-        Add Photos
-      </label>
-
-      <input
-        type="file"
-        id="reviewPhotos"
-        accept="image/*"
-        multiple
-      >
-
-      <div class="photo-note">
-        Photo upload will be connected with PS Mart storage later.
-      </div>
-
-    </div>
+    <textarea
+      id="reviewText"
+      placeholder="Tell us about your experience..."
+      maxlength="2000"
+    ></textarea>
 
 
-    <div class="checkbox-row">
-
-      <input
-        type="checkbox"
-        id="verifiedPurchase"
-      >
-
-      <label for="verifiedPurchase">
-        I purchased this product from PS Mart
-      </label>
-
-    </div>
-
-
-    <button class="submit-btn"
+    <button class="submit"
             onclick="submitReview()">
       Submit Review
     </button>
@@ -670,78 +371,301 @@ header{
 </div>
 
 
-<!-- TOAST -->
-
-<div id="toast" class="toast"></div>
+<div id="message"></div>
 
 
 <script>
 
 /* =========================
-   REVIEW FORM
+   SUPABASE
 ========================= */
 
-function openReviewForm(){
+const SUPABASE_URL =
+"https://nctscffhnztscczjxhat.supabase.co";
 
-  document.getElementById("reviewModal").style.display = "block";
+const SUPABASE_ANON_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
 
-  document.body.style.overflow = "hidden";
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
-}
+
+/* =========================
+   CURRENT USER
+========================= */
+
+let currentUser = null;
 
 
-function closeReviewForm(){
+/* =========================
+   START
+========================= */
 
-  document.getElementById("reviewModal").style.display = "none";
+async function start(){
 
-  document.body.style.overflow = "auto";
+  const {
+    data:{
+      user
+    }
+  } =
+  await supabaseClient.auth.getUser();
+
+
+  if(!user){
+
+    alert("Please login first.");
+
+    window.location.href =
+      "login.html";
+
+    return;
+
+  }
+
+
+  currentUser = user;
+
+  loadReviews();
 
 }
 
 
 /* =========================
-   STAR RATING
+   LOAD REVIEWS
 ========================= */
 
-function selectRating(rating){
+async function loadReviews(){
 
-  document.getElementById("reviewRating").value = rating;
+  const list =
+    document.getElementById("reviewsList");
 
-  const stars =
-    document.querySelectorAll("#ratingStars span");
 
-  stars.forEach(function(star,index){
+  list.innerHTML =
+    '<div class="review-box">Loading reviews...</div>';
 
-    if(index < rating){
 
-      star.classList.add("active");
+  const {
+    data,
+    error
+  } =
+  await supabaseClient
 
-    }else{
+    .from("reviews")
 
-      star.classList.remove("active");
+    .select("*")
 
-    }
+    .order(
+      "created_at",
+      {
+        ascending:false
+      }
+    );
+
+
+  if(error){
+
+    list.innerHTML =
+      '<div class="review-box">Unable to load reviews.</div>';
+
+    console.error(error);
+
+    return;
+
+  }
+
+
+  if(!data || data.length === 0){
+
+    list.innerHTML = `
+      <div class="review-box empty">
+
+        <h2>No reviews yet</h2>
+
+        <p style="margin-top:8px;">
+          Be the first person to write a review.
+        </p>
+
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  list.innerHTML = "";
+
+
+  data.forEach(function(review){
+
+    const stars =
+      "★".repeat(review.rating)
+      +
+      "☆".repeat(5 - review.rating);
+
+
+    const date =
+      review.created_at
+      ?
+      new Date(review.created_at)
+      .toLocaleDateString("en-IN")
+      :
+      "";
+
+
+    const ownReview =
+      currentUser &&
+      review.user_id === currentUser.id;
+
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "review-box";
+
+
+    card.innerHTML = `
+
+      <div class="review-top">
+
+        <div>
+
+          <div class="product-name">
+            ${escapeHTML(review.product_name || "Product")}
+          </div>
+
+        </div>
+
+        <div class="stars">
+          ${stars}
+        </div>
+
+      </div>
+
+
+      ${
+        review.title
+        ?
+        `<div class="review-title">
+          ${escapeHTML(review.title)}
+        </div>`
+        :
+        ""
+      }
+
+
+      <div class="review-text">
+        ${escapeHTML(review.review_text || "")}
+      </div>
+
+
+      <div class="date">
+        Reviewed on ${date}
+      </div>
+
+
+      ${
+        ownReview
+        ?
+        `
+        <div class="actions">
+
+          <button
+            class="edit"
+            onclick="editReview('${review.id}')">
+            ✏ Edit
+          </button>
+
+          <button
+            class="delete"
+            onclick="deleteReview('${review.id}')">
+            🗑 Delete
+          </button>
+
+        </div>
+        `
+        :
+        ""
+      }
+
+    `;
+
+
+    list.appendChild(card);
 
   });
 
-
-  const ratingText =
-    document.getElementById("ratingText");
+}
 
 
-  const messages = {
+/* =========================
+   OPEN FORM
+========================= */
 
-    1:"Very Bad",
-    2:"Not Good",
-    3:"Average",
-    4:"Good",
-    5:"Excellent"
+function openForm(){
 
-  };
+  document.getElementById(
+    "reviewModal"
+  ).style.display = "block";
+
+  document.body.style.overflow =
+    "hidden";
+
+}
 
 
-  ratingText.innerText =
-    messages[rating];
+/* =========================
+   CLOSE FORM
+========================= */
+
+function closeForm(){
+
+  document.getElementById(
+    "reviewModal"
+  ).style.display = "none";
+
+  document.body.style.overflow =
+    "auto";
+
+}
+
+
+/* =========================
+   RATING
+========================= */
+
+function setRating(value){
+
+  document.getElementById(
+    "rating"
+  ).value = value;
+
+
+  const stars =
+    document.querySelectorAll(
+      "#ratingStars span"
+    );
+
+
+  stars.forEach(
+    function(star,index){
+
+      if(index < value){
+
+        star.classList.add("active");
+
+      }else{
+
+        star.classList.remove("active");
+
+      }
+
+    }
+  );
 
 }
 
@@ -750,32 +674,39 @@ function selectRating(rating){
    SUBMIT REVIEW
 ========================= */
 
-function submitReview(){
+async function submitReview(){
 
-  const product =
-    document.getElementById("reviewProduct")
-    .value
-    .trim();
+  const productName =
+    document.getElementById(
+      "productName"
+    ).value.trim();
+
 
   const rating =
     Number(
-      document.getElementById("reviewRating").value
+      document.getElementById(
+        "rating"
+      ).value
     );
 
+
   const title =
-    document.getElementById("reviewTitle")
-    .value
-    .trim();
-
-  const review =
-    document.getElementById("reviewText")
-    .value
-    .trim();
+    document.getElementById(
+      "reviewTitle"
+    ).value.trim();
 
 
-  if(!product){
+  const reviewText =
+    document.getElementById(
+      "reviewText"
+    ).value.trim();
 
-    showToast("Please enter the product name.");
+
+  if(!productName){
+
+    showMessage(
+      "Please enter product name."
+    );
 
     return;
 
@@ -784,7 +715,9 @@ function submitReview(){
 
   if(rating < 1){
 
-    showToast("Please select a star rating.");
+    showMessage(
+      "Please select a rating."
+    );
 
     return;
 
@@ -793,43 +726,153 @@ function submitReview(){
 
   if(!title){
 
-    showToast("Please enter a review title.");
+    showMessage(
+      "Please enter review title."
+    );
 
     return;
 
   }
 
 
-  if(!review){
+  if(!reviewText){
 
-    showToast("Please write your review.");
+    showMessage(
+      "Please write your review."
+    );
 
     return;
 
   }
 
 
-  showToast(
-    "Review form is ready. Database connection will be added next."
+  const {
+    error
+  } =
+  await supabaseClient
+
+    .from("reviews")
+
+    .insert({
+
+      user_id:
+        currentUser.id,
+
+      product_name:
+        productName,
+
+      rating:
+        rating,
+
+      title:
+        title,
+
+      review_text:
+        reviewText
+
+    });
+
+
+  if(error){
+
+    console.error(error);
+
+    showMessage(
+      "Review could not be saved."
+    );
+
+    return;
+
+  }
+
+
+  showMessage(
+    "Review submitted successfully!"
   );
+
+
+  document.getElementById(
+    "productName"
+  ).value = "";
+
+
+  document.getElementById(
+    "rating"
+  ).value = 0;
+
+
+  document.getElementById(
+    "reviewTitle"
+  ).value = "";
+
+
+  document.getElementById(
+    "reviewText"
+  ).value = "";
+
+
+  setRating(0);
+
+  closeForm();
+
+  loadReviews();
 
 }
 
 
 /* =========================
-   HELPFUL
+   DELETE
 ========================= */
 
-function markHelpful(button){
+async function deleteReview(id){
 
-  const count =
-    button.querySelector("span");
+  if(
+    !confirm(
+      "Do you want to delete this review?"
+    )
+  ){
 
-  const current =
-    Number(count.innerText);
+    return;
 
-  count.innerText =
-    current + 1;
+  }
+
+
+  const {
+    error
+  } =
+  await supabaseClient
+
+    .from("reviews")
+
+    .delete()
+
+    .eq("id",id)
+
+    .eq(
+      "user_id",
+      currentUser.id
+    );
+
+
+  if(error){
+
+    console.error(error);
+
+    showMessage(
+      "Review could not be deleted."
+    );
+
+    return;
+
+  }
+
+
+  showMessage(
+    "Review deleted."
+  );
+
+
+  loadReviews();
 
 }
 
@@ -840,77 +883,70 @@ function markHelpful(button){
 
 function editReview(){
 
-  showToast(
-    "Edit will be connected with your review account."
+  showMessage(
+    "Edit will be added after the first save test."
   );
 
 }
 
 
 /* =========================
-   DELETE
+   HTML SECURITY
 ========================= */
 
-function deleteReview(){
+function escapeHTML(value){
 
-  const answer =
-    confirm(
-      "Are you sure you want to delete this review?"
-    );
+  return String(value)
 
+    .replaceAll("&","&amp;")
 
-  if(answer){
+    .replaceAll("<","&lt;")
 
-    showToast(
-      "Delete will be connected with the review database."
-    );
+    .replaceAll(">","&gt;")
 
-  }
+    .replaceAll('"',"&quot;")
+
+    .replaceAll("'","&#039;");
 
 }
 
 
 /* =========================
-   TOAST
+   MESSAGE
 ========================= */
 
-function showToast(message){
+function showMessage(text){
 
-  const toast =
-    document.getElementById("toast");
-
-  toast.innerText = message;
-
-  toast.style.display = "block";
+  const box =
+    document.getElementById(
+      "message"
+    );
 
 
-  setTimeout(function(){
+  box.innerText = text;
 
-    toast.style.display = "none";
+  box.style.display =
+    "block";
 
-  },3000);
+
+  setTimeout(
+    function(){
+
+      box.style.display =
+        "none";
+
+    },
+    3000
+  );
 
 }
 
 
 /* =========================
-   CLOSE MODAL OUTSIDE
+   START
 ========================= */
 
-window.addEventListener("click",function(event){
-
-  const modal =
-    document.getElementById("reviewModal");
-
-
-  if(event.target === modal){
-
-    closeReviewForm();
-
-  }
-
-});
-
+start();
 
 </script>
 
