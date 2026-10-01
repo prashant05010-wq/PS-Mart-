@@ -490,31 +490,64 @@ if (profileError || !profile) {
     alert("Unable to load products.");
 
     return;
-
-  }
-
-
-  let total = 0;
+    let total = 0;
 
 
-  for (const item of c) {
+for (const item of c) {
 
-    const product =
-      products.find(
-        p =>
-          String(p.id) ===
-          String(item.id)
-      );
-
-
-    if (!product) continue;
+  const product =
+    products.find(
+      p =>
+        String(p.id) ===
+        String(item.id)
+    );
 
 
-    total +=
-      Number(product.price) *
-      item.qty;
+  if (!product) continue;
 
-  }
+
+  total +=
+    Number(product.price) *
+    item.qty;
+
+}
+
+
+/* =========================
+   APPLY SAVED COUPON
+========================= */
+
+let couponDiscount = 0;
+
+const savedCoupon =
+  JSON.parse(
+    localStorage.getItem(
+      "psmart-applied-coupon"
+    ) || "null"
+  );
+
+
+if (savedCoupon) {
+
+  couponDiscount =
+    Number(
+      savedCoupon.discount || 0
+    );
+
+}
+
+
+const finalTotal =
+  Math.max(
+    0,
+    total - couponDiscount
+  );
+
+
+console.log("Cart Total:", total);
+console.log("Coupon Discount:", couponDiscount);
+console.log("Final Total:", finalTotal);
+
 
 
   if (total <= 0) {
@@ -542,8 +575,7 @@ if (profileError || !profile) {
 
        customer_id: profile.id,
 
-        total_amount: total,
-
+      total_amount: finalTotal,v
         status: "placed",
 
         address: deliveryAddress
