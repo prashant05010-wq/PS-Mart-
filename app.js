@@ -1038,6 +1038,22 @@ async function renderCart() {
     })
     .join("");
 
+  /* =========================
+     COUPON + CART SUMMARY
+  ========================= */
+
+  const savedCoupon =
+    JSON.parse(
+      localStorage.getItem("psmart-applied-coupon") || "null"
+    );
+
+  if (savedCoupon) {
+    couponDiscount = Number(savedCoupon.discount || 0);
+  }
+
+  const finalTotal =
+    Math.max(0, total - couponDiscount);
+
 
   e.innerHTML = `
 
@@ -1054,12 +1070,152 @@ async function renderCart() {
         Price Details
       </h2>
 
+
       <p>
         Total
         <b>
           ${money(total)}
         </b>
       </p>
+
+
+      <!-- COUPON BOX -->
+
+      <div style="
+        margin:15px 0;
+        padding:16px;
+        border-radius:12px;
+        background:linear-gradient(135deg,#fff8e7,#f8ead0);
+        border:1px solid #e0b45a;
+        box-shadow:0 3px 12px rgba(0,0,0,.08);
+      ">
+
+        <div style="
+          font-weight:bold;
+          color:#6f4612;
+          font-size:16px;
+          margin-bottom:10px;
+        ">
+          🎟️ Have a Coupon?
+        </div>
+
+
+        ${
+          savedCoupon
+            ? `
+
+              <div style="
+                background:#fff;
+                padding:12px;
+                border-radius:8px;
+                border:1px solid #d8b35c;
+              ">
+
+                <div style="
+                  color:#8a5a12;
+                  font-weight:bold;
+                ">
+                  🎉 ${savedCoupon.code}
+                </div>
+
+                <div style="
+                  color:#188038;
+                  margin-top:5px;
+                  font-weight:bold;
+                ">
+                  You saved ${money(couponDiscount)}
+                </div>
+
+
+                <button
+                  onclick="removeCoupon()"
+                  style="
+                    margin-top:10px;
+                    border:0;
+                    background:#f3eeee;
+                    color:#b3261e;
+                    padding:7px 12px;
+                    border-radius:6px;
+                    cursor:pointer;
+                    font-weight:bold;
+                  "
+                >
+                  Remove Coupon
+                </button>
+
+              </div>
+
+            `
+            : `
+
+              <div style="
+                display:flex;
+                gap:8px;
+              ">
+
+                <input
+                  id="couponInput"
+                  type="text"
+                  placeholder="Enter coupon code"
+                  style="
+                    flex:1;
+                    min-width:0;
+                    padding:12px;
+                    border:1px solid #c9a24d;
+                    border-radius:7px;
+                    outline:none;
+                    box-sizing:border-box;
+                    text-transform:uppercase;
+                  "
+                >
+
+                <button
+                  onclick="applyCoupon()"
+                  style="
+                    padding:12px 16px;
+                    border:0;
+                    border-radius:7px;
+                    background:linear-gradient(135deg,#d8a83e,#9b681b);
+                    color:white;
+                    font-weight:bold;
+                    cursor:pointer;
+                    white-space:nowrap;
+                  "
+                >
+                  Apply
+                </button>
+
+              </div>
+
+              <div style="
+                margin-top:8px;
+                font-size:12px;
+                color:#777;
+              ">
+                💡 Apply a valid coupon and save instantly.
+              </div>
+
+            `
+        }
+
+      </div>
+
+
+      ${
+        couponDiscount > 0
+          ? `
+
+            <p style="color:#188038;">
+              Coupon Discount
+              <b>
+                − ${money(couponDiscount)}
+              </b>
+            </p>
+
+          `
+          : ""
+      }
+
 
       <p>
         Delivery
@@ -1068,11 +1224,30 @@ async function renderCart() {
         </b>
       </p>
 
+
       <hr>
 
+
       <h2>
-        ${money(total)}
+        Total:
+        ${money(finalTotal)}
       </h2>
+
+
+      ${
+        couponDiscount > 0
+          ? `
+            <p style="
+              color:#188038;
+              font-weight:bold;
+              font-size:13px;
+            ">
+              🎉 You saved ${money(couponDiscount)} on this order!
+            </p>
+          `
+          : ""
+      }
+
 
       <a
         class="goldbtn block"
@@ -1084,7 +1259,204 @@ async function renderCart() {
 
   `;
 }
+/* =========================
+   PS MART COUPON SYSTEM
+========================= */
 
+let appliedCoupon = null;
+let couponDiscount = 0;
+
+async function applyCoupon() {
+
+  const input = document.getElementById("couponInput");
+
+  if (!input) return;
+
+  const code = input.value.trim().toUpperCase();
+
+  if (!code) {
+    alert("Please enter a coupon code.");
+    return;
+  }
+
+  const c = cart();
+
+  if (!c.length) {
+    alert("Your cart is empty.");
+    return;
+  }
+
+  const ids = c.map(item => item.id);
+
+  const {
+    data: products,
+    error: productError
+  } = await supabaseClient
+    .from("products")
+    .select("*")
+    .in("id", ids)
+    .eq("status", "approved");
+
+  if (productError) {
+    alert("Unable to calculate cart total.");
+    return;
+  }
+
+  let subtotal = 0;
+
+  c.forEach(item => {
+
+    const p = products.find(
+      product =>
+        String(product.id) === String(item.id)
+    );
+
+    if (p) {
+      subtotal +=
+        Number(p.price) *
+        Number(item.qty || 1);
+    }
+
+  });
+
+  const {
+    data: coupon,
+    error
+  } = await supabaseClient
+    .from("coupons")
+    .select("*")
+    .eq("code", code)
+    .eq("active", true)
+    .maybeSingle();
+
+  if (error || !coupon) {
+
+    appliedCoupon = null;
+    couponDiscount = 0;
+
+    alert("❌ Invalid or unavailable coupon code.");
+    await renderCart();
+
+    return;
+  }
+
+  /* EXPIRY CHECK */
+
+  if (
+    coupon.expires_at &&
+    new Date(coupon.expires_at) < new Date()
+  ) {
+
+    alert("⏰ This coupon has expired.");
+    return;
+  }
+
+  /* MINIMUM ORDER CHECK */
+
+  if (
+    Number(subtotal) <
+    Number(coupon.minimum_order || 0)
+  ) {
+
+    alert(
+      "🛍️ Minimum order value for this coupon is " +
+      money(coupon.minimum_order)
+    );
+
+    return;
+  }
+
+  /* USAGE LIMIT CHECK */
+
+  if (
+    coupon.usage_limit !== null &&
+    coupon.usage_limit !== undefined &&
+    Number(coupon.used_count || 0) >=
+    Number(coupon.usage_limit)
+  ) {
+
+    alert("😔 This coupon has reached its usage limit.");
+    return;
+  }
+
+  /* CALCULATE DISCOUNT */
+
+  let discount = 0;
+
+  if (
+    coupon.discount_type === "percentage"
+  ) {
+
+    discount =
+      subtotal *
+      Number(coupon.discount_value || 0) /
+      100;
+
+  } else {
+
+    discount =
+      Number(coupon.discount_value || 0);
+
+  }
+
+  /* MAXIMUM DISCOUNT */
+
+  if (
+    coupon.maximum_discount !== null &&
+    coupon.maximum_discount !== undefined
+  ) {
+
+    discount =
+      Math.min(
+        discount,
+        Number(coupon.maximum_discount)
+      );
+
+  }
+
+  /* NEVER DISCOUNT MORE THAN CART */
+
+  discount =
+    Math.min(discount, subtotal);
+
+  appliedCoupon = coupon;
+  couponDiscount = discount;
+
+  localStorage.setItem(
+    "psmart-applied-coupon",
+    JSON.stringify({
+      id: coupon.id,
+      code: coupon.code,
+      title: coupon.title,
+      discount: discount
+    })
+  );
+
+  alert(
+    "🎉 Coupon applied successfully!\n\n" +
+    coupon.code +
+    " → You saved " +
+    money(discount)
+  );
+
+  await renderCart();
+}
+
+
+/* REMOVE COUPON */
+
+function removeCoupon() {
+
+  appliedCoupon = null;
+  couponDiscount = 0;
+
+  localStorage.removeItem(
+    "psmart-applied-coupon"
+  );
+
+  renderCart();
+
+}
 
 /* =========================
    INCREASE QUANTITY
