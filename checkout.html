@@ -75,56 +75,79 @@
 
 <h2>2. Payment Method</h2>
 
-
 <label>
-
-<input
-  type="radio"
-  name="pay"
-  value="UPI"
-  checked
->
-
-UPI
-
+  <input
+    type="radio"
+    name="pay"
+    value="UPI"
+    checked
+    onchange="showPaymentSection()"
+  >
+  UPI
 </label>
 
-
 <label>
-
-<input
-  type="radio"
-  name="pay"
-  value="Card"
->
-
-Credit / Debit Card
-
+  <input
+    type="radio"
+    name="pay"
+    value="Card"
+    onchange="showPaymentSection()"
+  >
+  Credit / Debit Card
 </label>
 
+<div id="savedCardSection" style="display:none; margin-top:15px;">
+
+  <div
+    style="
+      padding:15px;
+      border:1px solid #ddd;
+      border-radius:12px;
+      background:#fffaf0;
+    "
+  >
+
+    <h3 style="margin-top:0;">
+      💳 Saved Cards
+    </h3>
+
+    <div id="savedCardsList">
+      Loading saved cards...
+    </div>
+
+    <a
+      href="saved-cards.html"
+      style="
+        display:inline-block;
+        margin-top:12px;
+        color:#b8860b;
+        font-weight:bold;
+        text-decoration:none;
+      "
+    >
+      ➕ Manage / Add Saved Card
+    </a>
+
+  </div>
+
+</div>
 
 <label>
-
-<input
-  type="radio"
-  name="pay"
-  value="COD"
->
-
-Cash on Delivery
-
+  <input
+    type="radio"
+    name="pay"
+    value="COD"
+    onchange="showPaymentSection()"
+  >
+  Cash on Delivery
 </label>
-
 
 <button
   class="goldbtn block"
   onclick="placeOrder()"
 >
-
   🛍️ Place Order
-
 </button>
-
 </div>
 
 
@@ -149,7 +172,222 @@ Cash on Delivery
 
 
 <script>
+<script>
 
+let selectedSavedCardId = null;
+
+
+/* =========================
+   PAYMENT METHOD
+========================= */
+
+function showPaymentSection() {
+
+  const selected =
+    document.querySelector(
+      'input[name="pay"]:checked'
+    )?.value;
+
+  const section =
+    document.getElementById(
+      "savedCardSection"
+    );
+
+  if (!section) return;
+
+  if (selected === "Card") {
+
+    section.style.display = "block";
+
+    loadSavedCards();
+
+  } else {
+
+    section.style.display = "none";
+
+  }
+
+}
+
+
+/* =========================
+   LOAD SAVED CARDS
+========================= */
+
+async function loadSavedCards() {
+
+  const box =
+    document.getElementById(
+      "savedCardsList"
+    );
+
+  if (!box) return;
+
+  box.innerHTML =
+    "Loading saved cards...";
+
+
+  const {
+    data: {
+      user
+    }
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (!user) {
+
+    box.innerHTML = `
+      <p>
+        Please login first to use saved cards.
+      </p>
+    `;
+
+    return;
+
+  }
+
+
+  const {
+    data: cards,
+    error
+  } =
+    await supabaseClient
+      .from("saved_cards")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("is_default", {
+        ascending: false
+      })
+      .order("created_at", {
+        ascending: false
+      });
+
+
+  if (error) {
+
+    console.log(error);
+
+    box.innerHTML = `
+      <p>
+        Unable to load saved cards.
+      </p>
+    `;
+
+    return;
+
+  }
+
+
+  if (!cards || !cards.length) {
+
+    box.innerHTML = `
+      <div
+        style="
+          padding:12px;
+          border:1px dashed #bbb;
+          border-radius:10px;
+        "
+      >
+        <p style="margin:0 0 8px;">
+          No saved cards found.
+        </p>
+
+        <a
+          href="saved-cards.html"
+          style="
+            color:#b8860b;
+            font-weight:bold;
+          "
+        >
+          Add a Credit / Debit Card →
+        </a>
+
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  const defaultCard =
+    cards.find(
+      card => card.is_default
+    ) || cards[0];
+
+
+  selectedSavedCardId =
+    defaultCard.id;
+
+
+  box.innerHTML =
+    cards.map(card => `
+
+      <label
+        style="
+          display:block;
+          margin-bottom:10px;
+          cursor:pointer;
+        "
+      >
+
+        <input
+          type="radio"
+          name="savedCard"
+          value="${card.id}"
+          ${card.id === defaultCard.id ? "checked" : ""}
+          onchange="selectedSavedCardId=${card.id}"
+        >
+
+        💳
+        <b>${escapeHtml(card.brand)}</b>
+        •••• ${escapeHtml(card.last4)}
+
+        ${
+          card.is_default
+            ? `
+              <span
+                style="
+                  color:#b8860b;
+                  font-weight:bold;
+                "
+              >
+                &nbsp; Default
+              </span>
+            `
+            : ""
+        }
+
+        <br>
+
+        <small>
+          ${escapeHtml(card.cardholder_name)}
+          •
+          ${String(card.expiry_month).padStart(2, "0")}/${card.expiry_year}
+        </small>
+
+      </label>
+
+    `).join("");
+
+}
+
+
+/* =========================
+   SAFE TEXT
+========================= */
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
 
 async function placeOrder() {
 
