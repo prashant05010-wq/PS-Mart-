@@ -73,30 +73,46 @@
 >
 
 
+<!-- PAYMENT METHOD -->
+
 <h2>2. Payment Method</h2>
 
-<label>
-  <input
-    type="radio"
-    name="pay"
-    value="UPI"
-    checked
-    onchange="showPaymentSection()"
-  >
-  UPI
-</label>
 
 <label>
-  <input
-    type="radio"
-    name="pay"
-    value="Card"
-    onchange="showPaymentSection()"
-  >
-  Credit / Debit Card
+
+<input
+  type="radio"
+  name="pay"
+  value="UPI"
+  checked
+  onchange="showPaymentSection()"
+>
+
+UPI
+
 </label>
 
-<div id="savedCardSection" style="display:none; margin-top:15px;">
+
+<label>
+
+<input
+  type="radio"
+  name="pay"
+  value="Card"
+  onchange="showPaymentSection()"
+>
+
+Credit / Debit Card
+
+</label>
+
+
+<!-- SAVED CARDS -->
+
+<div
+  id="savedCardSection"
+  style="display:none;margin-top:15px;"
+>
 
   <div
     style="
@@ -132,22 +148,31 @@
 
 </div>
 
+
 <label>
-  <input
-    type="radio"
-    name="pay"
-    value="COD"
-    onchange="showPaymentSection()"
-  >
-  Cash on Delivery
+
+<input
+  type="radio"
+  name="pay"
+  value="COD"
+  onchange="showPaymentSection()"
+>
+
+Cash on Delivery
+
 </label>
 
+
 <button
+  type="button"
   class="goldbtn block"
   onclick="placeOrder()"
 >
-  🛍️ Place Order
+
+🛍️ Place Order
+
 </button>
+
 </div>
 
 
@@ -172,7 +197,6 @@
 
 
 <script>
-<script>
 
 let selectedSavedCardId = null;
 
@@ -188,12 +212,15 @@ function showPaymentSection() {
       'input[name="pay"]:checked'
     )?.value;
 
+
   const section =
     document.getElementById(
       "savedCardSection"
     );
 
+
   if (!section) return;
+
 
   if (selected === "Card") {
 
@@ -221,7 +248,9 @@ async function loadSavedCards() {
       "savedCardsList"
     );
 
+
   if (!box) return;
+
 
   box.innerHTML =
     "Loading saved cards...";
@@ -289,6 +318,7 @@ async function loadSavedCards() {
           border-radius:10px;
         "
       >
+
         <p style="margin:0 0 8px;">
           No saved cards found.
         </p>
@@ -389,26 +419,57 @@ function escapeHtml(value) {
 
 }
 
+
+/* =========================
+   PLACE ORDER
+========================= */
+
 async function placeOrder() {
 
   const fullName =
-    document.getElementById("fullName").value.trim();
+    document
+      .getElementById("fullName")
+      .value
+      .trim();
+
 
   const phone =
-    document.getElementById("phone").value.trim();
+    document
+      .getElementById("phone")
+      .value
+      .trim();
+
 
   const address =
-    document.getElementById("address").value.trim();
+    document
+      .getElementById("address")
+      .value
+      .trim();
+
 
   const city =
-    document.getElementById("city").value.trim();
+    document
+      .getElementById("city")
+      .value
+      .trim();
+
 
   const pincode =
-    document.getElementById("pincode").value.trim();
-const paymentMethod =
-  document.querySelector(
-    'input[name="pay"]:checked'
-  )?.value || "UPI";
+    document
+      .getElementById("pincode")
+      .value
+      .trim();
+
+
+  const paymentMethod =
+    document.querySelector(
+      'input[name="pay"]:checked'
+    )?.value || "UPI";
+
+
+  /* =========================
+     VALIDATE DELIVERY
+  ========================= */
 
   if (
     !fullName ||
@@ -418,12 +479,18 @@ const paymentMethod =
     !pincode
   ) {
 
-    alert("Please fill all delivery details.");
+    alert(
+      "Please fill all delivery details."
+    );
 
     return;
 
   }
 
+
+  /* =========================
+     LOGIN CHECK
+  ========================= */
 
   const {
     data: {
@@ -443,36 +510,65 @@ const paymentMethod =
     return;
 
   }
+
+
+  /* =========================
+     PROFILE
+  ========================= */
+
   const {
-  data: profile,
-  error: profileError
-} = await supabaseClient
-  .from("profiles")
-  .select("id, role")
-  .eq("id", user.id)
-  .maybeSingle();
-
-if (profileError || !profile) {
-  console.log("Profile error:", profileError);
-  alert("Customer profile not found.");
-  return;
-}
+    data: profile,
+    error: profileError
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select("id, role")
+      .eq("id", user.id)
+      .maybeSingle();
 
 
-  const c = cart();
+  if (profileError || !profile) {
 
+    console.log(
+      "Profile error:",
+      profileError
+    );
 
-  if (!c.length) {
-
-    alert("Your cart is empty.");
+    alert(
+      "Customer profile not found."
+    );
 
     return;
 
   }
 
 
+  /* =========================
+     CART
+  ========================= */
+
+  const c = cart();
+
+
+  if (!c.length) {
+
+    alert(
+      "Your cart is empty."
+    );
+
+    return;
+
+  }
+
+
+  /* =========================
+     LOAD PRODUCTS
+  ========================= */
+
   const ids =
-    c.map(x => x.id);
+    c.map(
+      x => x.id
+    );
 
 
   const {
@@ -488,85 +584,116 @@ if (profileError || !profile) {
 
   if (productError) {
 
-    console.log(productError);
-
-    alert("Unable to load products.");
-
-    return;
-    let total = 0;
-
-
-for (const item of c) {
-
-  const product =
-    products.find(
-      p =>
-        String(p.id) ===
-        String(item.id)
+    console.log(
+      productError
     );
 
-
-  if (!product) continue;
-
-
-  total +=
-    Number(product.price) *
-    item.qty;
-
-}
-
-
-/* =========================
-   APPLY SAVED COUPON
-========================= */
-
-let couponDiscount = 0;
-
-const savedCoupon =
-  JSON.parse(
-    localStorage.getItem(
-      "psmart-applied-coupon"
-    ) || "null"
-  );
-
-
-if (savedCoupon) {
-
-  couponDiscount =
-    Number(
-      savedCoupon.discount || 0
+    alert(
+      "Unable to load products."
     );
-
-}
-
-
-const finalTotal =
-  Math.max(
-    0,
-    total - couponDiscount
-  );
-
-
-console.log("Cart Total:", total);
-console.log("Coupon Discount:", couponDiscount);
-console.log("Final Total:", finalTotal);
-
-
-
-  if (total <= 0) {
-
-    alert("Unable to calculate order total.");
 
     return;
 
   }
 
 
+  /* =========================
+     CALCULATE TOTAL
+  ========================= */
+
+  let total = 0;
+
+
+  for (const item of c) {
+
+    const product =
+      products.find(
+        p =>
+          String(p.id) ===
+          String(item.id)
+      );
+
+
+    if (!product) continue;
+
+
+    total +=
+      Number(product.price) *
+      item.qty;
+
+  }
+
+
+  if (total <= 0) {
+
+    alert(
+      "Unable to calculate order total."
+    );
+
+    return;
+
+  }
+
+
+  /* =========================
+     COUPON
+  ========================= */
+
+  let couponDiscount = 0;
+
+
+  const savedCoupon =
+    JSON.parse(
+      localStorage.getItem(
+        "psmart-applied-coupon"
+      ) || "null"
+    );
+
+
+  if (savedCoupon) {
+
+    couponDiscount =
+      Number(
+        savedCoupon.discount || 0
+      );
+
+  }
+
+
+  const finalTotal =
+    Math.max(
+      0,
+      total - couponDiscount
+    );
+
+
+  console.log(
+    "Cart Total:",
+    total
+  );
+
+  console.log(
+    "Coupon Discount:",
+    couponDiscount
+  );
+
+  console.log(
+    "Final Total:",
+    finalTotal
+  );
+
+
+  /* =========================
+     DELIVERY ADDRESS
+  ========================= */
+
   const deliveryAddress =
     `${fullName}, ${phone}, ${address}, ${city} - ${pincode}`;
 
 
-  /* CREATE ORDER */
+  /* =========================
+     CREATE ORDER
+  ========================= */
 
   const {
     data: order,
@@ -576,12 +703,20 @@ console.log("Final Total:", finalTotal);
       .from("orders")
       .insert({
 
-       customer_id: profile.id,
+        customer_id:
+          profile.id,
 
-      total_amount: finalTotal,v
-        status: "placed",
+        total_amount:
+          finalTotal,
 
-        address: deliveryAddress
+        status:
+          "placed",
+
+        address:
+          deliveryAddress,
+
+        payment_method:
+          paymentMethod
 
       })
       .select()
@@ -590,7 +725,9 @@ console.log("Final Total:", finalTotal);
 
   if (orderError) {
 
-    console.log(orderError);
+    console.log(
+      orderError
+    );
 
     alert(
       "Order could not be created: " +
@@ -602,8 +739,9 @@ console.log("Final Total:", finalTotal);
   }
 
 
-  /* CREATE ORDER ITEMS */
-
+  /* =========================
+     CREATE ORDER ITEMS
+  ========================= */
 
   const orderItems = [];
 
@@ -623,17 +761,33 @@ console.log("Final Total:", finalTotal);
 
     orderItems.push({
 
-      order_id: order.id,
+      order_id:
+        order.id,
 
-      product_id: product.id,
+      product_id:
+        product.id,
 
-      seller_id: product.seller_id,
+      seller_id:
+        product.seller_id,
 
-      quantity: item.qty,
+      quantity:
+        item.qty,
 
-      price: product.price
+      price:
+        product.price
 
     });
+
+  }
+
+
+  if (!orderItems.length) {
+
+    alert(
+      "No valid products found for this order."
+    );
+
+    return;
 
   }
 
@@ -648,7 +802,9 @@ console.log("Final Total:", finalTotal);
 
   if (itemError) {
 
-    console.log(itemError);
+    console.log(
+      itemError
+    );
 
     alert(
       "Order created but items could not be saved."
@@ -659,9 +815,23 @@ console.log("Final Total:", finalTotal);
   }
 
 
-  /* CLEAR CART */
+  /* =========================
+     CLEAR CART
+  ========================= */
 
-  localStorage.removeItem("psmart-cart");
+  localStorage.removeItem(
+    "psmart-cart"
+  );
+
+
+  localStorage.removeItem(
+    "psmart-applied-coupon"
+  );
+
+
+  localStorage.removeItem(
+    "psmart-auto-apply-coupon"
+  );
 
 
   updateCount();
@@ -676,7 +846,6 @@ console.log("Final Total:", finalTotal);
     "orders.html";
 
 }
-
 
 </script>
 
