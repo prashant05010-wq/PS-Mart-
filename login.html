@@ -14,7 +14,6 @@
 
 <link rel="stylesheet" href="style.css">
 
-
 <style>
 
 .loginwrap{
@@ -69,6 +68,11 @@
 
 .goldbtn:hover{
   opacity:.9;
+}
+
+.goldbtn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
 }
 
 #message{
@@ -151,9 +155,9 @@
         autocomplete="one-time-code"
       >
 
-
       <button
         class="goldbtn"
+        id="verifyBtn"
         onclick="verifyOTP()"
       >
         Verify OTP & Login
@@ -174,13 +178,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
 <!-- EXISTING FILES -->
 
 <script src="data.js"></script>
 
 <script src="app.js"></script>
-
 
 
 <script>
@@ -213,15 +215,11 @@ async function sendOTP(){
 
 
   const message =
-    document.getElementById(
-      "message"
-    );
+    document.getElementById("message");
 
 
   const sendButton =
-    document.getElementById(
-      "sendOtpBtn"
-    );
+    document.getElementById("sendOtpBtn");
 
 
   if(!email){
@@ -238,28 +236,23 @@ async function sendOTP(){
     "Sending OTP...";
 
 
-  sendButton.disabled =
-    true;
+  sendButton.disabled = true;
 
 
   try{
 
-    const {
-      error
-    } =
-      await psLoginClient
-        .auth
-        .signInWithOtp({
+    const { error } =
+      await psLoginClient.auth.signInWithOtp({
 
-          email: email,
+        email: email,
 
-          options: {
+        options: {
 
-            shouldCreateUser: true
+          shouldCreateUser: true
 
-          }
+        }
 
-        });
+      });
 
 
     if(error){
@@ -272,8 +265,7 @@ async function sendOTP(){
       message.innerText =
         error.message;
 
-      sendButton.disabled =
-        false;
+      sendButton.disabled = false;
 
       return;
 
@@ -294,8 +286,7 @@ async function sendOTP(){
       "Resend OTP";
 
 
-    sendButton.disabled =
-      false;
+    sendButton.disabled = false;
 
   }
 
@@ -312,8 +303,7 @@ async function sendOTP(){
       "Something went wrong. Please try again.";
 
 
-    sendButton.disabled =
-      false;
+    sendButton.disabled = false;
 
   }
 
@@ -342,9 +332,11 @@ async function verifyOTP(){
 
 
   const message =
-    document.getElementById(
-      "message"
-    );
+    document.getElementById("message");
+
+
+  const verifyButton =
+    document.getElementById("verifyBtn");
 
 
   if(!email){
@@ -371,23 +363,28 @@ async function verifyOTP(){
     "Verifying OTP...";
 
 
+  verifyButton.disabled = true;
+
+
   try{
+
+    /* =========================
+       VERIFY OTP
+    ========================= */
 
     const {
       data,
       error
     } =
-      await psLoginClient
-        .auth
-        .verifyOtp({
+      await psLoginClient.auth.verifyOtp({
 
-          email: email,
+        email: email,
 
-          token: otp,
+        token: otp,
 
-          type: "email"
+        type: "email"
 
-        });
+      });
 
 
     if(error){
@@ -400,121 +397,206 @@ async function verifyOTP(){
       message.innerText =
         error.message;
 
+      verifyButton.disabled = false;
+
       return;
 
     }
 
 
-    if(data.session){
+    /* =========================
+       CHECK SESSION
+    ========================= */
+
+    if(!data.session){
 
       message.innerText =
-        "Login successful!";
+        "OTP verified, but login session was not created.";
+
+      verifyButton.disabled = false;
+
+      return;
+
+    }
 
 
-      /* =========================
-         GET LOGGED-IN USER
-      ========================= */
+    /* =========================
+       SAVE SESSION
+    ========================= */
 
-      const user =
-        data.session.user;
+    const {
+      data: sessionResult,
+      error: sessionError
+    } =
+      await psLoginClient.auth.setSession({
 
+        access_token:
+          data.session.access_token,
 
-      /* =========================
-         GET USER ROLE
-      ========================= */
+        refresh_token:
+          data.session.refresh_token
 
-      const {
-        data: profile,
-        error: profileError
-      } =
-        await psLoginClient
-
-          .from("profiles")
-
-          .select("role")
-
-          .eq("id", user.id)
-
-          .single();
+      });
 
 
-      /* =========================
-         PROFILE ERROR
-      ========================= */
+    if(sessionError){
 
-      if(profileError){
+      console.error(
+        "SESSION ERROR:",
+        sessionError
+      );
 
-        console.error(
-          "PROFILE ERROR:",
-          profileError
-        );
+      message.innerText =
+        "Could not save login session.";
 
+      verifyButton.disabled = false;
 
-        setTimeout(() => {
+      return;
 
-          window.location.href =
-            "index.html";
-
-        },700);
+    }
 
 
-        return;
+    /* =========================
+       CONFIRM SESSION
+    ========================= */
+
+    const {
+      data: currentSession,
+      error: currentSessionError
+    } =
+      await psLoginClient.auth.getSession();
+
+
+    if(
+      currentSessionError ||
+      !currentSession.session
+    ){
+
+      console.error(
+        "CURRENT SESSION ERROR:",
+        currentSessionError
+      );
+
+      message.innerText =
+        "Login session could not be confirmed.";
+
+      verifyButton.disabled = false;
+
+      return;
+
+    }
+
+
+    /* =========================
+       LOGIN SUCCESS
+    ========================= */
+
+    message.innerText =
+      "Login successful!";
+
+
+    const user =
+      currentSession.session.user;
+
+
+    console.log(
+      "LOGGED IN USER:",
+      user.id
+    );
+
+
+    /* =========================
+       GET PROFILE ROLE
+    ========================= */
+
+    const {
+      data: profile,
+      error: profileError
+    } =
+      await psLoginClient
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+
+    /* =========================
+       PROFILE NOT FOUND
+    ========================= */
+
+    if(profileError){
+
+      console.error(
+        "PROFILE ERROR:",
+        profileError
+      );
+
+
+      message.innerText =
+        "Login successful! Opening PS Mart...";
+
+
+      setTimeout(() => {
+
+        window.location.href =
+          "index.html";
+
+      },1000);
+
+
+      return;
+
+    }
+
+
+    const role =
+      profile.role;
+
+
+    console.log(
+      "USER ROLE:",
+      role
+    );
+
+
+    /* =========================
+       REDIRECT
+    ========================= */
+
+    setTimeout(() => {
+
+
+      /* SELLER */
+
+      if(role === "seller"){
+
+        window.location.href =
+          "seller-dashboard.html";
 
       }
 
 
-      const role =
-        profile.role;
+      /* ADMIN */
+
+      else if(role === "admin"){
+
+        window.location.href =
+          "index.html";
+
+      }
 
 
-      /* =========================
-         ROLE BASED REDIRECT
-      ========================= */
+      /* CUSTOMER */
 
-      setTimeout(() => {
+      else{
 
+        window.location.href =
+          "index.html";
 
-        /* ADMIN */
-
-        if(role === "admin"){
-
-          window.location.href =
-            "index.html";
-
-        }
+      }
 
 
-        /* SELLER */
-
-        else if(role === "seller"){
-
-          window.location.href =
-            "seller-dashboard.html";
-
-        }
-
-
-        /* CUSTOMER */
-
-        else{
-
-          window.location.href =
-            "index.html";
-
-        }
-
-
-      },700);
-
-    }
-
-
-    else{
-
-      message.innerText =
-        "OTP verified. Please try again.";
-
-    }
+    },800);
 
   }
 
@@ -530,13 +612,56 @@ async function verifyOTP(){
     message.innerText =
       "Something went wrong. Please try again.";
 
+
+    verifyButton.disabled = false;
+
   }
 
 }
+
+
+
+/* =====================================================
+   CHECK EXISTING SESSION
+===================================================== */
+
+async function checkExistingLogin(){
+
+  try{
+
+    const {
+      data
+    } =
+      await psLoginClient.auth.getSession();
+
+
+    if(data.session){
+
+      console.log(
+        "Existing login session found."
+      );
+
+    }
+
+  }
+
+  catch(error){
+
+    console.error(
+      "SESSION CHECK ERROR:",
+      error
+    );
+
+  }
+
+}
+
+
+checkExistingLogin();
 
 </script>
 
 
 </body>
 
-</html>
+  </html>
