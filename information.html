@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Information | PS Mart</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial, sans-serif;
+  background:#f7f1e7;
+  color:#3d2615;
+}
+
+header{
+  background:linear-gradient(135deg,#3b1f0f,#6b3e1e);
+  color:#ffd66b;
+  padding:18px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:100;
+  box-shadow:0 3px 12px rgba(0,0,0,.25);
+}
+
+.logo{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.home-btn{
+  text-decoration:none;
+  color:#3b1f0f;
+  background:#ffd66b;
+  padding:9px 16px;
+  border-radius:20px;
+  font-weight:bold;
+}
+
+.container{
+  max-width:1050px;
+  margin:25px auto;
+  padding:0 15px;
+}
+
+.hero{
+  background:linear-gradient(135deg,#fff8e8,#f2d39a);
+  border:1px solid #d8ae62;
+  border-radius:18px;
+  padding:25px;
+  text-align:center;
+  margin-bottom:20px;
+  box-shadow:0 5px 18px rgba(76,43,16,.12);
+}
+
+.hero h1{
+  color:#5a2d12;
+  margin-bottom:8px;
+}
+
+.hero p{
+  color:#765638;
+  line-height:1.6;
+}
+
+.card{
+  background:#fff;
+  border:1px solid #e2c89b;
+  border-radius:16px;
+  margin-bottom:18px;
+  overflow:hidden;
+  box-shadow:0 4px 14px rgba(76,43,16,.08);
+}
+
+.card h2{
+  background:linear-gradient(135deg,#4a2714,#70401f);
+  color:#ffd66b;
+  padding:15px 18px;
+  font-size:19px;
+}
+
+.content{
+  padding:18px;
+}
+
+.info-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.info-box{
+  background:#fff9ef;
+  border:1px solid #ead3aa;
+  border-radius:12px;
+  padding:14px;
+}
+
+.info-box strong{
+  display:block;
+  color:#754018;
+  margin-bottom:5px;
+}
+
+.info-box span{
+  color:#493525;
+  word-break:break-word;
+}
+
+.links{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.link{
+  text-decoration:none;
+  background:#fff8ec;
+  border:1px solid #e0c18d;
+  border-radius:12px;
+  padding:15px;
+  color:#4d2a14;
+  font-weight:bold;
+  transition:.2s;
+}
+
+.link:hover{
+  background:#ffe6b0;
+  transform:translateY(-2px);
+}
+
+.link small{
+  display:block;
+  font-weight:normal;
+  margin-top:5px;
+  color:#765f4d;
+  line-height:1.4;
+}
+
+.faq{
+  border-bottom:1px solid #ead7b8;
+  padding:14px 0;
+}
+
+.faq:last-child{
+  border-bottom:none;
+}
+
+.faq strong{
+  display:block;
+  color:#5d3217;
+  margin-bottom:6px;
+}
+
+.faq p{
+  color:#665344;
+  line-height:1.55;
+}
+
+.notice{
+  background:#fff7df;
+  border-left:4px solid #c38b27;
+  padding:14px;
+  border-radius:8px;
+  color:#5b452b;
+  line-height:1.6;
+}
+
+.footer{
+  text-align:center;
+  padding:25px 15px;
+  color:#765d48;
+  font-size:14px;
+}
+
+.danger{
+  display:inline-block;
+  text-decoration:none;
+  background:#6b1f1f;
+  color:white;
+  padding:11px 20px;
+  border-radius:22px;
+  font-weight:bold;
+  margin-top:8px;
+}
+
+@media(max-width:700px){
+  .info-grid,
+  .links{
+    grid-template-columns:1fr;
+  }
+
+  header{
+    padding:15px;
+  }
+
+  .logo{
+    font-size:19px;
+  }
+
+  .hero{
+    padding:20px 15px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">🛍️ PS Mart</div>
+  <a class="home-btn" href="index.html">Home</a>
+</header>
+
+<div class="container">
+
+  <section class="hero">
+    <h1>ℹ️ PS Mart Information</h1>
+    <p>
+      Welcome to PS Mart. This page provides important information
+      about your account, shopping services, security, privacy,
+      support and the PS Mart platform.
+    </p>
+  </section>
+
+  <!-- ACCOUNT INFORMATION -->
+  <section class="card">
+    <h2>👤 My Account Information</h2>
+
+    <div class="content">
+      <div class="info-grid">
+
+        <div class="info-box">
+          <strong>Name</strong>
+          <span id="userName">Loading...</span>
+        </div>
+
+        <div class="info-box">
+          <strong>Email</strong>
+          <span id="userEmail">Loading...</span>
+        </div>
+
+        <div class="info-box">
+          <strong>Phone</strong>
+          <span id="userPhone">Loading...</span>
+        </div>
+
+        <div class="info-box">
+          <strong>Account Role</strong>
+          <span id="userRole">Loading...</span>
+        </div>
+
+        <div class="info-box">
+          <strong>Account Created</strong>
+          <span id="createdAt">Loading...</span>
+        </div>
+
+        <div class="info-box">
+          <strong>Account Status</strong>
+          <span id="accountStatus">Active</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- SHOPPING -->
+  <section class="card">
+    <h2>🛒 Shopping & Account Services</h2>
+
+    <div class="content">
+      <div class="links">
+
+        <a class="link" href="orders.html">
+          📦 My Orders
+          <small>View your orders and purchase history.</small>
+        </a>
+
+        <a class="link" href="cart.html">
+          🛒 My Cart
+          <small>View products currently added to your cart.</small>
+        </a>
+
+        <a class="link" href="wishlist.html">
+          ❤️ Wishlist
+          <small>View products saved for later.</small>
+        </a>
+
+        <a class="link" href="saved-address.html">
+          📍 Saved Addresses
+          <small>Manage your saved delivery addresses.</small>
+        </a>
+
+        <a class="link" href="products.html">
+          🛍️ Continue Shopping
+          <small>Explore products available on PS Mart.</small>
+        </a>
+
+        <a class="link" href="profile.html">
+          👤 Profile
+          <small>View or update your account profile.</small>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ACCOUNT & SECURITY -->
+  <section class="card">
+    <h2>🔐 Account & Security</h2>
+
+    <div class="content">
+
+      <div class="notice">
+        Your PS Mart account is connected with your registered
+        authentication account. Never share your password, OTP,
+        verification code or other login credentials with anyone.
+      </div>
+
+      <br>
+
+      <div class="links">
+
+        <a class="link" href="settings.html">
+          ⚙️ Settings
+          <small>Manage available account settings.</small>
+        </a>
+
+        <a class="link" href="privacy-center.html">
+          🔒 Privacy Center
+          <small>Manage your privacy preferences.</small>
+        </a>
+
+        <a class="link" href="notifications.html">
+          🔔 Notifications
+          <small>Manage notification preferences.</small>
+        </a>
+
+        <a class="link" href="language.html">
+          🌐 Language
+          <small>Select your preferred language.</small>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- REVIEWS AND Q&A -->
+  <section class="card">
+    <h2>⭐ Reviews, Questions & Feedback</h2>
+
+    <div class="content">
+
+      <div class="links">
+
+        <a class="link" href="reviews.html">
+          ⭐ Reviews
+          <small>Write and manage product reviews.</small>
+        </a>
+
+        <a class="link" href="questions.html">
+          ❓ Questions & Answers
+          <small>Ask questions and view answers about products.</small>
+        </a>
+
+        <a class="link" href="feedback.html">
+          💬 Feedback
+          <small>Share your experience with PS Mart.</small>
+        </a>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- SELLER -->
+  <section class="card">
+    <h2>🏪 Seller Information</h2>
+
+    <div class="content">
+
+      <p style="line-height:1.6;color:#5e4b3c;margin-bottom:14px;">
+        PS Mart also supports sellers who want to list products
+        and sell through the platform.
+      </p>
+
+      <div class="links">
+
+        <a class="link" href="seller-register.html">
+          📝 Become a Seller
+          <small>Submit your seller registration.</small>
+        </a>
+
+        <a class="link" href="seller-dashboard.html">
+          🏪 Seller Dashboard
+          <small>Manage seller products and activities.</small>
+        </a>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- PAYMENT -->
+  <section class="card">
+    <h2>💳 Payments & Payment Safety</h2>
+
+    <div class="content">
+
+      <div class="notice">
+        For your security, never share your card number, CVV,
+        PIN, OTP or banking password with another person.
+        Payment information should only be entered through
+        the official payment interface provided during checkout.
+      </div>
+
+      <br>
+
+      <p style="line-height:1.7;color:#5e4b3c;">
+        PS Mart does not ask users to share confidential banking
+        credentials through chat, phone calls, social media messages
+        or unofficial links.
+      </p>
+
+    </div>
+  </section>
+
+
+  <!-- PRIVACY -->
+  <section class="card">
+    <h2>🔒 Privacy Information</h2>
+
+    <div class="content">
+
+      <p style="line-height:1.7;color:#5e4b3c;">
+        PS Mart uses account information necessary to provide
+        shopping and account-related services. Privacy preferences
+        can be managed through the Privacy Center.
+      </p>
+
+      <br>
+
+      <a class="link" href="privacy-center.html" style="display:block;">
+        🔒 Open Privacy Center
+        <small>Review and manage your privacy preferences.</small>
+      </a>
+
+    </div>
+  </section>
+
+
+  <!-- HELP -->
+  <section class="card">
+    <h2>🆘 Help & Frequently Asked Questions</h2>
+
+    <div class="content">
+
+      <div class="faq">
+        <strong>How can I place an order?</strong>
+        <p>
+          Open the Products section, select a product, add it to
+          your cart and continue through the available checkout process.
+        </p>
+      </div>
+
+      <div class="faq">
+        <strong>How can I manage my account?</strong>
+        <p>
+          Open Profile to update available personal information
+          such as your name and phone number.
+        </p>
+      </div>
+
+      <div class="faq">
+        <strong>How can I ask a product question?</strong>
+        <p>
+          Open Questions & Answers or use the Ask a Question option
+          available from supported product pages.
+        </p>
+      </div>
+
+      <div class="faq">
+        <strong>How can I write a product review?</strong>
+        <p>
+          Open the Reviews section to view and manage your product reviews.
+        </p>
+      </div>
+
+      <div class="faq">
+        <strong>What should I do if I receive a suspicious message?</strong>
+        <p>
+          Do not share OTPs, passwords, card details or other sensitive
+          information. Use only official PS Mart pages and services.
+        </p>
+      </div>
+
+      <div class="faq">
+        <strong>How can I protect my account?</strong>
+        <p>
+          Keep your login credentials private and never share verification
+          codes with anyone.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- PLATFORM INFORMATION -->
+  <section class="card">
+    <h2>🏷️ About PS Mart</h2>
+
+    <div class="content">
+
+      <div class="info-grid">
+
+        <div class="info-box">
+          <strong>Platform</strong>
+          <span>PS Mart</span>
+        </div>
+
+        <div class="info-box">
+          <strong>Purpose</strong>
+          <span>Online shopping platform</span>
+        </div>
+
+        <div class="info-box">
+          <strong>Website</strong>
+          <span>PS Mart Official Website</span>
+        </div>
+
+        <div class="info-box">
+          <strong>Support</strong>
+          <span>Use the available account and support sections.</span>
+        </div>
+
+      </div>
+
+      <br>
+
+      <div class="notice">
+        PS Mart is designed to provide customers and sellers with
+        a convenient online shopping platform. Features and services
+        available to an account may depend on the current platform
+        implementation and account role.
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- LEGAL -->
+  <section class="card">
+    <h2>📜 Legal & Important Information</h2>
+
+    <div class="content">
+
+      <div class="faq">
+        <strong>Terms of Service</strong>
+        <p>
+          Use of PS Mart services should follow the applicable terms,
+          rules and conditions provided by the platform.
+        </p>
+      </div>
+
+      <div class="faq">
+        <strong>Privacy</strong>
+        <p>
+          Privacy preferences are available through the PS Mart
+          Privacy Center.
+        </p>
+      </div>
+
+      <div class="faq">
+        <strong>Account Responsibility</strong>
+        <p>
+          Users are responsible for keeping their account credentials
+          and verification information secure.
+        </p>
+      </div>
+
+      <div class="faq">
+        <strong>Platform Updates</strong>
+        <p>
+          PS Mart may add, modify or improve features and services
+          as the platform develops.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- LOGOUT -->
+  <section class="card">
+    <h2>🚪 Account Exit</h2>
+
+    <div class="content" style="text-align:center;">
+      <p style="color:#665344;line-height:1.6;">
+        If you want to sign out from your PS Mart account,
+        use the logout option from your Profile page.
+      </p>
+
+      <a class="danger" href="profile.html">
+        👤 Go to Profile
+      </a>
+    </div>
+  </section>
+
+</div>
+
+
+<footer class="footer">
+  © 2026 PS Mart
+  <br>
+  Shopping • Sellers • Account Services
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+"https://nctscffhnztscczjxhat.supabase.co";
+
+const SUPABASE_ANON_KEY =
+"YOUR_EXISTING_SUPABASE_ANON_KEY";
+
+const supabaseClient =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+
+async function loadInformation(){
+
+  const {
+    data: { user },
+    error: authError
+  } = await supabaseClient.auth.getUser();
+
+  if(authError || !user){
+    window.location.href = "login.html";
+    return;
+  }
+
+  document.getElementById("userEmail").textContent =
+    user.email || "Not available";
+
+  document.getElementById("createdAt").textContent =
+    user.created_at
+      ? new Date(user.created_at).toLocaleString()
+      : "Not available";
+
+
+  const { data: profile, error } =
+    await supabaseClient
+      .from("profiles")
+      .select("full_name, phone, role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+
+  if(error){
+    console.error(error);
+  }
+
+
+  document.getElementById("userName").textContent =
+    profile?.full_name || "Not set";
+
+  document.getElementById("userPhone").textContent =
+    profile?.phone || "Not set";
+
+  document.getElementById("userRole").textContent =
+    profile?.role || "customer";
+
+}
+
+
+loadInformation();
+
+</script>
+
+</body>
+</html>
