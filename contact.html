@@ -294,9 +294,24 @@
     © 2026 PS Mart • Customer Support
   </footer>
 
-  <script>
-    document.getElementById("supportForm").addEventListener("submit", function(event) {
+  
+   <script>
+  const SUPABASE_URL = "https://nctscffhnztscczjxhat.supabase.co";
+
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+  document
+    .getElementById("supportForm")
+    .addEventListener("submit", async function (event) {
+
       event.preventDefault();
+
+      const notice = document.getElementById("notice");
 
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
@@ -304,33 +319,57 @@
       const message = document.getElementById("message").value.trim();
 
       if (!name || !email || !category || !message) {
+        alert("Please fill all fields.");
         return;
       }
 
-      const subject = encodeURIComponent(
-        "PS Mart Support - " + category
-      );
+      try {
 
-      const body = encodeURIComponent(
-        "Name: " + name +
-        "\nEmail: " + email +
-        "\nCategory: " + category +
-        "\n\nProblem:\n" + message
-      );
+        const {
+          data: { user },
+          error: userError
+        } = await supabaseClient.auth.getUser();
 
-      /*
-        Replace the email address below with your actual PS Mart
-        support email when you create one.
-      */
-      window.location.href =
-        "mailto:support@psmart.com?subject=" +
-        subject +
-        "&body=" +
-        body;
+        if (userError || !user) {
+          alert("Please login to send a support request.");
+          window.location.href = "login.html";
+          return;
+        }
 
-      document.getElementById("notice").style.display = "block";
+        const { error } = await supabaseClient
+          .from("support_requests")
+          .insert([
+            {
+              user_id: user.id,
+              name: name,
+              email: email,
+              category: category,
+              message: message,
+              status: "Pending"
+            }
+          ]);
+
+        if (error) {
+          console.error(error);
+          alert("Support request could not be submitted.");
+          return;
+        }
+
+        notice.innerHTML =
+          "✅ Your support request has been submitted successfully.";
+
+        notice.style.display = "block";
+
+        document.getElementById("supportForm").reset();
+
+      } catch (error) {
+
+        console.error(error);
+        alert("Something went wrong. Please try again.");
+
+      }
     });
-  </script>
+</script>
 
 </body>
 </html>
