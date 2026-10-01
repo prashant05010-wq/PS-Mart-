@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Coupons | PS Mart</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5eee4;
+      color: #3b2415;
+    }
+
+    header {
+      background: linear-gradient(135deg, #3b1f0f, #704214);
+      color: #f7d774;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,.25);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-top: 10px;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
+
+    .intro {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,.10);
+      margin-bottom: 20px;
+    }
+
+    .intro h2 {
+      margin-top: 0;
+      color: #5b3218;
+    }
+
+    .coupon {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.10);
+      border-left: 5px solid #c99a3d;
+    }
+
+    .coupon-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .coupon h3 {
+      margin: 0 0 6px;
+      color: #5b3218;
+    }
+
+    .coupon p {
+      margin: 6px 0;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .discount {
+      background: #c99a3d;
+      color: white;
+      padding: 9px 13px;
+      border-radius: 8px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .code-box {
+      margin-top: 15px;
+      background: #faf6f0;
+      border: 1px dashed #c99a3d;
+      border-radius: 9px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .code {
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: #5b3218;
+    }
+
+    .copy-btn {
+      border: 0;
+      background: #704214;
+      color: white;
+      padding: 8px 13px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    .details {
+      margin-top: 12px;
+      color: #777;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .empty {
+      background: white;
+      padding: 35px;
+      text-align: center;
+      border-radius: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.10);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px;
+    }
+
+    .error {
+      background: #ffe1e1;
+      color: #a00000;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .coupon-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .code-box {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .copy-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+
+  <h1>🎟️ PS Mart Coupons</h1>
+
+  <a href="profile.html" class="back">
+    ← Back to Profile
+  </a>
+
+</header>
+
+
+<div class="container">
+
+  <div class="intro">
+
+    <h2>Available Coupons</h2>
+
+    <p>
+      Use these coupons to get discounts on eligible orders.
+    </p>
+
+  </div>
+
+
+  <div id="couponsContainer">
+
+    <div class="loading">
+      Loading coupons...
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  const SUPABASE_URL =
+    "https://nctscffhnztscczjxhat.supabase.co";
+
+  const SUPABASE_ANON_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+
+  const container =
+    document.getElementById("couponsContainer");
+
+
+  function escapeHTML(text) {
+
+    const div =
+      document.createElement("div");
+
+    div.textContent =
+      text || "";
+
+    return div.innerHTML;
+
+  }
+
+
+  function formatDate(date) {
+
+    if (!date) {
+      return "No expiry date";
+    }
+
+    return new Date(date).toLocaleDateString(
+      "en-IN",
+      {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      }
+    );
+
+  }
+
+
+  function discountText(coupon) {
+
+    if (coupon.discount_type === "fixed") {
+
+      return "₹" +
+        Number(coupon.discount_value).toLocaleString("en-IN") +
+        " OFF";
+
+    }
+
+    return coupon.discount_value + "% OFF";
+
+  }
+
+
+  async function loadCoupons() {
+
+    try {
+
+      const { data, error } =
+        await supabaseClient
+          .from("coupons")
+          .select("*")
+          .eq("active", true)
+          .order("created_at", {
+            ascending: false
+          });
+
+
+      if (error) {
+
+        console.error(
+          "COUPON ERROR:",
+          error
+        );
+
+        container.innerHTML = `
+          <div class="error">
+            ❌ Unable to load coupons.
+            <br><br>
+            ${escapeHTML(error.message)}
+          </div>
+        `;
+
+        return;
+
+      }
+
+
+      if (!data || data.length === 0) {
+
+        container.innerHTML = `
+          <div class="empty">
+            <h2>🎟️ No Coupons Available</h2>
+
+            <p>
+              There are currently no active coupons.
+              Please check again later.
+            </p>
+          </div>
+        `;
+
+        return;
+
+      }
+
+
+      container.innerHTML = "";
+
+
+      data.forEach(coupon => {
+
+        const card =
+          document.createElement("div");
+
+        card.className = "coupon";
+
+
+        const minimumOrder =
+          Number(coupon.minimum_order || 0);
+
+
+        const maximumDiscount =
+          coupon.maximum_discount
+            ? "Maximum discount ₹" +
+              Number(
+                coupon.maximum_discount
+              ).toLocaleString("en-IN")
+            : "";
+
+
+        card.innerHTML = `
+
+          <div class="coupon-top">
+
+            <div>
+
+              <h3>
+                ${escapeHTML(coupon.title)}
+              </h3>
+
+              <p>
+                ${escapeHTML(
+                  coupon.description || ""
+                )}
+              </p>
+
+            </div>
+
+
+            <div class="discount">
+
+              ${discountText(coupon)}
+
+            </div>
+
+          </div>
+
+
+          <div class="code-box">
+
+            <span class="code">
+
+              ${escapeHTML(coupon.code)}
+
+            </span>
+
+
+            <button
+              class="copy-btn"
+              onclick="copyCoupon('${escapeHTML(
+                coupon.code
+              )}')"
+            >
+
+              Copy Code
+
+            </button>
+
+          </div>
+
+
+          <div class="details">
+
+            Minimum order:
+            ₹${minimumOrder.toLocaleString("en-IN")}
+
+            <br>
+
+            ${
+              maximumDiscount
+                ? maximumDiscount + "<br>"
+                : ""
+            }
+
+            Valid until:
+            ${formatDate(coupon.expires_at)}
+
+          </div>
+
+        `;
+
+
+        container.appendChild(card);
+
+      });
+
+    }
+
+    catch(error) {
+
+      console.error(error);
+
+      container.innerHTML = `
+        <div class="error">
+          ❌ Something went wrong.
+          Please try again.
+        </div>
+      `;
+
+    }
+
+  }
+
+
+  async function copyCoupon(code) {
+
+    try {
+
+      await navigator.clipboard.writeText(code);
+
+      alert(
+        "✅ Coupon code copied: " + code
+      );
+
+    }
+
+    catch(error) {
+
+      alert(
+        "Coupon Code: " + code
+      );
+
+    }
+
+  }
+
+
+  loadCoupons();
+
+</script>
+
+</body>
+</html>
