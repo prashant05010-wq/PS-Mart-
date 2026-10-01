@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Contact Support | PS Mart</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #120b06;
+      color: #f5e6c8;
+      line-height: 1.6;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #3b1f0f, #1b0e07);
+      padding: 25px 15px;
+      text-align: center;
+      border-bottom: 1px solid #8f641f;
+    }
+
+    .header h1 {
+      color: #f5c76a;
+      font-size: 28px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      color: #d9c29a;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 25px auto;
+      padding: 0 15px 40px;
+    }
+
+    .back {
+      display: inline-block;
+      color: #f5c76a;
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    .card {
+      background: #1c1008;
+      border: 1px solid #654419;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .card h2 {
+      color: #f5c76a;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: #d8c8aa;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .contact-box {
+      display: grid;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .contact-item {
+      background: #251408;
+      border: 1px solid #5d3d17;
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    .contact-item strong {
+      display: block;
+      color: #f5c76a;
+      margin-bottom: 4px;
+    }
+
+    .contact-item span {
+      color: #d8c8aa;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      color: #f5c76a;
+      font-weight: bold;
+      margin-bottom: 7px;
+      font-size: 14px;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #69471b;
+      background: #110a05;
+      color: #f5e6c8;
+      outline: none;
+      font-size: 14px;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #d49a32;
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      background: #d49a32;
+      color: #180d05;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #f0b94f;
+    }
+
+    .notice {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #20351d;
+      border: 1px solid #55784b;
+      color: #cde8c5;
+      font-size: 14px;
+    }
+
+    .footer {
+      text-align: center;
+      color: #9f8968;
+      font-size: 12px;
+      padding: 20px 10px;
+      border-top: 1px solid #392512;
+    }
+
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 23px;
+      }
+
+      .card {
+        padding: 17px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <h1>🆘 Contact Support</h1>
+    <p>PS Mart Customer Support</p>
+  </header>
+
+  <main class="container">
+
+    <a href="profile.html" class="back">← Back to Profile</a>
+
+    <section class="card">
+      <h2>How Can We Help?</h2>
+
+      <p>
+        If you are facing a problem while using PS Mart, you can use the support
+        form below to describe your issue.
+      </p>
+
+      <div class="contact-box">
+
+        <div class="contact-item">
+          <strong>🛒 Shopping Support</strong>
+          <span>Help related to products, cart, wishlist and shopping.</span>
+        </div>
+
+        <div class="contact-item">
+          <strong>🔐 Account Support</strong>
+          <span>Help related to login, OTP, profile and account settings.</span>
+        </div>
+
+        <div class="contact-item">
+          <strong>📦 Order Support</strong>
+          <span>Help related to orders, cancellation, returns and refunds.</span>
+        </div>
+
+        <div class="contact-item">
+          <strong>🐞 Technical Support</strong>
+          <span>Report website errors, broken pages or other technical problems.</span>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Send a Support Request</h2>
+
+      <form id="supportForm">
+
+        <div class="form-group">
+          <label for="name">Your Name</label>
+          <input
+            type="text"
+            id="name"
+            placeholder="Enter your name"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="Enter your email"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="category">Support Category</label>
+
+          <select id="category" required>
+            <option value="">Select a category</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Account">Account</option>
+            <option value="Order">Order</option>
+            <option value="Payment">Payment</option>
+            <option value="Technical">Technical Issue</option>
+            <option value="Seller">Seller Support</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Describe Your Problem</label>
+
+          <textarea
+            id="message"
+            placeholder="Write your problem here..."
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit">
+          Send Support Request
+        </button>
+
+        <div class="notice" id="notice">
+          Your support request has been prepared successfully.
+        </div>
+
+      </form>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    © 2026 PS Mart • Customer Support
+  </footer>
+
+  <script>
+    document.getElementById("supportForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const category = document.getElementById("category").value;
+      const message = document.getElementById("message").value.trim();
+
+      if (!name || !email || !category || !message) {
+        return;
+      }
+
+      const subject = encodeURIComponent(
+        "PS Mart Support - " + category
+      );
+
+      const body = encodeURIComponent(
+        "Name: " + name +
+        "\nEmail: " + email +
+        "\nCategory: " + category +
+        "\n\nProblem:\n" + message
+      );
+
+      /*
+        Replace the email address below with your actual PS Mart
+        support email when you create one.
+      */
+      window.location.href =
+        "mailto:support@psmart.com?subject=" +
+        subject +
+        "&body=" +
+        body;
+
+      document.getElementById("notice").style.display = "block";
+    });
+  </script>
+
+</body>
+</html>
