@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Gift Cards | PS Mart</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      background: #f7f3ea;
+    }
+
+    .gift-page {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .gift-header {
+      background: linear-gradient(135deg, #6b3f16, #c99a3e);
+      color: white;
+      padding: 30px 20px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,.15);
+    }
+
+    .gift-header h1 {
+      margin: 0 0 8px;
+    }
+
+    .gift-header p {
+      margin: 0;
+      opacity: .9;
+    }
+
+    .redeem-box {
+      background: white;
+      margin-top: 20px;
+      padding: 22px;
+      border-radius: 18px;
+      box-shadow: 0 5px 18px rgba(0,0,0,.08);
+    }
+
+    .redeem-box h2 {
+      margin-top: 0;
+    }
+
+    .redeem-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .redeem-row input {
+      flex: 1;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+
+    .redeem-btn {
+      border: none;
+      background: #b8860b;
+      color: white;
+      padding: 14px 22px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .cards-title {
+      margin-top: 30px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px;
+    }
+
+    .gift-card {
+      background: linear-gradient(135deg, #fff8df, #ffffff);
+      border: 1px solid #e4c77d;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 5px 18px rgba(0,0,0,.07);
+    }
+
+    .gift-icon {
+      font-size: 35px;
+    }
+
+    .gift-code {
+      margin-top: 12px;
+      background: #f3ead2;
+      padding: 10px;
+      border-radius: 9px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      word-break: break-all;
+    }
+
+    .balance {
+      font-size: 25px;
+      font-weight: bold;
+      color: #8b6508;
+      margin: 12px 0;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      background: #e7f7e7;
+      color: #287528;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .empty {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      color: #777;
+    }
+
+    @media(max-width:600px) {
+      .redeem-row {
+        flex-direction: column;
+      }
+
+      .redeem-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="header">
+  <a class="logo" href="index.html">
+    🛍️ <b>PS</b> Mart
+  </a>
+</header>
+
+<main class="gift-page">
+
+  <section class="gift-header">
+    <h1>🎁 PS Mart Gift Cards</h1>
+    <p>Redeem your gift card and use your balance while shopping.</p>
+  </section>
+
+  <section class="redeem-box">
+
+    <h2>🔑 Redeem Gift Card</h2>
+
+    <p>
+      Enter your gift card code below.
+    </p>
+
+    <div class="redeem-row">
+
+      <input
+        id="giftCode"
+        type="text"
+        placeholder="Enter gift card code"
+        autocomplete="off"
+      >
+
+      <button
+        class="redeem-btn"
+        onclick="redeemGiftCard()"
+      >
+        Redeem
+      </button>
+
+    </div>
+
+  </section>
+
+  <h2 class="cards-title">💳 My Gift Cards</h2>
+
+  <section id="giftCards" class="cards">
+    <div class="empty">
+      Loading gift cards...
+    </div>
+  </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+
+<script>
+
+async function loadGiftCards() {
+
+  const container = document.getElementById("giftCards");
+
+  container.innerHTML = `
+    <div class="empty">
+      Loading gift cards...
+    </div>
+  `;
+
+  const {
+    data: { user }
+  } = await supabaseClient.auth.getUser();
+
+  if (!user) {
+
+    container.innerHTML = `
+      <div class="empty">
+        <h3>🔐 Please login first</h3>
+        <p>Login to view your gift cards.</p>
+
+        <a href="login.html">
+          Login
+        </a>
+      </div>
+    `;
+
+    return;
+  }
+
+  const { data, error } = await supabaseClient
+    .from("gift_cards")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", {
+      ascending: false
+    });
+
+  if (error) {
+
+    console.log(error);
+
+    container.innerHTML = `
+      <div class="empty">
+        Unable to load gift cards.
+      </div>
+    `;
+
+    return;
+  }
+
+  if (!data || data.length === 0) {
+
+    container.innerHTML = `
+      <div class="empty">
+        <div style="font-size:45px;">🎁</div>
+
+        <h3>No Gift Cards Yet</h3>
+
+        <p>
+          Your redeemed gift cards will appear here.
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML = data.map(card => {
+
+    const expiry = card.expires_at
+      ? new Date(card.expires_at).toLocaleDateString()
+      : "No expiry";
+
+    return `
+      <div class="gift-card">
+
+        <div class="gift-icon">
+          🎁
+        </div>
+
+        <div class="gift-code">
+          ${escapeGiftHtml(card.code)}
+        </div>
+
+        <div class="balance">
+          ₹${Number(card.balance || 0).toFixed(2)}
+        </div>
+
+        <p>
+          Initial Balance:
+          ₹${Number(card.initial_balance || 0).toFixed(2)}
+        </p>
+
+        <p>
+          Expires:
+          ${escapeGiftHtml(expiry)}
+        </p>
+
+        <span class="status">
+          ${escapeGiftHtml(card.status)}
+        </span>
+
+      </div>
+    `;
+
+  }).join("");
+}
+
+
+async function redeemGiftCard() {
+
+  const input =
+    document.getElementById("giftCode");
+
+  const code =
+    input.value.trim().toUpperCase();
+
+  if (!code) {
+
+    alert("Please enter a gift card code.");
+
+    return;
+  }
+
+  const {
+    data: { user }
+  } = await supabaseClient.auth.getUser();
+
+  if (!user) {
+
+    alert("Please login first.");
+
+    window.location.href =
+      "login.html";
+
+    return;
+  }
+
+  const {
+    data: card,
+    error
+  } = await supabaseClient
+    .from("gift_cards")
+    .select("*")
+    .eq("code", code)
+    .maybeSingle();
+
+  if (error) {
+
+    console.log(error);
+
+    alert(
+      "Unable to check gift card."
+    );
+
+    return;
+  }
+
+  if (!card) {
+
+    alert(
+      "❌ Gift card code not found."
+    );
+
+    return;
+  }
+
+  if (card.status !== "active") {
+
+    alert(
+      "❌ This gift card is not active."
+    );
+
+    return;
+  }
+
+  if (card.user_id) {
+
+    alert(
+      "❌ This gift card has already been redeemed."
+    );
+
+    return;
+  }
+
+  if (
+    card.expires_at &&
+    new Date(card.expires_at) < new Date()
+  ) {
+
+    alert(
+      "❌ This gift card has expired."
+    );
+
+    return;
+  }
+
+  const {
+    error: updateError
+  } = await supabaseClient
+    .from("gift_cards")
+    .update({
+      user_id: user.id
+    })
+    .eq("id", card.id)
+    .is("user_id", null);
+
+  if (updateError) {
+
+    console.log(updateError);
+
+    alert(
+      "❌ Gift card could not be redeemed."
+    );
+
+    return;
+  }
+
+  alert(
+    "🎉 Gift card redeemed successfully!"
+  );
+
+  input.value = "";
+
+  loadGiftCards();
+}
+
+
+function escapeGiftHtml(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+loadGiftCards();
+
+</script>
+
+</body>
+</html>
