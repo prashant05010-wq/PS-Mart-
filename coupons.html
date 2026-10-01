@@ -115,6 +115,12 @@
       color: #5b3218;
     }
 
+    .button-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .copy-btn {
       border: 0;
       background: #704214;
@@ -122,6 +128,25 @@
       padding: 8px 13px;
       border-radius: 7px;
       cursor: pointer;
+      font-weight: bold;
+    }
+
+    .copy-btn:hover {
+      background: #542f0e;
+    }
+
+    .apply-btn {
+      border: 0;
+      background: #c99a3d;
+      color: white;
+      padding: 8px 13px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .apply-btn:hover {
+      background: #a87c28;
     }
 
     .details {
@@ -153,6 +178,7 @@
     }
 
     @media (max-width: 600px) {
+
       .coupon-top {
         flex-direction: column;
         align-items: flex-start;
@@ -163,9 +189,16 @@
         align-items: stretch;
       }
 
-      .copy-btn {
+      .button-group {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .copy-btn,
+      .apply-btn {
         width: 100%;
       }
+
     }
   </style>
 </head>
@@ -213,7 +246,7 @@
     "https://nctscffhnztscczjxhat.supabase.co";
 
   const SUPABASE_ANON_KEY =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sIjoiYW5vbiIsImlhdCI6MTc5MDQ0MzQyNSwiZXhwIjoyMTA2MDE5NDI1fQ.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
 
   const supabaseClient =
     window.supabase.createClient(
@@ -310,12 +343,14 @@
 
         container.innerHTML = `
           <div class="empty">
+
             <h2>🎟️ No Coupons Available</h2>
 
             <p>
               There are currently no active coupons.
               Please check again later.
             </p>
+
           </div>
         `;
 
@@ -346,6 +381,10 @@
                 coupon.maximum_discount
               ).toLocaleString("en-IN")
             : "";
+
+
+        const safeCode =
+          escapeHTML(coupon.code);
 
 
         card.innerHTML = `
@@ -380,21 +419,29 @@
 
             <span class="code">
 
-              ${escapeHTML(coupon.code)}
+              ${safeCode}
 
             </span>
 
 
-            <button
-              class="copy-btn"
-              onclick="copyCoupon('${escapeHTML(
-                coupon.code
-              )}')"
-            >
+            <div class="button-group">
 
-              Copy Code
+              <button
+                class="copy-btn"
+                onclick="copyCoupon('${safeCode}')"
+              >
+                Copy Code
+              </button>
 
-            </button>
+
+              <button
+                class="apply-btn"
+                onclick="applyCouponFromCouponsPage('${safeCode}')"
+              >
+                Apply Coupon
+              </button>
+
+            </div>
 
           </div>
 
@@ -461,6 +508,45 @@
       );
 
     }
+
+  }
+
+
+  function applyCouponFromCouponsPage(code) {
+
+    const couponCode =
+      String(code || "").trim().toUpperCase();
+
+
+    if (!couponCode) {
+
+      alert("❌ Invalid coupon code.");
+
+      return;
+
+    }
+
+
+    /*
+      Coupon code ko temporarily save kar rahe hain.
+      Cart page ise automatically apply karega.
+    */
+
+    localStorage.setItem(
+      "psmart-auto-apply-coupon",
+      couponCode
+    );
+
+
+    alert(
+      "🎟️ Coupon selected: " +
+      couponCode +
+      "\n\nCart page par jaakar coupon apply hoga."
+    );
+
+
+    window.location.href =
+      "cart.html";
 
   }
 
