@@ -223,11 +223,11 @@ function card(p) {
             height:38px;
             border-radius:50%;
             border:none;
-            background:white;
+            background:transparent;
             color:#b8860b;
             font-size:24px;
             cursor:pointer;
-            box-shadow:0 2px 8px rgba(0,0,0,.15);
+           box-shadow:none;
           "
         >
           ♡
@@ -362,8 +362,39 @@ function card(p) {
         font-size:12px;
         font-weight:bold;
       ">
-        🎟️ Extra offers available
-      </div>
+       <!-- COUPON BUTTON -->
+
+<a
+  href="coupons.html"
+  style="
+    display:block;
+    margin-top:8px;
+    padding:9px 10px;
+    border-radius:6px;
+    background:#fff8e7;
+    border:1px dashed #d6a63c;
+    color:#79520f;
+    font-size:13px;
+    font-weight:bold;
+    text-align:center;
+    text-decoration:none;
+  "
+>
+  🎟️ View & Apply Coupons →
+</a>
+
+
+<!-- VIEW PRODUCT -->
+
+<a
+  href="product.html?id=${p.id}"
+  class="goldbtn block"
+  style="
+    margin-top:12px;
+  "
+>
+  View Product →
+</a>
 
 
       <!-- VIEW PRODUCT -->
