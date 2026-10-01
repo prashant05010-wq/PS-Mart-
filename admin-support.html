@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Support Requests | PS Mart Admin</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #120b06;
+      color: #f5e6c8;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #3b1f0f, #1b0e07);
+      border-bottom: 1px solid #8f641f;
+      padding: 22px 15px;
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #f5c76a;
+      font-size: 26px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      color: #d9c29a;
+      font-size: 13px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 25px auto;
+      padding: 0 15px 40px;
+    }
+
+    .back {
+      display: inline-block;
+      color: #f5c76a;
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    .topbar {
+      background: #1c1008;
+      border: 1px solid #654419;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    .topbar h2 {
+      color: #f5c76a;
+      margin-bottom: 12px;
+      font-size: 20px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      flex: 1;
+      min-width: 130px;
+      background: #251408;
+      border: 1px solid #5d3d17;
+      border-radius: 10px;
+      padding: 13px;
+    }
+
+    .stat strong {
+      display: block;
+      color: #f5c76a;
+      font-size: 22px;
+    }
+
+    .stat span {
+      color: #cdb994;
+      font-size: 12px;
+    }
+
+    .tools {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    input,
+    select {
+      flex: 1;
+      min-width: 180px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #69471b;
+      background: #110a05;
+      color: #f5e6c8;
+      outline: none;
+    }
+
+    .request {
+      background: #1c1008;
+      border: 1px solid #654419;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    .request-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+      margin-bottom: 12px;
+    }
+
+    .request h3 {
+      color: #f5c76a;
+      font-size: 17px;
+      margin-bottom: 4px;
+    }
+
+    .email {
+      color: #bfa980;
+      font-size: 13px;
+      word-break: break-word;
+    }
+
+    .status {
+      border-radius: 20px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .pending {
+      background: #4a3514;
+      color: #ffd978;
+    }
+
+    .progress {
+      background: #17364a;
+      color: #8fd5ff;
+    }
+
+    .resolved {
+      background: #17391d;
+      color: #9de0a4;
+    }
+
+    .category {
+      display: inline-block;
+      margin: 8px 0;
+      padding: 5px 9px;
+      border-radius: 6px;
+      background: #2c1a0b;
+      color: #d9ad57;
+      font-size: 12px;
+    }
+
+    .message {
+      background: #120b06;
+      border: 1px solid #392512;
+      border-radius: 9px;
+      padding: 13px;
+      margin: 10px 0 15px;
+      color: #d8c8aa;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .date {
+      color: #927d5f;
+      font-size: 11px;
+      margin-bottom: 12px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .actions select {
+      flex: 0 1 180px;
+      min-width: 160px;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      background: #d49a32;
+      color: #180d05;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #f0b94f;
+    }
+
+    .loading,
+    .empty,
+    .error {
+      text-align: center;
+      padding: 35px 15px;
+      color: #cdb994;
+      background: #1c1008;
+      border: 1px solid #654419;
+      border-radius: 14px;
+    }
+
+    .error {
+      color: #ffb0a8;
+    }
+
+    @media (max-width: 600px) {
+      .request-top {
+        flex-direction: column;
+      }
+
+      .status {
+        align-self: flex-start;
+      }
+
+      .actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .actions select,
+      .actions button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <h1>🆘 Support Requests</h1>
+    <p>PS Mart Admin Panel</p>
+  </header>
+
+  <main class="container">
+
+    <a href="admin-dashboard.html" class="back">← Back to Admin Dashboard</a>
+
+    <section class="topbar">
+      <h2>Support Overview</h2>
+
+      <div class="stats">
+        <div class="stat">
+          <strong id="totalCount">0</strong>
+          <span>Total Requests</span>
+        </div>
+
+        <div class="stat">
+          <strong id="pendingCount">0</strong>
+          <span>Pending</span>
+        </div>
+
+        <div class="stat">
+          <strong id="progressCount">0</strong>
+          <span>In Progress</span>
+        </div>
+
+        <div class="stat">
+          <strong id="resolvedCount">0</strong>
+          <span>Resolved</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="tools">
+
+      <input
+        type="search"
+        id="searchInput"
+        placeholder="Search name, email or message..."
+      >
+
+      <select id="statusFilter">
+        <option value="All">All Status</option>
+        <option value="Pending">Pending</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Resolved">Resolved</option>
+      </select>
+
+      <select id="categoryFilter">
+        <option value="All">All Categories</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Account">Account</option>
+        <option value="Order">Order</option>
+        <option value="Payment">Payment</option>
+        <option value="Technical">Technical Issue</option>
+        <option value="Seller">Seller Support</option>
+        <option value="Other">Other</option>
+      </select>
+
+    </div>
+
+    <div id="requestsContainer">
+      <div class="loading">
+        Loading support requests...
+      </div>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const SUPABASE_URL =
+      "https://nctscffhnztscczjxhat.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+    let allRequests = [];
+
+    async function checkAdmin() {
+
+      const {
+        data: { user },
+        error
+      } = await supabaseClient.auth.getUser();
+
+      if (error || !user) {
+        window.location.href = "login.html";
+        return false;
+      }
+
+      const { data: profile, error: profileError } =
+        await supabaseClient
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+
+      if (profileError || !profile || profile.role !== "admin") {
+        document.getElementById("requestsContainer").innerHTML = `
+          <div class="error">
+            ❌ Admin access required.
+          </div>
+        `;
+
+        return false;
+      }
+
+      return true;
+    }
+
+    async function loadRequests() {
+
+      const isAdmin = await checkAdmin();
+
+      if (!isAdmin) return;
+
+      const { data, error } = await supabaseClient
+        .from("support_requests")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error(error);
+
+        document.getElementById("requestsContainer").innerHTML = `
+          <div class="error">
+            ❌ Could not load support requests.
+          </div>
+        `;
+
+        return;
+      }
+
+      allRequests = data || [];
+
+      updateStats();
+      renderRequests();
+    }
+
+    function updateStats() {
+
+      document.getElementById("totalCount").textContent =
+        allRequests.length;
+
+      document.getElementById("pendingCount").textContent =
+        allRequests.filter(r => r.status === "Pending").length;
+
+      document.getElementById("progressCount").textContent =
+        allRequests.filter(r => r.status === "In Progress").length;
+
+      document.getElementById("resolvedCount").textContent =
+        allRequests.filter(r => r.status === "Resolved").length;
+    }
+
+    function escapeHTML(value) {
+
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function statusClass(status) {
+
+      if (status === "Resolved") return "resolved";
+
+      if (status === "In Progress") return "progress";
+
+      return "pending";
+    }
+
+    function renderRequests() {
+
+      const container =
+        document.getElementById("requestsContainer");
+
+      const search =
+        document.getElementById("searchInput")
+          .value
+          .toLowerCase()
+          .trim();
+
+      const status =
+        document.getElementById("statusFilter").value;
+
+      const category =
+        document.getElementById("categoryFilter").value;
+
+      const filtered = allRequests.filter(request => {
+
+        const searchableText =
+          `${request.name} ${request.email} ${request.message}`
+            .toLowerCase();
+
+        const searchMatch =
+          !search || searchableText.includes(search);
+
+        const statusMatch =
+          status === "All" || request.status === status;
+
+        const categoryMatch =
+          category === "All" ||
+          request.category === category;
+
+        return searchMatch && statusMatch && categoryMatch;
+      });
+
+      if (!filtered.length) {
+
+        container.innerHTML = `
+          <div class="empty">
+            No support requests found.
+          </div>
+        `;
+
+        return;
+      }
+
+      container.innerHTML = filtered.map(request => {
+
+        const date = request.created_at
+          ? new Date(request.created_at).toLocaleString()
+          : "Unknown";
+
+        return `
+          <article class="request">
+
+            <div class="request-top">
+
+              <div>
+                <h3>${escapeHTML(request.name)}</h3>
+                <div class="email">
+                  ${escapeHTML(request.email)}
+                </div>
+              </div>
+
+              <span class="status ${statusClass(request.status)}">
+                ${escapeHTML(request.status)}
+              </span>
+
+            </div>
+
+            <span class="category">
+              ${escapeHTML(request.category)}
+            </span>
+
+            <div class="message">
+              ${escapeHTML(request.message)}
+            </div>
+
+            <div class="date">
+              Submitted: ${escapeHTML(date)}
+            </div>
+
+            <div class="actions">
+
+              <select
+                id="status-${request.id}"
+              >
+                <option
+                  value="Pending"
+                  ${request.status === "Pending" ? "selected" : ""}
+                >
+                  Pending
+                </option>
+
+                <option
+                  value="In Progress"
+                  ${request.status === "In Progress" ? "selected" : ""}
+                >
+                  In Progress
+                </option>
+
+                <option
+                  value="Resolved"
+                  ${request.status === "Resolved" ? "selected" : ""}
+                >
+                  Resolved
+                </option>
+              </select>
+
+              <button
+                onclick="updateStatus(${request.id})"
+              >
+                Update Status
+              </button>
+
+            </div>
+
+          </article>
+        `;
+
+      }).join("");
+    }
+
+    async function updateStatus(id) {
+
+      const select =
+        document.getElementById("status-" + id);
+
+      const newStatus = select.value;
+
+      const { error } = await supabaseClient
+        .from("support_requests")
+        .update({
+          status: newStatus
+        })
+        .eq("id", id);
+
+      if (error) {
+
+        console.error(error);
+
+        alert("❌ Status update failed.");
+
+        return;
+      }
+
+      alert("✅ Support request status updated.");
+
+      await loadRequests();
+    }
+
+    document
+      .getElementById("searchInput")
+      .addEventListener("input", renderRequests);
+
+    document
+      .getElementById("statusFilter")
+      .addEventListener("change", renderRequests);
+
+    document
+      .getElementById("categoryFilter")
+      .addEventListener("change", renderRequests);
+
+    loadRequests();
+  </script>
+
+</body>
+</html>
