@@ -214,15 +214,17 @@
 
     try {
 
-      const {
-        data: { user },
-        error: userError
-      } = await supabaseClient.auth.getUser();
+     const {
+  data: { session },
+  error: sessionError
+} = await supabaseClient.auth.getSession();
 
-      if (userError || !user) {
-        window.location.href = "login.html";
-        return;
-      }
+if (sessionError || !session) {
+  window.location.href = "login.html";
+  return;
+}
+
+const user = session.user;
 
       const { data, error } = await supabaseClient
         .from("support_requests")
