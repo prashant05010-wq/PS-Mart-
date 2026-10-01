@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>Saved Cards | PS Mart</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f7f1e8;
+  color:#3b2416;
+}
+
+header{
+  background:#4b2e1f;
+  color:white;
+  padding:16px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+header a{
+  color:white;
+  text-decoration:none;
+}
+
+.container{
+  max-width:900px;
+  margin:25px auto;
+  padding:15px;
+}
+
+.card{
+  background:white;
+  border-radius:15px;
+  padding:22px;
+  margin-bottom:18px;
+  box-shadow:0 4px 15px rgba(0,0,0,.10);
+}
+
+h2{
+  margin-top:0;
+  color:#6b421f;
+}
+
+.card-item{
+  border:1px solid #e5ddd2;
+  border-radius:14px;
+  padding:18px;
+  margin-top:15px;
+  background:#fffdf9;
+}
+
+.card-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.card-brand{
+  font-size:20px;
+  font-weight:bold;
+}
+
+.default-badge{
+  background:#e8f5e9;
+  color:#2e7d32;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.card-number{
+  font-size:20px;
+  letter-spacing:2px;
+  margin:18px 0;
+  font-weight:bold;
+}
+
+.card-details{
+  display:flex;
+  justify-content:space-between;
+  color:#666;
+}
+
+input,
+select{
+  width:100%;
+  padding:12px;
+  margin:7px 0;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-size:15px;
+  background:white;
+}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+button,
+.btn{
+  display:block;
+  width:100%;
+  padding:13px;
+  margin-top:10px;
+  border:none;
+  border-radius:8px;
+  background:#b8860b;
+  color:white;
+  text-align:center;
+  text-decoration:none;
+  cursor:pointer;
+  font-size:15px;
+}
+
+.secondary{
+  background:#6b421f;
+}
+
+.danger{
+  background:#8b2e2e;
+}
+
+.gray{
+  background:#777;
+}
+
+.small-buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  margin-top:15px;
+}
+
+.small-buttons button{
+  margin-top:0;
+  padding:10px;
+  font-size:13px;
+}
+
+.hidden{
+  display:none;
+}
+
+.message{
+  margin-top:12px;
+  font-weight:bold;
+}
+
+.success{
+  color:#2e7d32;
+}
+
+.error{
+  color:#c62828;
+}
+
+.empty{
+  text-align:center;
+  padding:30px 10px;
+  color:#777;
+}
+
+.security{
+  background:#fff8e7;
+  border:1px solid #ead7a0;
+  border-radius:10px;
+  padding:13px;
+  margin-bottom:18px;
+  line-height:1.5;
+}
+
+.label{
+  font-size:13px;
+  font-weight:bold;
+  color:#555;
+}
+
+@media(max-width:600px){
+
+  header{
+    padding:14px;
+  }
+
+  .container{
+    margin:10px auto;
+    padding:10px;
+  }
+
+  .row{
+    grid-template-columns:1fr;
+  }
+
+  .small-buttons{
+    grid-template-columns:1fr;
+  }
+
+  .card-number{
+    font-size:17px;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+  <a href="profile.html">
+    ← My Account
+  </a>
+
+  <a href="index.html">
+    🛍️ <b>PS</b> Mart
+  </a>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- =========================
+     TITLE
+========================= -->
+
+<div class="card">
+
+  <h2>
+    💳 Saved Credit & Debit Cards
+  </h2>
+
+  <p>
+    Manage your saved payment cards.
+  </p>
+
+  <div class="security">
+
+    🔒 <b>Your card security</b>
+
+    <br>
+
+    Only masked card information is stored here.
+    Full card numbers and CVV are never stored.
+
+  </div>
+
+  <button onclick="showAddCard()">
+    ➕ Add New Card
+  </button>
+
+</div>
+
+
+<!-- =========================
+     ADD / EDIT CARD
+========================= -->
+
+<div
+  class="card hidden"
+  id="cardFormCard"
+>
+
+  <h2 id="formTitle">
+    ➕ Add New Card
+  </h2>
+
+
+  <label class="label">
+    Cardholder Name
+  </label>
+
+  <input
+    id="cardholderName"
+    type="text"
+    placeholder="Name as shown on card"
+    maxlength="80"
+  >
+
+
+  <label class="label">
+    Card Number
+  </label>
+
+  <input
+    id="cardNumber"
+    type="text"
+    inputmode="numeric"
+    autocomplete="cc-number"
+    placeholder="1234 5678 9012 3456"
+    maxlength="23"
+    oninput="formatCardNumber()"
+  >
+
+
+  <div
+    id="cardBrand"
+    style="font-size:13px;color:#777;"
+  >
+    Card type will appear here
+  </div>
+
+
+  <div class="row">
+
+    <div>
+
+      <label class="label">
+        Expiry Month
+      </label>
+
+      <select id="expiryMonth">
+
+        <option value="">
+          Month
+        </option>
+
+        <option value="1">01</option>
+        <option value="2">02</option>
+        <option value="3">03</option>
+        <option value="4">04</option>
+        <option value="5">05</option>
+        <option value="6">06</option>
+        <option value="7">07</option>
+        <option value="8">08</option>
+        <option value="9">09</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+
+      </select>
+
+    </div>
+
+
+    <div>
+
+      <label class="label">
+        Expiry Year
+      </label>
+
+      <select id="expiryYear">
+
+        <option value="">
+          Year
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <button onclick="saveCard()">
+    💾 Save Card
+  </button>
+
+
+  <button
+    class="gray"
+    onclick="cancelForm()"
+  >
+    Cancel
+  </button>
+
+
+  <div
+    id="formMessage"
+    class="message"
+  ></div>
+
+</div>
+
+
+<!-- =========================
+     SAVED CARDS
+========================= -->
+
+<div class="card">
+
+  <h2>
+    💳 My Saved Cards
+  </h2>
+
+  <div id="cardsList">
+
+    Loading...
+
+  </div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+
+/* =========================
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+"https://nctscffhnztscczjxhat.supabase.co";
+
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =========================
+   EDIT STATE
+========================= */
+
+let editingCardId = null;
+
+
+/* =========================
+   LOGIN CHECK
+========================= */
+
+async function getCurrentUser(){
+
+  const {
+    data:{
+      user
+    },
+    error
+  } =
+    await supabaseClient
+    .auth
+    .getUser();
+
+
+  if(error || !user){
+
+    window.location.href =
+      "login.html";
+
+    return null;
+
+  }
+
+
+  return user;
+
+}
+
+
+/* =========================
+   GENERATE YEARS
+========================= */
+
+function generateYears(){
+
+  const select =
+    document.getElementById(
+      "expiryYear"
+    );
+
+  const currentYear =
+    new Date().getFullYear();
+
+
+  for(
+    let i = 0;
+    i < 15;
+    i++
+  ){
+
+    const year =
+      currentYear + i;
+
+    const option =
+      document.createElement(
+        "option"
+      );
+
+    option.value = year;
+
+    option.textContent = year;
+
+    select.appendChild(option);
+
+  }
+
+}
+
+
+/* =========================
+   CARD BRAND
+========================= */
+
+function detectCardBrand(number){
+
+  const n =
+    number.replace(
+      /\D/g,
+      ""
+    );
+
+
+  if(/^4/.test(n))
+    return "Visa";
+
+
+  if(
+    /^(5[1-5]|2(2[2-7]))/.test(n)
+  )
+    return "Mastercard";
+
+
+  if(
+    /^(60|65|81|82|508)/.test(n)
+  )
+    return "RuPay";
+
+
+  if(
+    /^3[47]/.test(n)
+  )
+    return "Amex";
+
+
+  return "Card";
+
+}
+
+
+/* =========================
+   FORMAT CARD NUMBER
+========================= */
+
+function formatCardNumber(){
+
+  const input =
+    document.getElementById(
+      "cardNumber"
+    );
+
+
+  let value =
+    input.value.replace(
+      /\D/g,
+      ""
+    );
+
+
+  value =
+    value.substring(
+      0,
+      19
+    );
+
+
+  input.value =
+    value.match(
+      /.{1,4}/g
+    )?.join(" ") || "";
+
+
+  document.getElementById(
+    "cardBrand"
+  ).textContent =
+    "Card type: " +
+    detectCardBrand(value);
+
+}
+
+
+/* =========================
+   LUHN CHECK
+========================= */
+
+function luhnCheck(number){
+
+  const digits =
+    number
+    .replace(/\D/g,"");
+
+
+  let sum = 0;
+
+  let doubleDigit = false;
+
+
+  for(
+    let i =
+      digits.length - 1;
+    i >= 0;
+    i--
+  ){
+
+    let digit =
+      Number(
+        digits[i]
+      );
+
+
+    if(doubleDigit){
+
+      digit *= 2;
+
+      if(digit > 9)
+        digit -= 9;
+
+    }
+
+
+    sum += digit;
+
+    doubleDigit =
+      !doubleDigit;
+
+  }
+
+
+  return (
+    digits.length >= 12 &&
+    digits.length <= 19 &&
+    sum % 10 === 0
+  );
+
+}
+
+
+/* =========================
+   SHOW ADD
+========================= */
+
+function showAddCard(){
+
+  editingCardId = null;
+
+  document.getElementById(
+    "formTitle"
+  ).textContent =
+    "➕ Add New Card";
+
+
+  clearForm();
+
+
+  document.getElementById(
+    "cardFormCard"
+  ).classList.remove(
+    "hidden"
+  );
+
+}
+
+
+/* =========================
+   CANCEL
+========================= */
+
+function cancelForm(){
+
+  editingCardId = null;
+
+  clearForm();
+
+  document.getElementById(
+    "cardFormCard"
+  ).classList.add(
+    "hidden"
+  );
+
+}
+
+
+/* =========================
+   CLEAR FORM
+========================= */
+
+function clearForm(){
+
+  document.getElementById(
+    "cardholderName"
+  ).value = "";
+
+
+  document.getElementById(
+    "cardNumber"
+  ).value = "";
+
+
+  document.getElementById(
+    "expiryMonth"
+  ).value = "";
+
+
+  document.getElementById(
+    "expiryYear"
+  ).value = "";
+
+
+  document.getElementById(
+    "cardBrand"
+  ).textContent =
+    "Card type will appear here";
+
+
+  document.getElementById(
+    "formMessage"
+  ).textContent = "";
+
+}
+
+
+/* =========================
+   SAVE CARD
+========================= */
+
+async function saveCard(){
+
+  const message =
+    document.getElementById(
+      "formMessage"
+    );
+
+
+  message.textContent = "";
+
+
+  const user =
+    await getCurrentUser();
+
+
+  if(!user)
+    return;
+
+
+  const name =
+    document.getElementById(
+      "cardholderName"
+    ).value.trim();
+
+
+  const cardNumber =
+    document.getElementById(
+      "cardNumber"
+    ).value
+    .replace(
+      /\D/g,
+      ""
+    );
+
+
+  const month =
+    Number(
+      document.getElementById(
+        "expiryMonth"
+      ).value
+    );
+
+
+  const year =
+    Number(
+      document.getElementById(
+        "expiryYear"
+      ).value
+    );
+
+
+  /* NAME */
+
+  if(name.length < 2){
+
+    message.textContent =
+      "Please enter a valid cardholder name.";
+
+    message.className =
+      "message error";
+
+    return;
+
+  }
+
+
+  /* CARD NUMBER */
+
+  if(!luhnCheck(cardNumber)){
+
+    message.textContent =
+      "Please enter a valid card number.";
+
+    message.className =
+      "message error";
+
+    return;
+
+  }
+
+
+  /* EXPIRY */
+
+  if(!month || !year){
+
+    message.textContent =
+      "Please select card expiry date.";
+
+    message.className =
+      "message error";
+
+    return;
+
+  }
+
+
+  const now =
+    new Date();
+
+
+  const currentMonth =
+    now.getMonth() + 1;
+
+
+  const currentYear =
+    now.getFullYear();
+
+
+  if(
+    year < currentYear ||
+    (
+      year === currentYear &&
+      month < currentMonth
+    )
+  ){
+
+    message.textContent =
+      "This card has expired.";
+
+    message.className =
+      "message error";
+
+    return;
+
+  }
+
+
+  const brand =
+    detectCardBrand(
+      cardNumber
+    );
+
+
+  const last4 =
+    cardNumber.slice(-4);
+
+
+  /* =========================
+     CHECK DUPLICATE
+  ========================= */
+
+  let duplicateQuery =
+    supabaseClient
+    .from("saved_cards")
+    .select("id")
+    .eq("user_id",user.id)
+    .eq("last4",last4)
+    .eq("brand",brand)
+    .eq("expiry_month",month)
+    .eq("expiry_year",year);
+
+
+  if(editingCardId){
+
+    duplicateQuery =
+      duplicateQuery.neq(
+        "id",
+        editingCardId
+      );
+
+  }
+
+
+  const {
+    data:duplicates,
+    error:duplicateError
+  } =
+    await duplicateQuery;
+
+
+  if(duplicateError){
+
+    console.log(
+      duplicateError
+    );
+
+    message.textContent =
+      "Unable to check existing cards.";
+
+    message.className =
+      "message error";
+
+    return;
+
+  }
+
+
+  if(
+    duplicates &&
+    duplicates.length
+  ){
+
+    message.textContent =
+      "This card is already saved.";
+
+    message.className =
+      "message error";
+
+    return;
+
+  }
+
+
+  /* =========================
+     EDIT
+  ========================= */
+
+  if(editingCardId){
+
+    const {
+      error
+    } =
+      await supabaseClient
+
+      .from("saved_cards")
+
+      .update({
+
+        cardholder_name:name,
+
+        brand:brand,
+
+        last4:last4,
+
+        expiry_month:month,
+
+        expiry_year:year
+
+      })
+
+      .eq(
+        "id",
+        editingCardId
+      )
+
+      .eq(
+        "user_id",
+        user.id
+      );
+
+
+    if(error){
+
+      console.log(error);
+
+      message.textContent =
+        "Card update failed: " +
+        error.message;
+
+      message.className =
+        "message error";
+
+      return;
+
+    }
+
+
+    message.textContent =
+      "Card updated successfully ✓";
+
+    message.className =
+      "message success";
+
+
+    editingCardId = null;
+
+  }
+
+
+  /* =========================
+     ADD
+  ========================= */
+
+  else{
+
+    const {
+      error
+    } =
+      await supabaseClient
+
+      .from("saved_cards")
+
+      .insert({
+
+        user_id:user.id,
+
+        cardholder_name:name,
+
+        brand:brand,
+
+        last4:last4,
+
+        expiry_month:month,
+
+        expiry_year:year,
+
+        is_default:false
+
+      });
+
+
+    if(error){
+
+      console.log(error);
+
+      message.textContent =
+        "Card save failed: " +
+        error.message;
+
+      message.className =
+        "message error";
+
+      return;
+
+    }
+
+
+    message.textContent =
+      "Card saved successfully ✓";
+
+    message.className =
+      "message success";
+
+  }
+
+
+  clearForm();
+
+
+  document.getElementById(
+    "cardFormCard"
+  ).classList.add(
+    "hidden"
+  );
+
+
+  await loadCards();
+
+}
+
+
+/* =========================
+   LOAD CARDS
+========================= */
+
+async function loadCards(){
+
+  const list =
+    document.getElementById(
+      "cardsList"
+    );
+
+
+  const user =
+    await getCurrentUser();
+
+
+  if(!user)
+    return;
+
+
+  const {
+    data:cards,
+    error
+  } =
+    await supabaseClient
+
+    .from("saved_cards")
+
+    .select("*")
+
+    .eq(
+      "user_id",
+      user.id
+    )
+
+    .order(
+      "is_default",
+      {
+        ascending:false
+      }
+    )
+
+    .order(
+      "created_at",
+      {
+        ascending:false
+      }
+    );
+
+
+  if(error){
+
+    console.log(error);
+
+    list.innerHTML =
+      `<div class="empty">
+        Unable to load saved cards.
+      </div>`;
+
+    return;
+
+  }
+
+
+  if(!cards || !cards.length){
+
+    list.innerHTML =
+      `<div class="empty">
+
+        💳
+
+        <h3>
+          No saved cards
+        </h3>
+
+        <p>
+          Add a credit or debit card
+          for easier checkout.
+        </p>
+
+      </div>`;
+
+    return;
+
+  }
+
+
+  list.innerHTML =
+    cards
+    .map(
+      card => cardHTML(card)
+    )
+    .join("");
+
+}
+
+
+/* =========================
+   CARD HTML
+========================= */
+
+function cardHTML(card){
+
+  const expiry =
+    String(
+      card.expiry_month
+    ).padStart(
+      2,
+      "0"
+    )
+    + "/" +
+    String(
+      card.expiry_year
+    ).slice(-2);
+
+
+  return `
+
+    <div class="card-item">
+
+      <div class="card-top">
+
+        <div class="card-brand">
+
+          💳 ${escapeHTML(
+            card.brand
+          )}
+
+        </div>
+
+
+        ${
+          card.is_default
+          ?
+          `
+          <div class="default-badge">
+            ⭐ DEFAULT
+          </div>
+          `
+          :
+          ""
+        }
+
+      </div>
+
+
+      <div class="card-number">
+
+        •••• •••• •••• ${escapeHTML(
+          card.last4
+        )}
+
+      </div>
+
+
+      <div class="card-details">
+
+        <div>
+
+          <small>
+            CARDHOLDER
+          </small>
+
+          <br>
+
+          <b>
+            ${escapeHTML(
+              card.cardholder_name
+            )}
+          </b>
+
+        </div>
+
+
+        <div>
+
+          <small>
+            EXPIRES
+          </small>
+
+          <br>
+
+          <b>
+            ${expiry}
+          </b>
+
+        </div>
+
+      </div>
+
+
+      <div class="small-buttons">
+
+        ${
+          card.is_default
+          ?
+          ""
+          :
+          `
+          <button
+            onclick="makeDefault(${card.id})"
+          >
+            ⭐ Default
+          </button>
+          `
+        }
+
+
+        <button
+          class="secondary"
+          onclick="editCard(${card.id})"
+        >
+          ✏️ Edit
+        </button>
+
+
+        <button
+          class="danger"
+          onclick="deleteCard(${card.id})"
+        >
+          🗑️ Delete
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================
+   EDIT CARD
+========================= */
+
+async function editCard(id){
+
+  const user =
+    await getCurrentUser();
+
+
+  if(!user)
+    return;
+
+
+  const {
+    data:card,
+    error
+  } =
+    await supabaseClient
+
+    .from("saved_cards")
+
+    .select("*")
+
+    .eq(
+      "id",
+      id
+    )
+
+    .eq(
+      "user_id",
+      user.id
+    )
+
+    .maybeSingle();
+
+
+  if(error || !card){
+
+    alert(
+      "Card could not be found."
+    );
+
+    return;
+
+  }
+
+
+  editingCardId =
+    card.id;
+
+
+  document.getElementById(
+    "formTitle"
+  ).textContent =
+    "✏️ Edit Saved Card";
+
+
+  document.getElementById(
+    "cardholderName"
+  ).value =
+    card.cardholder_name;
+
+
+  /*
+    Full card number is intentionally
+    NOT stored.
+
+    Therefore edit keeps the existing
+    masked card and asks the user to
+    enter the number again only if
+    changing card details.
+  */
+
+  document.getElementById(
+    "cardNumber"
+  ).value = "";
+
+
+  document.getElementById(
+    "expiryMonth"
+  ).value =
+    card.expiry_month;
+
+
+  document.getElementById(
+    "expiryYear"
+  ).value =
+    card.expiry_year;
+
+
+  document.getElementById(
+    "cardBrand"
+  ).textContent =
+    "Current card: " +
+    card.brand +
+    " •••• " +
+    card.last4;
+
+
+  document.getElementById(
+    "formMessage"
+  ).textContent =
+    "Enter the card number again to update card details.";
+
+
+  document.getElementById(
+    "formMessage"
+  ).className =
+    "message";
+
+
+  document.getElementById(
+    "cardFormCard"
+  ).classList.remove(
+    "hidden"
+  );
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+/* =========================
+   DEFAULT CARD
+========================= */
+
+async function makeDefault(id){
+
+  const user =
+    await getCurrentUser();
+
+
+  if(!user)
+    return;
+
+
+  const {
+    error:resetError
+  } =
+    await supabaseClient
+
+    .from("saved_cards")
+
+    .update({
+      is_default:false
+    })
+
+    .eq(
+      "user_id",
+      user.id
+    );
+
+
+  if(resetError){
+
+    alert(
+      "Unable to update default card."
+    );
+
+    return;
+
+  }
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+
+    .from("saved_cards")
+
+    .update({
+      is_default:true
+    })
+
+    .eq(
+      "id",
+      id
+    )
+
+    .eq(
+      "user_id",
+      user.id
+    );
+
+
+  if(error){
+
+    alert(
+      "Unable to set default card."
+    );
+
+    return;
+
+  }
+
+
+  await loadCards();
+
+}
+
+
+/* =========================
+   DELETE CARD
+========================= */
+
+async function deleteCard(id){
+
+  const confirmDelete =
+    confirm(
+      "Are you sure you want to delete this saved card?"
+    );
+
+
+  if(!confirmDelete)
+    return;
+
+
+  const user =
+    await getCurrentUser();
+
+
+  if(!user)
+    return;
+
+
+  const {
+    data:card
+  } =
+    await supabaseClient
+
+    .from("saved_cards")
+
+    .select(
+      "id,is_default"
+    )
+
+    .eq(
+      "id",
+      id
+    )
+
+    .eq(
+      "user_id",
+      user.id
+    )
+
+    .maybeSingle();
+
+
+  if(!card)
+    return;
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+
+    .from("saved_cards")
+
+    .delete()
+
+    .eq(
+      "id",
+      id
+    )
+
+    .eq(
+      "user_id",
+      user.id
+    );
+
+
+  if(error){
+
+    alert(
+      "Card deletion failed: " +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  /*
+    If default card was deleted,
+    automatically select another
+    saved card as default.
+  */
+
+  if(card.is_default){
+
+    const {
+      data:remaining
+    } =
+      await supabaseClient
+
+      .from("saved_cards")
+
+      .select("id")
+
+      .eq(
+        "user_id",
+        user.id
+      )
+
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      )
+      .limit(1);
+
+
+    if(
+      remaining &&
+      remaining.length
+    ){
+
+      await supabaseClient
+
+      .from("saved_cards")
+
+      .update({
+        is_default:true
+      })
+
+      .eq(
+        "id",
+        remaining[0].id
+      )
+      .eq(
+        "user_id",
+        user.id
+      );
+
+    }
+
+  }
+
+
+  await loadCards();
+
+}
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHTML(value){
+
+  return String(
+    value ?? ""
+  )
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+generateYears();
+
+loadCards();
+
+</script>
+
+
+</body>
+
+</html>
