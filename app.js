@@ -384,17 +384,6 @@ function card(p) {
 </a>
 
 
-<!-- VIEW PRODUCT -->
-
-<a
-  href="product.html?id=${p.id}"
-  class="goldbtn block"
-  style="
-    margin-top:12px;
-  "
->
-  View Product →
-</a>
 
 
       <!-- VIEW PRODUCT -->
