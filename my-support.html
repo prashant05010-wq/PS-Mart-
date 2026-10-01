@@ -232,17 +232,21 @@ const user = session.user;
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error(error);
+    if (error) {
+  console.error("SUPPORT REQUEST ERROR:", error);
 
-        container.innerHTML = `
-          <div class="error">
-            ❌ Unable to load your support requests.
-          </div>
-        `;
+  container.innerHTML = `
+    <div class="error">
+      ❌ Unable to load your support requests.
+      <br><br>
+      <small>
+        ${escapeHTML(error.message || "Unknown database error")}
+      </small>
+    </div>
+  `;
 
-        return;
-      }
+  return;
+}
 
       if (!data || data.length === 0) {
 
