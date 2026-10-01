@@ -138,10 +138,49 @@ function search() {
 
 function card(p) {
 
+  /* =========================
+     AUTOMATIC DISCOUNT
+  ========================= */
+
+  let discount = 0;
+
+  if (
+    p.old_price &&
+    Number(p.old_price) > Number(p.price)
+  ) {
+
+    discount = Math.round(
+      (
+        (Number(p.old_price) - Number(p.price)) /
+        Number(p.old_price)
+      ) * 100
+    );
+
+  }
+
+
+  /* =========================
+     RATING
+  ========================= */
+
+  const rating =
+    Number(p.rating || 4.0);
+
+  const reviewCount =
+    Number(
+      p.review_count ||
+      p.reviews_count ||
+      100
+    );
+
+
   return `
+
     <article class="product">
 
-      <div style="position:relative;">
+      <div style="
+        position:relative;
+      ">
 
         <a href="product.html?id=${p.id}">
 
@@ -167,8 +206,15 @@ function card(p) {
 
         </a>
 
+
+        <!-- WISHLIST -->
+
         <button
-          onclick="event.preventDefault(); event.stopPropagation(); toggleWishlist('${p.id}', this)"
+          onclick="
+            event.preventDefault();
+            event.stopPropagation();
+            toggleWishlist('${p.id}', this)
+          "
           style="
             position:absolute;
             top:8px;
@@ -182,50 +228,161 @@ function card(p) {
             font-size:24px;
             cursor:pointer;
             box-shadow:0 2px 8px rgba(0,0,0,.15);
-          ">
+          "
+        >
           ♡
         </button>
 
+
+        <!-- DISCOUNT BADGE -->
+
+        ${
+          discount > 0
+            ? `
+              <span style="
+                position:absolute;
+                left:8px;
+                top:8px;
+                background:#188038;
+                color:white;
+                padding:5px 8px;
+                border-radius:5px;
+                font-size:12px;
+                font-weight:bold;
+              ">
+                ${discount}% OFF
+              </span>
+            `
+            : ""
+        }
+
       </div>
+
+
+      <!-- SELLER -->
 
       <small>
         PS Mart Seller
       </small>
 
+
+      <!-- PRODUCT NAME -->
+
       <h3>
         ${p.name}
       </h3>
 
-      <div class="rating">
-        ★ 4.0
+
+      <!-- RATING -->
+
+      <div style="
+        display:flex;
+        align-items:center;
+        gap:6px;
+        margin:6px 0;
+      ">
+
+        <span style="
+          background:#388e3c;
+          color:white;
+          padding:3px 7px;
+          border-radius:4px;
+          font-size:12px;
+          font-weight:bold;
+        ">
+          ★ ${rating.toFixed(1)}
+        </span>
+
+        <span style="
+          color:#777;
+          font-size:12px;
+        ">
+          ${reviewCount.toLocaleString("en-IN")} Ratings & Reviews
+        </span>
+
       </div>
 
-      <b>
-        ${money(p.price)}
-      </b>
 
-      ${
-        p.old_price
-          ? `
-            <del>
-              ${money(p.old_price)}
-            </del>
-          `
-          : ""
-      }
+      <!-- PRICE -->
+
+      <div style="
+        display:flex;
+        align-items:center;
+        gap:8px;
+        flex-wrap:wrap;
+      ">
+
+        <b style="
+          font-size:18px;
+        ">
+          ${money(p.price)}
+        </b>
+
+
+        ${
+          p.old_price
+            ? `
+              <del style="
+                color:#888;
+                font-size:13px;
+              ">
+                ${money(p.old_price)}
+              </del>
+            `
+            : ""
+        }
+
+
+        ${
+          discount > 0
+            ? `
+              <span style="
+                color:#188038;
+                font-size:13px;
+                font-weight:bold;
+              ">
+                ${discount}% OFF
+              </span>
+            `
+            : ""
+        }
+
+      </div>
+
+
+      <!-- COUPON OFFER -->
+
+      <div style="
+        margin-top:8px;
+        padding:7px 9px;
+        border-radius:6px;
+        background:#fff8e7;
+        border:1px dashed #d6a63c;
+        color:#79520f;
+        font-size:12px;
+        font-weight:bold;
+      ">
+        🎟️ Extra offers available
+      </div>
+
+
+      <!-- VIEW PRODUCT -->
 
       <a
         href="product.html?id=${p.id}"
         class="goldbtn block"
-        style="margin-top:12px;">
+        style="
+          margin-top:12px;
+        "
+      >
         View Product →
       </a>
 
+
     </article>
+
   `;
 }
-
-
 /* =========================
    LOAD APPROVED PRODUCTS
 ========================= */
