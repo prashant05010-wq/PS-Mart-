@@ -95,6 +95,17 @@
       color:#8b5e34;
       text-decoration:none;
     }
+
+    .image-preview{
+      width:100%;
+      max-height:220px;
+      object-fit:contain;
+      margin-top:12px;
+      border-radius:10px;
+      display:none;
+      background:#f7f1e8;
+      padding:8px;
+    }
   </style>
 </head>
 
@@ -154,11 +165,18 @@
     placeholder="Enter stock quantity"
   >
 
-  <label>Product Image URL</label>
+  <label>Product Image</label>
+
   <input
-    type="url"
-    id="imageUrl"
-    placeholder="Paste image URL"
+    type="file"
+    id="productImage"
+    accept="image/*"
+  >
+
+  <img
+    id="imagePreview"
+    class="image-preview"
+    alt="Product Preview"
   >
 
   <button onclick="addProduct()">
@@ -179,7 +197,7 @@ const SUPABASE_URL =
 "https://nctscffhnztscczjxhat.supabase.co";
 
 const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6IkFOT04iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
 
 const supabaseClient =
 window.supabase.createClient(
@@ -188,6 +206,33 @@ window.supabase.createClient(
 );
 
 
+/* IMAGE PREVIEW */
+
+document
+  .getElementById("productImage")
+  .addEventListener("change", function(){
+
+    const file = this.files[0];
+
+    const preview =
+      document.getElementById("imagePreview");
+
+    if(!file){
+      preview.style.display = "none";
+      preview.src = "";
+      return;
+    }
+
+    preview.src =
+      URL.createObjectURL(file);
+
+    preview.style.display = "block";
+
+  });
+
+
+/* ADD PRODUCT */
+
 async function addProduct(){
 
   const message =
@@ -195,29 +240,60 @@ async function addProduct(){
 
 
   const name =
-    document.getElementById("productName").value.trim();
+    document
+      .getElementById("productName")
+      .value
+      .trim();
+
 
   const description =
-    document.getElementById("description").value.trim();
+    document
+      .getElementById("description")
+      .value
+      .trim();
+
 
   const categoryName =
-    document.getElementById("category").value;
+    document
+      .getElementById("category")
+      .value;
+
 
   const price =
-    Number(document.getElementById("price").value);
+    Number(
+      document
+        .getElementById("price")
+        .value
+    );
+
 
   const oldPriceValue =
-    document.getElementById("oldPrice").value;
+    document
+      .getElementById("oldPrice")
+      .value;
+
 
   const oldPrice =
-    oldPriceValue ? Number(oldPriceValue) : null;
+    oldPriceValue
+      ? Number(oldPriceValue)
+      : null;
+
 
   const stock =
-    Number(document.getElementById("stock").value);
+    Number(
+      document
+        .getElementById("stock")
+        .value
+    );
 
-  const imageUrl =
-    document.getElementById("imageUrl").value.trim();
 
+  const imageFile =
+    document
+      .getElementById("productImage")
+      .files[0];
+
+
+  /* VALIDATION */
 
   if(
     !name ||
@@ -227,6 +303,7 @@ async function addProduct(){
   ){
 
     message.style.color = "red";
+
     message.innerText =
       "Please fill all required fields.";
 
@@ -234,15 +311,30 @@ async function addProduct(){
   }
 
 
+  if(!imageFile){
+
+    message.style.color = "red";
+
+    message.innerText =
+      "Please select a product image.";
+
+    return;
+  }
+
+
+  /* LOGIN CHECK */
+
   const {
     data: { user },
     error: authError
-  } = await supabaseClient.auth.getUser();
+  } =
+    await supabaseClient.auth.getUser();
 
 
   if(authError || !user){
 
     message.style.color = "red";
+
     message.innerText =
       "Please login first.";
 
@@ -250,19 +342,23 @@ async function addProduct(){
   }
 
 
+  /* SELLER CHECK */
+
   const {
     data: seller,
     error: sellerError
-  } = await supabaseClient
-    .from("sellers")
-    .select("id,status")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  } =
+    await supabaseClient
+      .from("sellers")
+      .select("id,status")
+      .eq("user_id", user.id)
+      .maybeSingle();
 
 
   if(sellerError){
 
     message.style.color = "red";
+
     message.innerText =
       sellerError.message;
 
@@ -273,6 +369,7 @@ async function addProduct(){
   if(!seller){
 
     message.style.color = "red";
+
     message.innerText =
       "Seller account not found.";
 
@@ -283,6 +380,7 @@ async function addProduct(){
   if(seller.status !== "approved"){
 
     message.style.color = "#856404";
+
     message.innerText =
       "Your seller account is pending admin approval.";
 
@@ -290,19 +388,23 @@ async function addProduct(){
   }
 
 
+  /* CATEGORY CHECK */
+
   const {
     data: category,
     error: categoryError
-  } = await supabaseClient
-    .from("categories")
-    .select("id")
-    .eq("name", categoryName)
-    .maybeSingle();
+  } =
+    await supabaseClient
+      .from("categories")
+      .select("id")
+      .eq("name", categoryName)
+      .maybeSingle();
 
 
   if(categoryError){
 
     message.style.color = "red";
+
     message.innerText =
       categoryError.message;
 
@@ -313,6 +415,7 @@ async function addProduct(){
   if(!category){
 
     message.style.color = "red";
+
     message.innerText =
       "Category not found.";
 
@@ -320,25 +423,116 @@ async function addProduct(){
   }
 
 
+  /* IMAGE UPLOAD */
+
+  message.style.color = "#8b5e34";
+
+  message.innerText =
+    "Uploading product image...";
+
+
+  const fileExt =
+    imageFile.name
+      .split(".")
+      .pop();
+
+
+  const fileName =
+    `${user.id}-${Date.now()}.${fileExt}`;
+
+
+  const filePath =
+    `products/${fileName}`;
+
+
+  const {
+    error: uploadError
+  } =
+    await supabaseClient
+      .storage
+      .from("product-images")
+      .upload(
+        filePath,
+        imageFile,
+        {
+          cacheControl: "3600",
+          upsert: false
+        }
+      );
+
+
+  if(uploadError){
+
+    message.style.color = "red";
+
+    message.innerText =
+      "Image upload failed: " +
+      uploadError.message;
+
+    return;
+  }
+
+
+  /* PUBLIC IMAGE URL */
+
+  const {
+    data: publicUrlData
+  } =
+    supabaseClient
+      .storage
+      .from("product-images")
+      .getPublicUrl(filePath);
+
+
+  const imageUrl =
+    publicUrlData.publicUrl;
+
+
+  /* SAVE PRODUCT */
+
+  message.innerText =
+    "Saving product...";
+
+
   const { error } =
     await supabaseClient
       .from("products")
       .insert({
-        seller_id: seller.id,
-        category_id: category.id,
-        name: name,
-        description: description,
-        price: price,
-        old_price: oldPrice,
-        stock: stock,
-        image_url: imageUrl,
-        status: "pending"
+
+        seller_id:
+          seller.id,
+
+        category_id:
+          category.id,
+
+        name:
+          name,
+
+        description:
+          description,
+
+        price:
+          price,
+
+        old_price:
+          oldPrice,
+
+        stock:
+          stock,
+
+        image_url:
+          imageUrl,
+
+        status:
+          "pending"
+
       });
 
 
   if(error){
 
     message.style.color = "red";
+
     message.innerText =
       error.message;
 
@@ -346,21 +540,54 @@ async function addProduct(){
   }
 
 
+  /* SUCCESS */
+
   message.style.color = "green";
+
   message.innerText =
     "Product submitted successfully! Waiting for admin approval.";
 
-  document.getElementById("productName").value = "";
-  document.getElementById("description").value = "";
-  document.getElementById("category").value = "";
-  document.getElementById("price").value = "";
-  document.getElementById("oldPrice").value = "";
-  document.getElementById("stock").value = "";
-  document.getElementById("imageUrl").value = "";
 
+  document
+    .getElementById("productName")
+    .value = "";
+
+
+  document
+    .getElementById("description")
+    .value = "";
+
+
+  document
+    .getElementById("category")
+    .value = "";
+
+
+  document
+    .getElementById("price")
+    .value = "";
+
+
+  document
+    .getElementById("oldPrice")
+    .value = "";
+
+
+  document
+    .getElementById("stock")
+    .value = "";
+
+
+  document
+    .getElementById("productImage")
+    .value = "";
+document.getElementById("imagePreview")
+    .style.display = "none";
+
+  
 }
 
 </script>
 
 </body>
-</html>
+  </html>
