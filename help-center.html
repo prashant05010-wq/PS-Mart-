@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Help Center | PS Mart</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5eee4;
+      color: #3b2415;
+    }
+
+    header {
+      background: linear-gradient(135deg, #3b1f0f, #704214);
+      color: #f7d774;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,.25);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-top: 10px;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 950px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
+
+    .welcome {
+      background: white;
+      padding: 22px;
+      border-radius: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.10);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .welcome h2 {
+      margin-top: 0;
+      color: #5b3218;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .category {
+      background: white;
+      padding: 18px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.10);
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .category:hover {
+      transform: translateY(-2px);
+    }
+
+    .category h3 {
+      margin: 0 0 7px;
+      color: #5b3218;
+    }
+
+    .category p {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .faq-section {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.10);
+    }
+
+    .faq-section h2 {
+      margin-top: 0;
+      color: #5b3218;
+    }
+
+    .faq {
+      border-bottom: 1px solid #eadfce;
+      padding: 14px 0;
+    }
+
+    .faq:last-child {
+      border-bottom: none;
+    }
+
+    .question {
+      cursor: pointer;
+      font-weight: bold;
+      color: #4d2b16;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .answer {
+      display: none;
+      color: #666;
+      line-height: 1.6;
+      padding-top: 10px;
+      font-size: 14px;
+    }
+
+    .faq.open .answer {
+      display: block;
+    }
+
+    .faq.open .arrow {
+      transform: rotate(180deg);
+    }
+
+    .arrow {
+      transition: .2s;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .action {
+      text-decoration: none;
+      text-align: center;
+      padding: 15px;
+      border-radius: 10px;
+      background: #704214;
+      color: white;
+      font-weight: bold;
+    }
+
+    .action.gold {
+      background: #c99a3d;
+    }
+
+    .no-results {
+      display: none;
+      text-align: center;
+      color: #777;
+      padding: 20px;
+    }
+
+    @media (max-width: 600px) {
+
+      .categories {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 23px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+
+  <h1>🆘 PS Mart Help Center</h1>
+
+  <a href="profile.html" class="back">
+    ← Back to Profile
+  </a>
+
+</header>
+
+
+<div class="container">
+
+  <div class="welcome">
+
+    <h2>How can we help you?</h2>
+
+    <p>
+      Find answers to common PS Mart questions below.
+    </p>
+
+    <input
+      type="search"
+      id="search"
+      class="search-box"
+      placeholder="🔍 Search your problem..."
+    >
+
+  </div>
+
+
+  <div class="categories">
+
+    <div class="category" onclick="showCategory('orders')">
+      <h3>📦 Orders & Delivery</h3>
+      <p>Order, delivery and cancellation help</p>
+    </div>
+
+    <div class="category" onclick="showCategory('payment')">
+      <h3>💳 Payments</h3>
+      <p>Payment and transaction related help</p>
+    </div>
+
+    <div class="category" onclick="showCategory('account')">
+      <h3>👤 Account & Login</h3>
+      <p>Login, OTP and account related help</p>
+    </div>
+
+    <div class="category" onclick="showCategory('products')">
+      <h3>🛍️ Products</h3>
+      <p>Product, seller and shopping help</p>
+    </div>
+
+  </div>
+
+
+  <div class="faq-section">
+
+    <h2>Frequently Asked Questions</h2>
+
+
+    <div class="faq"
+         data-category="account"
+         data-search="login otp email account">
+
+      <div class="question">
+        <span>Why am I asked for OTP while logging in?</span>
+        <span class="arrow">▼</span>
+      </div>
+
+      <div class="answer">
+        PS Mart uses email OTP verification for login.
+        Enter your registered email address and verify the OTP
+        received in your email.
+      </div>
+
+    </div>
+
+
+    <div class="faq"
+         data-category="orders"
+         data-search="order delivery order status">
+
+      <div class="question">
+        <span>Where can I check my orders?</span>
+        <span class="arrow">▼</span>
+      </div>
+
+      <div class="answer">
+        Open your Profile and select
+        <strong>My Orders</strong> to check your order information.
+      </div>
+
+    </div>
+
+
+    <div class="faq"
+         data-category="orders"
+         data-search="cancel cancellation order">
+
+      <div class="question">
+        <span>How can I get help with an order?</span>
+        <span class="arrow">▼</span>
+      </div>
+
+      <div class="answer">
+        If you have an issue with an order, contact PS Mart Support
+        and provide your order details and problem.
+      </div>
+
+    </div>
+
+
+    <div class="faq"
+         data-category="payment"
+         data-search="payment failed money transaction">
+
+      <div class="question">
+        <span>What should I do if payment has a problem?</span>
+        <span class="arrow">▼</span>
+      </div>
+
+      <div class="answer">
+        First check your payment status and transaction details.
+        If the issue continues, contact Support with the relevant
+        payment information.
+      </div>
+
+    </div>
+
+
+    <div class="faq"
+         data-category="products"
+         data-search="product seller product information">
+
+      <div class="question">
+        <span>How can I ask a question about a product?</span>
+        <span class="arrow">▼</span>
+      </div>
+
+      <div class="answer">
+        Open the product page and use the
+        <strong>Ask a Question</strong> option to submit your question.
+      </div>
+
+    </div>
+
+
+    <div class="faq"
+         data-category="account"
+         data-search="support request status pending resolved">
+
+      <div class="question">
+        <span>Where can I check my support request?</span>
+        <span class="arrow">▼</span>
+      </div>
+
+      <div class="answer">
+        Open your Profile and select
+        <strong>My Support Requests</strong>.
+        There you can check whether your request is Pending,
+        In Progress or Resolved.
+      </div>
+
+    </div>
+
+
+    <div class="no-results" id="noResults">
+      No matching help article found.
+    </div>
+
+  </div>
+
+
+  <div class="actions">
+
+    <a href="contact.html" class="action">
+      🆘 Contact Support
+    </a>
+
+    <a href="my-support.html" class="action gold">
+      🎫 My Support Requests
+    </a>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  /* FAQ OPEN/CLOSE */
+
+  document.querySelectorAll(".question").forEach(question => {
+
+    question.addEventListener("click", () => {
+
+      const faq = question.parentElement;
+
+      faq.classList.toggle("open");
+
+    });
+
+  });
+
+
+  /* SEARCH */
+
+  const searchInput =
+    document.getElementById("search");
+
+  const faqs =
+    document.querySelectorAll(".faq");
+
+  const noResults =
+    document.getElementById("noResults");
+
+
+  searchInput.addEventListener("input", function(){
+
+    const value =
+      this.value.toLowerCase().trim();
+
+    let found = false;
+
+
+    faqs.forEach(faq => {
+
+      const text =
+        (
+          faq.innerText +
+          " " +
+          faq.dataset.search
+        ).toLowerCase();
+
+
+      if(!value || text.includes(value)){
+
+        faq.style.display = "block";
+
+        found = true;
+
+      }else{
+
+        faq.style.display = "none";
+
+      }
+
+    });
+
+
+    noResults.style.display =
+      found ? "none" : "block";
+
+  });
+
+
+  /* CATEGORY FILTER */
+
+  function showCategory(category){
+
+    searchInput.value = "";
+
+    let found = false;
+
+
+    faqs.forEach(faq => {
+
+      if(faq.dataset.category === category){
+
+        faq.style.display = "block";
+
+        found = true;
+
+      }else{
+
+        faq.style.display = "none";
+
+      }
+
+    });
+
+
+    noResults.style.display =
+      found ? "none" : "block";
+
+
+    document
+      .querySelector(".faq-section")
+      .scrollIntoView({
+        behavior: "smooth"
+      });
+
+  }
+
+</script>
+
+</body>
+</html>
