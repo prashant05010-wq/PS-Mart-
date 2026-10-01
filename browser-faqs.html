@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Browser FAQs | PS Mart</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #120b06;
+      color: #f5e6c8;
+      line-height: 1.6;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #3b1f0f, #1b0e07);
+      padding: 22px 15px;
+      text-align: center;
+      border-bottom: 1px solid #8f641f;
+    }
+
+    .header h1 {
+      color: #f5c76a;
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      color: #d9c29a;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 25px auto;
+      padding: 0 15px 40px;
+    }
+
+    .back {
+      display: inline-block;
+      color: #f5c76a;
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    .intro {
+      background: #211208;
+      border: 1px solid #6e4918;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 22px;
+    }
+
+    .intro h2 {
+      color: #f5c76a;
+      margin-bottom: 8px;
+      font-size: 20px;
+    }
+
+    .intro p {
+      color: #d9c29a;
+      font-size: 14px;
+    }
+
+    .faq {
+      background: #1c1008;
+      border: 1px solid #5f3f18;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .faq summary {
+      cursor: pointer;
+      padding: 17px 18px;
+      color: #f5c76a;
+      font-weight: bold;
+      font-size: 15px;
+      list-style: none;
+      position: relative;
+      padding-right: 45px;
+    }
+
+    .faq summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq summary::after {
+      content: "+";
+      position: absolute;
+      right: 18px;
+      top: 12px;
+      font-size: 24px;
+      color: #f5c76a;
+    }
+
+    .faq[open] summary::after {
+      content: "−";
+    }
+
+    .answer {
+      padding: 0 18px 18px;
+      color: #d8c8aa;
+      font-size: 14px;
+      border-top: 1px solid #392512;
+    }
+
+    .answer p {
+      margin-top: 14px;
+    }
+
+    .support {
+      margin-top: 25px;
+      background: linear-gradient(135deg, #3b210e, #241308);
+      border: 1px solid #8f641f;
+      border-radius: 14px;
+      padding: 22px;
+      text-align: center;
+    }
+
+    .support h2 {
+      color: #f5c76a;
+      margin-bottom: 8px;
+    }
+
+    .support p {
+      color: #d9c29a;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    .support a {
+      display: inline-block;
+      background: #d49a32;
+      color: #180d05;
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .support a:hover {
+      background: #f0b94f;
+    }
+
+    .footer {
+      text-align: center;
+      color: #9f8968;
+      font-size: 12px;
+      padding: 20px 10px;
+      border-top: 1px solid #392512;
+    }
+
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 23px;
+      }
+
+      .faq summary {
+        font-size: 14px;
+        padding: 15px;
+        padding-right: 40px;
+      }
+
+      .answer {
+        font-size: 13px;
+        padding: 0 15px 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <h1>🌐 Browser FAQs</h1>
+    <p>Common browser and website questions</p>
+  </header>
+
+  <main class="container">
+
+    <a href="profile.html" class="back">← Back to Profile</a>
+
+    <section class="intro">
+      <h2>Browser Help</h2>
+      <p>
+        Find answers to common questions about opening, using and troubleshooting
+        PS Mart on mobile and desktop browsers.
+      </p>
+    </section>
+
+    <details class="faq">
+      <summary>Which browsers can I use to open PS Mart?</summary>
+      <div class="answer">
+        <p>
+          PS Mart is designed to work with modern web browsers such as Google Chrome,
+          Microsoft Edge, Mozilla Firefox and Safari. For the best experience, keep
+          your browser updated to the latest available version.
+        </p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Can I use PS Mart on my mobile phone?</summary>
+      <div class="answer">
+        <p>
+          Yes. PS Mart is designed to work on smartphones and tablets. You can open
+          the website through your mobile browser and use shopping, account and
+          other available features.
+        </p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Can I use PS Mart on a laptop or desktop?</summary>
+      <div class="answer">
+        <p>
+          Yes. PS Mart can also be accessed from a laptop or desktop computer using
+          a supported modern browser.
+        </p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>The website is not loading. What should I do?</summary>
+      <div class="answer">
+        <p>
+          First check your internet connection. Then refresh the page. If the
+          problem continues, close and reopen your browser or try opening PS Mart
+          in another updated browser.
+        </p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>The page looks old or does not update. What should I do?</summary>
+      <div class="answer">
+        <p>
+          Your browser may be showing an older cached version of the page. Try
+          refreshing the page. If necessary, clear the browser cache and open the
+          website again.
+        </p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Why am I being asked to log in again?</summary>
+      <div class="answer">
+        <p>
+          Your login session may have expired, your browser storage may have been
+          cleared, or you may be using a different browser or device. Log in again
+          using your registered account.
+        </p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Why is OTP or email verification not working?</summary>
+      <div class="answer">
+        <p>
+          Check that you entered the correct email address and that your internet
+          connection is working. Also check your spam or junk folder. If the
+          verification message does not arrive, wait a short time and try again.
+        </p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Why is my cart not showing correctly?</summary>
+      <div class="answer">
+        <p>
+          Cart information can depend on your browser's local storage. Make sure
+          browser storage is enabled and avoid clearing website data while using
+          the shopping cart.
+        </p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>What happens if I clear cookies or site data?</summary>
+      <div class="answer">
+        <p>
+          Clearing browser cookies or website data can remove stored preferences,
+          login sessions and locally stored shopping information. You may need to
+          log in again and restore some settings.
+        </p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Why are images or products not appearing?</summary>
+      <div class="answer">
+        <p>
+          Check your internet connection and refresh the page. If images still do
+          not appear, try another modern browser or clear the browser cache.
+        </p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Why is PS Mart running slowly?</summary>
+      <div class="answer">
+        <p>
+          Slow internet, an outdated browser, many open browser tabs or heavy
+          background activity can affect website performance. Try closing
+          unnecessary tabs and refreshing the page.
+        </p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Is it safe to use PS Mart on a public computer?</summary>
+      <div class="answer">
+        <p>
+          Avoid using sensitive account information on shared or public computers
+          whenever possible. Always log out after using your account and do not
+          save passwords or login information in a public browser.
+        </p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Can I use private or incognito mode?</summary>
+      <div class="answer">
+        <p>
+          You can open PS Mart in private or incognito mode, but browser data may
+          not be retained after the private session is closed. Some features that
+          depend on stored browser data may therefore behave differently.
+        </p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>What should I do if a button or link does not work?</summary>
+      <div class="answer">
+        <p>
+          Refresh the page and try again. If the issue continues, try another
+          supported browser or device. If the problem remains, contact PS Mart
+          support with details about the page and feature that is not working.
+        </p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>How can I get the best PS Mart experience?</summary>
+      <div class="answer">
+        <p>
+          Use a stable internet connection, keep your browser updated, allow
+          necessary website storage, and avoid using outdated browsers.
+        </p>
+      </div>
+    </details>
+
+    <section class="support">
+      <h2>Still Need Help?</h2>
+      <p>
+        If your browser problem continues, you can contact PS Mart support.
+      </p>
+
+      <a href="contact.html">Contact Support</a>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    © 2026 PS Mart • Browser FAQs
+  </footer>
+
+</body>
+</html>
