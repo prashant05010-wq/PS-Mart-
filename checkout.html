@@ -405,7 +405,10 @@ async function placeOrder() {
 
   const pincode =
     document.getElementById("pincode").value.trim();
-
+const paymentMethod =
+  document.querySelector(
+    'input[name="pay"]:checked'
+  )?.value || "UPI";
 
   if (
     !fullName ||
