@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Policies | PS Mart</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#f7f1e7;
+  color:#3d2615;
+  line-height:1.7;
+}
+
+header{
+  background:linear-gradient(135deg,#3b1f0f,#6b3e1e);
+  color:#ffd66b;
+  padding:17px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:100;
+  box-shadow:0 3px 12px rgba(0,0,0,.25);
+}
+
+.logo{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.home{
+  text-decoration:none;
+  color:#3b1f0f;
+  background:#ffd66b;
+  padding:9px 17px;
+  border-radius:20px;
+  font-weight:bold;
+}
+
+.container{
+  max-width:1000px;
+  margin:25px auto;
+  padding:0 15px;
+}
+
+.hero{
+  background:linear-gradient(135deg,#fff8e8,#f2d39a);
+  border:1px solid #d8ae62;
+  border-radius:18px;
+  padding:25px;
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.hero h1{
+  color:#5a2d12;
+  margin-bottom:8px;
+}
+
+.hero p{
+  color:#765638;
+}
+
+.card{
+  background:#fff;
+  border:1px solid #e2c89b;
+  border-radius:16px;
+  margin-bottom:18px;
+  overflow:hidden;
+  box-shadow:0 4px 14px rgba(76,43,16,.08);
+}
+
+.card h2{
+  background:linear-gradient(135deg,#4a2714,#70401f);
+  color:#ffd66b;
+  padding:14px 18px;
+  font-size:19px;
+}
+
+.content{
+  padding:18px;
+}
+
+.content p{
+  margin-bottom:12px;
+  color:#5c4939;
+}
+
+.content ul{
+  padding-left:22px;
+  color:#5c4939;
+}
+
+.content li{
+  margin-bottom:8px;
+}
+
+.notice{
+  background:#fff7df;
+  border-left:4px solid #c38b27;
+  padding:14px;
+  border-radius:8px;
+  color:#5b452b;
+  margin-bottom:18px;
+}
+
+.policy-list{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.policy-link{
+  display:block;
+  text-decoration:none;
+  background:#fff8ec;
+  border:1px solid #e0c18d;
+  border-radius:12px;
+  padding:15px;
+  color:#4d2a14;
+  font-weight:bold;
+}
+
+.policy-link:hover{
+  background:#ffe6b0;
+}
+
+.policy-link small{
+  display:block;
+  font-weight:normal;
+  color:#765f4d;
+  margin-top:5px;
+}
+
+.last-update{
+  text-align:center;
+  color:#806b58;
+  font-size:14px;
+  margin-top:10px;
+}
+
+footer{
+  text-align:center;
+  padding:25px 15px;
+  color:#765d48;
+  font-size:14px;
+}
+
+@media(max-width:650px){
+  .policy-list{
+    grid-template-columns:1fr;
+  }
+
+  .logo{
+    font-size:19px;
+  }
+
+  header{
+    padding:14px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">🛍️ PS Mart</div>
+  <a class="home" href="index.html">Home</a>
+</header>
+
+<div class="container">
+
+  <section class="hero">
+    <h1>📋 PS Mart Policies</h1>
+    <p>
+      Important policies and guidelines for customers, sellers
+      and users of the PS Mart platform.
+    </p>
+  </section>
+
+  <div class="notice">
+    These policies describe the general rules followed by PS Mart.
+    Specific product, order or seller situations may also be
+    subject to applicable laws and the terms shown during a transaction.
+  </div>
+
+
+  <!-- POLICY DIRECTORY -->
+  <section class="card">
+    <h2>📚 Policy Directory</h2>
+
+    <div class="content">
+      <div class="policy-list">
+
+        <a class="policy-link" href="#privacy">
+          🔒 Privacy Policy
+          <small>How account and service information may be handled.</small>
+        </a>
+
+        <a class="policy-link" href="#security">
+          🛡️ Security Policy
+          <small>Account and platform security guidelines.</small>
+        </a>
+
+        <a class="policy-link" href="#order">
+          📦 Order Policy
+          <small>General rules related to orders and purchases.</small>
+        </a>
+
+        <a class="policy-link" href="#cancellation">
+          ❌ Cancellation Policy
+          <small>General information about order cancellation.</small>
+        </a>
+
+        <a class="policy-link" href="#return">
+          🔄 Return Policy
+          <small>General return-related information.</small>
+        </a>
+
+        <a class="policy-link" href="#refund">
+          💰 Refund Policy
+          <small>General refund-related information.</small>
+        </a>
+
+        <a class="policy-link" href="#seller">
+          🏪 Seller Policy
+          <small>Rules and responsibilities for sellers.</small>
+        </a>
+
+        <a class="policy-link" href="#content">
+          ✍️ Content Policy
+          <small>Rules for reviews, questions and user content.</small>
+        </a>
+
+        <a class="policy-link" href="#payment">
+          💳 Payment Safety Policy
+          <small>Important payment and credential safety information.</small>
+        </a>
+
+        <a class="policy-link" href="#prohibited">
+          🚫 Prohibited Activities
+          <small>Activities that are not permitted on the platform.</small>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- PRIVACY -->
+  <section class="card" id="privacy">
+    <h2>1. 🔒 Privacy Policy</h2>
+
+    <div class="content">
+      <p>
+        PS Mart may process information needed to provide account,
+        shopping, seller and platform services.
+      </p>
+
+      <ul>
+        <li>Account information may be used to provide account-related services.</li>
+        <li>Information may be used to support shopping and platform functionality.</li>
+        <li>Users can manage available privacy preferences through the Privacy Center.</li>
+        <li>Users should avoid sharing unnecessary sensitive information through public areas.</li>
+      </ul>
+
+      <p>
+        For available privacy controls, visit the
+        <a href="privacy-center.html">Privacy Center</a>.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- SECURITY -->
+  <section class="card" id="security">
+    <h2>2. 🛡️ Security Policy</h2>
+
+    <div class="content">
+      <p>
+        Users are expected to take reasonable steps to protect
+        their PS Mart accounts and devices.
+      </p>
+
+      <ul>
+        <li>Never share passwords or OTPs.</li>
+        <li>Never share PINs or CVVs with other people.</li>
+        <li>Do not enter credentials on suspicious websites.</li>
+        <li>Use only official PS Mart pages for account activities.</li>
+        <li>Report suspicious account activity through available support channels.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- ORDER -->
+  <section class="card" id="order">
+    <h2>3. 📦 Order Policy</h2>
+
+    <div class="content">
+      <p>
+        Orders are processed through the shopping and checkout
+        features available on PS Mart.
+      </p>
+
+      <ul>
+        <li>Product availability can change.</li>
+        <li>Prices and product details should be checked before purchase.</li>
+        <li>An item in the cart is not necessarily a completed order.</li>
+        <li>Order confirmation depends on the applicable checkout process.</li>
+        <li>Delivery and fulfilment may depend on the seller and available services.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- CANCELLATION -->
+  <section class="card" id="cancellation">
+    <h2>4. ❌ Cancellation Policy</h2>
+
+    <div class="content">
+      <p>
+        Where cancellation functionality is available, an order
+        may be cancelled according to the applicable order status
+        and platform rules.
+      </p>
+
+      <p>
+        Cancellation availability can depend on whether the order
+        has already been processed, shipped or otherwise fulfilled.
+      </p>
+
+      <p>
+        Any amount eligible for refund after cancellation will be
+        handled according to the applicable payment and refund process.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- RETURN -->
+  <section class="card" id="return">
+    <h2>5. 🔄 Return Policy</h2>
+
+    <div class="content">
+      <p>
+        Returns may be available for eligible products where a
+        return facility is offered.
+      </p>
+
+      <ul>
+        <li>Return eligibility may depend on the product and seller.</li>
+        <li>Return requests may be subject to applicable time limits.</li>
+        <li>Products may need to meet applicable return conditions.</li>
+        <li>Some products may not be eligible for return where permitted by applicable rules.</li>
+      </ul>
+
+      <p>
+        The applicable return information shown for a product or
+        order should be reviewed before requesting a return.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- REFUND -->
+  <section class="card" id="refund">
+    <h2>6. 💰 Refund Policy</h2>
+
+    <div class="content">
+      <p>
+        Refunds, where applicable, may depend on cancellation,
+        return, payment status, order status and the applicable
+        transaction rules.
+      </p>
+
+      <ul>
+        <li>A refund may not always be available for every transaction.</li>
+        <li>Refund processing time may depend on the payment method.</li>
+        <li>Third-party payment providers may have their own processing timelines.</li>
+        <li>Users should keep relevant order and transaction information for support.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- SELLER -->
+  <section class="card" id="seller">
+    <h2>7. 🏪 Seller Policy</h2>
+
+    <div class="content">
+      <p>
+        Sellers are responsible for the products and information
+        they provide through PS Mart.
+      </p>
+
+      <ul>
+        <li>Product information should be accurate and not intentionally misleading.</li>
+        <li>Sellers should comply with applicable laws.</li>
+        <li>Sellers should not knowingly list prohibited or unlawful products.</li>
+        <li>Product prices and availability should be maintained accurately.</li>
+        <li>Sellers should handle customer orders responsibly.</li>
+        <li>Sellers should not misuse customer information.</li>
+        <li>PS Mart may review seller activity for platform and security purposes.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- CONTENT -->
+  <section class="card" id="content">
+    <h2>8. ✍️ Content Policy</h2>
+
+    <div class="content">
+      <p>
+        Users may submit reviews, questions, answers and feedback
+        through supported PS Mart features.
+      </p>
+
+      <ul>
+        <li>Content should be relevant and truthful.</li>
+        <li>Do not post abusive or threatening content.</li>
+        <li>Do not publish private information belonging to another person.</li>
+        <li>Do not intentionally post fraudulent or misleading information.</li>
+        <li>Do not upload malicious code or harmful content.</li>
+        <li>Do not use content features for spam.</li>
+      </ul>
+
+      <p>
+        Content that violates applicable rules may be removed or
+        restricted where appropriate.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- PAYMENT -->
+  <section class="card" id="payment">
+    <h2>9. 💳 Payment Safety Policy</h2>
+
+    <div class="content">
+
+      <div class="notice">
+        PS Mart users should never share their OTP, CVV, PIN,
+        password or banking credentials with another person.
+      </div>
+
+      <ul>
+        <li>Use only official checkout or payment interfaces.</li>
+        <li>Do not send card details through chat or social media.</li>
+        <li>Do not trust requests for OTPs from unknown people.</li>
+        <li>Check the website address before entering sensitive information.</li>
+        <li>Contact your bank or payment provider if you suspect unauthorized activity.</li>
+      </ul>
+
+    </div>
+  </section>
+
+
+  <!-- PROHIBITED -->
+  <section class="card" id="prohibited">
+    <h2>10. 🚫 Prohibited Activities</h2>
+
+    <div class="content">
+      <p>
+        The following activities are not permitted when using
+        PS Mart services:
+      </p>
+
+      <ul>
+        <li>Fraudulent transactions or scams.</li>
+        <li>Unauthorized access attempts.</li>
+        <li>Account impersonation.</li>
+        <li>Distribution of malware or harmful code.</li>
+        <li>Abuse of platform systems.</li>
+        <li>Attempts to bypass security controls.</li>
+        <li>Illegal use of the platform.</li>
+        <li>Misuse of customer, seller or other user information.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- CUSTOMER RESPONSIBILITY -->
+  <section class="card">
+    <h2>11. 👤 Customer Responsibility</h2>
+
+    <div class="content">
+      <ul>
+        <li>Provide accurate account information.</li>
+        <li>Keep login credentials secure.</li>
+        <li>Review product and order information before purchase.</li>
+        <li>Use the platform responsibly.</li>
+        <li>Follow applicable laws and platform rules.</li>
+        <li>Do not misuse reviews, questions or other community features.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- SELLER RESPONSIBILITY -->
+  <section class="card">
+    <h2>12. 🧑‍💼 Seller Responsibility</h2>
+
+    <div class="content">
+      <ul>
+        <li>Provide genuine and accurate product information.</li>
+        <li>Maintain appropriate product listings.</li>
+        <li>Follow applicable consumer and business laws.</li>
+        <li>Protect customer information.</li>
+        <li>Handle orders and customer interactions responsibly.</li>
+        <li>Follow PS Mart seller requirements.</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- POLICY CHANGES -->
+  <section class="card">
+    <h2>13. 🔄 Policy Changes</h2>
+
+    <div class="content">
+      <p>
+        PS Mart may update these policies when required because
+        of changes in services, security requirements, legal
+        requirements or platform operations.
+      </p>
+
+      <p>
+        The latest version published on the PS Mart website should
+        be considered when using the applicable service.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- LEGAL -->
+  <section class="card">
+    <h2>14. ⚖️ Legal Compliance</h2>
+
+    <div class="content">
+      <p>
+        PS Mart and its users are expected to comply with applicable
+        laws and regulations. Nothing on this page is intended to
+        remove or restrict consumer rights that cannot legally be
+        removed or restricted.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- SUPPORT -->
+  <section class="card">
+    <h2>15. 🆘 Policy Support</h2>
+
+    <div class="content">
+      <p>
+        If you have a question about a policy or an account-related
+        matter, use the available PS Mart support and account
+        features.
+      </p>
+
+      <p>
+        For privacy settings, visit the
+        <a href="privacy-center.html">Privacy Center</a>.
+      </p>
+
+      <p>
+        For general platform rules, see the
+        <a href="terms.html">Terms & Conditions</a>.
+      </p>
+    </div>
+  </section>
+
+
+  <section class="card">
+    <h2>📅 Policy Version</h2>
+
+    <div class="content">
+      <p>
+        These policies are intended as the general PS Mart platform
+        policy framework and may be supplemented by product-specific,
+        seller-specific or transaction-specific rules where applicable.
+      </p>
+
+      <div class="last-update">
+        Last updated: October 2026
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  © 2026 PS Mart
+  <br>
+  Shopping • Sellers • Account Services
+</footer>
+
+</body>
+</html>
