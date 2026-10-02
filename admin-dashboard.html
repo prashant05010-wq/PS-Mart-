@@ -1958,8 +1958,7 @@ if (customerError) {
   }
 }    
 }
-
-async function sendGiftCardToCustomer() {
+  async function sendGiftCardToCustomer() {
 
   const giftCardId =
     document.getElementById("sendGiftCard").value;
@@ -1970,87 +1969,168 @@ async function sendGiftCardToCustomer() {
   const message =
     document.getElementById("sendGiftCardMessage");
 
-
   if (!giftCardId) {
-
     message.style.color = "red";
-    message.textContent =
-      "❌ Please select a gift card.";
-
+    message.textContent = "❌ Please select a gift card.";
     return;
   }
-
 
   if (!customerId) {
-
     message.style.color = "red";
-    message.textContent =
-      "❌ Please select a customer.";
-
+    message.textContent = "❌ Please select a customer.";
     return;
   }
 
-
-  if (
-    !confirm(
-      "Are you sure you want to send this gift card to the selected customer?"
-    )
-  ) {
+  if (!confirm(
+    "Are you sure you want to send this gift card to the selected customer?"
+  )) {
     return;
   }
-
 
   message.style.color = "#b8860b";
-  message.textContent =
-    "⏳ Sending gift card...";
+  message.textContent = "⏳ Sending gift card...";
 
+  /* Get selected customer */
+  const {
+    data: customer,
+    error: customerError
+  } = await supabaseClient
+    .from("profiles")
+    .select("id, full_name, email, phone")
+    .eq("id", customerId)
+    .single();
 
-  const { data, error } =
-    await supabaseClient
-      .from("gift_cards")
-      .update({
-        user_id: customerId
-      })
-      .eq("id", giftCardId)
-      .is("user_id", null)
-      .eq("status", "active")
-      .select();
-
-
-  if (error) {
-
-    console.error(error);
+  if (customerError || !customer) {
+    console.error(customerError);
 
     message.style.color = "red";
-
     message.textContent =
-      "❌ Gift card could not be sent: " +
-      error.message;
+      "❌ Customer information could not be loaded.";
 
     return;
   }
 
-
-  if (!data || data.length === 0) {
-
+  if (!customer.email) {
     message.style.color = "red";
-
     message.textContent =
-      "❌ Gift card is already assigned or unavailable.";
+      "❌ This customer does not have an email address.";
 
     return;
   }
 
+  /* Get selected gift card */
+  const {
+    data: giftCard,
+    error: giftCardError
+  } = await supabaseClient
+    .from("gift_cards")
+    .select("id, code, balance, expires_at, status, user_id")
+    .eq("id", giftCardId)
+    .single();
 
+  if (giftCardError || !giftCard) {
+    console.error(giftCardError);
+
+    message.style.color = "red";
+    message.textContent =
+      "❌ Gift card could not be found.";
+
+    return;
+  }
+
+  /* Make sure card is still available */
+  if (giftCard.user_id !== null) {
+    message.style.color = "red";
+    message.textContent =
+      "❌ This gift card has already been assigned.";
+
+    return;
+  }
+
+  if (giftCard.status !== "active") {
+    message.style.color = "red";
+    message.textContent =
+      "❌ This gift card is not active.";
+
+    return;
+  }
+
+  /* Assign gift card to customer */
+  const {
+    data: assignedCard,
+    error: assignError
+  } = await supabaseClient
+    .from("gift_cards")
+    .update({
+      user_id: customerId
+    })
+    .eq("id", giftCardId)
+    .is("user_id", null)
+    .eq("status", "active")
+    .select()
+    .single();
+
+  if (assignError || !assignedCard) {
+    console.error(assignError);
+
+    message.style.color = "red";
+    message.textContent =
+      "❌ Gift card could not be assigned.";
+
+    return;
+  }
+
+  /* Send email */
+  const {
+    data: emailResult,
+    error: emailError
+  } = await supabaseClient.functions.invoke(
+    "send-gift-card-email",
+    {
+      body: {
+        email: customer.email,
+        name: customer.full_name || "Customer",
+        code: assignedCard.code,
+        balance: assignedCard.balance,
+        expires_at: assignedCard.expires_at
+      }
+    }
+  );
+
+  if (emailError) {
+    console.error("Email error:", emailError);
+
+    message.style.color = "#b8860b";
+    message.textContent =
+      "⚠️ Gift card sent, but email could not be sent.";
+
+    await loadGiftCards();
+    await loadSendGiftCardOptions();
+
+    return;
+  }
+
+  if (!emailResult || emailResult.success !== true) {
+    console.error("Email result:", emailResult);
+
+    message.style.color = "#b8860b";
+    message.textContent =
+      "⚠️ Gift card sent, but email could not be sent.";
+
+    await loadGiftCards();
+    await loadSendGiftCardOptions();
+
+    return;
+  }
+
+  /* Success */
   message.style.color = "green";
-
   message.textContent =
-    "✅ Gift card sent successfully to customer!";
-
+    "✅ Gift card sent successfully! Email sent to " +
+    customer.email;
 
   document.getElementById("sendGiftCard").value = "";
   document.getElementById("sendGiftCustomer").value = "";
-
 
   await loadGiftCards();
   await loadSendGiftCardOptions();
