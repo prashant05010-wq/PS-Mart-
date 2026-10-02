@@ -1910,52 +1910,51 @@ async function loadSendGiftCardOptions() {
 
   // Load customers
   const { data: customers, error: customerError } =
-    await supabaseClient
-      .from("profiles")
-      .select("id, full_name, phone, role")
-      .eq("role", "customer")
-      .order("full_name", { ascending: true });
+  await supabaseClient
+    .from("profiles")
+    .select("id, full_name, phone, email, role")
+    .eq("role", "customer")
+    .order("full_name", { ascending: true });
 
-  if (customerError) {
+if (customerError) {
 
-    console.error(customerError);
+  console.error("Customer loading error:", customerError);
+
+  customerSelect.innerHTML =
+    '<option value="">Unable to load customers</option>';
+
+} else {
+
+  customerSelect.innerHTML =
+    '<option value="">Select Customer</option>';
+
+  if (!customers || customers.length === 0) {
 
     customerSelect.innerHTML =
-      '<option value="">Unable to load customers</option>';
+      '<option value="">No customers found</option>';
 
   } else {
 
-    customerSelect.innerHTML =
-      '<option value="">Select Customer</option>';
+    customers.forEach(customer => {
 
-    if (!customers || customers.length === 0) {
+      const name =
+        customer.full_name ||
+        "Unnamed Customer";
 
-      customerSelect.innerHTML =
-        '<option value="">No customers found</option>';
+      const phone =
+        customer.phone ||
+        "No phone";
 
-    } else {
+      const email =
+        customer.email ||
+        "No email";
 
-      customers.forEach(customer => {
-
-        const name =
-          customer.full_name ||
-          "Unnamed Customer";
-
-        const phone =
-          customer.phone ||
-          "No phone";
-        
-        const email =
-  customer.email ||
-  "No email";
-
-        customerSelect.innerHTML += `
-          <option value="${customer.id}">
-            ${name} — ${phone} — ${email}
-          </option>
-        `;
-      });
-    }
+      customerSelect.innerHTML += `
+        <option value="${customer.id}">
+          ${name} — ${phone} — ${email}
+        </option>
+      `;
+    });
   }
 }
 
