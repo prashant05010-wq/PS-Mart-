@@ -310,19 +310,14 @@ async function loadGiftCards() {
   }).join("");
 }
 
-
 async function redeemGiftCard() {
 
-  const input =
-    document.getElementById("giftCode");
+  const input = document.getElementById("giftCode");
 
-  const code =
-    input.value.trim().toUpperCase();
+  const code = input.value.trim().toUpperCase();
 
   if (!code) {
-
     alert("Please enter a gift card code.");
-
     return;
   }
 
@@ -331,104 +326,46 @@ async function redeemGiftCard() {
   } = await supabaseClient.auth.getUser();
 
   if (!user) {
-
     alert("Please login first.");
-
-    window.location.href =
-      "login.html";
-
+    window.location.href = "login.html";
     return;
   }
 
-  const {
-    data: card,
-    error
-  } = await supabaseClient
-    .from("gift_cards")
-    .select("*")
-    .eq("code", code)
-    .maybeSingle();
+  const { data, error } = await supabaseClient
+    .rpc("redeem_gift_card", {
+      p_code: code
+    });
 
   if (error) {
-
-    console.log(error);
+    console.error(error);
 
     alert(
-      "Unable to check gift card."
+      "❌ Gift card redemption failed.\n\n" +
+      error.message
     );
 
     return;
   }
 
-  if (!card) {
-
+  if (!data || data.success !== true) {
     alert(
-      "❌ Gift card code not found."
+      "❌ " +
+      (data?.message || "Gift card could not be redeemed.")
     );
 
     return;
   }
-
-  if (card.status !== "active") {
-
-    alert(
-      "❌ This gift card is not active."
-    );
-
-    return;
-  }
-
-  if (card.user_id) {
-
-    alert(
-      "❌ This gift card has already been redeemed."
-    );
-
-    return;
-  }
-
-  if (
-    card.expires_at &&
-    new Date(card.expires_at) < new Date()
-  ) {
-
-    alert(
-      "❌ This gift card has expired."
-    );
-
-    return;
-  }
-
-  const {
-    error: updateError
-  } = await supabaseClient
-    .from("gift_cards")
-    .update({
-      user_id: user.id
-    })
-    .eq("id", card.id)
-    .is("user_id", null);
-
-  if (updateError) {
-
-    console.log(updateError);
-
-    alert(
-      "❌ Gift card could not be redeemed."
-    );
-
-    return;
-  }
-
-  alert(
-    "🎉 Gift card redeemed successfully!"
-  );
 
   input.value = "";
 
-  loadGiftCards();
-}
+  alert(
+    "🎉 Gift card redeemed successfully!\n\n" +
+    "Gift Card Balance: ₹" +
+    Number(data.balance || 0).toFixed(2)
+  );
 
+  await loadGiftCards();
+}
 
 function escapeGiftHtml(value) {
 
