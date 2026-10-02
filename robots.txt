@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://prashant05010-wq.github.io/PS-Mart-/sitemap.xml
