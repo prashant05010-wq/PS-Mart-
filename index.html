@@ -1416,15 +1416,31 @@ Cart
    HERO SLIDER
 ===================================================== */
 
+
+/* =====================================================
+   5 CARD HERO SLIDER
+===================================================== */
+
 let heroIndex = 0;
 
-const heroTrack = document.getElementById("heroTrack");
-const heroDots = document.querySelectorAll(".slider-dot");
+const heroTrack =
+  document.getElementById("heroTrack");
+
+const heroDots =
+  document.querySelectorAll(".slider-dot");
+
+const totalHeroSlides = 5;
+
 
 function updateHero(){
 
+  if(!heroTrack) return;
+
   heroTrack.style.transform =
-    "translateX(-" + (heroIndex * 100) + "%)";
+    "translateX(-" +
+    (heroIndex * 100) +
+    "%)";
+
 
   heroDots.forEach((dot,index)=>{
 
@@ -1437,29 +1453,37 @@ function updateHero(){
 
 }
 
+
 function heroNext(){
 
   heroIndex++;
 
-  if(heroIndex >= 4){
+  if(heroIndex >= totalHeroSlides){
+
     heroIndex = 0;
+
   }
 
   updateHero();
 
 }
+
 
 function heroPrev(){
 
   heroIndex--;
 
   if(heroIndex < 0){
-    heroIndex = 3;
+
+    heroIndex =
+      totalHeroSlides - 1;
+
   }
 
   updateHero();
 
 }
+
 
 function heroGo(index){
 
@@ -1470,29 +1494,96 @@ function heroGo(index){
 }
 
 
-/* automatic 3 second slide */
+/* ================= AUTO SLIDE ================= */
 
-let heroTimer = setInterval(heroNext,3000);
+let heroTimer =
+  setInterval(heroNext,3000);
 
 
-/* pause while touching/hovering */
+/* ================= PAUSE ON DESKTOP ================= */
 
 const heroSlider =
   document.getElementById("heroSlider");
 
-heroSlider.addEventListener(
-  "mouseenter",
-  ()=>{
-    clearInterval(heroTimer);
-  }
-);
 
-heroSlider.addEventListener(
-  "mouseleave",
-  ()=>{
-    clearInterval(heroTimer);
-    heroTimer = setInterval(heroNext,3000);
-  }
+if(heroSlider){
+
+  heroSlider.addEventListener(
+    "mouseenter",
+    ()=>{
+      clearInterval(heroTimer);
+    }
+  );
+
+
+  heroSlider.addEventListener(
+    "mouseleave",
+    ()=>{
+      clearInterval(heroTimer);
+
+      heroTimer =
+        setInterval(heroNext,3000);
+    }
+  );
+
+}
+
+
+/* ================= TOUCH / SWIPE ================= */
+
+let touchStartX = 0;
+let touchEndX = 0;
+
+
+if(heroSlider){
+
+  heroSlider.addEventListener(
+    "touchstart",
+    function(e){
+
+      touchStartX =
+        e.changedTouches[0].screenX;
+
+    },
+    {passive:true}
+  );
+
+
+  heroSlider.addEventListener(
+    "touchend",
+    function(e){
+
+      touchEndX =
+        e.changedTouches[0].screenX;
+
+      const difference =
+        touchStartX - touchEndX;
+
+
+      if(Math.abs(difference) > 50){
+
+        if(difference > 0){
+
+          heroNext();
+
+        }else{
+
+          heroPrev();
+
+        }
+
+      }
+
+    },
+    {passive:true}
+  );
+
+}
+
+
+/* Start first card */
+
+updateHero();
 );
 
 
