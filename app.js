@@ -436,6 +436,9 @@ async function loadProductsFromSupabase() {
 /* =========================
    PRODUCTS PAGE
 ========================= */
+/* =========================
+   PRODUCTS PAGE
+========================= */
 
 async function renderProducts() {
 
@@ -450,7 +453,9 @@ async function renderProducts() {
     );
 
   const cat =
-    params.get("cat");
+    (params.get("cat") || "")
+      .trim()
+      .toLowerCase();
 
   const q =
     (params.get("q") || "")
@@ -460,6 +465,10 @@ async function renderProducts() {
   let products =
     await loadProductsFromSupabase();
 
+
+  /* =========================
+     SEARCH + CATEGORY FILTER
+  ========================= */
 
   let filtered =
     products.filter(p => {
@@ -472,14 +481,44 @@ async function renderProducts() {
         String(p.description || "")
           .toLowerCase();
 
-      return (
+      const category =
+        String(
+          p.category_id ||
+          p.category ||
+          ""
+        )
+        .toLowerCase()
+        .trim();
+
+
+      /* SEARCH */
+
+      const searchMatch =
         !q ||
         name.includes(q) ||
-        description.includes(q)
+        description.includes(q);
+
+
+      /* CATEGORY */
+
+      const categoryMatch =
+        !cat ||
+        category === cat ||
+        category.includes(cat) ||
+        cat.includes(category);
+
+
+      return (
+        searchMatch &&
+        categoryMatch
       );
 
     });
 
+
+  /* =========================
+     SORT
+  ========================= */
 
   const sort =
     document.querySelector("#sort")
@@ -508,6 +547,10 @@ async function renderProducts() {
   }
 
 
+  /* =========================
+     PAGE TITLE
+  ========================= */
+
   const title =
     document.querySelector("#title");
 
@@ -521,7 +564,15 @@ async function renderProducts() {
     } else if (cat) {
 
       title.textContent =
-        `${cat} Products`;
+        `${cat
+          .split(" ")
+          .map(
+            word =>
+              word.charAt(0).toUpperCase() +
+              word.slice(1)
+          )
+          .join(" ")
+        } Products`;
 
     } else {
 
@@ -533,16 +584,35 @@ async function renderProducts() {
   }
 
 
+  /* =========================
+     SHOW PRODUCTS
+  ========================= */
+
   el.innerHTML =
     filtered.length
+
       ? filtered
           .map(card)
           .join("")
+
       : `
         <div class="empty">
-          No products found.
+
+          <h3>
+            No products found
+          </h3>
+
+          <p>
+            ${
+              cat
+                ? `No products available in "${cat}".`
+                : "Try another search."
+            }
+          </p>
+
         </div>
       `;
+
 }
 
 
