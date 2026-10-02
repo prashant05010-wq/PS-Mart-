@@ -1000,7 +1000,69 @@ if (checkoutGiftCard) {
     return;
 
   }
+  /* =========================
+     USE GIFT CARD
+  ========================= */
 
+  if (checkoutGiftCard && giftCardDiscount > 0) {
+
+    const {
+      data: giftResult,
+      error: giftError
+    } =
+      await supabaseClient
+        .rpc("use_gift_card", {
+          p_card_id:
+            checkoutGiftCard.id,
+
+          p_amount:
+            giftCardDiscount
+        });
+
+    if (giftError) {
+
+      console.error(
+        "Gift card error:",
+        giftError
+      );
+
+      alert(
+        "⚠️ Order created, but gift card could not be used.\n\n" +
+        giftError.message
+      );
+
+      return;
+
+    }
+
+    if (
+      !giftResult ||
+      giftResult.success !== true
+    ) {
+
+      alert(
+        "⚠️ Order created, but gift card could not be used.\n\n" +
+        (
+          giftResult?.message ||
+          "Gift card error."
+        )
+      );
+
+      return;
+
+    }
+
+    console.log(
+      "Gift Card Used:",
+      giftResult.used_amount
+    );
+
+    console.log(
+      "Remaining Gift Card Balance:",
+      giftResult.remaining_balance
+    );
+
+  }
 
   /* =========================
      CLEAR CART
