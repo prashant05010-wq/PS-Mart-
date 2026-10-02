@@ -2,760 +2,895 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  
-  <meta name="google-site-verification" content="yVuzDetDJKdxouvTn9B_HXXLpjHD4yIBFMOxNpbNHgQ" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-  
-  <title>PS Mart | Online Shopping</title>
+<meta name="google-site-verification" content="yVuzDetDJKdxouvTn9B_HXXLpjHD4yIBFMOxNpbNHgQ">
 
-  <meta name="description" content="PS Mart - Shop mobiles, electronics, fashion, beauty, home essentials, grocery and accessories online at affordable prices.">
+<title>PS Mart | Online Shopping</title>
+
+<meta name="description" content="PS Mart - Shop mobiles, electronics, fashion, beauty, home essentials, grocery and accessories online at affordable prices.">
 
 <link rel="canonical" href="https://prashant05010-wq.github.io/PS-Mart-/">
-  
-  <link rel="stylesheet" href="style.css">
-
-  <style>
-
-    *{
-      box-sizing:border-box;
-    }
-
-    body{
-      margin:0;
-      background:#f5f6f8;
-      font-family:Arial,Helvetica,sans-serif;
-      color:#212121;
-      padding-bottom:70px;
-    }
-
-    /* =========================
-       HEADER
-    ========================= */
-
-    .ps-header{
-      background:#43250f;
-      color:white;
-      padding:12px 4%;
-      display:flex;
-      align-items:center;
-      gap:20px;
-      position:sticky;
-      top:0;
-      z-index:1000;
-    }
-
-    .ps-logo{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      text-decoration:none;
-      color:white;
-      font-size:23px;
-      font-weight:bold;
-      white-space:nowrap;
-    }
-
-    .ps-logo-icon{
-      width:40px;
-      height:40px;
-      border-radius:10px;
-      background:#f0bd50;
-      color:#43250f;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:22px;
-      font-weight:bold;
-    }
-
-    .ps-search{
-      flex:1;
-      max-width:700px;
-      display:flex;
-      background:white;
-      border-radius:5px;
-      overflow:hidden;
-    }
-
-    .ps-search input{
-      flex:1;
-      border:0;
-      outline:0;
-      padding:13px 16px;
-      font-size:15px;
-    }
-
-    .ps-search button{
-      width:55px;
-      border:0;
-      background:#f0bd50;
-      color:#111;
-      font-size:22px;
-      cursor:pointer;
-    }
-
-    .ps-headlinks{
-      display:flex;
-      align-items:center;
-      gap:18px;
-      white-space:nowrap;
-    }
-
-    .ps-headlinks a{
-      color:white;
-      text-decoration:none;
-      font-weight:bold;
-    }
-
-    #count{
-      background:#f0bd50;
-      color:#111;
-      padding:2px 6px;
-      border-radius:10px;
-      font-size:11px;
-    }
-
-
-    /* =========================
-       LOCATION
-    ========================= */
-
-    .location-bar{
-      background:#fbf6ea;
-      padding:10px 5%;
-      color:#222;
-      font-size:14px;
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-
-    .location-bar a{
-      color:#43250f;
-      font-weight:bold;
-      text-decoration:none;
-    }
-
-
-    /* =========================
-       CATEGORIES
-    ========================= */
-
-    .category-scroll{
-      background:white;
-      display:flex;
-      gap:30px;
-      overflow-x:auto;
-      padding:14px 5%;
-      border-bottom:1px solid #ddd;
-      scrollbar-width:none;
-    }
-
-    .category-scroll::-webkit-scrollbar{
-      display:none;
-    }
-
-    .category-item{
-      min-width:75px;
-      text-align:center;
-      text-decoration:none;
-      color:#333;
-      font-size:13px;
-      flex-shrink:0;
-    }
-
-    .category-icon{
-      width:55px;
-      height:55px;
-      border-radius:50%;
-      background:#f1f5f9;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      margin:auto auto 7px;
-      font-size:27px;
-    }
-
-    .category-item:hover .category-icon{
-      background:#fbf6ea;
-    }
-
-
-    /* =========================
-       MAIN
-    ========================= */
-
-    .ps-main{
-      max-width:1400px;
-      margin:auto;
-      padding:18px 4%;
-    }
-
-
-    /* =========================
-       HERO
-    ========================= */
-
-    .hero-banner{
-      min-height:270px;
-      border-radius:16px;
-      overflow:hidden;
-      background:
-        linear-gradient(
-          120deg,
-          #43250f,
-          #5a3215,
-          #8a5a2b
-        );
-      color:white;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:35px 7%;
-      position:relative;
-    }
-
-    .hero-content small{
-      font-weight:bold;
-      letter-spacing:2px;
-      color:#f0bd50;
-    }
-
-    .hero-content h1{
-      font-size:42px;
-      margin:10px 0;
-      line-height:1.1;
-    }
-
-    .hero-content h1 span{
-      color:#f0bd50;
-    }
-
-    .hero-content p{
-      font-size:17px;
-      margin-bottom:25px;
-    }
-
-    .shop-btn{
-      display:inline-block;
-      background:#f0bd50;
-      color:#111;
-      padding:13px 25px;
-      border-radius:6px;
-      text-decoration:none;
-      font-weight:bold;
-    }
-
-    .hero-products{
-      display:flex;
-      align-items:center;
-      gap:20px;
-      font-size:70px;
-    }
-
-    .discount-circle{
-      width:125px;
-      height:125px;
-      border-radius:50%;
-      background:#f0bd50;
-      color:#111;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      font-size:30px;
-      font-weight:bold;
-    }
-
-    .discount-circle small{
-      font-size:14px;
-    }
-
-
-    /* =========================
-       OFFER CARDS
-    ========================= */
-
-    .offer-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:18px;
-      margin:22px 0;
-    }
-
-    .offer-card{
-      min-height:150px;
-      border-radius:14px;
-      padding:20px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      text-decoration:none;
-      color:#111;
-      overflow:hidden;
-    }
-
-    .offer-card:nth-child(1){
-      background:#fff3cd;
-    }
-
-    .offer-card:nth-child(2){
-      background:#fbf6ea;
-    }
-
-    .offer-card:nth-child(3){
-      background:#f3e5f5;
-    }
-
-    .offer-card h3{
-      margin:0 0 8px;
-      font-size:20px;
-    }
-
-    .offer-card p{
-      margin:0;
-      font-size:14px;
-    }
-
-    .offer-icon{
-      font-size:60px;
-    }
-
-
-    /* =========================
-       SECTION TITLE
-    ========================= */
-
-    .section-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin:28px 0 15px;
-    }
-
-    .section-head h2{
-      margin:0;
-      font-size:24px;
-    }
-
-    .section-head a{
-      color:#43250f;
-      text-decoration:none;
-      font-weight:bold;
-    }
-
-
-    /* =========================
-       PRODUCT AREA
-    ========================= */
-
-    #homeProducts{
-      min-height:100px;
-    }
-
-
-    /* =========================
-       TRUST
-    ========================= */
-
-    .trust-section{
-      background:white;
-      border-radius:12px;
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      margin-top:30px;
-      padding:22px;
-      gap:20px;
-    }
-
-    .trust-box{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-
-    .trust-icon{
-      font-size:30px;
-    }
-
-    .trust-box b{
-      display:block;
-      margin-bottom:4px;
-    }
-
-    .trust-box span{
-      font-size:12px;
-      color:#777;
-    }
-
-
-    /* =========================
-       FOOTER
-    ========================= */
-
-    .ps-footer{
-      background:#172337;
-      color:white;
-      margin-top:35px;
-      padding:35px 6%;
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:25px;
-    }
-
-    .ps-footer h3{
-      margin-top:0;
-      color:#f0bd50;
-    }
-
-    .ps-footer a{
-      color:#ddd;
-      text-decoration:none;
-      display:block;
-      margin:8px 0;
-      font-size:14px;
-    }
-
-    .footer-bottom{
-      background:#43250f;
-      color:white;
-      text-align:center;
-      padding:15px;
-      font-size:13px;
-    }
-
-
-    /* =========================
-       MOBILE BOTTOM NAV
-    ========================= */
-
-    .mobile-nav{
-      display:none;
-    }
-
-
-    /* =========================
-       MOBILE
-    ========================= */
-
-    @media(max-width:700px){
-
-      body{
-        padding-bottom:70px;
-      }
-
-      .ps-header{
-        padding:10px 12px;
-        display:grid;
-        grid-template-columns:auto 1fr auto;
-        gap:10px;
-      }
-
-      .ps-logo{
-        font-size:0;
-      }
-
-      .ps-logo-icon{
-        width:40px;
-        height:40px;
-      }
-
-      .ps-search{
-        width:100%;
-      }
-
-      .ps-search input{
-        padding:11px 10px;
-        font-size:14px;
-      }
-
-      .ps-search button{
-        width:45px;
-      }
-
-      .ps-headlinks{
-        display:none;
-      }
-
-      .location-bar{
-        padding:10px 15px;
-        white-space:nowrap;
-        overflow:hidden;
-      }
-
-      .category-scroll{
-        gap:18px;
-        padding:12px 15px;
-      }
-
-      .category-icon{
-        width:50px;
-        height:50px;
-        font-size:24px;
-      }
-
-      .ps-main{
-        padding:10px;
-      }
-
-      .hero-banner{
-        min-height:230px;
-        padding:25px 20px;
-        border-radius:12px;
-      }
-
-      .hero-content h1{
-        font-size:30px;
-      }
-
-      .hero-content p{
-        font-size:13px;
-      }
-
-      .hero-products{
-        font-size:38px;
-        flex-direction:column;
-        gap:5px;
-      }
-
-      .discount-circle{
-        width:75px;
-        height:75px;
-        font-size:20px;
-      }
-
-      .discount-circle small{
-        font-size:10px;
-      }
-
-      .offer-grid{
-        grid-template-columns:repeat(3,1fr);
-        gap:8px;
-      }
-
-      .offer-card{
-        min-height:120px;
-        padding:10px;
-        flex-direction:column;
-        text-align:center;
-        justify-content:center;
-      }
-
-      .offer-card h3{
-        font-size:13px;
-      }
-
-      .offer-card p{
-        font-size:10px;
-      }
-
-      .offer-icon{
-        font-size:35px;
-      }
-
-      .section-head{
-        margin:22px 4px 12px;
-      }
-
-      .section-head h2{
-        font-size:19px;
-      }
-
-      .section-head a{
-        font-size:12px;
-      }
-
-      .trust-section{
-        grid-template-columns:repeat(2,1fr);
-        padding:15px;
-        gap:15px;
-      }
-
-      .trust-icon{
-        font-size:24px;
-      }
-
-      .trust-box b{
-        font-size:12px;
-      }
-
-      .trust-box span{
-        font-size:10px;
-      }
-
-      .ps-footer{
-        display:none;
-      }
-
-      .mobile-nav{
-        position:fixed;
-        display:grid;
-        grid-template-columns:repeat(4,1fr);
-        bottom:0;
-        left:0;
-        right:0;
-        height:65px;
-        background:white;
-        border-top:1px solid #ddd;
-        z-index:2000;
-        box-shadow:0 -2px 10px rgba(0,0,0,.12);
-      }
-
-      .mobile-nav a{
-        display:flex;
-        flex-direction:column;
-        align-items:center;
-        justify-content:center;
-        color:#555;
-        text-decoration:none;
-        font-size:11px;
-        gap:3px;
-      }
-
-      .mobile-nav a:first-child{
-        color:#43250f;
-        font-weight:bold;
-      }
-
-      .mobile-nav span{
-        font-size:24px;
-      }
-
-    }
-
-  </style>
 
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#f5f6f8;
+  font-family:Arial,Helvetica,sans-serif;
+  color:#212121;
+  padding-bottom:70px;
+}
+
+/* ================= HEADER ================= */
+
+.ps-header{
+  background:#43250f;
+  color:white;
+  padding:12px 4%;
+  display:flex;
+  align-items:center;
+  gap:20px;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+.ps-logo{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  text-decoration:none;
+  color:white;
+  font-size:23px;
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+.ps-logo-icon{
+  width:40px;
+  height:40px;
+  border-radius:10px;
+  background:#f0bd50;
+  color:#43250f;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  font-weight:bold;
+}
+
+.ps-search{
+  flex:1;
+  max-width:700px;
+  display:flex;
+  background:white;
+  border-radius:5px;
+  overflow:hidden;
+}
+
+.ps-search input{
+  flex:1;
+  border:0;
+  outline:0;
+  padding:13px 16px;
+  font-size:15px;
+}
+
+.ps-search button{
+  width:55px;
+  border:0;
+  background:#f0bd50;
+  color:#111;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.ps-headlinks{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  white-space:nowrap;
+}
+
+.ps-headlinks a{
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+#count{
+  background:#f0bd50;
+  color:#111;
+  padding:2px 6px;
+  border-radius:10px;
+  font-size:11px;
+}
+
+/* ================= LOCATION ================= */
+
+.location-bar{
+  background:#fbf6ea;
+  padding:10px 5%;
+  color:#222;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.location-bar a{
+  color:#43250f;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+/* ================= CATEGORY ================= */
+
+.category-scroll{
+  background:white;
+  display:flex;
+  gap:30px;
+  overflow-x:auto;
+  padding:14px 5%;
+  border-bottom:1px solid #ddd;
+  scrollbar-width:none;
+}
+
+.category-scroll::-webkit-scrollbar{
+  display:none;
+}
+
+.category-item{
+  min-width:75px;
+  text-align:center;
+  text-decoration:none;
+  color:#333;
+  font-size:13px;
+  flex-shrink:0;
+}
+
+.category-icon{
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  background:#f1f5f9;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:auto auto 7px;
+  font-size:27px;
+}
+
+.category-item:hover .category-icon{
+  background:#fbf6ea;
+  transform:translateY(-2px);
+}
+
+/* ================= MAIN ================= */
+
+.ps-main{
+  max-width:1400px;
+  margin:auto;
+  padding:18px 4%;
+}
+
+/* ================= HERO SLIDER ================= */
+
+.hero-slider{
+  position:relative;
+  width:100%;
+  overflow:hidden;
+  border-radius:18px;
+  box-shadow:0 8px 25px rgba(0,0,0,.12);
+}
+
+.hero-track{
+  display:flex;
+  transition:transform .65s ease;
+}
+
+.hero-slide{
+  min-width:100%;
+  position:relative;
+}
+
+.hero-slide img{
+  width:100%;
+  height:285px;
+  display:block;
+  object-fit:cover;
+}
+
+/* arrows */
+
+.slider-arrow{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:50%;
+  background:rgba(255,255,255,.9);
+  color:#43250f;
+  font-size:25px;
+  cursor:pointer;
+  z-index:5;
+  box-shadow:0 3px 10px rgba(0,0,0,.2);
+}
+
+.slider-arrow.left{
+  left:15px;
+}
+
+.slider-arrow.right{
+  right:15px;
+}
+
+/* dots */
+
+.slider-dots{
+  position:absolute;
+  bottom:12px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:7px;
+}
+
+.slider-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:rgba(255,255,255,.65);
+  cursor:pointer;
+}
+
+.slider-dot.active{
+  width:24px;
+  border-radius:10px;
+  background:#f0bd50;
+}
+
+/* ================= SECTION ================= */
+
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:30px 0 15px;
+}
+
+.section-head h2{
+  margin:0;
+  font-size:24px;
+}
+
+.section-head a{
+  color:#43250f;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+/* ================= CATEGORY CARDS ================= */
+
+.category-cards{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:12px;
+}
+
+.cat-card{
+  background:white;
+  border-radius:14px;
+  padding:18px 8px;
+  text-align:center;
+  text-decoration:none;
+  color:#222;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  transition:.25s;
+}
+
+.cat-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 7px 18px rgba(0,0,0,.12);
+}
+
+.cat-card .big-icon{
+  font-size:35px;
+  margin-bottom:8px;
+}
+
+.cat-card b{
+  font-size:13px;
+}
+
+/* ================= DEAL STRIP ================= */
+
+.deal-strip{
+  margin-top:28px;
+  background:linear-gradient(90deg,#43250f,#6c3e17,#43250f);
+  color:white;
+  border-radius:14px;
+  padding:18px 24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+
+.deal-strip strong{
+  color:#f0bd50;
+}
+
+.deal-button{
+  background:#f0bd50;
+  color:#111;
+  text-decoration:none;
+  padding:10px 18px;
+  border-radius:7px;
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+/* ================= PRODUCT GRID ================= */
+
+.home-product-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+
+.home-product-card{
+  background:white;
+  border-radius:13px;
+  overflow:hidden;
+  box-shadow:0 2px 9px rgba(0,0,0,.07);
+  transition:.25s;
+}
+
+.home-product-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.home-product-image{
+  height:190px;
+  background:#f7f7f7;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.home-product-image img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.home-product-info{
+  padding:13px;
+}
+
+.home-product-name{
+  font-size:15px;
+  font-weight:bold;
+  min-height:38px;
+  line-height:1.3;
+}
+
+.home-price{
+  margin-top:8px;
+  font-size:19px;
+  font-weight:bold;
+  color:#43250f;
+}
+
+.home-old-price{
+  margin-left:6px;
+  font-size:12px;
+  color:#888;
+  text-decoration:line-through;
+}
+
+.home-off{
+  margin-left:5px;
+  font-size:11px;
+  color:#16853b;
+  font-weight:bold;
+}
+
+.home-view{
+  display:block;
+  margin-top:10px;
+  text-align:center;
+  padding:9px;
+  background:#43250f;
+  color:white;
+  text-decoration:none;
+  border-radius:6px;
+  font-size:13px;
+  font-weight:bold;
+}
+
+/* ================= COUPON ================= */
+
+.coupon-box{
+  margin-top:30px;
+  background:#fff4d8;
+  border:1px dashed #c9922e;
+  border-radius:14px;
+  padding:22px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+
+.coupon-title{
+  font-size:22px;
+  font-weight:bold;
+  color:#43250f;
+}
+
+.coupon-code{
+  display:inline-block;
+  margin-top:8px;
+  background:white;
+  border:1px solid #c9922e;
+  padding:8px 14px;
+  border-radius:6px;
+  font-weight:bold;
+  letter-spacing:1px;
+}
+
+.coupon-btn{
+  background:#43250f;
+  color:white;
+  border:0;
+  padding:11px 20px;
+  border-radius:7px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+/* ================= BENEFITS ================= */
+
+.trust-section{
+  background:white;
+  border-radius:14px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  margin-top:30px;
+  padding:22px;
+  gap:20px;
+}
+
+.trust-box{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.trust-icon{
+  font-size:30px;
+}
+
+.trust-box b{
+  display:block;
+  margin-bottom:4px;
+}
+
+.trust-box span{
+  font-size:12px;
+  color:#777;
+}
+
+/* ================= SELLER ================= */
+
+.seller-banner{
+  margin-top:30px;
+  background:linear-gradient(110deg,#24150b,#43250f,#76501f);
+  color:white;
+  border-radius:16px;
+  padding:28px 35px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+
+.seller-banner h2{
+  margin:0 0 8px;
+}
+
+.seller-banner p{
+  margin:0;
+  color:#eee;
+}
+
+.seller-btn{
+  background:#f0bd50;
+  color:#111;
+  text-decoration:none;
+  padding:12px 20px;
+  border-radius:7px;
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+/* ================= FOOTER ================= */
+
+.ps-footer{
+  background:#172337;
+  color:white;
+  margin-top:35px;
+  padding:35px 6%;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:25px;
+}
+
+.ps-footer h3{
+  margin-top:0;
+  color:#f0bd50;
+}
+
+.ps-footer a{
+  color:#ddd;
+  text-decoration:none;
+  display:block;
+  margin:8px 0;
+  font-size:14px;
+}
+
+.footer-bottom{
+  background:#43250f;
+  color:white;
+  text-align:center;
+  padding:15px;
+  font-size:13px;
+}
+
+/* ================= MOBILE NAV ================= */
+
+.mobile-nav{
+  display:none;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:900px){
+
+  .category-cards{
+    grid-template-columns:repeat(4,1fr);
+  }
+
+  .home-product-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+}
+
+@media(max-width:700px){
+
+  .ps-header{
+    padding:10px 12px;
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:10px;
+  }
+
+  .ps-logo{
+    font-size:0;
+  }
+
+  .ps-logo-icon{
+    width:40px;
+    height:40px;
+  }
+
+  .ps-search{
+    width:100%;
+  }
+
+  .ps-search input{
+    padding:11px 10px;
+    font-size:14px;
+  }
+
+  .ps-search button{
+    width:45px;
+  }
+
+  .ps-headlinks{
+    display:none;
+  }
+
+  .location-bar{
+    padding:10px 15px;
+    white-space:nowrap;
+    overflow:hidden;
+  }
+
+  .category-scroll{
+    gap:18px;
+    padding:12px 15px;
+  }
+
+  .category-icon{
+    width:50px;
+    height:50px;
+    font-size:24px;
+  }
+
+  .ps-main{
+    padding:10px;
+  }
+
+  .hero-slider{
+    border-radius:12px;
+  }
+
+  .hero-slide img{
+    height:190px;
+    object-fit:cover;
+  }
+
+  .slider-arrow{
+    width:32px;
+    height:32px;
+    font-size:18px;
+  }
+
+  .slider-arrow.left{
+    left:8px;
+  }
+
+  .slider-arrow.right{
+    right:8px;
+  }
+
+  .category-cards{
+    display:flex;
+    overflow-x:auto;
+    gap:10px;
+    scrollbar-width:none;
+  }
+
+  .category-cards::-webkit-scrollbar{
+    display:none;
+  }
+
+  .cat-card{
+    min-width:90px;
+    padding:13px 5px;
+  }
+
+  .cat-card .big-icon{
+    font-size:29px;
+  }
+
+  .section-head{
+    margin:23px 4px 12px;
+  }
+
+  .section-head h2{
+    font-size:19px;
+  }
+
+  .section-head a{
+    font-size:12px;
+  }
+
+  .deal-strip{
+    padding:15px;
+    flex-direction:column;
+    text-align:center;
+  }
+
+  .home-product-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+  }
+
+  .home-product-image{
+    height:150px;
+  }
+
+  .home-product-info{
+    padding:10px;
+  }
+
+  .home-product-name{
+    font-size:13px;
+  }
+
+  .home-price{
+    font-size:16px;
+  }
+
+  .coupon-box{
+    flex-direction:column;
+    text-align:center;
+    padding:18px;
+  }
+
+  .trust-section{
+    grid-template-columns:repeat(2,1fr);
+    padding:15px;
+    gap:15px;
+  }
+
+  .trust-icon{
+    font-size:24px;
+  }
+
+  .trust-box b{
+    font-size:12px;
+  }
+
+  .trust-box span{
+    font-size:10px;
+  }
+
+  .seller-banner{
+    flex-direction:column;
+    text-align:center;
+    padding:25px 18px;
+  }
+
+  .ps-footer{
+    display:none;
+  }
+
+  .mobile-nav{
+    position:fixed;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    bottom:0;
+    left:0;
+    right:0;
+    height:65px;
+    background:white;
+    border-top:1px solid #ddd;
+    z-index:2000;
+    box-shadow:0 -2px 10px rgba(0,0,0,.12);
+  }
+
+  .mobile-nav a{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    color:#555;
+    text-decoration:none;
+    font-size:11px;
+    gap:3px;
+  }
+
+  .mobile-nav a:first-child{
+    color:#43250f;
+    font-weight:bold;
+  }
+
+  .mobile-nav span{
+    font-size:24px;
+  }
+
+}
+
+</style>
 </head>
 
 
 <body>
 
-
-<!-- =========================
-     HEADER
-========================= -->
+<!-- ================= HEADER ================= -->
 
 <header class="ps-header">
 
-  <a class="ps-logo" href="index.html">
+<a class="ps-logo" href="index.html">
+  <span class="ps-logo-icon">PS</span>
+  <span>PS Mart</span>
+</a>
 
-    <span class="ps-logo-icon">
-      PS
-    </span>
+<div class="ps-search">
 
-    <span>
-      PS Mart
-    </span>
+<input
+id="search"
+type="text"
+placeholder="Search for Products, Brands and More"
+onkeydown="if(event.key==='Enter') search()">
 
-  </a>
+<button onclick="search()">🔍</button>
 
+</div>
 
-  <div class="ps-search">
+<div class="ps-headlinks">
 
-    <input
-      id="search"
-      type="text"
-      placeholder="Search for Products, Brands and More"
-      onkeydown="if(event.key==='Enter') search()"
-    >
+<a href="login.html">👤 Login</a>
 
-    <button onclick="search()">
-      🔍
-    </button>
+<a href="seller-register.html">Sell on PS Mart</a>
 
-  </div>
+<a href="wishlist.html">♡</a>
 
+<a href="cart.html">
+🛒 Cart
+<em id="count">0</em>
+</a>
 
-  <div class="ps-headlinks">
-
-    <a href="login.html">
-      👤 Login
-    </a>
-
-    <a href="seller-register.html">
-      Sell on PS Mart
-    </a>
-
-    <a href="wishlist.html">
-      ♡
-    </a>
-
-    <a href="cart.html">
-      🛒 Cart
-      <em id="count">0</em>
-    </a>
-
-  </div>
+</div>
 
 </header>
 
 
-<!-- =========================
-     LOCATION
-========================= -->
+<!-- ================= LOCATION ================= -->
 
 <div class="location-bar">
 
-  📍
+📍
 
-  <span>
-    Delivery location
-  </span>
+<span>Delivery location</span>
 
-  <a href="#" onclick="openLocation(); return false;">
-  Select your location →
+<a href="#" onclick="openLocation(); return false;">
+Select your location →
 </a>
 
 </div>
 
 
-<!-- =========================
-     CATEGORY SCROLL
-========================= -->
+<!-- ================= CATEGORIES ================= -->
 
 <div class="category-scroll">
 
-  <a class="category-item" href="products.html">
-    <div class="category-icon">🛍️</div>
-    <b>For You</b>
-  </a>
+<a class="category-item" href="products.html">
+<div class="category-icon">🛍️</div>
+<b>For You</b>
+</a>
 
-  <a class="category-item" href="products.html?cat=Mobiles">
-    <div class="category-icon">📱</div>
-    <b>Mobiles</b>
-  </a>
+<a class="category-item" href="products.html?cat=1">
+<div class="category-icon">📱</div>
+<b>Mobiles</b>
+</a>
 
-  <a class="category-item" href="products.html?cat=Fashion">
-    <div class="category-icon">👕</div>
-    <b>Fashion</b>
-  </a>
+<a class="category-item" href="products.html?cat=3">
+<div class="category-icon">👕</div>
+<b>Fashion</b>
+</a>
 
-  <a class="category-item" href="products.html?cat=Electronics">
-    <div class="category-icon">💻</div>
-    <b>Electronics</b>
-  </a>
+<a class="category-item" href="products.html?cat=2">
+<div class="category-icon">💻</div>
+<b>Electronics</b>
+</a>
 
-  <a class="category-item" href="products.html?cat=Beauty">
-    <div class="category-icon">💄</div>
-    <b>Beauty</b>
-  </a>
+<a class="category-item" href="products.html?cat=4">
+<div class="category-icon">💄</div>
+<b>Beauty</b>
+</a>
 
-  <a class="category-item" href="products.html?cat=Home">
-    <div class="category-icon">🏠</div>
-    <b>Home</b>
-  </a>
+<a class="category-item" href="products.html?cat=5">
+<div class="category-icon">🏠</div>
+<b>Home</b>
+</a>
 
-  <a class="category-item" href="products.html?cat=Grocery">
-    <div class="category-icon">🛒</div>
-    <b>Grocery</b>
-  </a>
+<a class="category-item" href="products.html?cat=6">
+<div class="category-icon">🛒</div>
+<b>Grocery</b>
+</a>
 
-  <a class="category-item" href="products.html?cat=Accessories">
-    <div class="category-icon">🎧</div>
-    <b>Accessories</b>
-  </a>
+<a class="category-item" href="products.html?cat=7">
+<div class="category-icon">🎧</div>
+<b>Accessories</b>
+</a>
 
 </div>
 
@@ -763,413 +898,351 @@
 <main class="ps-main">
 
 
-  <!-- =========================
-       HERO BANNER
-  ========================= -->
+<!-- ================= HERO SLIDER ================= -->
 
-  <section class="hero-banner">
+<section class="hero-slider" id="heroSlider">
 
-    <div class="hero-content">
+<div class="hero-track" id="heroTrack">
 
-      <small>
-        PS MART EXCLUSIVE
-      </small>
+<div class="hero-slide">
+<a href="products.html?cat=2">
+<img src="offer-electronics.png" alt="Electronics Sale">
+</a>
+</div>
 
-      <h1>
-        Big Deals
-        <br>
-        <span>Every Day</span>
-      </h1>
+<div class="hero-slide">
+<a href="products.html?cat=3">
+<img src="offer-fashion.png" alt="Fashion Sale">
+</a>
+</div>
 
-      <p>
-        Mobiles • Fashion • Electronics • Home
-      </p>
+<div class="hero-slide">
+<a href="products.html?cat=5">
+<img src="offer-home.png" alt="Home and Kitchen Sale">
+</a>
+</div>
 
-      <a
-        href="products.html"
-        class="shop-btn"
-      >
-        Shop Now →
-      </a>
+<div class="hero-slide">
+<a href="products.html?cat=4">
+<img src="offer-beauty.png" alt="Beauty and Accessories Sale">
+</a>
+</div>
 
-    </div>
+</div>
 
 
-    <div class="hero-products">
+<button class="slider-arrow left" onclick="heroPrev()">‹</button>
 
-      📱 🎧 ⌚
+<button class="slider-arrow right" onclick="heroNext()">›</button>
 
-      <div class="discount-circle">
 
-        70%
+<div class="slider-dots">
 
-        <small>
-          OFF
-        </small>
+<span class="slider-dot active" onclick="heroGo(0)"></span>
+<span class="slider-dot" onclick="heroGo(1)"></span>
+<span class="slider-dot" onclick="heroGo(2)"></span>
+<span class="slider-dot" onclick="heroGo(3)"></span>
 
-      </div>
+</div>
 
-    </div>
+</section>
 
-  </section>
 
+<!-- ================= SHOP BY CATEGORY ================= -->
 
-  <!-- =========================
-       OFFER CARDS
-  ========================= -->
+<div class="section-head">
 
-  <div class="offer-grid">
+<h2>Shop by Category 🛍️</h2>
 
-    <a
-      class="offer-card"
-      href="products.html?cat=Electronics"
-    >
+<a href="products.html">View All →</a>
 
-      <div>
+</div>
 
-        <h3>
-          Electronics Sale
-        </h3>
 
-        <p>
-          Best deals on gadgets
-        </p>
+<div class="category-cards">
 
-      </div>
+<a class="cat-card" href="products.html?cat=1">
+<div class="big-icon">📱</div>
+<b>Mobiles</b>
+</a>
 
-      <div class="offer-icon">
-        💻
-      </div>
+<a class="cat-card" href="products.html?cat=2">
+<div class="big-icon">🎧</div>
+<b>Electronics</b>
+</a>
 
-    </a>
+<a class="cat-card" href="products.html?cat=3">
+<div class="big-icon">👕</div>
+<b>Fashion</b>
+</a>
 
+<a class="cat-card" href="products.html?cat=4">
+<div class="big-icon">💄</div>
+<b>Beauty</b>
+</a>
 
-    <a
-      class="offer-card"
-      href="products.html?cat=Fashion"
-    >
+<a class="cat-card" href="products.html?cat=5">
+<div class="big-icon">🏠</div>
+<b>Home</b>
+</a>
 
-      <div>
+<a class="cat-card" href="products.html?cat=6">
+<div class="big-icon">🛒</div>
+<b>Grocery</b>
+</a>
 
-        <h3>
-          Fashion Deals
-        </h3>
+<a class="cat-card" href="products.html?cat=7">
+<div class="big-icon">🎧</div>
+<b>Accessories</b>
+</a>
 
-        <p>
-          Style at better prices
-        </p>
+</div>
 
-      </div>
 
-      <div class="offer-icon">
-        👕
-      </div>
+<!-- ================= DEAL STRIP ================= -->
 
-    </a>
+<div class="deal-strip">
 
+<div>
+<strong>⚡ LIMITED TIME DEALS</strong>
+<br>
+Save more on selected products today
+</div>
 
-    <a
-      class="offer-card"
-      href="products.html?cat=Home"
-    >
+<a class="deal-button" href="products.html">
+Shop Deals →
+</a>
 
-      <div>
+</div>
 
-        <h3>
-          Home Essentials
-        </h3>
 
-        <p>
-          Upgrade your home
-        </p>
+<!-- ================= FLASH DEALS ================= -->
 
-      </div>
+<div class="section-head">
 
-      <div class="offer-icon">
-        🏠
-      </div>
+<h2>⚡ Flash Deals</h2>
 
-    </a>
+<a href="products.html">View All →</a>
 
-  </div>
+</div>
 
+<div id="flashDeals" class="home-product-grid"></div>
 
-  <!-- =========================
-       BEST DEALS
-  ========================= -->
 
-  <section>
+<!-- ================= COUPON ================= -->
 
-    <div class="section-head">
+<div class="coupon-box">
 
-      <h2>
-        Best Deals For You 🔥
-      </h2>
+<div>
 
-      <a href="products.html">
-        View All →
-      </a>
+<div class="coupon-title">
+🎁 Get Extra ₹100 OFF
+</div>
 
-    </div>
+<div>
+Use this coupon on your next purchase
+</div>
 
+<span class="coupon-code" id="homeCouponCode">
+PS100
+</span>
 
-    <div
-      id="homeProducts"
-      class="grid"
-    ></div>
+</div>
 
-  </section>
+<button class="coupon-btn" onclick="copyHomeCoupon()">
+Copy Code
+</button>
 
+</div>
 
-  <!-- =========================
-       TRUST
-  ========================= -->
 
-  <section class="trust-section">
+<!-- ================= TRENDING ================= -->
 
-    <div class="trust-box">
+<div class="section-head">
 
-      <div class="trust-icon">
-        🚚
-      </div>
+<h2>🔥 Trending Picks</h2>
 
-      <div>
+<a href="products.html">View All →</a>
 
-        <b>
-          Fast Delivery
-        </b>
+</div>
 
-        <span>
-          Reliable delivery
-        </span>
+<div id="trendingProducts" class="home-product-grid"></div>
 
-      </div>
 
-    </div>
+<!-- ================= NEW ARRIVALS ================= -->
 
+<div class="section-head">
 
-    <div class="trust-box">
+<h2>✨ New Arrivals</h2>
 
-      <div class="trust-icon">
-        🔒
-      </div>
+<a href="products.html">View All →</a>
 
-      <div>
+</div>
 
-        <b>
-          Secure Payment
-        </b>
+<div id="newArrivals" class="home-product-grid"></div>
 
-        <span>
-          Safe checkout
-        </span>
 
-      </div>
+<!-- ================= BENEFITS ================= -->
 
-    </div>
+<section class="trust-section">
 
+<div class="trust-box">
 
-    <div class="trust-box">
+<div class="trust-icon">🚚</div>
 
-      <div class="trust-icon">
-        ↩️
-      </div>
+<div>
+<b>Fast Delivery</b>
+<span>Reliable delivery</span>
+</div>
 
-      <div>
+</div>
 
-        <b>
-          Easy Returns
-        </b>
 
-        <span>
-          Simple returns
-        </span>
+<div class="trust-box">
 
-      </div>
+<div class="trust-icon">🔒</div>
 
-    </div>
+<div>
+<b>Secure Shopping</b>
+<span>Safe checkout</span>
+</div>
 
+</div>
 
-    <div class="trust-box">
 
-      <div class="trust-icon">
-        ☎️
-      </div>
+<div class="trust-box">
 
-      <div>
+<div class="trust-icon">💳</div>
 
-        <b>
-          Customer Support
-        </b>
+<div>
+<b>Multiple Payments</b>
+<span>Choose your method</span>
+</div>
 
-        <span>
-          Help when needed
-        </span>
+</div>
 
-      </div>
 
-    </div>
+<div class="trust-box">
 
-  </section>
+<div class="trust-icon">☎️</div>
+
+<div>
+<b>Customer Support</b>
+<span>Help when needed</span>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= SELLER ================= -->
+
+<section class="seller-banner">
+
+<div>
+
+<h2>🏪 Sell on PS Mart</h2>
+
+<p>
+Have products to sell? Reach new customers and grow your business.
+</p>
+
+</div>
+
+<a class="seller-btn" href="seller-register.html">
+Become a Seller →
+</a>
+
+</section>
 
 
 </main>
 
 
-<!-- =========================
-     FOOTER
-========================= -->
+<!-- ================= FOOTER ================= -->
 
 <footer class="ps-footer">
 
-  <div>
+<div>
 
-    <h3>
-      PS Mart
-    </h3>
+<h3>PS Mart</h3>
 
-    <a href="index.html">
-      Home
-    </a>
+<a href="index.html">Home</a>
+<a href="products.html">All Products</a>
+<a href="wishlist.html">Wishlist</a>
 
-    <a href="products.html">
-      All Products
-    </a>
-
-    <a href="wishlist.html">
-      Wishlist
-    </a>
-
-  </div>
+</div>
 
 
-  <div>
+<div>
 
-    <h3>
-      Customer
-    </h3>
+<h3>Customer</h3>
 
-    <a href="profile.html">
-      My Account
-    </a>
+<a href="profile.html">My Account</a>
+<a href="orders.html">My Orders</a>
+<a href="cart.html">My Cart</a>
 
-    <a href="orders.html">
-      My Orders
-    </a>
-
-    <a href="cart.html">
-      My Cart
-    </a>
-
-  </div>
+</div>
 
 
-  <div>
+<div>
 
-    <h3>
-      Seller
-    </h3>
+<h3>Seller</h3>
 
-    <a href="seller-register.html">
-      Sell on PS Mart
-    </a>
+<a href="seller-register.html">Sell on PS Mart</a>
+<a href="seller-dashboard.html">Seller Dashboard</a>
 
-    <a href="seller-dashboard.html">
-      Seller Dashboard
-    </a>
-
-  </div>
+</div>
 
 
-  <div>
+<div>
 
-    <h3>
-      Support
-    </h3>
+<h3>Support</h3>
 
-    <a href="#">
-      About Us
-    </a>
+<a href="about.html">About Us</a>
+<a href="privacy-center.html">Privacy</a>
+<a href="terms.html">Terms</a>
+<a href="contact.html">Contact</a>
 
-    <a href="#">
-      Privacy
-    </a>
-
-    <a href="#">
-      Terms
-    </a>
-
-    <a href="#">
-      Contact
-    </a>
-
-  </div>
+</div>
 
 </footer>
 
 
 <div class="footer-bottom">
-
-  © 2026 PS Mart • Better Products, Better Life
-
+© 2026 PS Mart • Better Products, Better Life
 </div>
 
 
-<!-- =========================
-     MOBILE NAV
-========================= -->
+<!-- ================= MOBILE NAV ================= -->
 
 <nav class="mobile-nav">
 
-  <a href="index.html">
+<a href="index.html">
+<span>🏠</span>
+Home
+</a>
 
-    <span>
-      🏠
-    </span>
+<a href="products.html">
+<span>▦</span>
+Categories
+</a>
 
-    Home
+<a href="profile.html">
+<span>👤</span>
+Account
+</a>
 
-  </a>
-
-
-  <a href="products.html">
-
-    <span>
-      ▦
-    </span>
-
-    Categories
-
-  </a>
-
-
-  <a href="profile.html">
-
-    <span>
-      👤
-    </span>
-
-    Account
-
-  </a>
-
-
-  <a href="cart.html">
-
-    <span>
-      🛒
-    </span>
-
-    Cart
-
-  </a>
+<a href="cart.html">
+<span>🛒</span>
+Cart
+</a>
 
 </nav>
 
 
-<!-- =========================
-     SCRIPTS
-========================= -->
+<!-- ================= SCRIPTS ================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1177,6 +1250,454 @@
 <script src="translate.js"></script>
 <script src="app.js"></script>
 
+
+<script>
+
+/* =====================================================
+   HERO SLIDER
+===================================================== */
+
+let heroIndex = 0;
+
+const heroTrack = document.getElementById("heroTrack");
+const heroDots = document.querySelectorAll(".slider-dot");
+
+function updateHero(){
+
+  heroTrack.style.transform =
+    "translateX(-" + (heroIndex * 100) + "%)";
+
+  heroDots.forEach((dot,index)=>{
+
+    dot.classList.toggle(
+      "active",
+      index === heroIndex
+    );
+
+  });
+
+}
+
+function heroNext(){
+
+  heroIndex++;
+
+  if(heroIndex >= 4){
+    heroIndex = 0;
+  }
+
+  updateHero();
+
+}
+
+function heroPrev(){
+
+  heroIndex--;
+
+  if(heroIndex < 0){
+    heroIndex = 3;
+  }
+
+  updateHero();
+
+}
+
+function heroGo(index){
+
+  heroIndex = index;
+
+  updateHero();
+
+}
+
+
+/* automatic 3 second slide */
+
+let heroTimer = setInterval(heroNext,3000);
+
+
+/* pause while touching/hovering */
+
+const heroSlider =
+  document.getElementById("heroSlider");
+
+heroSlider.addEventListener(
+  "mouseenter",
+  ()=>{
+    clearInterval(heroTimer);
+  }
+);
+
+heroSlider.addEventListener(
+  "mouseleave",
+  ()=>{
+    clearInterval(heroTimer);
+    heroTimer = setInterval(heroNext,3000);
+  }
+);
+
+
+/* =====================================================
+   COUPON
+===================================================== */
+
+function copyHomeCoupon(){
+
+  const code =
+    document.getElementById("homeCouponCode")
+    .innerText
+    .trim();
+
+  navigator.clipboard.writeText(code)
+  .then(()=>{
+
+    alert(
+      "Coupon " + code + " copied!"
+    );
+
+  })
+  .catch(()=>{
+
+    alert(
+      "Coupon Code: " + code
+    );
+
+  });
+
+}
+
+
+/* =====================================================
+   HOME PRODUCTS
+===================================================== */
+
+async function loadHomeProducts(){
+
+  const flash =
+    document.getElementById("flashDeals");
+
+  const trending =
+    document.getElementById("trendingProducts");
+
+  const arrivals =
+    document.getElementById("newArrivals");
+
+
+  if(
+    typeof supabaseClient === "undefined"
+  ){
+
+    flash.innerHTML =
+      "<p>Products loading...</p>";
+
+    trending.innerHTML =
+      "<p>Products loading...</p>";
+
+    arrivals.innerHTML =
+      "<p>Products loading...</p>";
+
+    return;
+
+  }
+
+
+  try{
+
+    const result =
+      await supabaseClient
+      .from("products")
+      .select("*")
+      .eq("status","approved");
+
+
+    if(result.error){
+      throw result.error;
+    }
+
+
+    let products =
+      result.data || [];
+
+
+    if(products.length === 0){
+
+      flash.innerHTML =
+        "<p>No products available yet.</p>";
+
+      trending.innerHTML =
+        "<p>No products available yet.</p>";
+
+      arrivals.innerHTML =
+        "<p>No products available yet.</p>";
+
+      return;
+
+    }
+
+
+    /* Newest products */
+
+    const newest =
+      [...products]
+      .sort(
+        (a,b)=>
+          new Date(b.created_at || 0)
+          -
+          new Date(a.created_at || 0)
+      );
+
+
+    /* Flash deals */
+
+    const flashProducts =
+      products
+      .filter(p =>
+        Number(p.old_price || 0)
+        >
+        Number(p.price || 0)
+      )
+      .sort((a,b)=>{
+
+        const da =
+          Number(a.old_price || 0)
+          -
+          Number(a.price || 0);
+
+        const db =
+          Number(b.old_price || 0)
+          -
+          Number(b.price || 0);
+
+        return db-da;
+
+      });
+
+
+    /*
+      If fewer than 4 products have old_price,
+      fill remaining cards with newest products.
+    */
+
+    const flashFinal =
+      [...flashProducts];
+
+    for(const p of newest){
+
+      if(
+        flashFinal.length >= 4
+      ) break;
+
+      if(
+        !flashFinal.some(
+          x=>x.id === p.id
+        )
+      ){
+
+        flashFinal.push(p);
+
+      }
+
+    }
+
+
+    renderHomeProducts(
+      flash,
+      flashFinal.slice(0,4)
+    );
+
+
+    /*
+      Trending Picks:
+      currently uses latest approved products.
+      This can later be connected to real
+      views/order analytics.
+    */
+
+    renderHomeProducts(
+      trending,
+      newest.slice(0,4)
+    );
+
+
+    /* New arrivals */
+
+    renderHomeProducts(
+      arrivals,
+      newest.slice(0,4)
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Home products error:",
+      error
+    );
+
+    flash.innerHTML =
+      "<p>Unable to load products.</p>";
+
+    trending.innerHTML =
+      "<p>Unable to load products.</p>";
+
+    arrivals.innerHTML =
+      "<p>Unable to load products.</p>";
+
+  }
+
+}
+
+
+/* =====================================================
+   PRODUCT CARD
+===================================================== */
+
+function renderHomeProducts(
+  container,
+  products
+){
+
+  if(!products.length){
+
+    container.innerHTML =
+      "<p>No products available yet.</p>";
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    products.map(product=>{
+
+      const price =
+        Number(product.price || 0);
+
+      const oldPrice =
+        Number(product.old_price || 0);
+
+
+      let discount = "";
+
+      if(
+        oldPrice > price &&
+        oldPrice > 0
+      ){
+
+        discount =
+          Math.round(
+            ((oldPrice-price)/oldPrice)*100
+          );
+
+      }
+
+
+      const image =
+        product.image_url ||
+        product.image ||
+        "https://via.placeholder.com/400x300?text=PS+Mart";
+
+
+      const name =
+        product.name ||
+        "Product";
+
+
+      return `
+
+        <article class="home-product-card">
+
+          <div class="home-product-image">
+
+            <img
+              src="${escapeHomeHtml(image)}"
+              alt="${escapeHomeHtml(name)}"
+              loading="lazy"
+            >
+
+          </div>
+
+
+          <div class="home-product-info">
+
+            <div class="home-product-name">
+              ${escapeHomeHtml(name)}
+            </div>
+
+
+            <div class="home-price">
+
+              ₹${price.toLocaleString("en-IN")}
+
+              ${
+                oldPrice > price
+                ?
+                `<span class="home-old-price">
+                  ₹${oldPrice.toLocaleString("en-IN")}
+                </span>`
+                :
+                ""
+              }
+
+              ${
+                discount
+                ?
+                `<span class="home-off">
+                  ${discount}% OFF
+                </span>`
+                :
+                ""
+              }
+
+            </div>
+
+
+            <a
+              class="home-view"
+              href="products.html"
+            >
+              View Product →
+            </a>
+
+          </div>
+
+        </article>
+
+      `;
+
+    }).join("");
+
+}
+
+
+/* =====================================================
+   SAFE HTML
+===================================================== */
+
+function escapeHomeHtml(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  ()=>{
+    loadHomeProducts();
+  }
+);
+
+</script>
 
 </body>
 </html>
