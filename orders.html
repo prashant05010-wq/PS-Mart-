@@ -488,14 +488,20 @@ async function loadOrders(){
   `;
 
 
-  const {
-    data:{
-      user
-    }
-  } =
-    await supabaseClient
-    .auth
-    .getUser();
+ const {
+  data: sessionData,
+  error: sessionError
+} = await supabaseClient.auth.getSession();
+
+const user =
+  sessionData &&
+  sessionData.session
+    ? sessionData.session.user
+    : null;
+
+if (sessionError) {
+  console.log("Session error:", sessionError);
+}
 
 
   if(!user){
