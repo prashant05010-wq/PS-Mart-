@@ -1102,11 +1102,81 @@ async function cancelOrder(orderId){
 
 loadOrders();
 
-setInterval(
-  loadOrders,
-  15000
-);
+setInterval(async () => {
 
+  try {
+
+    const {
+      data: {
+        user
+      }
+    } = await supabaseClient.auth.getUser();
+
+    if (!user) return;
+
+    const {
+      data: sellerOrders,
+      error
+    } = await supabaseClient
+      .from("seller_orders")
+      .select("order_id,status,tracking_number,shipping_provider,updated_at");
+
+    if (error) {
+      console.log("Background status check:", error);
+      return;
+    }
+
+    if (!sellerOrders) return;
+
+    /*
+      Only reload the visible order data if
+      a seller status actually changed.
+    */
+
+    const currentData =
+      JSON.stringify(
+        sellerOrders.map(x => ({
+          order_id: x.order_id,
+          status: x.status,
+          tracking_number: x.tracking_number,
+          shipping_provider: x.shipping_provider,
+          updated_at: x.updated_at
+        }))
+      );
+
+    const oldData =
+      sessionStorage.getItem(
+        "psmart-seller-order-status"
+      );
+
+    if (oldData && oldData !== currentData) {
+
+      sessionStorage.setItem(
+        "psmart-seller-order-status",
+        currentData
+      );
+
+      await loadOrders();
+
+    } else if (!oldData) {
+
+      sessionStorage.setItem(
+        "psmart-seller-order-status",
+        currentData
+      );
+
+    }
+
+  } catch (err) {
+
+    console.log(
+      "Background refresh error:",
+      err
+    );
+
+  }
+
+}, 15000);
 </script>
 
 </body>
