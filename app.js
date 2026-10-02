@@ -436,58 +436,56 @@ async function loadProductsFromSupabase() {
 /* =========================
    PRODUCTS PAGE
 ========================= */
-/* =========================
-   PRODUCTS PAGE
-========================= */
-
 async function renderProducts() {
 
-  const el =
-    document.querySelector("#products");
+  const el = document.querySelector("#products");
 
   if (!el) return;
 
-  const params =
-    new URLSearchParams(
-      location.search
-    );
+  const params = new URLSearchParams(location.search);
 
-  const cat =
-    (params.get("cat") || "")
-      .trim()
+  /* CATEGORY ID FROM URL */
+  const cat = (params.get("cat") || "").trim();
+
+  const categoryId = cat ? Number(cat) : null;
+
+  /* SEARCH */
+  const q = (params.get("q") || "")
+    .toLowerCase()
+    .trim();
+
+  /* LOAD APPROVED PRODUCTS */
+  const products = await loadProductsFromSupabase();
+
+  /* CATEGORY NAMES */
+  const categoryNames = {
+    1: "Mobiles",
+    2: "Electronics",
+    3: "Fashion",
+    4: "Beauty",
+    5: "Home",
+    6: "Grocery",
+    7: "Accessories"
+  };
+
+  /* FILTER PRODUCTS */
+  let filtered = products.filter(p => {
+
+    const name = String(p.name || "")
       .toLowerCase();
-   const categoryId = category ? Number(category) : null;
 
-  const q =
-    (params.get("q") || "")
-      .toLowerCase()
-      .trim();
-
-  let products =
-    await loadProductsFromSupabase();
-
-
-  /* =========================
-     SEARCH + CATEGORY FILTER
-  ========================= */
-let filtered =
-  products.filter(p => {
-
-    const name =
-      String(p.name || "")
-        .toLowerCase();
-
-    const description =
-      String(p.description || "")
-        .toLowerCase();
+    const description = String(p.description || "")
+      .toLowerCase();
 
     const productCategoryId =
       Number(p.category_id || 0);
 
+    /* CATEGORY MATCH */
     const matchesCategory =
       !categoryId ||
       productCategoryId === categoryId;
 
+    /* SEARCH MATCH */
     const matchesSearch =
       !q ||
       name.includes(q) ||
@@ -500,31 +498,9 @@ let filtered =
 
   });
 
-      /* CATEGORY */
-
-      const categoryMatch =
-        !cat ||
-        category === cat ||
-        category.includes(cat) ||
-        cat.includes(category);
-
-
-      return (
-        searchMatch &&
-        categoryMatch
-      );
-
-    });
-
-
-  /* =========================
-     SORT
-  ========================= */
-
+  /* SORT */
   const sort =
-    document.querySelector("#sort")
-      ?.value;
-
+    document.querySelector("#sort")?.value;
 
   if (sort === "low") {
 
@@ -536,7 +512,6 @@ let filtered =
 
   }
 
-
   if (sort === "high") {
 
     filtered.sort(
@@ -547,11 +522,7 @@ let filtered =
 
   }
 
-
-  /* =========================
-     PAGE TITLE
-  ========================= */
-
+  /* PAGE TITLE */
   const title =
     document.querySelector("#title");
 
@@ -562,18 +533,10 @@ let filtered =
       title.textContent =
         `Search: ${q}`;
 
-    } else if (cat) {
+    } else if (categoryId) {
 
       title.textContent =
-        `${cat
-          .split(" ")
-          .map(
-            word =>
-              word.charAt(0).toUpperCase() +
-              word.slice(1)
-          )
-          .join(" ")
-        } Products`;
+        `${categoryNames[categoryId] || "Category"} Products`;
 
     } else {
 
@@ -584,38 +547,42 @@ let filtered =
 
   }
 
+  /* SHOW PRODUCTS */
+  if (filtered.length) {
 
-  /* =========================
-     SHOW PRODUCTS
-  ========================= */
+    el.innerHTML =
+      filtered
+        .map(card)
+        .join("");
 
-  el.innerHTML =
-    filtered.length
+  } else {
 
-      ? filtered
-          .map(card)
-          .join("")
+    const categoryText =
+      categoryId
+        ? categoryNames[categoryId] || "this category"
+        : "";
 
-      : `
-        <div class="empty">
+    el.innerHTML = `
+      <div class="empty">
 
-          <h3>
-            No products found
-          </h3>
+        <h3>
+          No products found
+        </h3>
 
-          <p>
-            ${
-              cat
-                ? `No products available in "${cat}".`
-                : "Try another search."
-            }
-          </p>
+        <p>
+          ${
+            categoryText
+              ? `No approved products available in "${categoryText}".`
+              : "Try another search."
+          }
+        </p>
 
-        </div>
-      `;
+      </div>
+    `;
+
+  }
 
 }
-
 
 /* =========================
    HOME PRODUCTS
