@@ -1944,10 +1944,14 @@ async function loadSendGiftCardOptions() {
         const phone =
           customer.phone ||
           "No phone";
+        
+        const email =
+  customer.email ||
+  "No email";
 
         customerSelect.innerHTML += `
           <option value="${customer.id}">
-            ${name} — ${phone}
+            ${name} — ${phone} — ${email}
           </option>
         `;
       });
