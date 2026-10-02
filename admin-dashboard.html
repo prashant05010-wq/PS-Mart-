@@ -1855,8 +1855,204 @@ async function logoutAdmin(){
 
    await loadGiftCards();
 
-})();
+  loadSendGiftCardOptions();
+  
 
+})();
+async function loadSendGiftCardOptions() {
+
+  const giftSelect = document.getElementById("sendGiftCard");
+  const customerSelect = document.getElementById("sendGiftCustomer");
+
+  if (!giftSelect || !customerSelect) return;
+
+  // Load available gift cards
+  const { data: cards, error: cardError } =
+    await supabaseClient
+      .from("gift_cards")
+      .select("id, code, balance, expires_at")
+      .is("user_id", null)
+      .eq("status", "active")
+      .order("id", { ascending: false });
+
+  if (cardError) {
+    console.error(cardError);
+    giftSelect.innerHTML =
+      '<option value="">Unable to load gift cards</option>';
+  } else {
+
+    giftSelect.innerHTML =
+      '<option value="">Select Gift Card</option>';
+
+    if (!cards || cards.length === 0) {
+
+      giftSelect.innerHTML =
+        '<option value="">No available gift cards</option>';
+
+    } else {
+
+      cards.forEach(card => {
+
+        const expiry = card.expires_at
+          ? new Date(card.expires_at).toLocaleDateString()
+          : "No expiry";
+
+        giftSelect.innerHTML += `
+          <option value="${card.id}">
+            ${card.code} — ₹${Number(card.balance || 0).toFixed(2)}
+            — Exp: ${expiry}
+          </option>
+        `;
+      });
+    }
+  }
+
+
+  // Load customers
+  const { data: customers, error: customerError } =
+    await supabaseClient
+      .from("profiles")
+      .select("id, full_name, phone, role")
+      .eq("role", "customer")
+      .order("full_name", { ascending: true });
+
+  if (customerError) {
+
+    console.error(customerError);
+
+    customerSelect.innerHTML =
+      '<option value="">Unable to load customers</option>';
+
+  } else {
+
+    customerSelect.innerHTML =
+      '<option value="">Select Customer</option>';
+
+    if (!customers || customers.length === 0) {
+
+      customerSelect.innerHTML =
+        '<option value="">No customers found</option>';
+
+    } else {
+
+      customers.forEach(customer => {
+
+        const name =
+          customer.full_name ||
+          "Unnamed Customer";
+
+        const phone =
+          customer.phone ||
+          "No phone";
+
+        customerSelect.innerHTML += `
+          <option value="${customer.id}">
+            ${name} — ${phone}
+          </option>
+        `;
+      });
+    }
+  }
+}
+
+
+async function sendGiftCardToCustomer() {
+
+  const giftCardId =
+    document.getElementById("sendGiftCard").value;
+
+  const customerId =
+    document.getElementById("sendGiftCustomer").value;
+
+  const message =
+    document.getElementById("sendGiftCardMessage");
+
+
+  if (!giftCardId) {
+
+    message.style.color = "red";
+    message.textContent =
+      "❌ Please select a gift card.";
+
+    return;
+  }
+
+
+  if (!customerId) {
+
+    message.style.color = "red";
+    message.textContent =
+      "❌ Please select a customer.";
+
+    return;
+  }
+
+
+  if (
+    !confirm(
+      "Are you sure you want to send this gift card to the selected customer?"
+    )
+  ) {
+    return;
+  }
+
+
+  message.style.color = "#b8860b";
+  message.textContent =
+    "⏳ Sending gift card...";
+
+
+  const { data, error } =
+    await supabaseClient
+      .from("gift_cards")
+      .update({
+        user_id: customerId
+      })
+      .eq("id", giftCardId)
+      .is("user_id", null)
+      .eq("status", "active")
+      .select();
+
+
+  if (error) {
+
+    console.error(error);
+
+    message.style.color = "red";
+
+    message.textContent =
+      "❌ Gift card could not be sent: " +
+      error.message;
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    message.style.color = "red";
+
+    message.textContent =
+      "❌ Gift card is already assigned or unavailable.";
+
+    return;
+  }
+
+
+  message.style.color = "green";
+
+  message.textContent =
+    "✅ Gift card sent successfully to customer!";
+
+
+  document.getElementById("sendGiftCard").value = "";
+  document.getElementById("sendGiftCustomer").value = "";
+
+
+  await loadGiftCards();
+  await loadSendGiftCardOptions();
+}
+  
 </script>
 
 </body>
