@@ -1455,7 +1455,302 @@ async function loadDashboardCounts(){
     orders.count || 0;
 
 }
+/* ================= GIFT CARDS ================= */
 
+function generateGiftCardCode(){
+
+  const chars =
+    "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+  let code = "PSM-";
+
+  for(let i = 0; i < 12; i++){
+
+    if(i > 0 && i % 4 === 0){
+      code += "-";
+    }
+
+    code +=
+      chars.charAt(
+        Math.floor(Math.random() * chars.length)
+      );
+
+  }
+
+  return code;
+}
+
+
+/* ================= CREATE GIFT CARDS ================= */
+
+async function createGiftCards(){
+
+  const amount =
+    Number(
+      document.getElementById(
+        "giftCardAmount"
+      ).value
+    );
+
+  const expiry =
+    document.getElementById(
+      "giftCardExpiry"
+    ).value;
+
+  const quantity =
+    Number(
+      document.getElementById(
+        "giftCardQuantity"
+      ).value
+    );
+
+
+  if(
+    !amount ||
+    amount <= 0
+  ){
+
+    alert(
+      "Please enter a valid gift card amount."
+    );
+
+    return;
+  }
+
+
+  if(
+    !expiry
+  ){
+
+    alert(
+      "Please select an expiry date."
+    );
+
+    return;
+  }
+
+
+  if(
+    !quantity ||
+    quantity < 1 ||
+    quantity > 50
+  ){
+
+    alert(
+      "Quantity must be between 1 and 50."
+    );
+
+    return;
+  }
+
+
+  const expiryDate =
+    new Date(
+      expiry + "T23:59:59"
+    ).toISOString();
+
+
+  const cards = [];
+
+
+  for(
+    let i = 0;
+    i < quantity;
+    i++
+  ){
+
+    cards.push({
+
+      code:
+        generateGiftCardCode(),
+
+      initial_balance:
+        amount,
+
+      balance:
+        amount,
+
+      status:
+        "active",
+
+      expires_at:
+        expiryDate
+
+    });
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+    .from("gift_cards")
+    .insert(cards)
+    .select();
+
+
+  if(error){
+
+    console.error(error);
+
+    alert(
+      "❌ Gift card creation failed:\n\n" +
+      error.message
+    );
+
+    return;
+  }
+
+
+  alert(
+    "🎉 " +
+    data.length +
+    " Gift Card(s) created successfully!"
+  );
+
+
+  document.getElementById(
+    "giftCardAmount"
+  ).value = "";
+
+  document.getElementById(
+    "giftCardExpiry"
+  ).value = "";
+
+  document.getElementById(
+    "giftCardQuantity"
+  ).value = "1";
+
+
+  loadGiftCards();
+
+}
+
+
+/* ================= LOAD GIFT CARDS ================= */
+
+async function loadGiftCards(){
+
+  const box =
+    document.getElementById(
+      "giftCardsList"
+    );
+
+
+  box.innerHTML =
+    "Loading gift cards...";
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+    .from("gift_cards")
+    .select("*")
+    .order(
+      "id",
+      {
+        ascending:false
+      }
+    );
+
+
+  if(error){
+
+    box.innerHTML =
+      "❌ " +
+      error.message;
+
+    return;
+  }
+
+
+  if(
+    !data ||
+    data.length === 0
+  ){
+
+    box.innerHTML =
+      "<div class='empty'>" +
+      "No gift cards found." +
+      "</div>";
+
+    return;
+  }
+
+
+  let html = "";
+
+
+  data.forEach(card => {
+
+    const expiry =
+      card.expires_at
+      ?
+      new Date(
+        card.expires_at
+      ).toLocaleDateString()
+      :
+      "No expiry";
+
+
+    html += `
+
+      <div class="card">
+
+        <h3>
+          🎟️ ${card.code}
+        </h3>
+
+        <p>
+          <b>Initial Balance:</b>
+          ₹${Number(
+            card.initial_balance || 0
+          ).toFixed(2)}
+        </p>
+
+        <p>
+          <b>Current Balance:</b>
+          ₹${Number(
+            card.balance || 0
+          ).toFixed(2)}
+        </p>
+
+        <p>
+          <b>Status:</b>
+          <span class="status">
+            ${card.status}
+          </span>
+        </p>
+
+        <p>
+          <b>Expiry:</b>
+          ${expiry}
+        </p>
+
+        <p>
+          <b>User:</b>
+          ${
+            card.user_id
+            ||
+            "Not redeemed"
+          }
+        </p>
+
+      </div>
+
+    `;
+
+  });
+
+
+  box.innerHTML =
+    html;
+
+}
 
 /* ================= LOGOUT ================= */
 
@@ -1493,6 +1788,8 @@ async function logoutAdmin(){
   await loadCustomers();
 
   await loadFinance();
+
+   await loadGiftCards();
 
 })();
 
