@@ -456,6 +456,7 @@ async function renderProducts() {
     (params.get("cat") || "")
       .trim()
       .toLowerCase();
+   const categoryId = category ? Number(category) : null;
 
   const q =
     (params.get("q") || "")
