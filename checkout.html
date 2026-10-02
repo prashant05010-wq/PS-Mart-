@@ -831,13 +831,28 @@ async function placeOrder() {
 
   }
 
+/* =========================
+   GIFT CARD DISCOUNT
+========================= */
 
-  const finalTotal =
-    Math.max(
-      0,
-      total - couponDiscount
+let giftCardDiscount = 0;
+
+if (checkoutGiftCard) {
+
+  giftCardDiscount =
+    Math.min(
+      Number(checkoutGiftCard.balance || 0),
+      Math.max(0, total - couponDiscount)
     );
 
+}
+  const finalTotal =
+  Math.max(
+    0,
+    total -
+    couponDiscount -
+    giftCardDiscount
+  );
 
   console.log(
     "Cart Total:",
