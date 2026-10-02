@@ -154,6 +154,18 @@ header h2{
   color:#d32f2f;
 }
 
+.seller-status{
+  margin-top:10px;
+}
+
+.tracking-box{
+  margin-top:15px;
+  padding:12px;
+  background:#faf7f2;
+  border-radius:8px;
+  border:1px solid #eee;
+}
+
 @media(max-width:600px){
 
   header{
@@ -223,14 +235,47 @@ const SUPABASE_URL =
 "https://nctscffhnztscczjxhat.supabase.co";
 
 const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
-
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
 
 const supabaseClient =
 window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
+
+
+/* =========================
+   STATUS LABEL
+========================= */
+
+function statusLabel(status){
+
+  switch(status){
+
+    case "confirmed":
+      return "✓ Confirmed";
+
+    case "packed":
+      return "📦 Packed";
+
+    case "shipped":
+      return "🚚 Shipped";
+
+    case "out_for_delivery":
+      return "🛵 Out for Delivery";
+
+    case "delivered":
+      return "✓ Delivered";
+
+    case "cancelled":
+      return "✕ Cancelled";
+
+    default:
+      return "📦 Order Placed";
+
+  }
+
+}
 
 
 /* =========================
@@ -244,6 +289,10 @@ async function loadOrders(){
 
   const ordersBox =
     document.getElementById("orders");
+
+
+  message.innerText =
+    "Loading orders...";
 
 
   const {
@@ -266,7 +315,7 @@ async function loadOrders(){
 
 
   /* =========================
-     SELLER
+     FIND SELLER
   ========================= */
 
   const {
@@ -308,64 +357,54 @@ async function loadOrders(){
 
 
   /* =========================
-     ORDER ITEMS
+     SELLER ORDERS
+     seller_id = auth.uid()
   ========================= */
 
   const {
-    data,
-    error
+    data:sellerOrders,
+    error:sellerOrdersError
   } =
     await supabaseClient
 
-    .from("order_items")
+    .from("seller_orders")
 
-    .select(`
-
-      id,
-      order_id,
-      product_id,
-      quantity,
-      price,
-
-      orders(
-        total_amount,
-        status,
-        address
-      ),
-
-      products(
-        name
-      )
-
-    `)
+    .select("*")
 
     .eq(
       "seller_id",
-      seller.id
+      user.id
     )
 
     .order(
-      "id",
+      "created_at",
       {
         ascending:false
       }
     );
 
 
-  if(error){
+  if(sellerOrdersError){
+
+    console.log(
+      "Seller orders error:",
+      sellerOrdersError
+    );
 
     message.innerText =
-      error.message;
+      sellerOrdersError.message;
 
     return;
 
   }
 
 
-  message.innerText = "";
+  if(
+    !sellerOrders ||
+    sellerOrders.length === 0
+  ){
 
-
-  if(!data || data.length === 0){
+    message.innerText = "";
 
     ordersBox.innerHTML = `
 
@@ -389,21 +428,198 @@ async function loadOrders(){
 
 
   /* =========================
-     DISPLAY ORDERS
+     ORDER IDS
+  ========================= */
+
+  const orderIds =
+    sellerOrders.map(
+      so => so.order_id
+    );
+
+
+  /* =========================
+     ORDER ITEMS
+  ========================= */
+
+  const {
+    data:items,
+    error:itemError
+  } =
+    await supabaseClient
+
+    .from("order_items")
+
+    .select(`
+      id,
+      order_id,
+      product_id,
+      seller_id,
+      quantity,
+      price,
+      orders(
+        total_amount,
+        status,
+        address,
+        created_at
+      ),
+      products(
+        name
+      )
+    `)
+
+    .eq(
+      "seller_id",
+      seller.id
+    )
+
+    .in(
+      "order_id",
+      orderIds
+    );
+
+
+  if(itemError){
+
+    console.log(
+      "Order items error:",
+      itemError
+    );
+
+    message.innerText =
+      itemError.message;
+
+    return;
+
+  }
+
+
+  message.innerText = "";
+
+
+  /* =========================
+     DISPLAY SELLER ORDERS
   ========================= */
 
   ordersBox.innerHTML =
 
-    data.map(item => {
+    sellerOrders.map(so => {
+
+
+      const orderId =
+        so.order_id;
+
+
+      const orderItems =
+        (items || [])
+        .filter(
+          item =>
+            String(item.order_id) ===
+            String(orderId)
+        );
+
+
+      const firstItem =
+        orderItems[0];
+
 
       const order =
-        item.orders || {};
+        firstItem?.orders || {};
 
-      const product =
-        item.products || {};
 
-      const status =
-        order.status || "placed";
+      const currentStatus =
+        so.status || "placed";
+
+
+      /* =========================
+         PRODUCTS
+      ========================= */
+
+      const productsHTML =
+
+        orderItems.length
+
+        ?
+
+        orderItems.map(item => {
+
+          const product =
+            item.products || {};
+
+          return `
+
+            <div
+              class="row"
+              style="
+                padding:10px 0;
+                border-bottom:1px solid #eee;
+              "
+            >
+
+              <span class="label">
+                Product:
+              </span>
+
+              ${product.name || "Product"}
+
+              &nbsp; × &nbsp;
+
+              <b>
+                ${item.quantity || 1}
+              </b>
+
+              <br>
+
+              <span class="label">
+                Item Amount:
+              </span>
+
+              ₹${Number(
+                item.price || 0
+              ).toLocaleString("en-IN")}
+
+            </div>
+
+          `;
+
+        }).join("")
+
+        :
+
+        `
+
+        <div class="row">
+          Product information unavailable.
+        </div>
+
+        `;
+
+
+      /* =========================
+         DATE
+      ========================= */
+
+      const date =
+        order.created_at
+
+        ?
+
+        new Date(
+          order.created_at
+        ).toLocaleString("en-IN")
+
+        :
+
+        "Date not available";
+
+
+      /* =========================
+         CANCELLED
+      ========================= */
+
+      const customerCancelled =
+        String(order.status || "")
+        .toLowerCase() ===
+        "cancelled";
 
 
       return `
@@ -412,43 +628,24 @@ async function loadOrders(){
 
 
           <h3>
-            Order #${item.order_id}
+            Order #${orderId}
           </h3>
 
 
           <div class="row">
 
             <span class="label">
-              Product:
+              Order Date:
             </span>
 
-            ${product.name || "Product"}
+            ${date}
 
           </div>
 
 
-          <div class="row">
+          <!-- PRODUCTS -->
 
-            <span class="label">
-              Quantity:
-            </span>
-
-            ${item.quantity}
-
-          </div>
-
-
-          <div class="row">
-
-            <span class="label">
-              Item Amount:
-            </span>
-
-            ₹${Number(
-              item.price || 0
-            ).toLocaleString("en-IN")}
-
-          </div>
+          ${productsHTML}
 
 
           <div class="row">
@@ -475,98 +672,216 @@ async function loadOrders(){
           </div>
 
 
-          <span class="status">
+          <!-- SELLER STATUS -->
 
-            Current Status:
-            ${status.replaceAll("_"," ")}
+          <div class="seller-status">
 
-          </span>
+            <span class="status">
+
+              Current Seller Status:
+              ${statusLabel(currentStatus)}
+
+            </span>
+
+          </div>
 
 
-        
-             <!-- STATUS UPDATE -->
+          ${
+            so.tracking_number ||
+            so.shipping_provider
 
-<div class="status-box">
+            ?
 
-  ${
-    status === "cancelled"
+            `
 
-    ? `
-      <div style="
-        padding:12px;
-        background:#fdeaea;
-        color:#d32f2f;
-        border-radius:7px;
-        font-weight:bold;
-      ">
-        ❌ This order was cancelled by the customer.
-      </div>
-    `
+            <div class="tracking-box">
 
-    : `
-      <label>
-        Update Order Status
-      </label>
+              ${
+                so.tracking_number
 
-      <select
-        class="status-select"
-        id="status-${item.order_id}"
-      >
-        <option
-          value="placed"
-          ${status === "placed" ? "selected" : ""}
-        >
-          📦 Order Placed
-        </option>
+                ?
 
-        <option
-          value="confirmed"
-          ${status === "confirmed" ? "selected" : ""}
-        >
-          ✓ Confirmed
-        </option>
+                `
+                📦 Tracking Number:
+                <b>
+                  ${so.tracking_number}
+                </b>
+                <br><br>
+                `
 
-        <option
-          value="shipped"
-          ${status === "shipped" ? "selected" : ""}
-        >
-          🚚 Shipped
-        </option>
+                :
 
-        <option
-          value="out_for_delivery"
-          ${status === "out_for_delivery" ? "selected" : ""}
-        >
-          🛵 Out for Delivery
-        </option>
+                ""
+              }
 
-        <option
-          value="delivered"
-          ${status === "delivered" ? "selected" : ""}
-        >
-          ✓ Delivered
-        </option>
+              ${
+                so.shipping_provider
 
-        <option
-          value="cancelled"
-          ${status === "cancelled" ? "selected" : ""}
-        >
-          ✕ Cancelled
-        </option>
-      </select>
+                ?
 
-      <br>
+                `
+                🚚 Shipping Provider:
+                <b>
+                  ${so.shipping_provider}
+                </b>
+                `
 
-      <button
-        class="update-btn"
-        onclick="updateStatus('${item.order_id}')"
-      >
-        Update Status
-      </button>
-    `
-  }
+                :
 
-</div>
+                ""
+              }
+
+            </div>
+
+            `
+
+            :
+
+            ""
+
+          }
+
+
+          <!-- STATUS UPDATE -->
+
+          <div class="status-box">
+
+
+            ${
+              customerCancelled
+
+              ?
+
+              `
+
+              <div style="
+                padding:12px;
+                background:#fdeaea;
+                color:#d32f2f;
+                border-radius:7px;
+                font-weight:bold;
+              ">
+
+                ❌ Customer cancelled this order.
+
+              </div>
+
+              `
+
+              :
+
+              currentStatus === "delivered"
+
+              ?
+
+              `
+
+              <div style="
+                padding:12px;
+                background:#eaf7ea;
+                color:#008000;
+                border-radius:7px;
+                font-weight:bold;
+              ">
+
+                ✓ This order has been delivered.
+
+              </div>
+
+              `
+
+              :
+
+              `
+
+              <label>
+                Update Order Status
+              </label>
+
+
+              <select
+                class="status-select"
+                id="status-${so.id}"
+              >
+
+                <option
+                  value="placed"
+                  ${currentStatus === "placed" ? "selected" : ""}
+                >
+                  📦 Order Placed
+                </option>
+
+
+                <option
+                  value="confirmed"
+                  ${currentStatus === "confirmed" ? "selected" : ""}
+                >
+                  ✓ Confirmed
+                </option>
+
+
+                <option
+                  value="packed"
+                  ${currentStatus === "packed" ? "selected" : ""}
+                >
+                  📦 Packed
+                </option>
+
+
+                <option
+                  value="shipped"
+                  ${currentStatus === "shipped" ? "selected" : ""}
+                >
+                  🚚 Shipped
+                </option>
+
+
+                <option
+                  value="out_for_delivery"
+                  ${currentStatus === "out_for_delivery" ? "selected" : ""}
+                >
+                  🛵 Out for Delivery
+                </option>
+
+
+                <option
+                  value="delivered"
+                  ${currentStatus === "delivered" ? "selected" : ""}
+                >
+                  ✓ Delivered
+                </option>
+
+
+                <option
+                  value="cancelled"
+                  ${currentStatus === "cancelled" ? "selected" : ""}
+                >
+                  ✕ Cancelled
+                </option>
+
+              </select>
+
+
+              <br>
+
+
+              <button
+                class="update-btn"
+                id="btn-${so.id}"
+                onclick="updateStatus('${so.id}')"
+              >
+
+                Update Status
+
+              </button>
+
+              `
+
+            }
+
+          </div>
+
+
         </div>
 
       `;
@@ -577,18 +892,28 @@ async function loadOrders(){
 
 
 /* =========================
-   UPDATE STATUS
+   UPDATE SELLER STATUS
 ========================= */
 
-async function updateStatus(orderId){
+async function updateStatus(sellerOrderId){
 
   const select =
     document.getElementById(
-      "status-" + orderId
+      "status-" + sellerOrderId
+    );
+
+
+  const button =
+    document.getElementById(
+      "btn-" + sellerOrderId
     );
 
 
   if(!select){
+
+    alert(
+      "Status selector not found ❌"
+    );
 
     return;
 
@@ -600,32 +925,89 @@ async function updateStatus(orderId){
 
 
   const {
+    data:{
+      user
+    }
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if(!user){
+
+    alert(
+      "Please login first ❌"
+    );
+
+    return;
+
+  }
+
+
+  if(button){
+
+    button.disabled = true;
+
+    button.innerText =
+      "Updating...";
+
+  }
+
+
+  /* =========================
+     IMPORTANT:
+     UPDATE seller_orders
+     NOT orders
+  ========================= */
+
+  const {
     error
   } =
     await supabaseClient
 
-    .from("orders")
+    .from("seller_orders")
 
     .update({
 
-      status:newStatus
+      status:newStatus,
+
+      updated_at:
+        new Date().toISOString()
 
     })
 
     .eq(
       "id",
-      orderId
+      sellerOrderId
+    )
+
+    .eq(
+      "seller_id",
+      user.id
     );
 
 
   if(error){
+
+    console.log(
+      "Seller status update error:",
+      error
+    );
+
 
     alert(
       "Status update failed:\n" +
       error.message
     );
 
-    console.log(error);
+
+    if(button){
+
+      button.disabled = false;
+
+      button.innerText =
+        "Update Status";
+
+    }
 
     return;
 
