@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
@@ -23,6 +24,22 @@
 
   <url>
     <loc>https://prashant05010-wq.github.io/PS-Mart-/coupons.html</loc>
+  </url>
+
+  <url>
+    <loc>https://prashant05010-wq.github.io/PS-Mart-/gift-cards.html</loc>
+  </url>
+
+  <url>
+    <loc>https://prashant05010-wq.github.io/PS-Mart-/saved-cards.html</loc>
+  </url>
+
+  <url>
+    <loc>https://prashant05010-wq.github.io/PS-Mart-/help.html</loc>
+  </url>
+
+  <url>
+    <loc>https://prashant05010-wq.github.io/PS-Mart-/contact.html</loc>
   </url>
 
 </urlset>
