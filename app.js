@@ -470,35 +470,35 @@ async function renderProducts() {
   /* =========================
      SEARCH + CATEGORY FILTER
   ========================= */
+let filtered =
+  products.filter(p => {
 
-  let filtered =
-    products.filter(p => {
+    const name =
+      String(p.name || "")
+        .toLowerCase();
 
-      const name =
-        String(p.name || "")
-          .toLowerCase();
+    const description =
+      String(p.description || "")
+        .toLowerCase();
 
-      const description =
-        String(p.description || "")
-          .toLowerCase();
+    const productCategoryId =
+      Number(p.category_id || 0);
 
-      const category =
-        String(
-          p.category_id ||
-          p.category ||
-          ""
-        )
-        .toLowerCase()
-        .trim();
+    const matchesCategory =
+      !categoryId ||
+      productCategoryId === categoryId;
 
+    const matchesSearch =
+      !q ||
+      name.includes(q) ||
+      description.includes(q);
 
-      /* SEARCH */
+    return (
+      matchesCategory &&
+      matchesSearch
+    );
 
-      const searchMatch =
-        !q ||
-        name.includes(q) ||
-        description.includes(q);
-
+  });
 
       /* CATEGORY */
 
