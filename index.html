@@ -184,29 +184,44 @@ body{
 
 /* ================= HERO SLIDER ================= */
 
+/* ================= HERO CARD SLIDER ================= */
+
 .hero-slider{
   position:relative;
   width:100%;
+  max-width:1200px;
+  margin:0 auto;
   overflow:hidden;
   border-radius:18px;
-  box-shadow:0 8px 25px rgba(0,0,0,.12);
+  box-shadow:0 8px 25px rgba(0,0,0,.14);
+  background:#fff;
 }
 
 .hero-track{
   display:flex;
+  width:100%;
   transition:transform .65s ease;
 }
 
 .hero-slide{
   min-width:100%;
-  position:relative;
+  flex:0 0 100%;
+  aspect-ratio:1200 / 990;
+  background:#fff;
+}
+
+.hero-slide a{
+  display:block;
+  width:100%;
+  height:100%;
 }
 
 .hero-slide img{
-  width:100%;
-  height:auto;
   display:block;
-  object-fit:contain;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
 }
 
 /* arrows */
@@ -219,20 +234,21 @@ body{
   height:42px;
   border:0;
   border-radius:50%;
-  background:rgba(255,255,255,.9);
+  background:rgba(255,255,255,.92);
   color:#43250f;
-  font-size:25px;
+  font-size:28px;
+  font-weight:bold;
   cursor:pointer;
-  z-index:5;
-  box-shadow:0 3px 10px rgba(0,0,0,.2);
+  z-index:10;
+  box-shadow:0 3px 12px rgba(0,0,0,.22);
 }
 
 .slider-arrow.left{
-  left:15px;
+  left:12px;
 }
 
 .slider-arrow.right{
-  right:15px;
+  right:12px;
 }
 
 /* dots */
@@ -243,21 +259,74 @@ body{
   left:50%;
   transform:translateX(-50%);
   display:flex;
+  align-items:center;
   gap:7px;
+  z-index:10;
 }
 
 .slider-dot{
   width:9px;
   height:9px;
   border-radius:50%;
-  background:rgba(255,255,255,.65);
+  background:rgba(255,255,255,.75);
   cursor:pointer;
+  transition:.25s;
 }
 
 .slider-dot.active{
   width:24px;
   border-radius:10px;
   background:#f0bd50;
+}
+
+
+/* ================= MOBILE HERO ================= */
+
+@media(max-width:700px){
+
+  .hero-slider{
+    width:100%;
+    border-radius:13px;
+    margin:0 auto;
+  }
+
+  .hero-slide{
+    aspect-ratio:1200 / 990;
+  }
+
+  .hero-slide img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+
+  .slider-arrow{
+    width:32px;
+    height:32px;
+    font-size:20px;
+  }
+
+  .slider-arrow.left{
+    left:7px;
+  }
+
+  .slider-arrow.right{
+    right:7px;
+  }
+
+  .slider-dots{
+    bottom:7px;
+  }
+
+  .slider-dot{
+    width:7px;
+    height:7px;
+  }
+
+  .slider-dot.active{
+    width:20px;
+  }
+
 }
 
 /* ================= SECTION ================= */
@@ -894,52 +963,146 @@ Select your location →
 <main class="ps-main">
 
 
-<!-- ================= HERO SLIDER ================= -->
+<!-- ================= 5 CARD HERO SLIDER ================= -->
 
 <section class="hero-slider" id="heroSlider">
 
-<div class="hero-track" id="heroTrack">
+  <div class="hero-track" id="heroTrack">
 
-<div class="hero-slide">
-<a href="products.html?cat=2">
-<img src="offer-electronics.png" alt="Electronics Sale">
-</a>
-</div>
+    <!-- 1. WELCOME -->
 
-<div class="hero-slide">
-<a href="products.html?cat=3">
-<img src="offer-fashion.png" alt="Fashion Sale">
-</a>
-</div>
+    <div class="hero-slide">
 
-<div class="hero-slide">
-<a href="products.html?cat=5">
-<img src="offer-home.png" alt="Home and Kitchen Sale">
-</a>
-</div>
+      <a href="products.html">
 
-<div class="hero-slide">
-<a href="products.html?cat=4">
-<img src="offer-beauty.png" alt="Beauty and Accessories Sale">
-</a>
-</div>
+        <img
+          src="psmart-slide-1-welcome.png"
+          alt="Welcome to PS Mart"
+        >
 
-</div>
+      </a>
+
+    </div>
 
 
-<button class="slider-arrow left" onclick="heroPrev()">‹</button>
+    <!-- 2. ELECTRONICS -->
 
-<button class="slider-arrow right" onclick="heroNext()">›</button>
+    <div class="hero-slide">
+
+      <a href="products.html?cat=2">
+
+        <img
+          src="psmart-slide-2-electronics.png"
+          alt="Electronics Sale"
+        >
+
+      </a>
+
+    </div>
 
 
-<div class="slider-dots">
+    <!-- 3. FASHION -->
 
-<span class="slider-dot active" onclick="heroGo(0)"></span>
-<span class="slider-dot" onclick="heroGo(1)"></span>
-<span class="slider-dot" onclick="heroGo(2)"></span>
-<span class="slider-dot" onclick="heroGo(3)"></span>
+    <div class="hero-slide">
 
-</div>
+      <a href="products.html?cat=3">
+
+        <img
+          src="psmart-slide-3-fashion.png"
+          alt="Fashion Sale"
+        >
+
+      </a>
+
+    </div>
+
+
+    <!-- 4. HOME -->
+
+    <div class="hero-slide">
+
+      <a href="products.html?cat=5">
+
+        <img
+          src="psmart-slide-4-home.png"
+          alt="Home and Kitchen Sale"
+        >
+
+      </a>
+
+    </div>
+
+
+    <!-- 5. BEAUTY -->
+
+    <div class="hero-slide">
+
+      <a href="products.html?cat=4">
+
+        <img
+          src="psmart-slide-5-beauty.png"
+          alt="Beauty and Accessories Sale"
+        >
+
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <!-- PREVIOUS -->
+
+  <button
+    class="slider-arrow left"
+    onclick="heroPrev()"
+    aria-label="Previous banner"
+  >
+    ‹
+  </button>
+
+
+  <!-- NEXT -->
+
+  <button
+    class="slider-arrow right"
+    onclick="heroNext()"
+    aria-label="Next banner"
+  >
+    ›
+  </button>
+
+
+  <!-- DOTS -->
+
+  <div class="slider-dots">
+
+    <span
+      class="slider-dot active"
+      onclick="heroGo(0)"
+    ></span>
+
+    <span
+      class="slider-dot"
+      onclick="heroGo(1)"
+    ></span>
+
+    <span
+      class="slider-dot"
+      onclick="heroGo(2)"
+    ></span>
+
+    <span
+      class="slider-dot"
+      onclick="heroGo(3)"
+    ></span>
+
+    <span
+      class="slider-dot"
+      onclick="heroGo(4)"
+    ></span>
+
+  </div>
 
 </section>
 
