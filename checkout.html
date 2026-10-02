@@ -71,7 +71,69 @@
   type="number"
   required
 >
+<!-- GIFT CARD -->
 
+<div
+  id="giftCardCheckoutBox"
+  style="
+    margin:20px 0;
+    padding:18px;
+    border:1px solid #e4c77d;
+    border-radius:14px;
+    background:#fffaf0;
+  "
+>
+
+  <h2 style="margin-top:0;">
+    🎁 Gift Card
+  </h2>
+
+  <p>
+    Have a PS Mart Gift Card? Use it on this order.
+  </p>
+
+  <div
+    style="
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    "
+  >
+
+    <input
+      id="checkoutGiftCardCode"
+      type="text"
+      placeholder="Enter gift card code"
+      autocomplete="off"
+      style="
+        flex:1;
+        min-width:220px;
+        padding:12px;
+        border:1px solid #ddd;
+        border-radius:10px;
+        text-transform:uppercase;
+      "
+    >
+
+    <button
+      type="button"
+      class="goldbtn"
+      onclick="checkCheckoutGiftCard()"
+    >
+      Apply Gift Card
+    </button>
+
+  </div>
+
+  <div
+    id="checkoutGiftCardMessage"
+    style="
+      margin-top:12px;
+      font-weight:bold;
+    "
+  ></div>
+
+</div>
 
 <!-- PAYMENT METHOD -->
 
@@ -416,6 +478,116 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+
+}
+  /* =========================
+   CHECKOUT GIFT CARD
+========================= */
+
+let checkoutGiftCard = null;
+
+async function checkCheckoutGiftCard() {
+
+  const input =
+    document.getElementById("checkoutGiftCardCode");
+
+  const message =
+    document.getElementById("checkoutGiftCardMessage");
+
+  const code =
+    input.value.trim().toUpperCase();
+
+  if (!code) {
+
+    message.style.color = "red";
+    message.textContent =
+      "❌ Please enter a gift card code.";
+
+    return;
+  }
+
+  const {
+    data: { user }
+  } =
+    await supabaseClient.auth.getUser();
+
+  if (!user) {
+
+    message.style.color = "red";
+    message.textContent =
+      "❌ Please login first.";
+
+    return;
+  }
+
+  const {
+    data: card,
+    error
+  } =
+    await supabaseClient
+      .from("gift_cards")
+      .select("*")
+      .eq("code", code)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+  if (error) {
+
+    console.error(error);
+
+    message.style.color = "red";
+    message.textContent =
+      "❌ Unable to check gift card.";
+
+    return;
+  }
+
+  if (!card) {
+
+    message.style.color = "red";
+    message.textContent =
+      "❌ Gift card not found in your account.";
+
+    return;
+  }
+
+  if (card.status !== "active") {
+
+    message.style.color = "red";
+    message.textContent =
+      "❌ This gift card is not active.";
+
+    return;
+  }
+
+  if (
+    card.expires_at &&
+    new Date(card.expires_at) < new Date()
+  ) {
+
+    message.style.color = "red";
+    message.textContent =
+      "❌ This gift card has expired.";
+
+    return;
+  }
+
+  if (Number(card.balance || 0) <= 0) {
+
+    message.style.color = "red";
+    message.textContent =
+      "❌ This gift card has no balance.";
+
+    return;
+  }
+
+  checkoutGiftCard = card;
+
+  message.style.color = "green";
+
+  message.textContent =
+    "✅ Gift Card applied! Balance: ₹" +
+    Number(card.balance).toFixed(2);
 
 }
 
