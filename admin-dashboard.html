@@ -522,6 +522,68 @@ input{
   class="section hidden">
 
   <h2>🎁 Gift Card Management</h2>
+  <div class="card">
+
+  <h3>📤 Send Gift Card to Customer</h3>
+
+  <label>Select Gift Card</label>
+  <br><br>
+
+  <select
+    id="sendGiftCard"
+    style="
+      padding:12px;
+      border:1px solid #ccc;
+      border-radius:7px;
+      font-size:16px;
+      width:100%;
+      max-width:500px;
+    "
+  >
+    <option value="">
+      Loading available gift cards...
+    </option>
+  </select>
+
+  <br><br>
+
+  <label>Select Customer</label>
+  <br><br>
+
+  <select
+    id="sendGiftCustomer"
+    style="
+      padding:12px;
+      border:1px solid #ccc;
+      border-radius:7px;
+      font-size:16px;
+      width:100%;
+      max-width:500px;
+    "
+  >
+    <option value="">
+      Loading customers...
+    </option>
+  </select>
+
+  <br><br>
+
+  <button
+    class="gold"
+    onclick="sendGiftCardToCustomer()"
+  >
+    📤 Send Gift Card
+  </button>
+
+  <p
+    id="sendGiftCardMessage"
+    style="
+      font-weight:bold;
+      margin-top:10px;
+    "
+  ></p>
+
+</div>
 
   <div class="card">
 
