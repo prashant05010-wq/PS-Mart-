@@ -364,6 +364,12 @@ input{
     
     <button
   class="tab"
+  onclick="showSection('giftCardsSection',this)">
+  🎁 Gift Cards
+</button>
+    
+    <button
+  class="tab"
   onclick="window.location.href='admin-support.html'">
   🆘 Support
 </button>
@@ -506,6 +512,77 @@ input{
       onclick="saveCommission()">
       💾 Save Commission
     </button>
+    <!-- ================= GIFT CARDS ================= -->
+
+<div
+  id="giftCardsSection"
+  class="section hidden">
+
+  <h2>🎁 Gift Card Management</h2>
+
+  <div class="card">
+
+    <h3>➕ Create New Gift Card</h3>
+
+    <label>Gift Card Amount (₹)</label>
+    <br><br>
+
+    <input
+      type="number"
+      id="giftCardAmount"
+      min="1"
+      step="1"
+      placeholder="Example: 500">
+
+    <br><br>
+
+    <label>Expiry Date</label>
+    <br><br>
+
+    <input
+      type="date"
+      id="giftCardExpiry">
+
+    <br><br>
+
+    <label>Number of Cards</label>
+    <br><br>
+
+    <input
+      type="number"
+      id="giftCardQuantity"
+      min="1"
+      max="50"
+      value="1"
+      placeholder="Example: 5">
+
+    <br><br>
+
+    <button
+      class="gold"
+      onclick="createGiftCards()">
+      🎁 Generate Gift Card(s)
+    </button>
+
+  </div>
+
+  <div class="card">
+
+    <h3>🎟️ Gift Cards</h3>
+
+    <button
+      class="refresh"
+      onclick="loadGiftCards()">
+      🔄 Refresh Gift Cards
+    </button>
+
+    <div id="giftCardsList">
+      Loading gift cards...
+    </div>
+
+  </div>
+
+</div>
 
   </div>
 
