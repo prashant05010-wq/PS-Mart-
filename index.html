@@ -7,22 +7,32 @@
 
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<meta name="google-site-verification" content="yVuzDetDJKdxouvTn9B_HXXLpjHD4yIBFMOxNpbNHgQ">
+<meta name="google-site-verification"
+content="yVuzDetDJKdxouvTn9B_HXXLpjHD4yIBFMOxNpbNHgQ">
 
 <title>PS Mart | Online Shopping</title>
 
-<meta name="description" content="PS Mart - Shop mobiles, electronics, fashion, beauty, home essentials, grocery and accessories online at affordable prices.">
+<meta name="description"
+content="PS Mart - Shop mobiles, electronics, fashion, beauty, home essentials, grocery and accessories online at affordable prices.">
 
-<link rel="canonical" href="https://prashant05010-wq.github.io/PS-Mart-/">
+<link rel="canonical"
+href="https://prashant05010-wq.github.io/PS-Mart-/">
 
 <link rel="stylesheet" href="style.css">
 
+
 <style>
 
-/* ================= GLOBAL ================= */
+/* =========================================================
+   GLOBAL
+========================================================= */
 
 *{
   box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
 }
 
 body{
@@ -33,8 +43,15 @@ body{
   padding-bottom:70px;
 }
 
+button,
+input{
+  font-family:inherit;
+}
 
-/* ================= HEADER ================= */
+
+/* =========================================================
+   HEADER
+========================================================= */
 
 .ps-header{
   background:#43250f;
@@ -77,7 +94,7 @@ body{
   max-width:700px;
   display:flex;
   background:white;
-  border-radius:5px;
+  border-radius:6px;
   overflow:hidden;
 }
 
@@ -87,6 +104,7 @@ body{
   outline:0;
   padding:13px 16px;
   font-size:15px;
+  color:#222;
 }
 
 .ps-search button{
@@ -120,7 +138,9 @@ body{
 }
 
 
-/* ================= LOCATION ================= */
+/* =========================================================
+   LOCATION
+========================================================= */
 
 .location-bar{
   background:#fbf6ea;
@@ -139,7 +159,9 @@ body{
 }
 
 
-/* ================= CATEGORY ================= */
+/* =========================================================
+   CATEGORY SCROLL
+========================================================= */
 
 .category-scroll{
   background:white;
@@ -174,6 +196,7 @@ body{
   justify-content:center;
   margin:auto auto 7px;
   font-size:27px;
+  transition:.2s;
 }
 
 .category-item:hover .category-icon{
@@ -182,7 +205,9 @@ body{
 }
 
 
-/* ================= MAIN ================= */
+/* =========================================================
+   MAIN
+========================================================= */
 
 .ps-main{
   max-width:1400px;
@@ -191,7 +216,10 @@ body{
 }
 
 
-/* ================= HERO SLIDER ================= */
+/* =========================================================
+   HERO SLIDER
+   FLIPKART-STYLE SHAPE
+========================================================= */
 
 .hero-slider{
   position:relative;
@@ -199,23 +227,28 @@ body{
   max-width:1400px;
   margin:0 auto;
   overflow:hidden;
-  border-radius:18px;
-  box-shadow:0 8px 25px rgba(0,0,0,.14);
+
+  /* Flipkart screenshot jaisa wide rectangular shape */
+  aspect-ratio:2.05 / 1;
+
+  border-radius:20px;
+  box-shadow:0 5px 18px rgba(0,0,0,.14);
   background:#fff;
 }
 
 .hero-track{
   display:flex;
   width:100%;
-  transition:transform .65s ease;
+  height:100%;
+  transition:transform .6s ease;
 }
 
 .hero-slide{
   min-width:100%;
   flex:0 0 100%;
-  aspect-ratio:3 / 1;
-  background:#fff;
+  height:100%;
   overflow:hidden;
+  background:#fff;
 }
 
 .hero-slide a{
@@ -228,28 +261,44 @@ body{
   display:block;
   width:100%;
   height:100%;
+
+  /* Banner ko poora area cover karna hai */
   object-fit:cover;
   object-position:center;
 }
 
 
-/* ================= SLIDER ARROWS ================= */
+/* =========================================================
+   SLIDER ARROWS
+========================================================= */
 
 .slider-arrow{
   position:absolute;
   top:50%;
   transform:translateY(-50%);
+
   width:44px;
   height:44px;
+
   border:0;
   border-radius:50%;
-  background:rgba(255,255,255,.94);
+
+  background:rgba(255,255,255,.95);
   color:#43250f;
+
   font-size:30px;
   font-weight:bold;
+
   cursor:pointer;
-  z-index:10;
+  z-index:20;
+
   box-shadow:0 3px 12px rgba(0,0,0,.22);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  transition:.2s;
 }
 
 .slider-arrow:hover{
@@ -265,41 +314,52 @@ body{
 }
 
 
-/* ================= SLIDER DOTS ================= */
+/* =========================================================
+   SLIDER DOTS
+========================================================= */
 
 .slider-dots{
   position:absolute;
   bottom:12px;
   left:50%;
   transform:translateX(-50%);
+
   display:flex;
   align-items:center;
   gap:7px;
-  z-index:10;
+
+  z-index:20;
 }
 
 .slider-dot{
-  width:9px;
-  height:9px;
+  width:10px;
+  height:10px;
+
   border-radius:50%;
-  background:rgba(255,255,255,.8);
+
+  background:rgba(255,255,255,.75);
+
   cursor:pointer;
+
   transition:.25s;
 }
 
 .slider-dot.active{
-  width:24px;
+  width:25px;
   border-radius:10px;
-  background:#f0bd50;
+  background:#111;
 }
 
 
-/* ================= SECTION ================= */
+/* =========================================================
+   SECTION HEAD
+========================================================= */
 
 .section-head{
   display:flex;
   justify-content:space-between;
   align-items:center;
+
   margin:30px 0 15px;
 }
 
@@ -315,7 +375,9 @@ body{
 }
 
 
-/* ================= CATEGORY CARDS ================= */
+/* =========================================================
+   CATEGORY CARDS
+========================================================= */
 
 .category-cards{
   display:grid;
@@ -326,11 +388,16 @@ body{
 .cat-card{
   background:white;
   border-radius:14px;
+
   padding:18px 8px;
+
   text-align:center;
+
   text-decoration:none;
   color:#222;
+
   box-shadow:0 2px 8px rgba(0,0,0,.06);
+
   transition:.25s;
 }
 
@@ -349,17 +416,30 @@ body{
 }
 
 
-/* ================= DEAL STRIP ================= */
+/* =========================================================
+   DEAL STRIP
+========================================================= */
 
 .deal-strip{
   margin-top:28px;
-  background:linear-gradient(90deg,#43250f,#6c3e17,#43250f);
+
+  background:linear-gradient(
+    90deg,
+    #43250f,
+    #6c3e17,
+    #43250f
+  );
+
   color:white;
+
   border-radius:14px;
+
   padding:18px 24px;
+
   display:flex;
   justify-content:space-between;
   align-items:center;
+
   gap:15px;
 }
 
@@ -370,15 +450,22 @@ body{
 .deal-button{
   background:#f0bd50;
   color:#111;
+
   text-decoration:none;
+
   padding:10px 18px;
+
   border-radius:7px;
+
   font-weight:bold;
+
   white-space:nowrap;
 }
 
 
-/* ================= PRODUCT GRID ================= */
+/* =========================================================
+   PRODUCT GRID
+========================================================= */
 
 .home-product-grid{
   display:grid;
@@ -389,8 +476,11 @@ body{
 .home-product-card{
   background:white;
   border-radius:13px;
+
   overflow:hidden;
+
   box-shadow:0 2px 9px rgba(0,0,0,.07);
+
   transition:.25s;
 }
 
@@ -401,7 +491,9 @@ body{
 
 .home-product-image{
   height:190px;
+
   background:#f7f7f7;
+
   display:flex;
   align-items:center;
   justify-content:center;
@@ -420,56 +512,83 @@ body{
 .home-product-name{
   font-size:15px;
   font-weight:bold;
+
   min-height:38px;
+
   line-height:1.3;
 }
 
 .home-price{
   margin-top:8px;
+
   font-size:19px;
   font-weight:bold;
+
   color:#43250f;
 }
 
 .home-old-price{
   margin-left:6px;
+
   font-size:12px;
+
   color:#888;
+
   text-decoration:line-through;
 }
 
 .home-off{
   margin-left:5px;
+
   font-size:11px;
+
   color:#16853b;
+
   font-weight:bold;
 }
 
 .home-view{
   display:block;
+
   margin-top:10px;
+
   text-align:center;
+
   padding:9px;
+
   background:#43250f;
+
   color:white;
+
   text-decoration:none;
+
   border-radius:6px;
+
   font-size:13px;
+
   font-weight:bold;
 }
 
 
-/* ================= COUPON ================= */
+/* =========================================================
+   COUPON
+========================================================= */
 
 .coupon-box{
   margin-top:30px;
+
   background:#fff4d8;
+
   border:1px dashed #c9922e;
+
   border-radius:14px;
+
   padding:22px;
+
   display:flex;
   justify-content:space-between;
   align-items:center;
+
   gap:20px;
 }
 
@@ -481,35 +600,55 @@ body{
 
 .coupon-code{
   display:inline-block;
+
   margin-top:8px;
+
   background:white;
+
   border:1px solid #c9922e;
+
   padding:8px 14px;
+
   border-radius:6px;
+
   font-weight:bold;
+
   letter-spacing:1px;
 }
 
 .coupon-btn{
   background:#43250f;
   color:white;
+
   border:0;
+
   padding:11px 20px;
+
   border-radius:7px;
+
   cursor:pointer;
+
   font-weight:bold;
 }
 
 
-/* ================= BENEFITS ================= */
+/* =========================================================
+   BENEFITS
+========================================================= */
 
 .trust-section{
   background:white;
+
   border-radius:14px;
+
   display:grid;
+
   grid-template-columns:repeat(4,1fr);
+
   margin-top:30px;
+
   padding:22px;
+
   gap:20px;
 }
 
@@ -534,17 +673,30 @@ body{
 }
 
 
-/* ================= SELLER ================= */
+/* =========================================================
+   SELLER
+========================================================= */
 
 .seller-banner{
   margin-top:30px;
-  background:linear-gradient(110deg,#24150b,#43250f,#76501f);
+
+  background:linear-gradient(
+    110deg,
+    #24150b,
+    #43250f,
+    #76501f
+  );
+
   color:white;
+
   border-radius:16px;
+
   padding:28px 35px;
+
   display:flex;
   justify-content:space-between;
   align-items:center;
+
   gap:20px;
 }
 
@@ -560,23 +712,36 @@ body{
 .seller-btn{
   background:#f0bd50;
   color:#111;
+
   text-decoration:none;
+
   padding:12px 20px;
+
   border-radius:7px;
+
   font-weight:bold;
+
   white-space:nowrap;
 }
 
 
-/* ================= FOOTER ================= */
+/* =========================================================
+   FOOTER
+========================================================= */
 
 .ps-footer{
   background:#172337;
+
   color:white;
+
   margin-top:35px;
+
   padding:35px 6%;
+
   display:grid;
+
   grid-template-columns:repeat(4,1fr);
+
   gap:25px;
 }
 
@@ -587,29 +752,41 @@ body{
 
 .ps-footer a{
   color:#ddd;
+
   text-decoration:none;
+
   display:block;
+
   margin:8px 0;
+
   font-size:14px;
 }
 
 .footer-bottom{
   background:#43250f;
+
   color:white;
+
   text-align:center;
+
   padding:15px;
+
   font-size:13px;
 }
 
 
-/* ================= MOBILE NAV ================= */
+/* =========================================================
+   MOBILE NAV
+========================================================= */
 
 .mobile-nav{
   display:none;
 }
 
 
-/* ================= TABLET ================= */
+/* =========================================================
+   TABLET
+========================================================= */
 
 @media(max-width:900px){
 
@@ -624,14 +801,26 @@ body{
 }
 
 
-/* ================= MOBILE ================= */
+/* =========================================================
+   MOBILE
+========================================================= */
 
 @media(max-width:700px){
 
+  body{
+    padding-bottom:68px;
+  }
+
+
+  /* HEADER */
+
   .ps-header{
     padding:10px 12px;
+
     display:grid;
+
     grid-template-columns:auto 1fr;
+
     gap:10px;
   }
 
@@ -646,26 +835,36 @@ body{
 
   .ps-search{
     width:100%;
+    height:40px;
   }
 
   .ps-search input{
-    padding:11px 10px;
+    padding:10px;
     font-size:14px;
   }
 
   .ps-search button{
     width:45px;
+    font-size:19px;
   }
 
   .ps-headlinks{
     display:none;
   }
 
+
+  /* LOCATION */
+
   .location-bar{
     padding:10px 15px;
+
     white-space:nowrap;
+
     overflow:hidden;
   }
+
+
+  /* CATEGORY */
 
   .category-scroll{
     gap:18px;
@@ -678,30 +877,52 @@ body{
     font-size:24px;
   }
 
+
+  /* MAIN */
+
   .ps-main{
     padding:10px;
   }
 
-  /* Wide banner on phone */
+
+  /* =====================================================
+     MOBILE HERO
+     EXACT WIDE FLIPKART-LIKE SHAPE
+  ===================================================== */
+
   .hero-slider{
+
     width:100%;
-    border-radius:10px;
+
+    /* screenshot ke approx 2:1 shape */
+    aspect-ratio:2.05 / 1;
+
+    border-radius:20px;
+
+    box-shadow:0 4px 15px rgba(0,0,0,.12);
   }
 
   .hero-slide{
-    aspect-ratio:3 / 1;
+    aspect-ratio:auto;
+    height:100%;
   }
 
   .hero-slide img{
     width:100%;
     height:100%;
+
     object-fit:cover;
+    object-position:center;
   }
 
+
+  /* ARROWS */
+
   .slider-arrow{
-    width:32px;
-    height:32px;
-    font-size:19px;
+    width:34px;
+    height:34px;
+
+    font-size:20px;
   }
 
   .slider-arrow.left{
@@ -712,23 +933,33 @@ body{
     right:7px;
   }
 
+
+  /* DOTS */
+
   .slider-dots{
     bottom:7px;
+    gap:6px;
   }
 
   .slider-dot{
-    width:7px;
-    height:7px;
+    width:8px;
+    height:8px;
   }
 
   .slider-dot.active{
-    width:20px;
+    width:22px;
   }
+
+
+  /* CATEGORY CARDS */
 
   .category-cards{
     display:flex;
+
     overflow-x:auto;
+
     gap:10px;
+
     scrollbar-width:none;
   }
 
@@ -745,6 +976,9 @@ body{
     font-size:29px;
   }
 
+
+  /* SECTION */
+
   .section-head{
     margin:23px 4px 12px;
   }
@@ -757,14 +991,23 @@ body{
     font-size:12px;
   }
 
+
+  /* DEAL */
+
   .deal-strip{
     padding:15px;
+
     flex-direction:column;
+
     text-align:center;
   }
 
+
+  /* PRODUCTS */
+
   .home-product-grid{
     grid-template-columns:repeat(2,1fr);
+
     gap:10px;
   }
 
@@ -784,15 +1027,25 @@ body{
     font-size:16px;
   }
 
+
+  /* COUPON */
+
   .coupon-box{
     flex-direction:column;
+
     text-align:center;
+
     padding:18px;
   }
 
+
+  /* TRUST */
+
   .trust-section{
     grid-template-columns:repeat(2,1fr);
+
     padding:15px;
+
     gap:15px;
   }
 
@@ -808,64 +1061,100 @@ body{
     font-size:10px;
   }
 
+
+  /* SELLER */
+
   .seller-banner{
     flex-direction:column;
+
     text-align:center;
+
     padding:25px 18px;
   }
+
+
+  /* FOOTER */
 
   .ps-footer{
     display:none;
   }
 
+
+  /* =====================================================
+     BOTTOM NAV
+  ===================================================== */
+
   .mobile-nav{
+
     position:fixed;
+
     display:grid;
+
     grid-template-columns:repeat(4,1fr);
+
     bottom:0;
     left:0;
     right:0;
+
     height:65px;
+
     background:white;
+
     border-top:1px solid #ddd;
+
     z-index:2000;
+
     box-shadow:0 -2px 10px rgba(0,0,0,.12);
   }
 
   .mobile-nav a{
+
     display:flex;
+
     flex-direction:column;
+
     align-items:center;
+
     justify-content:center;
+
     color:#555;
+
     text-decoration:none;
+
     font-size:11px;
+
     gap:3px;
   }
 
   .mobile-nav a:first-child{
+
     color:#43250f;
+
     font-weight:bold;
   }
 
   .mobile-nav span{
     font-size:24px;
+    line-height:25px;
   }
 
 }
 
 
-/* ================= VERY SMALL PHONES ================= */
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
 
 @media(max-width:380px){
 
-  .hero-slide{
-    aspect-ratio:3 / 1;
+  .hero-slider{
+    aspect-ratio:2.05 / 1;
+    border-radius:17px;
   }
 
   .slider-arrow{
-    width:28px;
-    height:28px;
+    width:29px;
+    height:29px;
     font-size:17px;
   }
 
@@ -876,12 +1165,14 @@ body{
 }
 
 
-/* ================= LARGE SCREENS ================= */
+/* =========================================================
+   LARGE SCREEN
+========================================================= */
 
 @media(min-width:1400px){
 
-  .hero-slide{
-    aspect-ratio:3 / 1;
+  .hero-slider{
+    aspect-ratio:2.05 / 1;
   }
 
 }
@@ -894,14 +1185,24 @@ body{
 <body>
 
 
-<!-- ================= HEADER ================= -->
+<!-- =======================================================
+     HEADER
+======================================================= -->
 
 <header class="ps-header">
 
   <a class="ps-logo" href="index.html">
-    <span class="ps-logo-icon">PS</span>
-    <span>PS Mart</span>
+
+    <span class="ps-logo-icon">
+      PS
+    </span>
+
+    <span>
+      PS Mart
+    </span>
+
   </a>
+
 
   <div class="ps-search">
 
@@ -912,17 +1213,26 @@ body{
       onkeydown="if(event.key==='Enter') search()"
     >
 
-    <button onclick="search()">🔍</button>
+    <button onclick="search()">
+      🔍
+    </button>
 
   </div>
 
+
   <div class="ps-headlinks">
 
-    <a href="login.html">👤 Login</a>
+    <a href="login.html">
+      👤 Login
+    </a>
 
-    <a href="seller-register.html">Sell on PS Mart</a>
+    <a href="seller-register.html">
+      Sell on PS Mart
+    </a>
 
-    <a href="wishlist.html">♡</a>
+    <a href="wishlist.html">
+      ♡
+    </a>
 
     <a href="cart.html">
       🛒 Cart
@@ -934,79 +1244,192 @@ body{
 </header>
 
 
-<!-- ================= LOCATION ================= -->
+
+<!-- =======================================================
+     LOCATION
+======================================================= -->
 
 <div class="location-bar">
 
   📍
 
-  <span>Delivery location</span>
+  <span>
+    Delivery location
+  </span>
 
-  <a href="#" onclick="openLocation(); return false;">
+  <a
+    href="#"
+    onclick="openLocation(); return false;"
+  >
     Select your location →
   </a>
 
 </div>
 
 
-<!-- ================= CATEGORIES ================= -->
+
+<!-- =======================================================
+     CATEGORY SCROLL
+======================================================= -->
 
 <div class="category-scroll">
 
-  <a class="category-item" href="products.html">
-    <div class="category-icon">🛍️</div>
-    <b>For You</b>
+  <a
+    class="category-item"
+    href="products.html"
+  >
+
+    <div class="category-icon">
+      🛍️
+    </div>
+
+    <b>
+      For You
+    </b>
+
   </a>
 
-  <a class="category-item" href="products.html?cat=1">
-    <div class="category-icon">📱</div>
-    <b>Mobiles</b>
+
+  <a
+    class="category-item"
+    href="products.html?cat=1"
+  >
+
+    <div class="category-icon">
+      📱
+    </div>
+
+    <b>
+      Mobiles
+    </b>
+
   </a>
 
-  <a class="category-item" href="products.html?cat=3">
-    <div class="category-icon">👕</div>
-    <b>Fashion</b>
+
+  <a
+    class="category-item"
+    href="products.html?cat=3"
+  >
+
+    <div class="category-icon">
+      👕
+    </div>
+
+    <b>
+      Fashion
+    </b>
+
   </a>
 
-  <a class="category-item" href="products.html?cat=2">
-    <div class="category-icon">💻</div>
-    <b>Electronics</b>
+
+  <a
+    class="category-item"
+    href="products.html?cat=2"
+  >
+
+    <div class="category-icon">
+      💻
+    </div>
+
+    <b>
+      Electronics
+    </b>
+
   </a>
 
-  <a class="category-item" href="products.html?cat=4">
-    <div class="category-icon">💄</div>
-    <b>Beauty</b>
+
+  <a
+    class="category-item"
+    href="products.html?cat=4"
+  >
+
+    <div class="category-icon">
+      💄
+    </div>
+
+    <b>
+      Beauty
+    </b>
+
   </a>
 
-  <a class="category-item" href="products.html?cat=5">
-    <div class="category-icon">🏠</div>
-    <b>Home</b>
+
+  <a
+    class="category-item"
+    href="products.html?cat=5"
+  >
+
+    <div class="category-icon">
+      🏠
+    </div>
+
+    <b>
+      Home
+    </b>
+
   </a>
 
-  <a class="category-item" href="products.html?cat=6">
-    <div class="category-icon">🛒</div>
-    <b>Grocery</b>
+
+  <a
+    class="category-item"
+    href="products.html?cat=6"
+  >
+
+    <div class="category-icon">
+      🛒
+    </div>
+
+    <b>
+      Grocery
+    </b>
+
   </a>
 
-  <a class="category-item" href="products.html?cat=7">
-    <div class="category-icon">🎧</div>
-    <b>Accessories</b>
+
+  <a
+    class="category-item"
+    href="products.html?cat=7"
+  >
+
+    <div class="category-icon">
+      🎧
+    </div>
+
+    <b>
+      Accessories
+    </b>
+
   </a>
 
 </div>
 
 
+
+<!-- =======================================================
+     MAIN
+======================================================= -->
+
 <main class="ps-main">
 
 
-<!-- ================= 5 CARD HERO SLIDER ================= -->
 
-<section class="hero-slider" id="heroSlider">
+<!-- =======================================================
+     5 CARD HERO SLIDER
+======================================================= -->
 
-  <div class="hero-track" id="heroTrack">
+<section
+  class="hero-slider"
+  id="heroSlider"
+>
 
 
-    <!-- 1. WELCOME -->
+  <div
+    class="hero-track"
+    id="heroTrack"
+  >
+
+
+    <!-- 1 WELCOME -->
 
     <div class="hero-slide">
 
@@ -1022,7 +1445,8 @@ body{
     </div>
 
 
-    <!-- 2. ELECTRONICS -->
+
+    <!-- 2 ELECTRONICS -->
 
     <div class="hero-slide">
 
@@ -1038,7 +1462,8 @@ body{
     </div>
 
 
-    <!-- 3. FASHION -->
+
+    <!-- 3 FASHION -->
 
     <div class="hero-slide">
 
@@ -1054,7 +1479,8 @@ body{
     </div>
 
 
-    <!-- 4. HOME -->
+
+    <!-- 4 HOME -->
 
     <div class="hero-slide">
 
@@ -1070,7 +1496,8 @@ body{
     </div>
 
 
-    <!-- 5. BEAUTY -->
+
+    <!-- 5 BEAUTY -->
 
     <div class="hero-slide">
 
@@ -1085,7 +1512,9 @@ body{
 
     </div>
 
+
   </div>
+
 
 
   <!-- PREVIOUS -->
@@ -1099,6 +1528,7 @@ body{
   </button>
 
 
+
   <!-- NEXT -->
 
   <button
@@ -1108,6 +1538,7 @@ body{
   >
     ›
   </button>
+
 
 
   <!-- DOTS -->
@@ -1141,67 +1572,159 @@ body{
 
   </div>
 
+
 </section>
 
 
-<!-- ================= SHOP BY CATEGORY ================= -->
+
+<!-- =======================================================
+     SHOP BY CATEGORY
+======================================================= -->
 
 <div class="section-head">
 
-  <h2>Shop by Category 🛍️</h2>
+  <h2>
+    Shop by Category 🛍️
+  </h2>
 
-  <a href="products.html">View All →</a>
+  <a href="products.html">
+    View All →
+  </a>
 
 </div>
+
 
 
 <div class="category-cards">
 
-  <a class="cat-card" href="products.html?cat=1">
-    <div class="big-icon">📱</div>
-    <b>Mobiles</b>
+
+  <a
+    class="cat-card"
+    href="products.html?cat=1"
+  >
+
+    <div class="big-icon">
+      📱
+    </div>
+
+    <b>
+      Mobiles
+    </b>
+
   </a>
 
-  <a class="cat-card" href="products.html?cat=2">
-    <div class="big-icon">🎧</div>
-    <b>Electronics</b>
+
+  <a
+    class="cat-card"
+    href="products.html?cat=2"
+  >
+
+    <div class="big-icon">
+      🎧
+    </div>
+
+    <b>
+      Electronics
+    </b>
+
   </a>
 
-  <a class="cat-card" href="products.html?cat=3">
-    <div class="big-icon">👕</div>
-    <b>Fashion</b>
+
+  <a
+    class="cat-card"
+    href="products.html?cat=3"
+  >
+
+    <div class="big-icon">
+      👕
+    </div>
+
+    <b>
+      Fashion
+    </b>
+
   </a>
 
-  <a class="cat-card" href="products.html?cat=4">
-    <div class="big-icon">💄</div>
-    <b>Beauty</b>
+
+  <a
+    class="cat-card"
+    href="products.html?cat=4"
+  >
+
+    <div class="big-icon">
+      💄
+    </div>
+
+    <b>
+      Beauty
+    </b>
+
   </a>
 
-  <a class="cat-card" href="products.html?cat=5">
-    <div class="big-icon">🏠</div>
-    <b>Home</b>
+
+  <a
+    class="cat-card"
+    href="products.html?cat=5"
+  >
+
+    <div class="big-icon">
+      🏠
+    </div>
+
+    <b>
+      Home
+    </b>
+
   </a>
 
-  <a class="cat-card" href="products.html?cat=6">
-    <div class="big-icon">🛒</div>
-    <b>Grocery</b>
+
+  <a
+    class="cat-card"
+    href="products.html?cat=6"
+  >
+
+    <div class="big-icon">
+      🛒
+    </div>
+
+    <b>
+      Grocery
+    </b>
+
   </a>
 
-  <a class="cat-card" href="products.html?cat=7">
-    <div class="big-icon">🎧</div>
-    <b>Accessories</b>
+
+  <a
+    class="cat-card"
+    href="products.html?cat=7"
+  >
+
+    <div class="big-icon">
+      🎧
+    </div>
+
+    <b>
+      Accessories
+    </b>
+
   </a>
+
 
 </div>
 
 
-<!-- ================= DEAL STRIP ================= -->
+
+<!-- =======================================================
+     DEAL STRIP
+======================================================= -->
 
 <div class="deal-strip">
 
   <div>
 
-    <strong>⚡ LIMITED TIME DEALS</strong>
+    <strong>
+      ⚡ LIMITED TIME DEALS
+    </strong>
 
     <br>
 
@@ -1209,27 +1732,45 @@ body{
 
   </div>
 
-  <a class="deal-button" href="products.html">
+
+  <a
+    class="deal-button"
+    href="products.html"
+  >
     Shop Deals →
   </a>
 
 </div>
 
 
-<!-- ================= FLASH DEALS ================= -->
+
+<!-- =======================================================
+     FLASH DEALS
+======================================================= -->
 
 <div class="section-head">
 
-  <h2>⚡ Flash Deals</h2>
+  <h2>
+    ⚡ Flash Deals
+  </h2>
 
-  <a href="products.html">View All →</a>
+  <a href="products.html">
+    View All →
+  </a>
 
 </div>
 
-<div id="flashDeals" class="home-product-grid"></div>
+
+<div
+  id="flashDeals"
+  class="home-product-grid"
+></div>
 
 
-<!-- ================= COUPON ================= -->
+
+<!-- =======================================================
+     COUPON
+======================================================= -->
 
 <div class="coupon-box">
 
@@ -1243,94 +1784,678 @@ body{
       Use this coupon on your next purchase
     </div>
 
-    <span class="coupon-code" id="homeCouponCode">
+    <span
+      class="coupon-code"
+      id="homeCouponCode"
+    >
       PS100
     </span>
 
   </div>
 
-  <button class="coupon-btn" onclick="copyHomeCoupon()">
+
+  <button
+    class="coupon-btn"
+    onclick="copyHomeCoupon()"
+  >
     Copy Code
   </button>
 
 </div>
 
 
-<!-- ================= TRENDING ================= -->
+
+<!-- =======================================================
+     TRENDING
+======================================================= -->
 
 <div class="section-head">
 
-  <h2>🔥 Trending Picks</h2>
+  <h2>
+    🔥 Trending Picks
+  </h2>
 
-  <a href="products.html">View All →</a>
+  <a href="products.html">
+    View All →
+  </a>
 
 </div>
 
-<div id="trendingProducts" class="home-product-grid"></div>
+
+<div
+  id="trendingProducts"
+  class="home-product-grid"
+></div>
 
 
-<!-- ================= NEW ARRIVALS ================= -->
+
+<!-- =======================================================
+     NEW ARRIVALS
+======================================================= -->
 
 <div class="section-head">
 
-  <h2>✨ New Arrivals</h2>
+  <h2>
+    ✨ New Arrivals
+  </h2>
 
-  <a href="products.html">View All →</a>
+  <a href="products.html">
+    View All →
+  </a>
 
 </div>
 
-<div id="newArrivals" class="home-product-grid"></div>
+
+<div
+  id="newArrivals"
+  class="home-product-grid"
+></div>
 
 
-<!-- ================= BENEFITS ================= -->
+
+<!-- =======================================================
+     BENEFITS
+======================================================= -->
 
 <section class="trust-section">
 
+
   <div class="trust-box">
 
-    <div class="trust-icon">🚚</div>
+    <div class="trust-icon">
+      🚚
+    </div>
 
     <div>
-      <b>Fast Delivery</b>
-      <span>Reliable delivery</span>
+
+      <b>
+        Fast Delivery
+      </b>
+
+      <span>
+        Reliable delivery
+      </span>
+
     </div>
 
   </div>
 
 
+
   <div class="trust-box">
 
-    <div class="trust-icon">🔒</div>
+    <div class="trust-icon">
+      🔒
+    </div>
 
     <div>
-      <b>Secure Shopping</b>
-      <span>Safe checkout</span>
+
+      <b>
+        Secure Shopping
+      </b>
+
+      <span>
+        Safe checkout
+      </span>
+
     </div>
 
   </div>
 
 
+
   <div class="trust-box">
 
-    <div class="trust-icon">💳</div>
+    <div class="trust-icon">
+      💳
+    </div>
 
     <div>
-      <b>Multiple Payments</b>
-      <span>Choose your method</span>
+
+      <b>
+        Multiple Payments
+      </b>
+
+      <span>
+        Choose your method
+      </span>
+
     </div>
 
   </div>
 
 
+
   <div class="trust-box">
 
-    <div class="trust-icon">☎️</div>
+    <div class="trust-icon">
+      ☎️
+    </div>
 
     <div>
-      <b>Customer Support</b>
-      <span>Help when needed</span>
+
+      <b>
+        Customer Support
+      </b>
+
+      <span>
+        Help when needed
+      </span>
+
     </div>
 
   </div>
 
-  
+
+</section>
+
+
+
+<!-- =======================================================
+     SELLER BANNER
+======================================================= -->
+
+<section class="seller-banner">
+
+  <div>
+
+    <h2>
+      🏪 Sell on PS Mart
+    </h2>
+
+    <p>
+      Grow your business and reach more customers.
+    </p>
+
+  </div>
+
+
+  <a
+    class="seller-btn"
+    href="seller-register.html"
+  >
+    Become a Seller →
+  </a>
+
+</section>
+
+
+</main>
+
+
+
+<!-- =======================================================
+     FOOTER
+======================================================= -->
+
+<footer class="ps-footer">
+
+
+  <div>
+
+    <h3>
+      PS Mart
+    </h3>
+
+    <a href="index.html">
+      Home
+    </a>
+
+    <a href="products.html">
+      All Products
+    </a>
+
+    <a href="wishlist.html">
+      Wishlist
+    </a>
+
+    <a href="coupons.html">
+      Coupons
+    </a>
+
+    <a href="gift-cards.html">
+      Gift Cards
+    </a>
+
+  </div>
+
+
+
+  <div>
+
+    <h3>
+      Customer
+    </h3>
+
+    <a href="profile.html">
+      My Account
+    </a>
+
+    <a href="orders.html">
+      My Orders
+    </a>
+
+    <a href="cart.html">
+      My Cart
+    </a>
+
+    <a href="saved-cards.html">
+      Saved Cards
+    </a>
+
+    <a href="help.html">
+      Help Center
+    </a>
+
+  </div>
+
+
+
+  <div>
+
+    <h3>
+      Seller
+    </h3>
+
+    <a href="seller-register.html">
+      Sell on PS Mart
+    </a>
+
+    <a href="seller-login.html">
+      Seller Login
+    </a>
+
+    <a href="seller-orders.html">
+      Seller Orders
+    </a>
+
+    <a href="seller-dashboard.html">
+      Seller Dashboard
+    </a>
+
+  </div>
+
+
+
+  <div>
+
+    <h3>
+      Support
+    </h3>
+
+    <a href="contact.html">
+      Contact Support
+    </a>
+
+    <a href="support.html">
+      My Support Requests
+    </a>
+
+    <a href="privacy-center.html">
+      Privacy Center
+    </a>
+
+    <a href="terms.html">
+      Terms & Conditions
+    </a>
+
+    <a href="privacy.html">
+      Privacy Policy
+    </a>
+
+  </div>
+
+
+</footer>
+
+
+
+<!-- =======================================================
+     FOOTER BOTTOM
+======================================================= -->
+
+<div class="footer-bottom">
+
+  © 2026 PS Mart • Shop Smart • Shop Simple
+
+</div>
+
+
+
+<!-- =======================================================
+     MOBILE BOTTOM NAV
+======================================================= -->
+
+<nav class="mobile-nav">
+
+
+  <a href="index.html">
+
+    <span>
+      🏠
+    </span>
+
+    Home
+
+  </a>
+
+
+  <a href="products.html">
+
+    <span>
+      ▦
+    </span>
+
+    Categories
+
+  </a>
+
+
+  <a href="profile.html">
+
+    <span>
+      👤
+    </span>
+
+    Account
+
+  </a>
+
+
+  <a href="cart.html">
+
+    <span>
+      🛒
+    </span>
+
+    Cart
+
+  </a>
+
+
+</nav>
+
+
+
+<!-- =======================================================
+     APP JS
+======================================================= -->
+
+<script src="app.js"></script>
+
+
+
+<!-- =======================================================
+     HERO SLIDER JS
+======================================================= -->
+
+<script>
+
+let heroIndex = 0;
+
+let heroTimer = null;
+
+const heroTotal = 5;
+
+
+/* ---------------------------------------------------------
+   UPDATE SLIDER
+--------------------------------------------------------- */
+
+function updateHero(){
+
+  const track =
+    document.getElementById("heroTrack");
+
+  if(!track){
+    return;
+  }
+
+  track.style.transform =
+    "translateX(-" +
+    (heroIndex * 100) +
+    "%)";
+
+
+  const dots =
+    document.querySelectorAll(".slider-dot");
+
+
+  dots.forEach(function(dot,index){
+
+    dot.classList.toggle(
+      "active",
+      index === heroIndex
+    );
+
+  });
+
+}
+
+
+/* ---------------------------------------------------------
+   NEXT
+--------------------------------------------------------- */
+
+function heroNext(){
+
+  heroIndex++;
+
+  if(heroIndex >= heroTotal){
+
+    heroIndex = 0;
+
+  }
+
+  updateHero();
+
+  restartHeroTimer();
+
+}
+
+
+/* ---------------------------------------------------------
+   PREVIOUS
+--------------------------------------------------------- */
+
+function heroPrev(){
+
+  heroIndex--;
+
+  if(heroIndex < 0){
+
+    heroIndex =
+      heroTotal - 1;
+
+  }
+
+  updateHero();
+
+  restartHeroTimer();
+
+}
+
+
+/* ---------------------------------------------------------
+   GO TO SLIDE
+--------------------------------------------------------- */
+
+function heroGo(index){
+
+  if(index < 0 || index >= heroTotal){
+
+    return;
+
+  }
+
+  heroIndex = index;
+
+  updateHero();
+
+  restartHeroTimer();
+
+}
+
+
+/* ---------------------------------------------------------
+   AUTO SLIDER
+   3 SECOND
+--------------------------------------------------------- */
+
+function startHeroTimer(){
+
+  clearInterval(heroTimer);
+
+  heroTimer =
+    setInterval(function(){
+
+      heroIndex++;
+
+      if(heroIndex >= heroTotal){
+
+        heroIndex = 0;
+
+      }
+
+      updateHero();
+
+    },3000);
+
+}
+
+
+/* ---------------------------------------------------------
+   RESTART TIMER
+--------------------------------------------------------- */
+
+function restartHeroTimer(){
+
+  startHeroTimer();
+
+}
+
+
+/* ---------------------------------------------------------
+   PAUSE WHEN TOUCHING SLIDER
+--------------------------------------------------------- */
+
+const heroSlider =
+  document.getElementById("heroSlider");
+
+
+if(heroSlider){
+
+  heroSlider.addEventListener(
+    "mouseenter",
+    function(){
+
+      clearInterval(heroTimer);
+
+    }
+  );
+
+
+  heroSlider.addEventListener(
+    "mouseleave",
+    function(){
+
+      startHeroTimer();
+
+    }
+  );
+
+
+  heroSlider.addEventListener(
+    "touchstart",
+    function(){
+
+      clearInterval(heroTimer);
+
+    },
+    {passive:true}
+  );
+
+
+  heroSlider.addEventListener(
+    "touchend",
+    function(){
+
+      startHeroTimer();
+
+    },
+    {passive:true}
+  );
+
+}
+
+
+/* ---------------------------------------------------------
+   START
+--------------------------------------------------------- */
+
+updateHero();
+
+startHeroTimer();
+
+
+/* ---------------------------------------------------------
+   COPY HOME COUPON
+--------------------------------------------------------- */
+
+function copyHomeCoupon(){
+
+  const code =
+    document.getElementById(
+      "homeCouponCode"
+    )?.innerText.trim();
+
+
+  if(!code){
+
+    return;
+
+  }
+
+
+  if(
+    navigator.clipboard &&
+    navigator.clipboard.writeText
+  ){
+
+    navigator.clipboard
+      .writeText(code)
+      .then(function(){
+
+        alert(
+          "Coupon " +
+          code +
+          " copied!"
+        );
+
+      })
+      .catch(function(){
+
+        alert(
+          "Coupon Code: " +
+          code
+        );
+
+      });
+
+  }else{
+
+    alert(
+      "Coupon Code: " +
+      code
+    );
+
+  }
+
+}
+
+</script>
+
+
+</body>
+
+</html>
