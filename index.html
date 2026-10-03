@@ -1427,95 +1427,103 @@ input{
     class="hero-track"
     id="heroTrack"
   >
+<!-- =======================================================
+     4 CARD HERO SLIDER
+======================================================= -->
 
+<section class="hero-slider" id="heroSlider">
 
-    <!-- 1 WELCOME -->
+  <div class="hero-track" id="heroTrack">
 
+    <!-- 1 -->
     <div class="hero-slide">
-
       <a href="products.html">
-
         <img
-          src="PS_Mart_Welcome_Mobile_1080x1350_HD.jpg"
+          src="ps-mart-slider-1.jpg"
           alt="Welcome to PS Mart"
         >
-
       </a>
-
     </div>
 
-
-
-    <!-- 2 ELECTRONICS -->
-
+    <!-- 2 -->
     <div class="hero-slide">
-
       <a href="products.html?cat=2">
-
         <img
-          src="1790998808134.png"
+          src="ps-mart-slider-2.jpg"
           alt="Electronics Sale"
         >
-
       </a>
-
     </div>
 
-
-
-    <!-- 3 FASHION -->
-
+    <!-- 3 -->
     <div class="hero-slide">
-
       <a href="products.html?cat=3">
-
         <img
-          src="1790998942479.png"
+          src="ps-mart-slider-3.jpg"
           alt="Fashion Sale"
         >
-
       </a>
-
     </div>
 
-
-
-    <!-- 4 HOME -->
-
+    <!-- 4 -->
     <div class="hero-slide">
-
       <a href="products.html?cat=5">
-
         <img
-          src="1790999037554.png"
-          alt="Home and Kitchen Sale"
+          src="ps-mart-slider-4.jpg"
+          alt="Home and Beauty Sale"
         >
-
       </a>
-
     </div>
-
-
-
-    <!-- 5 BEAUTY -->
-
-    <div class="hero-slide">
-
-      <a href="products.html?cat=4">
-
-        <img
-          src="1790999189084.png"
-          alt="Beauty Sale"
-        >
-
-      </a>
-
-    </div>
-
 
   </div>
 
 
+  <!-- PREVIOUS -->
+  <button
+    class="slider-arrow left"
+    onclick="heroPrev()"
+    aria-label="Previous banner"
+  >
+    ‹
+  </button>
+
+
+  <!-- NEXT -->
+  <button
+    class="slider-arrow right"
+    onclick="heroNext()"
+    aria-label="Next banner"
+  >
+    ›
+  </button>
+
+
+  <!-- DOTS -->
+  <div class="slider-dots">
+
+    <span
+      class="slider-dot active"
+      onclick="heroGo(0)"
+    ></span>
+
+    <span
+      class="slider-dot"
+      onclick="heroGo(1)"
+    ></span>
+
+    <span
+      class="slider-dot"
+      onclick="heroGo(2)"
+    ></span>
+
+    <span
+      class="slider-dot"
+      onclick="heroGo(3)"
+    ></span>
+
+  </div>
+
+</section>
 
   <!-- PREVIOUS -->
 
@@ -2195,8 +2203,7 @@ let heroIndex = 0;
 
 let heroTimer = null;
 
-const heroTotal = 5;
-
+const heroTotal = 4;
 
 /* ---------------------------------------------------------
    UPDATE SLIDER
