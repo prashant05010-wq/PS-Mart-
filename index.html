@@ -2,7 +2,9 @@
 <html lang="en">
 
 <head>
+
 <meta charset="utf-8">
+
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <meta name="google-site-verification" content="yVuzDetDJKdxouvTn9B_HXXLpjHD4yIBFMOxNpbNHgQ">
@@ -17,6 +19,8 @@
 
 <style>
 
+/* ================= GLOBAL ================= */
+
 *{
   box-sizing:border-box;
 }
@@ -28,6 +32,7 @@ body{
   color:#212121;
   padding-bottom:70px;
 }
+
 
 /* ================= HEADER ================= */
 
@@ -114,6 +119,7 @@ body{
   font-size:11px;
 }
 
+
 /* ================= LOCATION ================= */
 
 .location-bar{
@@ -131,6 +137,7 @@ body{
   font-weight:bold;
   text-decoration:none;
 }
+
 
 /* ================= CATEGORY ================= */
 
@@ -174,6 +181,7 @@ body{
   transform:translateY(-2px);
 }
 
+
 /* ================= MAIN ================= */
 
 .ps-main{
@@ -182,14 +190,13 @@ body{
   padding:18px 4%;
 }
 
-/* ================= HERO SLIDER ================= */
 
-/* ================= HERO CARD SLIDER ================= */
+/* ================= HERO SLIDER ================= */
 
 .hero-slider{
   position:relative;
   width:100%;
-  max-width:1200px;
+  max-width:1400px;
   margin:0 auto;
   overflow:hidden;
   border-radius:18px;
@@ -206,8 +213,9 @@ body{
 .hero-slide{
   min-width:100%;
   flex:0 0 100%;
-  aspect-ratio:1200 / 990;
+  aspect-ratio:3 / 1;
   background:#fff;
+  overflow:hidden;
 }
 
 .hero-slide a{
@@ -224,34 +232,40 @@ body{
   object-position:center;
 }
 
-/* arrows */
+
+/* ================= SLIDER ARROWS ================= */
 
 .slider-arrow{
   position:absolute;
   top:50%;
   transform:translateY(-50%);
-  width:42px;
-  height:42px;
+  width:44px;
+  height:44px;
   border:0;
   border-radius:50%;
-  background:rgba(255,255,255,.92);
+  background:rgba(255,255,255,.94);
   color:#43250f;
-  font-size:28px;
+  font-size:30px;
   font-weight:bold;
   cursor:pointer;
   z-index:10;
   box-shadow:0 3px 12px rgba(0,0,0,.22);
 }
 
+.slider-arrow:hover{
+  background:#f0bd50;
+}
+
 .slider-arrow.left{
-  left:12px;
+  left:14px;
 }
 
 .slider-arrow.right{
-  right:12px;
+  right:14px;
 }
 
-/* dots */
+
+/* ================= SLIDER DOTS ================= */
 
 .slider-dots{
   position:absolute;
@@ -268,7 +282,7 @@ body{
   width:9px;
   height:9px;
   border-radius:50%;
-  background:rgba(255,255,255,.75);
+  background:rgba(255,255,255,.8);
   cursor:pointer;
   transition:.25s;
 }
@@ -279,55 +293,6 @@ body{
   background:#f0bd50;
 }
 
-
-/* ================= MOBILE HERO ================= */
-
-@media(max-width:700px){
-
-  .hero-slider{
-    width:100%;
-    border-radius:13px;
-    margin:0 auto;
-  }
-
-  .hero-slide{
-    aspect-ratio:1200 / 990;
-  }
-
-  .hero-slide img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-  }
-
-  .slider-arrow{
-    width:32px;
-    height:32px;
-    font-size:20px;
-  }
-
-  .slider-arrow.left{
-    left:7px;
-  }
-
-  .slider-arrow.right{
-    right:7px;
-  }
-
-  .slider-dots{
-    bottom:7px;
-  }
-
-  .slider-dot{
-    width:7px;
-    height:7px;
-  }
-
-  .slider-dot.active{
-    width:20px;
-  }
-
-}
 
 /* ================= SECTION ================= */
 
@@ -348,6 +313,7 @@ body{
   text-decoration:none;
   font-weight:bold;
 }
+
 
 /* ================= CATEGORY CARDS ================= */
 
@@ -382,6 +348,7 @@ body{
   font-size:13px;
 }
 
+
 /* ================= DEAL STRIP ================= */
 
 .deal-strip{
@@ -409,6 +376,7 @@ body{
   font-weight:bold;
   white-space:nowrap;
 }
+
 
 /* ================= PRODUCT GRID ================= */
 
@@ -490,6 +458,7 @@ body{
   font-weight:bold;
 }
 
+
 /* ================= COUPON ================= */
 
 .coupon-box{
@@ -531,6 +500,7 @@ body{
   font-weight:bold;
 }
 
+
 /* ================= BENEFITS ================= */
 
 .trust-section{
@@ -562,6 +532,7 @@ body{
   font-size:12px;
   color:#777;
 }
+
 
 /* ================= SELLER ================= */
 
@@ -596,6 +567,7 @@ body{
   white-space:nowrap;
 }
 
+
 /* ================= FOOTER ================= */
 
 .ps-footer{
@@ -629,13 +601,15 @@ body{
   font-size:13px;
 }
 
+
 /* ================= MOBILE NAV ================= */
 
 .mobile-nav{
   display:none;
 }
 
-/* ================= MOBILE ================= */
+
+/* ================= TABLET ================= */
 
 @media(max-width:900px){
 
@@ -648,6 +622,9 @@ body{
   }
 
 }
+
+
+/* ================= MOBILE ================= */
 
 @media(max-width:700px){
 
@@ -705,23 +682,47 @@ body{
     padding:10px;
   }
 
+  /* Wide banner on phone */
   .hero-slider{
-    border-radius:12px;
+    width:100%;
+    border-radius:10px;
   }
 
+  .hero-slide{
+    aspect-ratio:3 / 1;
+  }
+
+  .hero-slide img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
 
   .slider-arrow{
     width:32px;
     height:32px;
-    font-size:18px;
+    font-size:19px;
   }
 
   .slider-arrow.left{
-    left:8px;
+    left:7px;
   }
 
   .slider-arrow.right{
-    right:8px;
+    right:7px;
+  }
+
+  .slider-dots{
+    bottom:7px;
+  }
+
+  .slider-dot{
+    width:7px;
+    height:7px;
+  }
+
+  .slider-dot.active{
+    width:20px;
   }
 
   .category-cards{
@@ -853,47 +854,82 @@ body{
 
 }
 
+
+/* ================= VERY SMALL PHONES ================= */
+
+@media(max-width:380px){
+
+  .hero-slide{
+    aspect-ratio:3 / 1;
+  }
+
+  .slider-arrow{
+    width:28px;
+    height:28px;
+    font-size:17px;
+  }
+
+  .home-product-image{
+    height:135px;
+  }
+
+}
+
+
+/* ================= LARGE SCREENS ================= */
+
+@media(min-width:1400px){
+
+  .hero-slide{
+    aspect-ratio:3 / 1;
+  }
+
+}
+
 </style>
+
 </head>
 
 
 <body>
 
+
 <!-- ================= HEADER ================= -->
 
 <header class="ps-header">
 
-<a class="ps-logo" href="index.html">
-  <span class="ps-logo-icon">PS</span>
-  <span>PS Mart</span>
-</a>
+  <a class="ps-logo" href="index.html">
+    <span class="ps-logo-icon">PS</span>
+    <span>PS Mart</span>
+  </a>
 
-<div class="ps-search">
+  <div class="ps-search">
 
-<input
-id="search"
-type="text"
-placeholder="Search for Products, Brands and More"
-onkeydown="if(event.key==='Enter') search()">
+    <input
+      id="search"
+      type="text"
+      placeholder="Search for Products, Brands and More"
+      onkeydown="if(event.key==='Enter') search()"
+    >
 
-<button onclick="search()">🔍</button>
+    <button onclick="search()">🔍</button>
 
-</div>
+  </div>
 
-<div class="ps-headlinks">
+  <div class="ps-headlinks">
 
-<a href="login.html">👤 Login</a>
+    <a href="login.html">👤 Login</a>
 
-<a href="seller-register.html">Sell on PS Mart</a>
+    <a href="seller-register.html">Sell on PS Mart</a>
 
-<a href="wishlist.html">♡</a>
+    <a href="wishlist.html">♡</a>
 
-<a href="cart.html">
-🛒 Cart
-<em id="count">0</em>
-</a>
+    <a href="cart.html">
+      🛒 Cart
+      <em id="count">0</em>
+    </a>
 
-</div>
+  </div>
 
 </header>
 
@@ -902,13 +938,13 @@ onkeydown="if(event.key==='Enter') search()">
 
 <div class="location-bar">
 
-📍
+  📍
 
-<span>Delivery location</span>
+  <span>Delivery location</span>
 
-<a href="#" onclick="openLocation(); return false;">
-Select your location →
-</a>
+  <a href="#" onclick="openLocation(); return false;">
+    Select your location →
+  </a>
 
 </div>
 
@@ -917,45 +953,45 @@ Select your location →
 
 <div class="category-scroll">
 
-<a class="category-item" href="products.html">
-<div class="category-icon">🛍️</div>
-<b>For You</b>
-</a>
+  <a class="category-item" href="products.html">
+    <div class="category-icon">🛍️</div>
+    <b>For You</b>
+  </a>
 
-<a class="category-item" href="products.html?cat=1">
-<div class="category-icon">📱</div>
-<b>Mobiles</b>
-</a>
+  <a class="category-item" href="products.html?cat=1">
+    <div class="category-icon">📱</div>
+    <b>Mobiles</b>
+  </a>
 
-<a class="category-item" href="products.html?cat=3">
-<div class="category-icon">👕</div>
-<b>Fashion</b>
-</a>
+  <a class="category-item" href="products.html?cat=3">
+    <div class="category-icon">👕</div>
+    <b>Fashion</b>
+  </a>
 
-<a class="category-item" href="products.html?cat=2">
-<div class="category-icon">💻</div>
-<b>Electronics</b>
-</a>
+  <a class="category-item" href="products.html?cat=2">
+    <div class="category-icon">💻</div>
+    <b>Electronics</b>
+  </a>
 
-<a class="category-item" href="products.html?cat=4">
-<div class="category-icon">💄</div>
-<b>Beauty</b>
-</a>
+  <a class="category-item" href="products.html?cat=4">
+    <div class="category-icon">💄</div>
+    <b>Beauty</b>
+  </a>
 
-<a class="category-item" href="products.html?cat=5">
-<div class="category-icon">🏠</div>
-<b>Home</b>
-</a>
+  <a class="category-item" href="products.html?cat=5">
+    <div class="category-icon">🏠</div>
+    <b>Home</b>
+  </a>
 
-<a class="category-item" href="products.html?cat=6">
-<div class="category-icon">🛒</div>
-<b>Grocery</b>
-</a>
+  <a class="category-item" href="products.html?cat=6">
+    <div class="category-icon">🛒</div>
+    <b>Grocery</b>
+  </a>
 
-<a class="category-item" href="products.html?cat=7">
-<div class="category-icon">🎧</div>
-<b>Accessories</b>
-</a>
+  <a class="category-item" href="products.html?cat=7">
+    <div class="category-icon">🎧</div>
+    <b>Accessories</b>
+  </a>
 
 </div>
 
@@ -969,6 +1005,7 @@ Select your location →
 
   <div class="hero-track" id="heroTrack">
 
+
     <!-- 1. WELCOME -->
 
     <div class="hero-slide">
@@ -976,7 +1013,7 @@ Select your location →
       <a href="products.html">
 
         <img
-          src="psmart-slide-1-welcome.png"
+          src="PS_Mart_Welcome_Mobile_1080x1350_HD.jpg"
           alt="Welcome to PS Mart"
         >
 
@@ -992,7 +1029,7 @@ Select your location →
       <a href="products.html?cat=2">
 
         <img
-          src="psmart-slide-2-electronics.png"
+          src="1790998808134.png"
           alt="Electronics Sale"
         >
 
@@ -1008,7 +1045,7 @@ Select your location →
       <a href="products.html?cat=3">
 
         <img
-          src="psmart-slide-3-fashion.png"
+          src="1790998942479.png"
           alt="Fashion Sale"
         >
 
@@ -1024,7 +1061,7 @@ Select your location →
       <a href="products.html?cat=5">
 
         <img
-          src="psmart-slide-4-home.png"
+          src="1790999037554.png"
           alt="Home and Kitchen Sale"
         >
 
@@ -1040,8 +1077,8 @@ Select your location →
       <a href="products.html?cat=4">
 
         <img
-          src="psmart-slide-5-beauty.png"
-          alt="Beauty and Accessories Sale"
+          src="1790999189084.png"
+          alt="Beauty Sale"
         >
 
       </a>
@@ -1111,49 +1148,49 @@ Select your location →
 
 <div class="section-head">
 
-<h2>Shop by Category 🛍️</h2>
+  <h2>Shop by Category 🛍️</h2>
 
-<a href="products.html">View All →</a>
+  <a href="products.html">View All →</a>
 
 </div>
 
 
 <div class="category-cards">
 
-<a class="cat-card" href="products.html?cat=1">
-<div class="big-icon">📱</div>
-<b>Mobiles</b>
-</a>
+  <a class="cat-card" href="products.html?cat=1">
+    <div class="big-icon">📱</div>
+    <b>Mobiles</b>
+  </a>
 
-<a class="cat-card" href="products.html?cat=2">
-<div class="big-icon">🎧</div>
-<b>Electronics</b>
-</a>
+  <a class="cat-card" href="products.html?cat=2">
+    <div class="big-icon">🎧</div>
+    <b>Electronics</b>
+  </a>
 
-<a class="cat-card" href="products.html?cat=3">
-<div class="big-icon">👕</div>
-<b>Fashion</b>
-</a>
+  <a class="cat-card" href="products.html?cat=3">
+    <div class="big-icon">👕</div>
+    <b>Fashion</b>
+  </a>
 
-<a class="cat-card" href="products.html?cat=4">
-<div class="big-icon">💄</div>
-<b>Beauty</b>
-</a>
+  <a class="cat-card" href="products.html?cat=4">
+    <div class="big-icon">💄</div>
+    <b>Beauty</b>
+  </a>
 
-<a class="cat-card" href="products.html?cat=5">
-<div class="big-icon">🏠</div>
-<b>Home</b>
-</a>
+  <a class="cat-card" href="products.html?cat=5">
+    <div class="big-icon">🏠</div>
+    <b>Home</b>
+  </a>
 
-<a class="cat-card" href="products.html?cat=6">
-<div class="big-icon">🛒</div>
-<b>Grocery</b>
-</a>
+  <a class="cat-card" href="products.html?cat=6">
+    <div class="big-icon">🛒</div>
+    <b>Grocery</b>
+  </a>
 
-<a class="cat-card" href="products.html?cat=7">
-<div class="big-icon">🎧</div>
-<b>Accessories</b>
-</a>
+  <a class="cat-card" href="products.html?cat=7">
+    <div class="big-icon">🎧</div>
+    <b>Accessories</b>
+  </a>
 
 </div>
 
@@ -1162,15 +1199,19 @@ Select your location →
 
 <div class="deal-strip">
 
-<div>
-<strong>⚡ LIMITED TIME DEALS</strong>
-<br>
-Save more on selected products today
-</div>
+  <div>
 
-<a class="deal-button" href="products.html">
-Shop Deals →
-</a>
+    <strong>⚡ LIMITED TIME DEALS</strong>
+
+    <br>
+
+    Save more on selected products today
+
+  </div>
+
+  <a class="deal-button" href="products.html">
+    Shop Deals →
+  </a>
 
 </div>
 
@@ -1179,9 +1220,9 @@ Shop Deals →
 
 <div class="section-head">
 
-<h2>⚡ Flash Deals</h2>
+  <h2>⚡ Flash Deals</h2>
 
-<a href="products.html">View All →</a>
+  <a href="products.html">View All →</a>
 
 </div>
 
@@ -1192,25 +1233,25 @@ Shop Deals →
 
 <div class="coupon-box">
 
-<div>
+  <div>
 
-<div class="coupon-title">
-🎁 Get Extra ₹100 OFF
-</div>
+    <div class="coupon-title">
+      🎁 Get Extra ₹100 OFF
+    </div>
 
-<div>
-Use this coupon on your next purchase
-</div>
+    <div>
+      Use this coupon on your next purchase
+    </div>
 
-<span class="coupon-code" id="homeCouponCode">
-PS100
-</span>
+    <span class="coupon-code" id="homeCouponCode">
+      PS100
+    </span>
 
-</div>
+  </div>
 
-<button class="coupon-btn" onclick="copyHomeCoupon()">
-Copy Code
-</button>
+  <button class="coupon-btn" onclick="copyHomeCoupon()">
+    Copy Code
+  </button>
 
 </div>
 
@@ -1219,9 +1260,9 @@ Copy Code
 
 <div class="section-head">
 
-<h2>🔥 Trending Picks</h2>
+  <h2>🔥 Trending Picks</h2>
 
-<a href="products.html">View All →</a>
+  <a href="products.html">View All →</a>
 
 </div>
 
@@ -1232,9 +1273,9 @@ Copy Code
 
 <div class="section-head">
 
-<h2>✨ New Arrivals</h2>
+  <h2>✨ New Arrivals</h2>
 
-<a href="products.html">View All →</a>
+  <a href="products.html">View All →</a>
 
 </div>
 
@@ -1245,709 +1286,51 @@ Copy Code
 
 <section class="trust-section">
 
-<div class="trust-box">
+  <div class="trust-box">
 
-<div class="trust-icon">🚚</div>
+    <div class="trust-icon">🚚</div>
 
-<div>
-<b>Fast Delivery</b>
-<span>Reliable delivery</span>
-</div>
+    <div>
+      <b>Fast Delivery</b>
+      <span>Reliable delivery</span>
+    </div>
 
-</div>
+  </div>
 
 
-<div class="trust-box">
+  <div class="trust-box">
 
-<div class="trust-icon">🔒</div>
+    <div class="trust-icon">🔒</div>
 
-<div>
-<b>Secure Shopping</b>
-<span>Safe checkout</span>
-</div>
+    <div>
+      <b>Secure Shopping</b>
+      <span>Safe checkout</span>
+    </div>
 
-</div>
+  </div>
 
 
-<div class="trust-box">
+  <div class="trust-box">
 
-<div class="trust-icon">💳</div>
+    <div class="trust-icon">💳</div>
 
-<div>
-<b>Multiple Payments</b>
-<span>Choose your method</span>
-</div>
+    <div>
+      <b>Multiple Payments</b>
+      <span>Choose your method</span>
+    </div>
 
-</div>
+  </div>
 
 
-<div class="trust-box">
+  <div class="trust-box">
 
-<div class="trust-icon">☎️</div>
+    <div class="trust-icon">☎️</div>
 
-<div>
-<b>Customer Support</b>
-<span>Help when needed</span>
-</div>
+    <div>
+      <b>Customer Support</b>
+      <span>Help when needed</span>
+    </div>
 
-</div>
+  </div>
 
-</section>
-
-
-<!-- ================= SELLER ================= -->
-
-<section class="seller-banner">
-
-<div>
-
-<h2>🏪 Sell on PS Mart</h2>
-
-<p>
-Have products to sell? Reach new customers and grow your business.
-</p>
-
-</div>
-
-<a class="seller-btn" href="seller-register.html">
-Become a Seller →
-</a>
-
-</section>
-
-
-</main>
-
-
-<!-- ================= FOOTER ================= -->
-
-<footer class="ps-footer">
-
-<div>
-
-<h3>PS Mart</h3>
-
-<a href="index.html">Home</a>
-<a href="products.html">All Products</a>
-<a href="wishlist.html">Wishlist</a>
-
-</div>
-
-
-<div>
-
-<h3>Customer</h3>
-
-<a href="profile.html">My Account</a>
-<a href="orders.html">My Orders</a>
-<a href="cart.html">My Cart</a>
-
-</div>
-
-
-<div>
-
-<h3>Seller</h3>
-
-<a href="seller-register.html">Sell on PS Mart</a>
-<a href="seller-dashboard.html">Seller Dashboard</a>
-
-</div>
-
-
-<div>
-
-<h3>Support</h3>
-
-<a href="about.html">About Us</a>
-<a href="privacy-center.html">Privacy</a>
-<a href="terms.html">Terms</a>
-<a href="contact.html">Contact</a>
-
-</div>
-
-</footer>
-
-
-<div class="footer-bottom">
-© 2026 PS Mart • Better Products, Better Life
-</div>
-
-
-<!-- ================= MOBILE NAV ================= -->
-
-<nav class="mobile-nav">
-
-<a href="index.html">
-<span>🏠</span>
-Home
-</a>
-
-<a href="products.html">
-<span>▦</span>
-Categories
-</a>
-
-<a href="profile.html">
-<span>👤</span>
-Account
-</a>
-
-<a href="cart.html">
-<span>🛒</span>
-Cart
-</a>
-
-</nav>
-
-
-<!-- ================= SCRIPTS ================= -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="data.js"></script>
-<script src="translate.js"></script>
-<script src="app.js"></script>
-
-
-<script>
-
-/* =====================================================
-   HERO SLIDER
-===================================================== */
-
-
-/* =====================================================
-   5 CARD HERO SLIDER
-===================================================== */
-
-let heroIndex = 0;
-
-const heroTrack =
-  document.getElementById("heroTrack");
-
-const heroDots =
-  document.querySelectorAll(".slider-dot");
-
-const totalHeroSlides = 5;
-
-
-function updateHero(){
-
-  if(!heroTrack) return;
-
-  heroTrack.style.transform =
-    "translateX(-" +
-    (heroIndex * 100) +
-    "%)";
-
-
-  heroDots.forEach((dot,index)=>{
-
-    dot.classList.toggle(
-      "active",
-      index === heroIndex
-    );
-
-  });
-
-}
-
-
-function heroNext(){
-
-  heroIndex++;
-
-  if(heroIndex >= totalHeroSlides){
-
-    heroIndex = 0;
-
-  }
-
-  updateHero();
-
-}
-
-
-function heroPrev(){
-
-  heroIndex--;
-
-  if(heroIndex < 0){
-
-    heroIndex =
-      totalHeroSlides - 1;
-
-  }
-
-  updateHero();
-
-}
-
-
-function heroGo(index){
-
-  heroIndex = index;
-
-  updateHero();
-
-}
-
-
-/* ================= AUTO SLIDE ================= */
-
-let heroTimer =
-  setInterval(heroNext,3000);
-
-
-/* ================= PAUSE ON DESKTOP ================= */
-
-const heroSlider =
-  document.getElementById("heroSlider");
-
-
-if(heroSlider){
-
-  heroSlider.addEventListener(
-    "mouseenter",
-    ()=>{
-      clearInterval(heroTimer);
-    }
-  );
-
-
-  heroSlider.addEventListener(
-    "mouseleave",
-    ()=>{
-      clearInterval(heroTimer);
-
-      heroTimer =
-        setInterval(heroNext,3000);
-    }
-  );
-
-}
-
-
-/* ================= TOUCH / SWIPE ================= */
-
-let touchStartX = 0;
-let touchEndX = 0;
-
-
-if(heroSlider){
-
-  heroSlider.addEventListener(
-    "touchstart",
-    function(e){
-
-      touchStartX =
-        e.changedTouches[0].screenX;
-
-    },
-    {passive:true}
-  );
-
-
-  heroSlider.addEventListener(
-    "touchend",
-    function(e){
-
-      touchEndX =
-        e.changedTouches[0].screenX;
-
-      const difference =
-        touchStartX - touchEndX;
-
-
-      if(Math.abs(difference) > 50){
-
-        if(difference > 0){
-
-          heroNext();
-
-        }else{
-
-          heroPrev();
-
-        }
-
-      }
-
-    },
-    {passive:true}
-  );
-
-}
-
-
-/* Start first card */
-
-updateHero();
-);
-
-
-/* =====================================================
-   COUPON
-===================================================== */
-
-function copyHomeCoupon(){
-
-  const code =
-    document.getElementById("homeCouponCode")
-    .innerText
-    .trim();
-
-  navigator.clipboard.writeText(code)
-  .then(()=>{
-
-    alert(
-      "Coupon " + code + " copied!"
-    );
-
-  })
-  .catch(()=>{
-
-    alert(
-      "Coupon Code: " + code
-    );
-
-  });
-
-}
-
-
-/* =====================================================
-   HOME PRODUCTS
-===================================================== */
-
-async function loadHomeProducts(){
-
-  const flash =
-    document.getElementById("flashDeals");
-
-  const trending =
-    document.getElementById("trendingProducts");
-
-  const arrivals =
-    document.getElementById("newArrivals");
-
-
-  if(
-    typeof supabaseClient === "undefined"
-  ){
-
-    flash.innerHTML =
-      "<p>Products loading...</p>";
-
-    trending.innerHTML =
-      "<p>Products loading...</p>";
-
-    arrivals.innerHTML =
-      "<p>Products loading...</p>";
-
-    return;
-
-  }
-
-
-  try{
-
-    const result =
-      await supabaseClient
-      .from("products")
-      .select("*")
-      .eq("status","approved");
-
-
-    if(result.error){
-      throw result.error;
-    }
-
-
-    let products =
-      result.data || [];
-
-
-    if(products.length === 0){
-
-      flash.innerHTML =
-        "<p>No products available yet.</p>";
-
-      trending.innerHTML =
-        "<p>No products available yet.</p>";
-
-      arrivals.innerHTML =
-        "<p>No products available yet.</p>";
-
-      return;
-
-    }
-
-
-    /* Newest products */
-
-    const newest =
-      [...products]
-      .sort(
-        (a,b)=>
-          new Date(b.created_at || 0)
-          -
-          new Date(a.created_at || 0)
-      );
-
-
-    /* Flash deals */
-
-    const flashProducts =
-      products
-      .filter(p =>
-        Number(p.old_price || 0)
-        >
-        Number(p.price || 0)
-      )
-      .sort((a,b)=>{
-
-        const da =
-          Number(a.old_price || 0)
-          -
-          Number(a.price || 0);
-
-        const db =
-          Number(b.old_price || 0)
-          -
-          Number(b.price || 0);
-
-        return db-da;
-
-      });
-
-
-    /*
-      If fewer than 4 products have old_price,
-      fill remaining cards with newest products.
-    */
-
-    const flashFinal =
-      [...flashProducts];
-
-    for(const p of newest){
-
-      if(
-        flashFinal.length >= 4
-      ) break;
-
-      if(
-        !flashFinal.some(
-          x=>x.id === p.id
-        )
-      ){
-
-        flashFinal.push(p);
-
-      }
-
-    }
-
-
-    renderHomeProducts(
-      flash,
-      flashFinal.slice(0,4)
-    );
-
-
-    /*
-      Trending Picks:
-      currently uses latest approved products.
-      This can later be connected to real
-      views/order analytics.
-    */
-
-    renderHomeProducts(
-      trending,
-      newest.slice(0,4)
-    );
-
-
-    /* New arrivals */
-
-    renderHomeProducts(
-      arrivals,
-      newest.slice(0,4)
-    );
-
-
-  }catch(error){
-
-    console.error(
-      "Home products error:",
-      error
-    );
-
-    flash.innerHTML =
-      "<p>Unable to load products.</p>";
-
-    trending.innerHTML =
-      "<p>Unable to load products.</p>";
-
-    arrivals.innerHTML =
-      "<p>Unable to load products.</p>";
-
-  }
-
-}
-
-
-/* =====================================================
-   PRODUCT CARD
-===================================================== */
-
-function renderHomeProducts(
-  container,
-  products
-){
-
-  if(!products.length){
-
-    container.innerHTML =
-      "<p>No products available yet.</p>";
-
-    return;
-
-  }
-
-
-  container.innerHTML =
-    products.map(product=>{
-
-      const price =
-        Number(product.price || 0);
-
-      const oldPrice =
-        Number(product.old_price || 0);
-
-
-      let discount = "";
-
-      if(
-        oldPrice > price &&
-        oldPrice > 0
-      ){
-
-        discount =
-          Math.round(
-            ((oldPrice-price)/oldPrice)*100
-          );
-
-      }
-
-
-      const image =
-        product.image_url ||
-        product.image ||
-        "https://via.placeholder.com/400x300?text=PS+Mart";
-
-
-      const name =
-        product.name ||
-        "Product";
-
-
-      return `
-
-        <article class="home-product-card">
-
-          <div class="home-product-image">
-
-            <img
-              src="${escapeHomeHtml(image)}"
-              alt="${escapeHomeHtml(name)}"
-              loading="lazy"
-            >
-
-          </div>
-
-
-          <div class="home-product-info">
-
-            <div class="home-product-name">
-              ${escapeHomeHtml(name)}
-            </div>
-
-
-            <div class="home-price">
-
-              ₹${price.toLocaleString("en-IN")}
-
-              ${
-                oldPrice > price
-                ?
-                `<span class="home-old-price">
-                  ₹${oldPrice.toLocaleString("en-IN")}
-                </span>`
-                :
-                ""
-              }
-
-              ${
-                discount
-                ?
-                `<span class="home-off">
-                  ${discount}% OFF
-                </span>`
-                :
-                ""
-              }
-
-            </div>
-
-
-            <a
-              class="home-view"
-              href="products.html"
-            >
-              View Product →
-            </a>
-
-          </div>
-
-        </article>
-
-      `;
-
-    }).join("");
-
-}
-
-
-/* =====================================================
-   SAFE HTML
-===================================================== */
-
-function escapeHomeHtml(value){
-
-  return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
-
-/* =====================================================
-   START
-===================================================== */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  ()=>{
-    loadHomeProducts();
-  }
-);
-
-</script>
-
-</body>
-</html>
+  
