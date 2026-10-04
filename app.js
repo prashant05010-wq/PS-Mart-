@@ -2152,3 +2152,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   await detail();
 
 });
+/* =========================
+   HOME PAGE INITIALIZATION
+========================= */
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+  await renderHome();
+
+});
