@@ -2136,3 +2136,19 @@ supabaseClient.auth.onAuthStateChange(
 
   }
 );
+/* =========================
+   PAGE INITIALIZATION
+========================= */
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+  updateCount();
+  updateLoginState();
+
+  await renderHome();
+  await renderProducts();
+  await renderCart();
+  await summary();
+  await detail();
+
+});
