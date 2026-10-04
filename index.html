@@ -2337,8 +2337,90 @@ function copyHomeCoupon(){
 }
 
 </script>
+<!-- Supabase JS Library (app.js से ठीक ऊपर होना जरूरी है) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- App JS -->
+<script src="app.js"></script>
+
+<!-- HERO SLIDER JS -->
+<script>
+let heroIndex = 0;
+let heroTimer = null;
+const heroTotal = 4;
+
+function updateHero(){
+  const track = document.getElementById("heroTrack");
+  if(!track) return;
+  track.style.transform = "translateX(-" + (heroIndex * 100) + "%)";
+
+  const dots = document.querySelectorAll(".slider-dot");
+  dots.forEach(function(dot,index){
+    dot.classList.toggle("active", index === heroIndex);
+  });
+}
+
+function heroNext(){
+  heroIndex++;
+  if(heroIndex >= heroTotal) heroIndex = 0;
+  updateHero();
+  restartHeroTimer();
+}
+
+function heroPrev(){
+  heroIndex--;
+  if(heroIndex < 0) heroIndex = heroTotal - 1;
+  updateHero();
+  restartHeroTimer();
+}
+
+function heroGo(index){
+  if(index < 0 || index >= heroTotal) return;
+  heroIndex = index;
+  updateHero();
+  restartHeroTimer();
+}
+
+function startHeroTimer(){
+  clearInterval(heroTimer);
+  heroTimer = setInterval(function(){
+    heroIndex++;
+    if(heroIndex >= heroTotal) heroIndex = 0;
+    updateHero();
+  },3000);
+}
+
+function restartHeroTimer(){
+  startHeroTimer();
+}
+
+const heroSlider = document.getElementById("heroSlider");
+if(heroSlider){
+  heroSlider.addEventListener("mouseenter", function(){ clearInterval(heroTimer); });
+  heroSlider.addEventListener("mouseleave", function(){ startHeroTimer(); });
+  heroSlider.addEventListener("touchstart", function(){ clearInterval(heroTimer); }, {passive:true});
+  heroSlider.addEventListener("touchend", function(){ startHeroTimer(); });
+}
+
+updateHero();
+startHeroTimer();
+
+function copyHomeCoupon(){
+  const code = document.getElementById("homeCouponCode")?.innerText.trim();
+  if(!code) return;
+
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(function(){
+      alert("🎉 कूपन कोड '" + code + "' कॉपी हो गया है!\n\n₹500 या उससे अधिक की खरीदारी पर इसे Cart (कार्ट) पेज में Apply करें।");
+    }).catch(function(){
+      alert("कूपन कोड: " + code);
+    });
+  } else {
+    alert("कूपन कोड: " + code);
+  }
+}
+
+</script>
 
 </body>
-
 </html>
