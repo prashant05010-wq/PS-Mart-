@@ -552,6 +552,7 @@ async function renderProducts() {
   }
 
 }
+
 /* =========================
    HOME PRODUCTS
 ========================= */
@@ -561,8 +562,24 @@ async function renderHome() {
   const products = await loadProductsFromSupabase();
 
   /* =========================
-     MAIN HOME PRODUCTS
+     FLASH DEALS & MAIN HOME
   ========================= */
+
+  const flash = document.querySelector("#flashDeals");
+  if (flash) {
+    flash.innerHTML = products
+      .slice(0, 5)
+      .map(card)
+      .join("");
+
+    if (!products.length) {
+      flash.innerHTML = `
+        <div class="empty">
+          No products available yet.
+        </div>
+      `;
+    }
+  }
 
   const home = document.querySelector("#homeProducts");
 
@@ -1234,7 +1251,7 @@ async function renderCart() {
                     "
                   >
                 `
-                : "🛍️"
+                : "🛍️️"
             }
 
           </div>
@@ -1620,7 +1637,7 @@ async function applyCoupon() {
   ) {
 
     alert(
-      "🛍️️ Minimum order value for this coupon is " +
+      "🛍 Minimum order value for this coupon is " +
       money(coupon.minimum_order) +
       ". Please add more items to your cart."
     );
@@ -2150,14 +2167,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   await renderCart();
   await summary();
   await detail();
-
-});
-/* =========================
-   HOME PAGE INITIALIZATION
-========================= */
-
-document.addEventListener("DOMContentLoaded", async () => {
-
-  await renderHome();
 
 });
