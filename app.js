@@ -94,11 +94,13 @@ async function decreaseQty(id) {
    LOAD & RENDER HOME PRODUCTS
 ========================= */
 async function renderHome() {
-  const container = document.querySelector("#homeProducts") || document.querySelector("#products");
-  if (!container) return;
+  // Check index.html containers
+  const flashContainer = document.querySelector("#flashDeals");
+  const trendingContainer = document.querySelector("#trendingProducts");
+  const newContainer = document.querySelector("#newArrivals");
+  const singleContainer = document.querySelector("#homeProducts") || document.querySelector("#products");
 
-  container.innerHTML = `<div style="text-align:center; padding:20px; width:100%;">Loading products...</div>`;
-
+  // Fetch all products from Supabase
   const { data: products, error } = await supabaseClient
     .from("products")
     .select("*")
@@ -106,55 +108,45 @@ async function renderHome() {
 
   if (error) {
     console.error("Home products fetch error:", error);
-    container.innerHTML = `<div style="text-align:center; padding:20px; color:red;">Failed to load products.</div>`;
     return;
   }
 
   if (!products || products.length === 0) {
-    container.innerHTML = `<div style="text-align:center; padding:30px; width:100%; color:#666;">No products available right now.</div>`;
+    if (flashContainer) flashContainer.innerHTML = `<p style="padding:15px; color:#666;">No products available.</p>`;
     return;
   }
 
-  container.innerHTML = products.map(p => `
-    <div style="
-      background: #fff;
-      border-radius: 12px;
-      padding: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      border: 1px solid #eee;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    ">
-      <div style="height: 160px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; background: #fafafa; margin-bottom: 12px;">
+  // HTML generator for product card matching your CSS
+  const createProductHTML = p => `
+    <div class="home-product-card">
+      <div class="home-product-image">
         ${
           p.image_url 
-            ? `<img src="${p.image_url}" alt="${p.name}" style="max-height: 100%; max-width: 100%; object-fit: contain;">`
-            : `<span style="font-size: 50px;">🛍️</span>`
+            ? `<img src="${p.image_url}" alt="${p.name}">`
+            : `<span style="font-size: 50px;">🛍️️</span>`
         }
       </div>
-
-      <div>
-        <h3 style="font-size: 16px; margin: 0 0 8px 0; color: #333;">${p.name}</h3>
-        <p style="font-size: 18px; font-weight: bold; color: #9b681b; margin: 0 0 12px 0;">${money(p.price)}</p>
+      <div class="home-product-info">
+        <div class="home-product-name">${p.name}</div>
+        <div class="home-price">
+          ${money(p.price)}
+          ${p.old_price ? `<span class="home-old-price">${money(p.old_price)}</span>` : ''}
+        </div>
+        <button onclick="add('${p.id}')" class="home-view" style="border:none; width:100%; cursor:pointer;">
+          Add to Cart 🛒
+        </button>
       </div>
-
-      <button onclick="add('${p.id}')" style="
-        width: 100%;
-        background: linear-gradient(135deg, #d8a83e, #9b681b);
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 6px;
-        font-weight: bold;
-        cursor: pointer;
-      ">
-        Add to Cart 🛒
-      </button>
     </div>
-  `).join("");
-}
+  `;
 
+  const allHTML = products.map(createProductHTML).join("");
+
+  // Populate containers based on what exists on the page
+  if (flashContainer) flashContainer.innerHTML = allHTML;
+  if (trendingContainer) trendingContainer.innerHTML = allHTML;
+  if (newContainer) newContainer.innerHTML = allHTML;
+  if (singleContainer) singleContainer.innerHTML = allHTML;
+}
 /* =========================
    PREMIUM CART RENDER
 ========================= */
