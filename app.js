@@ -138,10 +138,6 @@ function search() {
 
 function card(p) {
 
-  /* =========================
-     AUTOMATIC DISCOUNT
-  ========================= */
-
   let discount = 0;
 
   if (
@@ -158,10 +154,6 @@ function card(p) {
 
   }
 
-
-  /* =========================
-     RATING
-  ========================= */
 
   const rating =
     Number(p.rating || 4.0);
@@ -350,40 +342,26 @@ function card(p) {
       </div>
 
 
-      <!-- COUPON OFFER -->
+      <!-- COUPON OFFER BUTTON -->
 
-      <div style="
-        margin-top:8px;
-        padding:7px 9px;
-        border-radius:6px;
-        background:#fff8e7;
-        border:1px dashed #d6a63c;
-        color:#79520f;
-        font-size:12px;
-        font-weight:bold;
-      ">
-       <!-- COUPON BUTTON -->
-
-<a
-  href="coupons.html"
-  style="
-    display:block;
-    margin-top:8px;
-    padding:9px 10px;
-    border-radius:6px;
-    background:#fff8e7;
-    border:1px dashed #d6a63c;
-    color:#79520f;
-    font-size:13px;
-    font-weight:bold;
-    text-align:center;
-    text-decoration:none;
-  "
->
-  🎟️ View & Apply Coupons →
-</a>
-
-
+      <a
+        href="coupons.html"
+        style="
+          display:block;
+          margin-top:8px;
+          padding:9px 10px;
+          border-radius:6px;
+          background:#fff8e7;
+          border:1px dashed #d6a63c;
+          color:#79520f;
+          font-size:13px;
+          font-weight:bold;
+          text-align:center;
+          text-decoration:none;
+        "
+      >
+        🎟️ View & Apply Coupons →
+      </a>
 
 
       <!-- VIEW PRODUCT -->
@@ -403,6 +381,7 @@ function card(p) {
 
   `;
 }
+
 /* =========================
    LOAD APPROVED PRODUCTS
 ========================= */
@@ -444,20 +423,16 @@ async function renderProducts() {
 
   const params = new URLSearchParams(location.search);
 
-  /* CATEGORY ID FROM URL */
   const cat = (params.get("cat") || "").trim();
 
   const categoryId = cat ? Number(cat) : null;
 
-  /* SEARCH */
   const q = (params.get("q") || "")
     .toLowerCase()
     .trim();
 
-  /* LOAD APPROVED PRODUCTS */
   const products = await loadProductsFromSupabase();
 
-  /* CATEGORY NAMES */
   const categoryNames = {
     1: "Mobiles",
     2: "Electronics",
@@ -468,7 +443,6 @@ async function renderProducts() {
     7: "Accessories"
   };
 
-  /* FILTER PRODUCTS */
   let filtered = products.filter(p => {
 
     const name = String(p.name || "")
@@ -480,12 +454,10 @@ async function renderProducts() {
     const productCategoryId =
       Number(p.category_id || 0);
 
-    /* CATEGORY MATCH */
     const matchesCategory =
       !categoryId ||
       productCategoryId === categoryId;
 
-    /* SEARCH MATCH */
     const matchesSearch =
       !q ||
       name.includes(q) ||
@@ -498,7 +470,6 @@ async function renderProducts() {
 
   });
 
-  /* SORT */
   const sort =
     document.querySelector("#sort")?.value;
 
@@ -522,7 +493,6 @@ async function renderProducts() {
 
   }
 
-  /* PAGE TITLE */
   const title =
     document.querySelector("#title");
 
@@ -547,7 +517,6 @@ async function renderProducts() {
 
   }
 
-  /* SHOW PRODUCTS */
   if (filtered.length) {
 
     el.innerHTML =
@@ -1011,30 +980,30 @@ async function detail() {
       </div>
 
     </div>
-<div class="info-section">
 
-  <h2>❓ Questions & Answers</h2>
+    <div class="info-section">
 
-  <p style="color:#777;">
-    Have a question about this product?
-  </p>
+      <h2>❓ Questions & Answers</h2>
 
-  <a
-    <a href="questions.html?id=${encodeURIComponent(p.id)}&name=${encodeURIComponent(p.name)}"
-    style="
-      display:inline-block;
-      background:#9b681b;
-      color:white;
-      padding:12px 20px;
-      border-radius:8px;
-      text-decoration:none;
-      font-weight:bold;
-    "
-  >
-    ❓ Ask a Question
-  </a>
+      <p style="color:#777;">
+        Have a question about this product?
+      </p>
 
-</div>
+      <a href="questions.html?id=${encodeURIComponent(p.id)}&name=${encodeURIComponent(p.name)}"
+        style="
+          display:inline-block;
+          background:#9b681b;
+          color:white;
+          padding:12px 20px;
+          border-radius:8px;
+          text-decoration:none;
+          font-weight:bold;
+        "
+      >
+        ❓ Ask a Question
+      </a>
+
+    </div>
   `;
 
 }
@@ -1257,13 +1226,21 @@ async function renderCart() {
      COUPON + CART SUMMARY
   ========================= */
 
+  let couponDiscount = 0; // बग फिक्स: घोषित किया गया
+
   const savedCoupon =
     JSON.parse(
       localStorage.getItem("psmart-applied-coupon") || "null"
     );
 
   if (savedCoupon) {
-    couponDiscount = Number(savedCoupon.discount || 0);
+    // यदि कार्ट का कुल मूल्य न्यूनतम ऑर्डर से कम हो गया हो तो कूपन स्वतः हटा दें
+    if (savedCoupon.minimum_order && total < savedCoupon.minimum_order) {
+      localStorage.removeItem("psmart-applied-coupon");
+      couponDiscount = 0;
+    } else {
+      couponDiscount = Number(savedCoupon.discount || 0);
+    }
   }
 
   const finalTotal =
@@ -1316,7 +1293,7 @@ async function renderCart() {
 
 
         ${
-          savedCoupon
+          savedCoupon && couponDiscount > 0
             ? `
 
               <div style="
@@ -1474,6 +1451,7 @@ async function renderCart() {
 
   `;
 }
+
 /* =========================
    PS MART COUPON SYSTEM
 ========================= */
@@ -1574,8 +1552,9 @@ async function applyCoupon() {
   ) {
 
     alert(
-      "🛍️ Minimum order value for this coupon is " +
-      money(coupon.minimum_order)
+      "🛍️️ Minimum order value for this coupon is " +
+      money(coupon.minimum_order) +
+      ". Please add more items to your cart."
     );
 
     return;
@@ -1643,7 +1622,8 @@ async function applyCoupon() {
       id: coupon.id,
       code: coupon.code,
       title: coupon.title,
-      discount: discount
+      discount: discount,
+      minimum_order: coupon.minimum_order
     })
   );
 
@@ -1733,7 +1713,6 @@ async function decreaseQty(id) {
       );
 
   }
-
 
   saveCart(c);
 
@@ -1846,6 +1825,19 @@ async function summary() {
     );
 
 
+  // चेकाउट में कूपन डिस्काउंट शामिल करें
+  let summaryDiscount = 0;
+  const savedCoupon = JSON.parse(
+    localStorage.getItem("psmart-applied-coupon") || "null"
+  );
+
+  if (savedCoupon) {
+    summaryDiscount = Number(savedCoupon.discount || 0);
+  }
+
+  const finalCheckoutTotal = Math.max(0, total - summaryDiscount);
+
+
   e.innerHTML = `
 
     <h2>
@@ -1860,6 +1852,26 @@ async function summary() {
     </p>
 
     <p>
+      Subtotal:
+      <b>
+        ${money(total)}
+      </b>
+    </p>
+
+    ${
+      summaryDiscount > 0
+        ? `
+          <p style="color:#188038;">
+            Coupon Discount (${savedCoupon.code}):
+            <b>
+              − ${money(summaryDiscount)}
+            </b>
+          </p>
+        `
+        : ""
+    }
+
+    <p>
       Delivery:
       <b class="green">
         FREE
@@ -1870,7 +1882,7 @@ async function summary() {
 
     <h2>
       Total:
-      ${money(total)}
+      ${money(finalCheckoutTotal)}
     </h2>
 
   `;
@@ -2056,1267 +2068,3 @@ supabaseClient.auth.onAuthStateChange(
 
   }
 );
-
-
-/* =========================
-   START
-========================= */
-
-updateCount();
-
-renderHome();
-
-renderProducts();
-
-detail();
-
-renderCart();
-
-summary();
-
-updateLoginState();
-
-
-/* =========================
-   WISHLIST
-========================= */
-
-async function toggleWishlist(productId, button) {
-
-  const { data: userData } =
-    await supabaseClient.auth.getUser();
-
-  const user = userData.user;
-
-  if (!user) {
-
-    alert("Please login first ❤️");
-
-    window.location.href =
-      "login.html";
-
-    return;
-  }
-
-
-  const { data: existing } =
-    await supabaseClient
-      .from("wishlist")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("product_id", productId)
-      .maybeSingle();
-
-
-  if (existing) {
-
-    const { error } =
-      await supabaseClient
-        .from("wishlist")
-        .delete()
-        .eq("id", existing.id);
-
-    if (!error) {
-
-      button.innerHTML = "♡";
-
-      button.classList.remove(
-        "active"
-      );
-
-    }
-
-  } else {
-
-    const { error } =
-      await supabaseClient
-        .from("wishlist")
-        .insert({
-          user_id: user.id,
-          product_id: productId
-        });
-
-    if (!error) {
-
-      button.innerHTML = "♥";
-
-      button.classList.add(
-        "active"
-      );
-
-    }
-
-  }
-
-}
-
-
-/* =========================
-   PS MART DELIVERY LOCATION
-========================= */
-function openLocation(isNewAddress = false) {
-
-  const oldPopup =
-    document.getElementById(
-      "locationPopup"
-    );
-
-  if (oldPopup) {
-    oldPopup.remove();
-  }
-
-
-  document.body.insertAdjacentHTML(
-    "beforeend",
-    `
-
-    <div id="locationPopup"
-      style="
-        position:fixed;
-        inset:0;
-        background:rgba(0,0,0,.55);
-        z-index:99999;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        padding:15px;
-        box-sizing:border-box;
-      ">
-
-      <div
-        style="
-          width:100%;
-          max-width:520px;
-          max-height:90vh;
-          overflow:auto;
-          background:#fff;
-          border-radius:12px;
-          box-shadow:0 10px 40px rgba(0,0,0,.3);
-        ">
-
-
-        <!-- HEADER -->
-
-        <div
-          style="
-            padding:18px 20px;
-            border-bottom:1px solid #eadfc9;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-          ">
-
-          <h2
-            style="
-              margin:0;
-              color:#21170f;
-              font-size:20px;
-            ">
-            Select Delivery Address
-          </h2>
-
-          <button
-            onclick="closeLocation()"
-            style="
-              border:0;
-              background:none;
-              font-size:25px;
-              cursor:pointer;
-              color:#555;
-            ">
-            ×
-          </button>
-
-        </div>
-
-
-        <!-- SEARCH -->
-
-        <div
-          style="
-            padding:18px 20px 10px;
-          ">
-
-          <div
-            style="
-              display:flex;
-              border:1px solid #cfcfcf;
-              border-radius:7px;
-              overflow:hidden;
-              height:46px;
-            ">
-
-            <span
-              style="
-                display:flex;
-                align-items:center;
-                padding:0 12px;
-                font-size:18px;
-              ">
-              🔍
-            </span>
-
-            <input
-              id="locationSearch"
-              type="text"
-              placeholder="Search area, street, city..."
-              style="
-                flex:1;
-                border:0;
-                outline:0;
-                font-size:14px;
-              "
-            >
-
-          </div>
-
-        </div>
-
-
-        <!-- CURRENT LOCATION -->
-
-        <button
-          onclick="useCurrentLocation(this)"
-          style="
-            width:calc(100% - 40px);
-            margin:8px 20px 15px;
-            padding:13px;
-            border:1px solid #e2a938;
-            background:#fff8e6;
-            color:#8b5a16;
-            border-radius:7px;
-            font-weight:bold;
-            cursor:pointer;
-          ">
-
-          📍 Use My Current Location
-
-        </button>
-
-
-        <!-- ADDRESS FORM -->
-
-        <div
-          style="
-            padding:5px 20px 20px;
-          ">
-
-          <input
-            id="addressName"
-            class="location-input"
-            type="text"
-            placeholder="Full Name"
-          >
-
-          <input
-            id="addressPhone"
-            class="location-input"
-            type="tel"
-            placeholder="Phone Number"
-          >
-
-          <input
-            id="addressLine"
-            class="location-input"
-            type="text"
-            placeholder="Address Line"
-          >
-
-          <input
-            id="addressCity"
-            class="location-input"
-            type="text"
-            placeholder="City"
-          >
-
-          <input
-            id="addressPincode"
-            class="location-input"
-            type="text"
-            placeholder="Pincode"
-          >
-
-          <input
-            id="addressState"
-            class="location-input"
-            type="text"
-            placeholder="State"
-          >
-
-          <select
-            id="addressType"
-            class="location-input">
-
-            <option value="Home">
-              Home
-            </option>
-
-            <option value="Work">
-              Work
-            </option>
-
-            <option value="Other">
-              Other
-            </option>
-
-          </select>
-
-
-          <button
-            onclick="saveDeliveryAddress()"
-            style="
-              width:100%;
-              padding:14px;
-              background:linear-gradient(
-                135deg,
-                #f0c256,
-                #bb7719
-              );
-              color:#281507;
-              border:0;
-              border-radius:7px;
-              font-weight:bold;
-              font-size:15px;
-              cursor:pointer;
-            ">
-
-            Save & Continue
-
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
-
-    `
-  );
-
-
-  /* =========================
-     INPUT STYLE
-  ========================= */
-/* =========================
-   LOCATION SEARCH AUTOCOMPLETE
-========================= */
-
-const locationSearch =
-  document.getElementById("locationSearch");
-
-if (locationSearch) {
-
-  const suggestionBox =
-    document.createElement("div");
-
-  suggestionBox.id =
-    "locationSuggestions";
-
-  suggestionBox.style.position =
-    "relative";
-
-  suggestionBox.style.background =
-    "#fff";
-
-  suggestionBox.style.border =
-    "1px solid #ddd";
-
-  suggestionBox.style.borderTop =
-    "0";
-
-  suggestionBox.style.maxHeight =
-    "220px";
-
-  suggestionBox.style.overflowY =
-    "auto";
-
-  suggestionBox.style.zIndex =
-    "100000";
-
-  locationSearch.parentElement
-    .parentElement
-    .appendChild(suggestionBox);
-
-
-  let searchTimer;
-
-
-  locationSearch.addEventListener(
-    "input",
-    function () {
-
-      const query =
-        this.value.trim();
-
-      clearTimeout(searchTimer);
-
-      suggestionBox.innerHTML = "";
-
-      if (query.length < 2) {
-        return;
-      }
-
-
-      searchTimer =
-        setTimeout(async function () {
-
-          try {
-
-            const response =
-              await fetch(
-                "https://nominatim.openstreetmap.org/search" +
-                "?format=jsonv2" +
-                "&q=" +
-                encodeURIComponent(query) +
-                "&countrycodes=in" +
-                "&addressdetails=1" +
-                "&limit=6",
-                {
-                  headers: {
-                    "Accept":
-                      "application/json"
-                  }
-                }
-              );
-
-
-            if (!response.ok) {
-              return;
-            }
-
-
-            const results =
-              await response.json();
-
-
-            suggestionBox.innerHTML = "";
-
-
-            results.forEach(function(place) {
-
-              const item =
-                document.createElement("div");
-
-              item.textContent =
-                place.display_name;
-
-              item.style.padding =
-                "12px";
-
-              item.style.cursor =
-                "pointer";
-
-              item.style.borderBottom =
-                "1px solid #eee";
-
-              item.style.fontSize =
-                "13px";
-
-
-              item.addEventListener(
-                "click",
-                function () {
-
-                  locationSearch.value =
-                    place.display_name;
-
-                  const a =
-                    place.address || {};
-
-
-                  const area =
-                    a.neighbourhood ||
-                    a.suburb ||
-                    a.quarter ||
-                    a.residential ||
-                    a.village ||
-                    "";
-
-
-                  const road =
-                    a.road ||
-                    a.street ||
-                    a.pedestrian ||
-                    "";
-
-
-                  const city =
-                    a.city ||
-                    a.town ||
-                    a.municipality ||
-                    a.county ||
-                    a.village ||
-                    "";
-
-
-                  const state =
-                    a.state || "";
-
-
-                  const pincode =
-                    a.postcode || "";
-
-
-                  const addressInput =
-                    document.getElementById(
-                      "addressLine"
-                    );
-
-                  const cityInput =
-                    document.getElementById(
-                      "addressCity"
-                    );
-
-                  const stateInput =
-                    document.getElementById(
-                      "addressState"
-                    );
-
-                  const pincodeInput =
-                    document.getElementById(
-                      "addressPincode"
-                    );
-
-
-                  if (addressInput) {
-                    addressInput.value =
-                      [road, area]
-                        .filter(Boolean)
-                        .join(", ");
-                  }
-
-
-                  if (cityInput) {
-                    cityInput.value =
-                      city;
-                  }
-
-
-                  if (stateInput) {
-                    stateInput.value =
-                      state;
-                  }
-
-
-                  if (pincodeInput) {
-                    pincodeInput.value =
-                      pincode;
-                  }
-
-
-                  suggestionBox.innerHTML =
-                    "";
-
-                }
-              );
-
-
-              suggestionBox.appendChild(
-                item
-              );
-
-            });
-
-          }
-
-          catch(error) {
-
-            console.error(
-              "Location search error:",
-              error
-            );
-
-          }
-
-        }, 400);
-
-    }
-  );
-
-}
-  document
-    .querySelectorAll(
-      ".location-input"
-    )
-    .forEach(input => {
-
-      input.style.width =
-        "100%";
-
-      input.style.boxSizing =
-        "border-box";
-
-      input.style.padding =
-        "12px";
-
-      input.style.marginBottom =
-        "10px";
-
-      input.style.border =
-        "1px solid #d5d5d5";
-
-      input.style.borderRadius =
-        "6px";
-
-      input.style.outline =
-        "none";
-
-      input.style.fontSize =
-        "14px";
-
-    });
-
-
-  /* =========================
-     LOAD SAVED ADDRESS
-  ========================= */
-
-  const saved =
-    JSON.parse(
-      localStorage.getItem(
-        "psmart-address"
-      ) || "null"
-    );
-
-
-if (saved && !isNewAddress) {
-
-    const name =
-      document.getElementById(
-        "addressName"
-      );
-
-    const phone =
-      document.getElementById(
-        "addressPhone"
-      );
-
-    const address =
-      document.getElementById(
-        "addressLine"
-      );
-
-    const city =
-      document.getElementById(
-        "addressCity"
-      );
-
-    const pincode =
-      document.getElementById(
-        "addressPincode"
-      );
-
-    const state =
-      document.getElementById(
-        "addressState"
-      );
-
-    const type =
-      document.getElementById(
-        "addressType"
-      );
-
-
-    if (name)
-      name.value =
-        saved.name || "";
-
-    if (phone)
-      phone.value =
-        saved.phone || "";
-
-    if (address)
-      address.value =
-        saved.address || "";
-
-    if (city)
-      city.value =
-        saved.city || "";
-
-    if (pincode)
-      pincode.value =
-        saved.pincode || "";
-
-    if (state)
-      state.value =
-        saved.state || "";
-
-    if (type)
-      type.value =
-        saved.type || "Home";
-
-  }
-
-}
-
-
-/* =========================
-   CLOSE LOCATION
-========================= */
-
-function closeLocation() {
-
-  const popup =
-    document.getElementById(
-      "locationPopup"
-    );
-
-  if (popup) {
-    popup.remove();
-  }
-
-}
-
-
-/* =========================
-   CURRENT LOCATION
-========================= */
-
-function useCurrentLocation(button) {
-
-  if (!navigator.geolocation) {
-
-    alert(
-      "Your browser does not support location."
-    );
-
-    return;
-  }
-
-
-  if (button) {
-
-    button.disabled = true;
-
-    button.textContent =
-      "📍 Detecting location...";
-
-  }
-
-
-  navigator.geolocation.getCurrentPosition(
-
-    async function(position) {
-
-      try {
-
-        const lat =
-          position.coords.latitude;
-
-        const lon =
-          position.coords.longitude;
-
-
-        const response =
-          await fetch(
-            "https://nominatim.openstreetmap.org/reverse" +
-            "?format=jsonv2" +
-            "&lat=" +
-            encodeURIComponent(lat) +
-            "&lon=" +
-            encodeURIComponent(lon) +
-            "&zoom=18" +
-            "&addressdetails=1",
-            {
-              headers: {
-                "Accept":
-                  "application/json"
-              }
-            }
-          );
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            "Address service failed"
-          );
-
-        }
-
-
-        const data =
-          await response.json();
-
-
-        const a =
-          data.address || {};
-
-
-        const area =
-          a.neighbourhood ||
-          a.suburb ||
-          a.quarter ||
-          a.residential ||
-          a.village ||
-          "";
-
-
-        const road =
-          a.road ||
-          a.street ||
-          a.pedestrian ||
-          "";
-
-
-        const city =
-          a.city ||
-          a.town ||
-          a.village ||
-          a.municipality ||
-          a.county ||
-          "";
-
-
-        const state =
-          a.state ||
-          "";
-
-
-        const pincode =
-          a.postcode ||
-          "";
-
-
-        const addressLine =
-          [road, area]
-            .filter(Boolean)
-            .join(", ");
-
-
-        const addressInput =
-          document.getElementById(
-            "addressLine"
-          );
-
-        const cityInput =
-          document.getElementById(
-            "addressCity"
-          );
-
-        const stateInput =
-          document.getElementById(
-            "addressState"
-          );
-
-        const pincodeInput =
-          document.getElementById(
-            "addressPincode"
-          );
-
-
-        if (addressInput) {
-
-          addressInput.value =
-            addressLine;
-
-        }
-
-
-        if (cityInput) {
-
-          cityInput.value =
-            city;
-
-        }
-
-
-        if (stateInput) {
-
-          stateInput.value =
-            state;
-
-        }
-
-
-        if (pincodeInput) {
-
-          pincodeInput.value =
-            pincode;
-
-        }
-
-
-        if (
-          addressLine ||
-          city ||
-          state ||
-          pincode
-        ) {
-
-          alert(
-            "✓ Location detected!\n\n" +
-            "Please check the address and click Save & Continue."
-          );
-
-        } else {
-
-          alert(
-            "Location detected, but complete address could not be found.\n\n" +
-            "Please enter the address manually."
-          );
-
-        }
-
-      } catch (error) {
-
-        console.error(
-          "Current location error:",
-          error
-        );
-
-        alert(
-          "Location detected, but address could not be loaded.\n\n" +
-          "Please enter the address manually."
-        );
-
-      } finally {
-
-        if (button) {
-
-          button.disabled =
-            false;
-
-          button.textContent =
-            "📍 Use My Current Location";
-
-        }
-
-      }
-
-    },
-
-
-    function(error) {
-
-      console.error(
-        "Geolocation error:",
-        error
-      );
-
-
-      if (error.code === 1) {
-
-        alert(
-          "Location permission denied.\n\n" +
-          "Please click the 🔒 icon near the website address, allow Location, and try again."
-        );
-
-      } else if (error.code === 2) {
-
-        alert(
-          "Your current location could not be detected. Please try again."
-        );
-
-      } else if (error.code === 3) {
-
-        alert(
-          "Location request timed out. Please try again."
-        );
-
-      } else {
-
-        alert(
-          "Unable to detect your location. Please enter the address manually."
-        );
-
-      }
-
-
-      if (button) {
-
-        button.disabled =
-          false;
-
-        button.textContent =
-          "📍 Use My Current Location";
-
-      }
-
-    },
-
-
-    {
-      enableHighAccuracy: true,
-      timeout: 20000,
-      maximumAge: 0
-    }
-
-  );
-
-}
-
-
-/* =========================
-   SAVE DELIVERY ADDRESS
-========================= */
-
-/* =========================
-   SAVE DELIVERY ADDRESS
-========================= */
-
-function saveDeliveryAddress() {
-
-  const name =
-    document.getElementById("addressName")
-    ?.value.trim() || "";
-
-  const phone =
-    document.getElementById("addressPhone")
-    ?.value.trim() || "";
-
-  const address =
-    document.getElementById("addressLine")
-    ?.value.trim() || "";
-
-  const city =
-    document.getElementById("addressCity")
-    ?.value.trim() || "";
-
-  const pincode =
-    document.getElementById("addressPincode")
-    ?.value.trim() || "";
-
-  const state =
-    document.getElementById("addressState")
-    ?.value.trim() || "";
-
-  const type =
-    document.getElementById("addressType")
-    ?.value || "Home";
-
-
-  if (!name) {
-    alert("Please enter your full name.");
-    return;
-  }
-
-  if (!phone) {
-    alert("Please enter your phone number.");
-    return;
-  }
-
-  if (!address) {
-    alert("Please enter your address.");
-    return;
-  }
-
-  if (!city) {
-    alert("Please enter your city.");
-    return;
-  }
-
-  if (!pincode) {
-    alert("Please enter your pincode.");
-    return;
-  }
-
-  if (!state) {
-    alert("Please enter your state.");
-    return;
-  }
-
-
-  /* =========================
-     NEW ADDRESS OBJECT
-  ========================= */
-
-  const savedAddress = {
-
-    id: Date.now(),
-
-    name: name,
-
-    phone: phone,
-
-    address: address,
-
-    city: city,
-
-    pincode: pincode,
-
-    state: state,
-
-    type: type
-
-  };
-
-
-  /* =========================
-     GET ALL OLD ADDRESSES
-  ========================= */
-
-  let addresses = [];
-
-  const oldAddresses =
-    localStorage.getItem(
-      "psmart-addresses"
-    );
-
-
-  if (oldAddresses) {
-
-    try {
-
-      const parsed =
-        JSON.parse(oldAddresses);
-
-      if (Array.isArray(parsed)) {
-        addresses = parsed;
-      }
-
-    } catch (error) {
-
-      console.error(
-        "Address list error:",
-        error
-      );
-
-    }
-
-  }
-
-
-  /* =========================
-     OLD SINGLE ADDRESS
-     → CONVERT TO LIST
-  ========================= */
-
-  if (addresses.length === 0) {
-
-    const oldSingle =
-      localStorage.getItem(
-        "psmart-address"
-      );
-
-
-    if (oldSingle) {
-
-      try {
-
-        const oldAddress =
-          JSON.parse(oldSingle);
-
-
-        if (
-          oldAddress &&
-          oldAddress.name
-        ) {
-
-          oldAddress.id =
-            oldAddress.id ||
-            Date.now() - 1;
-
-          addresses.push(
-            oldAddress
-          );
-
-        }
-
-      } catch (error) {
-
-        console.error(
-          "Old address error:",
-          error
-        );
-
-      }
-
-    }
-
-  }
-
-
-  /* =========================
-     ADD NEW ADDRESS
-  ========================= */
-
-  addresses.push(
-    savedAddress
-  );
-
-
-  /* =========================
-     SAVE ALL ADDRESSES
-  ========================= */
-
-  localStorage.setItem(
-    "psmart-addresses",
-    JSON.stringify(addresses)
-  );
-
-
-  /* =========================
-     MAKE NEW ADDRESS ACTIVE
-  ========================= */
-
-  localStorage.setItem(
-    "psmart-address",
-    JSON.stringify(savedAddress)
-  );
-
-
-  closeLocation();
-
-  updateLocationText();
-
-
-  alert(
-    "✓ New address saved successfully!"
-  );
-
-}
-
-
- 
-/* =========================
-   UPDATE LOCATION TEXT
-========================= */
-
-function updateLocationText() {
-
-  const saved =
-    JSON.parse(
-      localStorage.getItem(
-        "psmart-address"
-      ) || "null"
-    );
-
-
-  const links =
-    document.querySelectorAll(
-      ".location-bar a"
-    );
-
-
-  links.forEach(link => {
-
-    if (
-      saved &&
-      saved.city &&
-      saved.pincode
-    ) {
-
-      link.textContent =
-        saved.city +
-        " - " +
-        saved.pincode +
-        " →";
-
-    } else {
-
-      link.textContent =
-        "Select your location →";
-
-    }
-
-  });
-
-}
-
-
-/* =========================
-   UPDATE LOCATION ON LOAD
-========================= */
-
-updateLocationText();
