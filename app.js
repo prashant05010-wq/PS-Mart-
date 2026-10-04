@@ -552,39 +552,107 @@ async function renderProducts() {
   }
 
 }
-
 /* =========================
    HOME PRODUCTS
 ========================= */
 
 async function renderHome() {
 
-  const e =
-    document.querySelector(
-      "#homeProducts"
-    );
+  const products = await loadProductsFromSupabase();
 
-  if (!e) return;
+  /* =========================
+     MAIN HOME PRODUCTS
+  ========================= */
 
-  const products =
-    await loadProductsFromSupabase();
+  const home = document.querySelector("#homeProducts");
 
-  e.innerHTML =
-    products
+  if (home) {
+    home.innerHTML = products
       .slice(0, 5)
       .map(card)
       .join("");
 
-
-  if (!products.length) {
-
-    e.innerHTML = `
-      <div class="empty">
-        No products available yet.
-      </div>
-    `;
-
+    if (!products.length) {
+      home.innerHTML = `
+        <div class="empty">
+          No products available yet.
+        </div>
+      `;
+    }
   }
+
+
+  /* =========================
+     TRENDING PICKS
+  ========================= */
+
+  const trending =
+    document.querySelector("#trendingProducts");
+
+  if (trending) {
+
+    const trendingProducts =
+      [...products]
+        .sort((a, b) => {
+
+          const aRating = Number(a.rating || 0);
+          const bRating = Number(b.rating || 0);
+
+          if (bRating !== aRating) {
+            return bRating - aRating;
+          }
+
+          return Number(b.review_count || 0) -
+                 Number(a.review_count || 0);
+        })
+        .slice(0, 5);
+
+    trending.innerHTML =
+      trendingProducts
+        .map(card)
+        .join("");
+
+    if (!trendingProducts.length) {
+      trending.innerHTML = `
+        <div class="empty">
+          No trending products available yet.
+        </div>
+      `;
+    }
+  }
+
+
+  /* =========================
+     NEW ARRIVALS
+  ========================= */
+
+  const arrivals =
+    document.querySelector("#newArrivals");
+
+  if (arrivals) {
+
+    const newProducts =
+      [...products]
+        .sort((a, b) => {
+          return new Date(b.created_at || 0) -
+                 new Date(a.created_at || 0);
+        })
+        .slice(0, 5);
+
+    arrivals.innerHTML =
+      newProducts
+        .map(card)
+        .join("");
+
+    if (!newProducts.length) {
+      arrivals.innerHTML = `
+        <div class="empty">
+          No new products available yet.
+        </div>
+      `;
+    }
+  }
+
 }
 
 
