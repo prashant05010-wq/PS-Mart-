@@ -94,13 +94,12 @@ async function decreaseQty(id) {
    LOAD & RENDER HOME PRODUCTS
 ========================= */
 async function renderHome() {
-  // Check index.html containers
   const flashContainer = document.querySelector("#flashDeals");
   const trendingContainer = document.querySelector("#trendingProducts");
   const newContainer = document.querySelector("#newArrivals");
   const singleContainer = document.querySelector("#homeProducts") || document.querySelector("#products");
 
-  // Fetch all products from Supabase
+  // Supabase से सारे प्रोडक्ट्स फ़ेच करें
   const { data: products, error } = await supabaseClient
     .from("products")
     .select("*")
@@ -116,14 +115,14 @@ async function renderHome() {
     return;
   }
 
-  // HTML generator for product card matching your CSS
+  // आपके CSS डिज़ाइन के अनुसार HTML तैयार करें
   const createProductHTML = p => `
     <div class="home-product-card">
       <div class="home-product-image">
         ${
           p.image_url 
             ? `<img src="${p.image_url}" alt="${p.name}">`
-            : `<span style="font-size: 50px;">🛍️️</span>`
+            : `<span style="font-size: 50px;">🛍️</span>`
         }
       </div>
       <div class="home-product-info">
@@ -141,7 +140,7 @@ async function renderHome() {
 
   const allHTML = products.map(createProductHTML).join("");
 
-  // Populate containers based on what exists on the page
+  // सेक्शंस में प्रोडक्ट्स डालें
   if (flashContainer) flashContainer.innerHTML = allHTML;
   if (trendingContainer) trendingContainer.innerHTML = allHTML;
   if (newContainer) newContainer.innerHTML = allHTML;
