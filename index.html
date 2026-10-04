@@ -2337,13 +2337,9 @@ function copyHomeCoupon(){
 }
 
 </script>
-<!-- Supabase JS Library (app.js से ठीक ऊपर होना जरूरी है) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- App JS -->
 <script src="app.js"></script>
 
-<!-- HERO SLIDER JS -->
 <script>
 let heroIndex = 0;
 let heroTimer = null;
@@ -2411,15 +2407,14 @@ function copyHomeCoupon(){
 
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(code).then(function(){
-      alert("🎉 कूपन कोड '" + code + "' कॉपी हो गया है!\n\n₹500 या उससे अधिक की खरीदारी पर इसे Cart (कार्ट) पेज में Apply करें।");
+      alert("🎉 Coupon code '" + code + "' copy ho gaya hai!");
     }).catch(function(){
-      alert("कूपन कोड: " + code);
+      alert("Coupon code: " + code);
     });
   } else {
-    alert("कूपन कोड: " + code);
+    alert("Coupon code: " + code);
   }
 }
-
 </script>
 
 </body>
