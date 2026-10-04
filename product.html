@@ -1,597 +1,223 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-
-<meta charset="utf-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1">
-
-<title>Product | PS Mart</title>
-
-<link rel="stylesheet" href="style.css">
-
-<style>
-
-/* =========================
-   PS MART PRODUCT PAGE
-   ORIGINAL BROWN + GOLD THEME
-========================= */
-
-.product-detail-page{
-  max-width:1400px;
-  margin:auto;
-  padding:25px 4%;
-}
-
-.product-detail-card{
-  background:#fff;
-  border:1px solid #eadfc9;
-  border-radius:12px;
-  padding:25px;
-}
-
-/* PRODUCT TOP */
-
-.detail-top{
-  display:grid;
-  grid-template-columns:42% 58%;
-  gap:35px;
-}
-
-/* IMAGE */
-
-.detail-image-box{
-  min-height:450px;
-  background:#f8f3e9;
-  border-radius:10px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  padding:20px;
-}
-
-.detail-image-box img{
-  width:100%;
-  height:430px;
-  object-fit:contain;
-}
-
-/* PRODUCT INFO */
-
-.detail-info h1{
-  font-size:28px;
-  margin:8px 0 12px;
-  color:#21170f;
-}
-
-.detail-rating{
-  display:inline-block;
-
-  background:#8b5a16;
-  color:white;
-
-  padding:5px 9px;
-  border-radius:5px;
-
-  font-size:13px;
-
-  margin-bottom:12px;
-}
-
-.detail-price{
-  font-size:30px;
-  font-weight:bold;
-
-  margin:10px 0;
-
-  color:#21170f;
-}
-
-.detail-price del{
-  font-size:15px;
-  color:#777;
-
-  margin-left:10px;
-
-  font-weight:normal;
-}
-
-.discount{
-  color:#23833d;
-
-  font-size:14px;
-
-  margin-left:8px;
-}
-
-/* OFFERS */
-
-.offer-box{
-  background:#fff8e6;
-
-  border:1px solid #f0d58a;
-
-  border-radius:8px;
-
-  padding:15px;
-
-  margin:18px 0;
-}
-
-.offer-box h3{
-  margin-top:0;
-
-  color:#6b4515;
-}
-
-.offer{
-  padding:7px 0;
-}
-
-/* DELIVERY */
-
-.delivery-box{
-  border-top:1px solid #eadfc9;
-  border-bottom:1px solid #eadfc9;
-
-  padding:18px 0;
-
-  margin:15px 0;
-}
-
-/* BUTTONS */
-
-.action-buttons{
-  display:flex;
-
-  gap:12px;
-
-  margin:20px 0;
-}
-
-.action-buttons button,
-.action-buttons a{
-
-  flex:1;
-
-  text-align:center;
-
-  padding:15px;
-
-  border:0;
-
-  border-radius:6px;
-
-  font-weight:bold;
-
-  text-decoration:none;
-
-  cursor:pointer;
-}
-
-.cart-btn{
-
-  background:
-    linear-gradient(
-      135deg,
-      #f0c256,
-      #bb7719
-    );
-
-  color:#281507;
-}
-
-.buy-btn{
-
-  background:
-    linear-gradient(
-      135deg,
-      #f0c256,
-      #bb7719
-    );
-
-  color:#281507;
-}
-
-/* INFORMATION */
-
-.info-section{
-
-  margin-top:25px;
-
-  border-top:1px solid #eadfc9;
-
-  padding-top:20px;
-}
-
-.info-section h2{
-  color:#21170f;
-}
-
-/* SPECIFICATIONS */
-
-.spec-table{
-
-  width:100%;
-
-  border-collapse:collapse;
-}
-
-.spec-table td{
-
-  border:1px solid #eadfc9;
-
-  padding:12px;
-}
-
-.spec-table td:first-child{
-
-  width:30%;
-
-  color:#6f6255;
-
-  background:#fbf6ea;
-}
-
-/* SELLER */
-
-.seller-box{
-
-  background:#fff;
-
-  border:1px solid #eadfc9;
-
-  border-radius:8px;
-
-  padding:18px;
-}
-
-/* REVIEWS */
-
-.review-box{
-
-  background:#fff;
-
-  border:1px solid #eadfc9;
-
-  border-radius:8px;
-
-  padding:15px;
-
-  margin-top:12px;
-}
-
-/* MOBILE */
-
-@media(max-width:750px){
-
-  .detail-top{
-
-    grid-template-columns:1fr;
-
-  }
-
-  .detail-image-box{
-
-    min-height:320px;
-
-  }
-
-  .detail-image-box img{
-
-    height:300px;
-
-  }
-
-  .detail-info h1{
-
-    font-size:22px;
-
-  }
-
-  .detail-price{
-
-    font-size:26px;
-
-  }
-
-  .action-buttons{
-
-    flex-direction:column;
-
-  }
-
-}
-  /* =========================
-   PRODUCT PAGE HEADER FIX
-========================= */
-
-.ps-header{
-  display:flex;
-  align-items:center;
-  gap:20px;
-  padding:12px 4%;
-  box-sizing:border-box;
-}
-
-.ps-logo{
-  flex:0 0 auto;
-  white-space:nowrap;
-}
-
-.ps-search{
-  flex:1;
-  min-width:0;
-  max-width:650px;
-  display:flex;
-  margin:0 auto;
-}
-
-.ps-search input{
-  flex:1;
-  min-width:0;
-  height:42px;
-  box-sizing:border-box;
-}
-
-.ps-search button{
-  width:48px;
-  height:42px;
-  flex:0 0 48px;
-  border:0;
-  cursor:pointer;
-}
-
-.ps-headlinks{
-  flex:0 0 auto;
-  display:flex;
-  align-items:center;
-  gap:15px;
-  white-space:nowrap;
-}
-
-.ps-headlinks a{
-  text-decoration:none;
-}
-
-/* MOBILE */
-
-@media(max-width:850px){
-
-  .ps-header{
-    flex-wrap:wrap;
-    gap:10px;
-  }
-
-  .ps-logo{
-    order:1;
-  }
-
-  .ps-headlinks{
-    order:2;
-    margin-left:auto;
-  }
-
-  .ps-search{
-    order:3;
-    flex:0 0 100%;
-    max-width:none;
-  }
-
-}
-
-@media(max-width:500px){
-
-  .ps-headlinks a:nth-child(2){
-    display:none;
-  }
-
-  .ps-headlinks{
-    gap:8px;
-  }
-
-  .ps-search input{
-    height:40px;
-    font-size:13px;
-  }
-
-  .ps-search button{
-    height:40px;
-    width:44px;
-    flex-basis:44px;
-  }
-
-}
-
-</style>
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Product | PS Mart</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* PS MART PRODUCT PAGE - BROWN + GOLD THEME */
+    .product-detail-page {
+      max-width: 1400px;
+      margin: auto;
+      padding: 25px 4%;
+    }
+
+    .product-detail-card {
+      background: #fff;
+      border: 1px solid #eadfc9;
+      border-radius: 12px;
+      padding: 25px;
+    }
+
+    .detail-top {
+      display: grid;
+      grid-template-columns: 42% 58%;
+      gap: 35px;
+    }
+
+    .detail-image-box {
+      min-height: 450px;
+      background: #f8f3e9;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .detail-image-box img {
+      width: 100%;
+      height: 430px;
+      object-fit: contain;
+    }
+
+    .detail-info h1 {
+      font-size: 28px;
+      margin: 8px 0 12px;
+      color: #21170f;
+    }
+
+    .detail-rating {
+      display: inline-block;
+      background: #8b5a16;
+      color: white;
+      padding: 5px 9px;
+      border-radius: 5px;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .detail-price {
+      font-size: 30px;
+      font-weight: bold;
+      margin: 10px 0;
+      color: #21170f;
+    }
+
+    .detail-price del {
+      font-size: 15px;
+      color: #777;
+      margin-left: 10px;
+      font-weight: normal;
+    }
+
+    .discount {
+      color: #23833d;
+      font-size: 14px;
+      margin-left: 8px;
+    }
+
+    .offer-box {
+      background: #fff8e6;
+      border: 1px solid #f0d58a;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 18px 0;
+    }
+
+    .offer-box h3 {
+      margin-top: 0;
+      color: #6b4515;
+    }
+
+    .offer {
+      padding: 7px 0;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .action-buttons button {
+      flex: 1;
+      text-align: center;
+      padding: 15px;
+      border: 0;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .cart-btn, .buy-btn {
+      background: linear-gradient(135deg, #f0c256, #bb7719);
+      color: #281507;
+    }
+
+    .info-section {
+      margin-top: 25px;
+      border-top: 1px solid #eadfc9;
+      padding-top: 20px;
+    }
+
+    .info-section h2 {
+      color: #21170f;
+    }
+
+    .ps-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 12px 4%;
+      box-sizing: border-box;
+    }
+
+    .ps-logo { flex: 0 0 auto; white-space: nowrap; }
+    .ps-search { flex: 1; min-width: 0; max-width: 650px; display: flex; margin: 0 auto; }
+    .ps-search input { flex: 1; height: 42px; }
+    .ps-search button { width: 48px; height: 42px; border: 0; cursor: pointer; }
+    .ps-headlinks { flex: 0 0 auto; display: flex; align-items: center; gap: 15px; }
+
+    @media(max-width: 750px) {
+      .detail-top { grid-template-columns: 1fr; }
+      .detail-image-box { min-height: 320px; }
+      .detail-image-box img { height: 300px; }
+      .detail-info h1 { font-size: 22px; }
+      .detail-price { font-size: 26px; }
+      .action-buttons { flex-direction: column; }
+    }
+  </style>
 </head>
-
 
 <body>
 
-
-<!-- =========================
-     HEADER
-========================= -->
-
-<header class="ps-header">
-
-  <a
-    class="ps-logo"
-    href="index.html">
-
-    <span class="ps-logo-icon">
-      PS
-    </span>
-
-    <span>
-      PS Mart
-    </span>
-
-  </a>
-
-
-  <div class="ps-search">
-
-    <input
-      id="search"
-      type="text"
-      placeholder="Search for Products, Brands and More"
-      onkeydown="if(event.key==='Enter') search()">
-
-    <button
-      onclick="search()">
-
-      🔍
-
-    </button>
-
-  </div>
-
-
-  <div class="ps-headlinks">
-
-    <a href="login.html">
-      👤 Login
+  <!-- HEADER -->
+  <header class="ps-header">
+    <a class="ps-logo" href="index.html">
+      <span class="ps-logo-icon">PS</span>
+      <span>PS Mart</span>
     </a>
 
-    <a href="seller-register.html">
-      Sell on PS Mart
-    </a>
+    <div class="ps-search">
+      <input id="search" type="text" placeholder="Search for Products, Brands and More" onkeydown="if(event.key==='Enter') search()">
+      <button onclick="search()">🔍</button>
+    </div>
 
-    <a href="wishlist.html">
-      ♡
-    </a>
+    <div class="ps-headlinks">
+      <a href="login.html">👤 Login</a>
+      <a href="seller-register.html">Sell on PS Mart</a>
+      <a href="wishlist.html">♡</a>
+      <a href="cart.html">🛒 Cart <em id="count">0</em></a>
+    </div>
+  </header>
 
-    <a href="cart.html">
-
-      🛒 Cart
-
-      <em id="count">
-        0
-      </em>
-
-    </a>
-
+  <!-- LOCATION -->
+  <div class="location-bar">
+    📍 <span>Delivery location</span>
+    <a href="#" onclick="openLocation(); return false;">Select your location →</a>
   </div>
 
-</header>
+  <!-- PRODUCT CONTAINER -->
+  <main class="product-detail-page">
+    <div id="detail" class="product-detail-card">
+      <p style="padding: 20px; text-align: center;">Loading product details...</p>
+    </div>
+  </main>
 
+  <!-- FOOTER -->
+  <footer class="ps-footer">
+    <div>
+      <b>PS Mart</b>
+      <p>Better Products • Better Life</p>
+    </div>
+    <div>
+      <b>Quick Links</b>
+      <p><a href="index.html">Home</a></p>
+      <p><a href="products.html">Products</a></p>
+    </div>
+    <div>
+      <b>Customer</b>
+      <p><a href="cart.html">Cart</a></p>
+      <p><a href="orders.html">My Orders</a></p>
+    </div>
+  </footer>
 
-<!-- =========================
-     LOCATION
-========================= -->
-
-<div class="location-bar">
-
-  📍
-
-  <span>
-    Delivery location
-  </span>
-
-<a href="#" onclick="openLocation(); return false;">
-  Select your location →
-</a>
-
-</div>
-
-
-<!-- =========================
-     PRODUCT
-========================= -->
-
-<main class="product-detail-page">
-
-  <div
-    id="detail"
-    class="product-detail-card">
-
-  </div>
-
-</main>
-
-
-<!-- =========================
-     FOOTER
-========================= -->
-
-<footer class="ps-footer">
-
-  <div>
-
-    <b>
-      PS Mart
-    </b>
-
-    <p>
-      Better Products • Better Life
-    </p>
-
-  </div>
-
-
-  <div>
-
-    <b>
-      Quick Links
-    </b>
-
-    <p>
-      <a href="index.html">
-        Home
-      </a>
-    </p>
-
-    <p>
-      <a href="products.html">
-        Products
-      </a>
-    </p>
-
-  </div>
-
-
-  <div>
-
-    <b>
-      Customer
-    </b>
-
-    <p>
-      <a href="cart.html">
-        Cart
-      </a>
-    </p>
-
-    <p>
-      <a href="orders.html">
-        My Orders
-      </a>
-    </p>
-
-  </div>
-
-</footer>
-
-
-<!-- =========================
-     SCRIPTS
-========================= -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="data.js"></script>
-
-<script src="app.js"></script>
-
-
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+      const productId = params.get("id");
+      if (productId) {
+        renderProductDetail(productId);
+      } else {
+        document.getElementById("detail").innerHTML = "<p style='padding:20px; text-align:center;'>No Product Selected.</p>";
+      }
+    });
+  </script>
 </body>
-
 </html>
