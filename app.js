@@ -91,23 +91,72 @@ async function decreaseQty(id) {
 }
 
 /* =========================
-   LOAD PRODUCTS (FIXED STATUS BUG)
+   LOAD & RENDER HOME PRODUCTS
 ========================= */
-async function loadProductsFromSupabase() {
-  // 'status' filter hata diya taaki aapke pehle se uploaded saare products show hon
-  const { data, error } = await supabaseClient
+async function renderHome() {
+  const container = document.querySelector("#homeProducts") || document.querySelector("#products");
+  if (!container) return;
+
+  container.innerHTML = `<div style="text-align:center; padding:20px; width:100%;">Loading products...</div>`;
+
+  const { data: products, error } = await supabaseClient
     .from("products")
-    .select("*");
+    .select("*")
+    .order("created_at", { ascending: false });
 
   if (error) {
-    console.log("Supabase products error:", error.message);
-    return [];
+    console.error("Home products fetch error:", error);
+    container.innerHTML = `<div style="text-align:center; padding:20px; color:red;">Failed to load products.</div>`;
+    return;
   }
-  return data || [];
+
+  if (!products || products.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding:30px; width:100%; color:#666;">No products available right now.</div>`;
+    return;
+  }
+
+  container.innerHTML = products.map(p => `
+    <div style="
+      background: #fff;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #eee;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    ">
+      <div style="height: 160px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; background: #fafafa; margin-bottom: 12px;">
+        ${
+          p.image_url 
+            ? `<img src="${p.image_url}" alt="${p.name}" style="max-height: 100%; max-width: 100%; object-fit: contain;">`
+            : `<span style="font-size: 50px;">🛍️</span>`
+        }
+      </div>
+
+      <div>
+        <h3 style="font-size: 16px; margin: 0 0 8px 0; color: #333;">${p.name}</h3>
+        <p style="font-size: 18px; font-weight: bold; color: #9b681b; margin: 0 0 12px 0;">${money(p.price)}</p>
+      </div>
+
+      <button onclick="add('${p.id}')" style="
+        width: 100%;
+        background: linear-gradient(135deg, #d8a83e, #9b681b);
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+      ">
+        Add to Cart 🛒
+      </button>
+    </div>
+  `).join("");
 }
 
 /* =========================
-   PREMIUM BEAUTIFUL CART RENDER
+   PREMIUM CART RENDER
 ========================= */
 async function renderCart() {
   const e = document.querySelector("#cart");
@@ -115,7 +164,6 @@ async function renderCart() {
 
   const c = cart();
 
-  // 🛒 EMPTY CART UI (अगर कार्ट में कुछ न हो)
   if (!c.length) {
     e.innerHTML = `
       <div style="
@@ -133,7 +181,7 @@ async function renderCart() {
         <p style="color: #777; font-size: 14px; margin-bottom: 25px;">
           Looks like you haven't added anything to your cart yet.
         </p>
-        <a href="products.html" style="
+        <a href="index.html" style="
           display: inline-block;
           background: linear-gradient(135deg, #d8a83e, #9b681b);
           color: white;
@@ -143,7 +191,6 @@ async function renderCart() {
           font-weight: bold;
           font-size: 15px;
           box-shadow: 0 4px 15px rgba(155, 104, 27, 0.3);
-          transition: transform 0.2s;
         ">
           🛍️ Start Shopping Now
         </a>
@@ -152,27 +199,20 @@ async function renderCart() {
     return;
   }
 
-  // IDs of items in cart
   const ids = c.map(item => item.id);
 
-  // Fetch product data without status restriction
   const { data: products, error } = await supabaseClient
     .from("products")
     .select("*")
     .in("id", ids);
 
   if (error || !products || !products.length) {
-    e.innerHTML = `
-      <div style="text-align:center; padding:40px; color:#d32f2f;">
-        <h3>Unable to load cart products.</h3>
-      </div>
-    `;
+    e.innerHTML = `<div style="text-align:center; padding:40px; color:#d32f2f;"><h3>Unable to load cart products.</h3></div>`;
     return;
   }
 
   let subtotal = 0;
 
-  // ITEM LIST BUILDER
   const rows = c.map(item => {
     const p = products.find(product => String(product.id) === String(item.id));
     if (!p) return "";
@@ -206,7 +246,6 @@ async function renderCart() {
           <div style="font-size: 14px; color: #666;">Price: <b>${money(p.price)}</b></div>
           <div style="font-size: 14px; color: #188038; font-weight: bold; margin-top: 2px;">Subtotal: ${money(amount)}</div>
 
-          <!-- QTY CONTROL -->
           <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
             <button onclick="decreaseQty('${p.id}')" style="width:28px; height:28px; border-radius:6px; border:1px solid #ccc; background:#f9f9f9; cursor:pointer; font-weight:bold;">−</button>
             <span style="font-weight:bold; font-size:14px; min-width:20px; text-align:center;">${qty}</span>
@@ -221,7 +260,6 @@ async function renderCart() {
     `;
   }).join("");
 
-  // COUPON DISCOUNT LOGIC
   let couponDiscount = 0;
   const savedCoupon = JSON.parse(localStorage.getItem("psmart-applied-coupon") || "null");
 
@@ -235,17 +273,13 @@ async function renderCart() {
 
   const grandTotal = Math.max(0, subtotal - couponDiscount);
 
-  // CART CONTAINER HTML
   e.innerHTML = `
     <div style="max-width: 1000px; margin: 20px auto; padding: 0 15px; display: grid; grid-template-columns: 1fr; gap: 20px;">
-      
-      <!-- LEFT: PRODUCT LIST -->
       <div>
         <h2 style="font-size: 20px; color: #333; margin-bottom: 15px;">Shopping Cart Items</h2>
         ${rows}
       </div>
 
-      <!-- RIGHT: BILLING & COUPON -->
       <div style="
         background: #ffffff;
         padding: 20px;
@@ -255,7 +289,7 @@ async function renderCart() {
       ">
         <h3 style="margin-top:0; color:#333; border-bottom:1px solid #eee; padding-bottom:10px;">Order Summary</h3>
         
-        <div style="display:flex; justify-space-between; margin:10px 0; color:#555;">
+        <div style="display:flex; justify-content:space-between; margin:10px 0; color:#555;">
           <span>Items Total</span>
           <b>${money(subtotal)}</b>
         </div>
@@ -281,7 +315,6 @@ async function renderCart() {
           <b style="color:#9b681b;">${money(grandTotal)}</b>
         </div>
 
-        <!-- COUPON CODE BOX -->
         <div style="margin-bottom:20px; background:#fff8e7; padding:12px; border-radius:8px; border:1px dashed #d6a63c;">
           <div style="font-size:13px; font-weight:bold; color:#79520f; margin-bottom:8px;">🎟️ Apply Coupon Code</div>
           ${
@@ -318,7 +351,7 @@ async function renderCart() {
 }
 
 /* =========================
-   APPLY COUPON
+   APPLY / REMOVE COUPON
 ========================= */
 async function applyCoupon() {
   const input = document.getElementById("couponInput");
@@ -351,13 +384,10 @@ function removeCoupon() {
 }
 
 /* =========================
-   INITIAL AUTO RUN
+   INITIAL AUTO RUN ON LOAD
 ========================= */
 document.addEventListener("DOMContentLoaded", () => {
   updateCount();
+  renderHome();
   if (document.querySelector("#cart")) renderCart();
-  if (document.querySelector("#products")) renderProducts();
-  if (document.querySelector("#homeProducts")) renderHome();
-  if (document.querySelector("#detail")) detail();
-  if (document.querySelector("#summary")) summary();
 });
