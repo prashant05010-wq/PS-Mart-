@@ -89,9 +89,8 @@ async function decreaseQty(id) {
   saveCart(c);
   await renderCart();
 }
-
 /* =========================
-   LOAD & RENDER HOME PRODUCTS
+   LOAD & RENDER HOME PRODUCTS (Clickable Card + No Add To Cart Button)
 ========================= */
 async function renderHome() {
   const flashContainer = document.querySelector("#flashDeals");
@@ -99,7 +98,7 @@ async function renderHome() {
   const newContainer = document.querySelector("#newArrivals");
   const singleContainer = document.querySelector("#homeProducts") || document.querySelector("#products");
 
-  // Supabase से सारे प्रोडक्ट्स फ़ेच करें
+  // Fetch all products from Supabase
   const { data: products, error } = await supabaseClient
     .from("products")
     .select("*")
@@ -115,9 +114,9 @@ async function renderHome() {
     return;
   }
 
-  // आपके CSS डिज़ाइन के अनुसार HTML तैयार करें
+  // HTML generator for product card (Clickable, Image + Name + Price only)
   const createProductHTML = p => `
-    <div class="home-product-card">
+    <div class="home-product-card" onclick="openProductDetail('${p.id}')" style="cursor: pointer;">
       <div class="home-product-image">
         ${
           p.image_url 
@@ -131,20 +130,27 @@ async function renderHome() {
           ${money(p.price)}
           ${p.old_price ? `<span class="home-old-price">${money(p.old_price)}</span>` : ''}
         </div>
-        <button onclick="add('${p.id}')" class="home-view" style="border:none; width:100%; cursor:pointer;">
-          Add to Cart 🛒
-        </button>
       </div>
     </div>
   `;
 
   const allHTML = products.map(createProductHTML).join("");
 
-  // सेक्शंस में प्रोडक्ट्स डालें
+  // Inject into containers
   if (flashContainer) flashContainer.innerHTML = allHTML;
   if (trendingContainer) trendingContainer.innerHTML = allHTML;
   if (newContainer) newContainer.innerHTML = allHTML;
   if (singleContainer) singleContainer.innerHTML = allHTML;
+}
+
+/* =========================
+   OPEN PRODUCT DETAIL FUNCTION
+========================= */
+function openProductDetail(productId) {
+  // Agar aapka alag product detail page hai (e.g. product.html?id=...):
+  window.location.href = `product.html?id=${productId}`;
+  
+  // YA agar aap modal/popup se detail dikhate hain, toh apna detail function yahan call karein.
 }
 /* =========================
    PREMIUM CART RENDER
