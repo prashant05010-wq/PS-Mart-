@@ -218,7 +218,7 @@ input{
 
 /* =========================================================
    HERO SLIDER
-   FLIPKART-STYLE SHAPE
+   FLIPKART-STYLE SHAPE (1200x396 RATIO)
 ========================================================= */
 
 .hero-slider{
@@ -228,12 +228,11 @@ input{
   margin:0 auto;
   overflow:hidden;
 
-  /* Flipkart screenshot jaisa wide rectangular shape */
-  aspect-ratio:2.05 / 1;
+  /* Perfect 1200x396 aspect ratio */
+  aspect-ratio:1200 / 396;
 
   border-radius:20px;
   box-shadow:0 5px 18px rgba(0,0,0,.14);
- 
 }
 
 .hero-track{
@@ -246,7 +245,7 @@ input{
 .hero-slide{
   min-width:100%;
   flex:0 0 100%;
-  aspect-ratio:1200 / 396;
+  height:100%;
   overflow:hidden;
   background:#fff;
 }
@@ -262,8 +261,8 @@ input{
   width:100%;
   height:100%;
 
-  /* Banner ko poora area cover karna hai */
- object-fit:contain;
+  /* Cover full container area */
+  object-fit:cover;
   object-position:center;
 }
 
@@ -887,25 +886,24 @@ input{
 
   /* =====================================================
      MOBILE HERO
-     EXACT WIDE FLIPKART-LIKE SHAPE
+     EXACT WIDE FLIPKART-LIKE SHAPE (1200x396 RATIO)
   ===================================================== */
 
-.hero-slider{
-  width:100%;
-  aspect-ratio:1200 / 396;
-  border-radius:13px;
-  box-shadow:0 4px 15px rgba(0,0,0,.12);
-}
+  .hero-slider{
+    width:100%;
+    aspect-ratio:1200 / 396;
+    border-radius:13px;
+    box-shadow:0 4px 15px rgba(0,0,0,.12);
+  }
+
   .hero-slide{
-    aspect-ratio:auto;
     height:100%;
   }
 
   .hero-slide img{
     width:100%;
     height:100%;
-
-   object-fit:contain;
+    object-fit:cover;
     object-position:center;
   }
 
@@ -1188,11 +1186,11 @@ input{
   <a class="ps-logo" href="index.html">
 
     <span class="ps-logo-icon">
-      PS
+       PS
     </span>
 
     <span>
-      PS Mart
+       PS Mart
     </span>
 
   </a>
