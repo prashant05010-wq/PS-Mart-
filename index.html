@@ -2321,56 +2321,19 @@ startHeroTimer();
 /* ---------------------------------------------------------
    COPY HOME COUPON
 --------------------------------------------------------- */
-
 function copyHomeCoupon(){
+  const code = document.getElementById("homeCouponCode")?.innerText.trim();
+  if(!code) return;
 
-  const code =
-    document.getElementById(
-      "homeCouponCode"
-    )?.innerText.trim();
-
-
-  if(!code){
-
-    return;
-
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(function(){
+      alert("🎉 कूपन कोड '" + code + "' कॉपी हो गया है!\n\n₹500 या उससे अधिक की खरीदारी पर इसे Cart (कार्ट) पेज में Apply करें।");
+    }).catch(function(){
+      alert("कूपन कोड: " + code);
+    });
+  } else {
+    alert("कूपन कोड: " + code);
   }
-
-
-  if(
-    navigator.clipboard &&
-    navigator.clipboard.writeText
-  ){
-
-    navigator.clipboard
-      .writeText(code)
-      .then(function(){
-
-        alert(
-          "Coupon " +
-          code +
-          " copied!"
-        );
-
-      })
-      .catch(function(){
-
-        alert(
-          "Coupon Code: " +
-          code
-        );
-
-      });
-
-  }else{
-
-    alert(
-      "Coupon Code: " +
-      code
-    );
-
-  }
-
 }
 
 </script>
