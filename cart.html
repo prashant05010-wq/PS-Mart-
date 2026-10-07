@@ -1,4 +1,93 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cart | PS Mart</title><link rel="stylesheet" href="style.css"></head><body>
-<header class="header"><a class="logo" href="index.html">🛍️ <b>PS</b> Mart</a><div class="search"><input id="search" placeholder="Search products"><button onclick="search()">⌕</button></div><div class="headlinks"><a href="login.html">♙ Login</a><a href="cart.html">🛒 Cart <em id="count">0</em></a></div></header><main><h1>My Cart</h1><div id="cart" class="cartlayout"></div></main><footer><b>🛍️ PS Mart</b></footer><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cart | PS Mart</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+:root{--esp:#24150b;--brown:#43250f;--gold:#f0bd50;--gdeep:#c9922e;--gsoft:#f7dd9b;--cream:#fbf6ea;--page:#f6f1e7;--ink:#2a1a0e;--muted:#7c6a58;--line:#e6dac3;--serif:"Cormorant Garamond",Georgia,serif;--sans:Inter,"Segoe UI",Arial,sans-serif;--ggrad:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);--bgrad:linear-gradient(110deg,#24150b,#43250f 55%,#6c3e17)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);font-family:var(--sans);color:var(--ink);padding-bottom:70px}
+button,input{font-family:inherit}
+.pm-head{background:var(--bgrad);color:#fff;padding:12px 4%;display:flex;align-items:center;gap:22px;position:sticky;top:0;z-index:1000;border-bottom:2px solid var(--gdeep);box-shadow:0 4px 18px rgba(36,21,11,.35)}
+.pm-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;font:700 28px var(--serif);white-space:nowrap}
+.pm-logo i{width:42px;height:42px;border-radius:50%;background:var(--ggrad);color:var(--esp);display:flex;align-items:center;justify-content:center;font:700 20px var(--serif);box-shadow:0 0 0 3px rgba(240,189,80,.3)}
+.pm-search{flex:1;max-width:700px;display:flex;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--gdeep)}
+.pm-search input{flex:1;border:0;outline:0;padding:13px 16px;font-size:15px;color:var(--ink)}
+.pm-search button{width:56px;border:0;background:var(--ggrad);font-size:20px;cursor:pointer}
+.pm-links{display:flex;align-items:center;gap:20px;white-space:nowrap}
+.pm-links a{color:#fff;text-decoration:none;font-weight:600;font-size:14px}.pm-links a:hover{color:var(--gold)}
+#count{font-style:normal;background:var(--gold);color:var(--esp);padding:2px 7px;border-radius:10px;font-size:11px;font-weight:700}
+.location-bar{background:var(--cream);padding:10px 5%;font-size:14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+.location-bar a{color:var(--brown);font-weight:700;text-decoration:none;border-bottom:1px solid var(--gdeep)}
+.pm-wrap{max-width:1400px;margin:auto;padding:20px 4%}
+.pm-wrap h1.pm-title{margin:0 0 16px;font:700 34px var(--serif);color:var(--brown)}
+.pm-foot{background:var(--esp);color:#d9ccb7;margin-top:35px;padding:26px 6%;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:3px solid var(--gdeep);font-size:14px}
+.pm-foot b{font:700 22px var(--serif);color:var(--gold)}.pm-foot a{color:#d9ccb7;text-decoration:none;margin-right:16px}.pm-foot a:hover{color:var(--gold)}
+.pm-mnav{display:none}
+.empty{padding:40px 20px;text-align:center;background:#fff;border:1px dashed var(--gdeep);border-radius:12px;color:var(--muted)}
+.goldbtn{display:inline-block;text-decoration:none;background:var(--ggrad);color:var(--esp);padding:12px 22px;border-radius:8px;font-weight:700}
+.green{color:#188038;font-weight:700}
+@media(max-width:700px){
+.pm-head{padding:10px 12px;display:grid;grid-template-columns:auto 1fr;gap:10px}.pm-logo{font-size:0}.pm-search{height:40px}.pm-search input{padding:10px;font-size:14px}.pm-search button{width:45px}.pm-links{display:none}
+.location-bar{padding:10px 15px;white-space:nowrap;overflow:hidden}.pm-wrap{padding:12px 10px}.pm-wrap h1.pm-title{font-size:26px}
+.pm-mnav{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);bottom:0;left:0;right:0;height:65px;padding-bottom:env(safe-area-inset-bottom,0);background:var(--esp);border-top:2px solid var(--gdeep);z-index:2000}
+.pm-mnav a{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#cdbda3;text-decoration:none;font-size:11px;gap:3px}
+.pm-mnav a.on{color:var(--gold);font-weight:700}.pm-mnav span{font-size:24px;line-height:25px}.pm-foot{display:none}}
+
+.cartlayout{display:grid;grid-template-columns:1fr 370px;gap:18px;align-items:start}
+.cartlayout>div:first-child{display:flex;flex-direction:column;gap:12px}
+.cartlayout .empty{grid-column:1/-1}
+.cartlayout .empty .goldbtn,.cartlayout .empty a{display:inline-block;margin-top:10px;text-decoration:none;background:var(--ggrad);color:var(--esp);padding:12px 22px;border-radius:8px;font-weight:700}
+.cartrow{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;grid-template-columns:110px 1fr auto;gap:16px;align-items:center}
+.cartrow .pic{width:110px;height:110px;background:var(--cream);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:36px;overflow:hidden}
+.cartrow p{margin:5px 0;font-size:14px;color:var(--muted)}.cartrow b{color:var(--brown)}
+.cartrow button{border:1px solid var(--gdeep);background:var(--cream);color:var(--brown);border-radius:8px;padding:7px 13px;font-weight:700;cursor:pointer}
+.cartrow button:hover{background:var(--gsoft)}
+.cartrow>button:last-child{border-color:#d9b5b0;background:#fff;color:#a33a2f;font-size:13px}
+.summary{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;position:sticky;top:84px}
+.summary h2{margin:0 0 12px;font:700 26px var(--serif);color:var(--brown)}
+.summary hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+.summary input{padding:10px;border:1px solid var(--gdeep);border-radius:8px;outline:0}
+.summary button{background:var(--brown);color:var(--gold);border:0;border-radius:8px;padding:10px 16px;font-weight:700;cursor:pointer}
+.summary .goldbtn{display:block;text-align:center;margin-top:14px;background:var(--ggrad);color:var(--esp)}
+@media(max-width:850px){.cartlayout{grid-template-columns:1fr}.summary{position:static}}
+@media(max-width:560px){.cartrow{grid-template-columns:80px 1fr;gap:12px}.cartrow .pic{width:80px;height:80px}.cartrow>button:last-child{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="pm-head" role="banner">
+  <a class="pm-logo" href="index.html"><i>PS</i><span>PS Mart</span></a>
+  <div class="pm-search">
+    <input id="search" type="text" placeholder="Search for Products, Brands and More" onkeydown="if(event.key==='Enter') search()">
+    <button onclick="search()" aria-label="Search">🔍</button>
+  </div>
+  <div class="pm-links">
+    <a href="login.html">👤 Login</a>
+    <a href="seller-register.html">Sell on PS Mart</a>
+    <a href="wishlist.html">♡</a>
+    <a href="cart.html">🛒 Cart <em id="count">0</em></a>
+  </div>
+</div>
+<div class="location-bar">📍 <span>Delivery location</span>
+  <a href="#" onclick="openLocation(); return false;">Select your location →</a>
+</div>
+<div class="pm-wrap">
+  <h1 class="pm-title">My Cart</h1>
+  <div id="cart" class="cartlayout"></div>
+</div>
+<div class="pm-foot"><div><b>PS Mart</b><br>Better Products • Better Life</div>
+  <div><a href="index.html">Home</a><a href="products.html">Products</a><a href="cart.html">Cart</a><a href="orders.html">My Orders</a></div></div>
+<div class="pm-mnav">
+  <a href="index.html"><span>🏠</span>Home</a>
+  <a href="products.html"><span>▦</span>Categories</a>
+  <a href="profile.html"><span>👤</span>Account</a>
+  <a href="cart.html" class="on"><span>🛒</span>Cart</a>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="data.js"></script>
 <script src="app.js"></script>
+</body>
+</html>
