@@ -265,6 +265,9 @@ function card(p) {
       </h3>
 
 
+      ${
+        p.rating
+          ? `
       <!-- RATING -->
 
       <div style="
@@ -293,6 +296,11 @@ function card(p) {
         </span>
 
       </div>
+
+
+          `
+          : ""
+      }
 
 
       <!-- PRICE -->
@@ -443,6 +451,13 @@ async function renderProducts() {
     7: "Accessories"
   };
 
+  const priceRanges = [
+    ...document.querySelectorAll(".price-filter:checked")
+  ].map(c => {
+    const [lo, hi] = c.value.split("-");
+    return [Number(lo) || 0, hi === "" ? Infinity : Number(hi)];
+  });
+
   let filtered = products.filter(p => {
 
     const name = String(p.name || "")
@@ -463,9 +478,16 @@ async function renderProducts() {
       name.includes(q) ||
       description.includes(q);
 
+    const price = Number(p.price || 0);
+
+    const matchesPrice =
+      !priceRanges.length ||
+      priceRanges.some(([lo, hi]) => price >= lo && price <= hi);
+
     return (
       matchesCategory &&
-      matchesSearch
+      matchesSearch &&
+      matchesPrice
     );
 
   });
@@ -557,9 +579,19 @@ async function renderProducts() {
    HOME PRODUCTS
 ========================= */
 
+function pickUnique(list, used, n) {
+  const out = list.filter(p => !used.has(p.id)).slice(0, n);
+  if (out.length < n) {
+    list.forEach(p => { if (out.length < n && !out.includes(p)) out.push(p); });
+  }
+  out.forEach(p => used.add(p.id));
+  return out;
+}
+
 async function renderHome() {
 
   const products = await loadProductsFromSupabase();
+  const usedHome = new Set(products.slice(0, 5).map(p => p.id));
 
   /* =========================
      FLASH DEALS & MAIN HOME
@@ -609,7 +641,7 @@ async function renderHome() {
   if (trending) {
 
     const trendingProducts =
-      [...products]
+      pickUnique([...products]
         .sort((a, b) => {
 
           const aRating = Number(a.rating || 0);
@@ -622,7 +654,7 @@ async function renderHome() {
           return Number(b.review_count || 0) -
                  Number(a.review_count || 0);
         })
-        .slice(0, 5);
+        , usedHome, 5);
 
     trending.innerHTML =
       trendingProducts
@@ -649,12 +681,12 @@ async function renderHome() {
   if (arrivals) {
 
     const newProducts =
-      [...products]
+      pickUnique([...products]
         .sort((a, b) => {
           return new Date(b.created_at || 0) -
                  new Date(a.created_at || 0);
         })
-        .slice(0, 5);
+        , usedHome, 5);
 
     arrivals.innerHTML =
       newProducts
@@ -786,13 +818,14 @@ async function detail() {
           ${p.name}
         </h1>
 
-        <div class="detail-rating">
-          ★ 4.0
-        </div>
-
-        <span style="color:#777;font-size:13px;">
-          100+ Ratings & Reviews
-        </span>
+        ${
+          p.rating
+            ? `
+              <div class="detail-rating">★ ${Number(p.rating).toFixed(1)}</div>
+              <span style="color:#777;font-size:13px;">${Number(p.review_count || 0).toLocaleString("en-IN")} Ratings & Reviews</span>
+            `
+            : ""
+        }
 
 
         <div class="detail-price">
@@ -981,7 +1014,7 @@ async function detail() {
 
         <tr>
           <td>Category</td>
-          <td>${p.category_id || "General"}</td>
+          <td>${({1:"Mobiles",2:"Electronics",3:"Fashion",4:"Beauty",5:"Home",6:"Grocery",7:"Accessories"})[Number(p.category_id)] || "General"}</td>
         </tr>
 
         <tr>
@@ -1039,18 +1072,6 @@ async function detail() {
       <h2>
         Ratings & Reviews
       </h2>
-
-      <div class="review-box">
-
-        <b>
-          ★ 4.0 / 5
-        </b>
-
-        <p>
-          Customer reviews will appear here.
-        </p>
-
-      </div>
 
       <div class="review-box">
 
