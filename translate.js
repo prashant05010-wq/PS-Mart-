@@ -861,6 +861,15 @@ var PS_LANG_CODES = {Hindi:"hi",Bengali:"bn",Marathi:"mr",Telugu:"te",Tamil:"ta"
 
 var PS_DICT_CACHE = {};
 
+/* Test ke liye: koi bhi page ?lang=Hindi laga kar kholo (jaise index.html?lang=Hindi) */
+(function(){
+  try{
+    var q = new URLSearchParams(location.search).get("lang");
+    if(q && (q === "English" || PS_LANG_CODES[q])){ localStorage.setItem("psmart-language", q); }
+    console.info("PS Mart translate-extra.js loaded. Language:", localStorage.getItem("psmart-language") || "English");
+  }catch(e){}
+})();
+
 function psGetDict(lang){
   if(PS_DICT_CACHE[lang]) return PS_DICT_CACHE[lang];
   var base = (typeof PS_TRANSLATIONS !== "undefined" && PS_TRANSLATIONS[lang]) || {};
