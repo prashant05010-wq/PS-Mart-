@@ -10,241 +10,101 @@
 
 <style>
 
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box;}
 
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f7f1e8;
-  color:#3b2618;
-}
+body{margin:0;font-family:Arial,sans-serif;background:#f7f1e8;color:#3b2618;}
 
-header{
-  background:#3b2618;
-  color:#f5c76a;
-  padding:18px 25px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  position:sticky;
-  top:0;
-  z-index:10;
-}
+header{background:#3b2618;color:#f5c76a;padding:18px 25px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;}
 
-header h2{
-  margin:0;
-}
+header h2{margin:0;}
 
-.logout{
-  background:#f5c76a;
-  color:#3b2618;
-  border:0;
-  padding:10px 16px;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:bold;
-}
+.logout{background:#f5c76a;color:#3b2618;border:0;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:bold;}
 
-.container{
-  max-width:1200px;
-  margin:30px auto;
-  padding:0 20px;
-}
+.container{max-width:1200px;margin:30px auto;padding:0 20px;}
 
-.message{
-  background:white;
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:20px;
-}
+.message{background:white;padding:15px;border-radius:10px;margin-bottom:20px;}
 
-.stats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-  margin-bottom:25px;
-}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:25px;}
 
-.stat{
-  background:white;
-  padding:20px;
-  border-radius:14px;
-  box-shadow:0 4px 15px rgba(0,0,0,.08);
-  text-align:center;
-}
+.stat{background:white;padding:20px;border-radius:14px;box-shadow:0 4px 15px rgba(0,0,0,.08);text-align:center;}
 
-.stat h2{
-  margin:8px 0 0;
-  color:#b8860b;
-  font-size:27px;
-}
+.stat h2{margin:8px 0 0;color:#b8860b;font-size:27px;}
 
-.stat p{
-  margin:0;
-  color:#777;
-}
+.stat p{margin:0;color:#777;}
 
-.tabs{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-bottom:20px;
-}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
 
-.tab{
-  background:#3b2618;
-  color:#f5c76a;
-  border:0;
-  padding:11px 15px;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:bold;
-}
+.tab{background:#3b2618;color:#f5c76a;border:0;padding:11px 15px;border-radius:8px;cursor:pointer;font-weight:bold;}
 
-.tab.active{
-  background:#f5c76a;
-  color:#3b2618;
-}
+.tab.active{background:#f5c76a;color:#3b2618;}
 
-.section{
-  background:white;
-  padding:20px;
-  border-radius:14px;
-  margin-bottom:25px;
-  box-shadow:0 4px 15px rgba(0,0,0,.08);
-}
+.section{background:white;padding:20px;border-radius:14px;margin-bottom:25px;box-shadow:0 4px 15px rgba(0,0,0,.08);}
 
-.section h2{
-  margin-top:0;
-}
+.section h2{margin-top:0;}
 
-.card{
-  border:1px solid #ddd;
-  border-radius:10px;
-  padding:15px;
-  margin:12px 0;
-}
+.card{border:1px solid #ddd;border-radius:10px;padding:15px;margin:12px 0;}
 
-.card h3{
-  margin-top:0;
-}
+.card h3{margin-top:0;}
 
-button{
-  border:0;
-  padding:9px 14px;
-  border-radius:7px;
-  cursor:pointer;
-  margin:5px;
-  font-weight:bold;
-}
+button{border:0;padding:9px 14px;border-radius:7px;cursor:pointer;margin:5px;font-weight:bold;}
 
-.approve{
-  background:#198754;
-  color:white;
-}
+.approve{background:#198754;color:white;}
 
-.reject{
-  background:#dc3545;
-  color:white;
-}
+.reject{background:#dc3545;color:white;}
 
-.refresh{
-  background:#3b2618;
-  color:#f5c76a;
-}
+.refresh{background:#3b2618;color:#f5c76a;}
 
-.gold{
-  background:#b8860b;
-  color:white;
-}
+.gold{background:#b8860b;color:white;}
 
-.status{
-  display:inline-block;
-  padding:5px 9px;
-  border-radius:6px;
-  background:#fff3cd;
-  color:#856404;
-  font-size:13px;
-}
+.status{display:inline-block;padding:5px 9px;border-radius:6px;background:#fff3cd;color:#856404;font-size:13px;}
 
-.empty{
-  color:#777;
-  padding:15px;
-}
+.empty{color:#777;padding:15px;}
 
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:15px;
-}
+table{width:100%;border-collapse:collapse;margin-top:15px;}
 
-th,
-td{
-  border-bottom:1px solid #ddd;
-  padding:11px;
-  text-align:left;
-  font-size:14px;
-}
+th,td{border-bottom:1px solid #ddd;padding:11px;text-align:left;font-size:14px;}
 
-th{
-  background:#f1e7dc;
-}
+th{background:#f1e7dc;}
 
-.commission{
-  color:#d32f2f;
-  font-weight:bold;
-}
+.commission{color:#d32f2f;font-weight:bold;}
 
-.earning{
-  color:#16834a;
-  font-weight:bold;
-}
+.earning{color:#16834a;font-weight:bold;}
 
-.hidden{
-  display:none;
-}
+.hidden{display:none;}
 
-input{
-  padding:12px;
-  border:1px solid #ccc;
-  border-radius:7px;
-  font-size:16px;
-  width:250px;
-}
+input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:250px;}
 
-@media(max-width:900px){
+/* ===== NEW: notifications + order actions ===== */
 
-  .stats{
-    grid-template-columns:repeat(2,1fr);
-  }
+.cnt{display:inline-block;background:#dc3545;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:5px;}
 
-}
+.notif{padding:12px 14px;border-bottom:1px solid #eee;cursor:pointer;background:#fff;}
+
+.notif.unread{background:#fff9e8;border-left:4px solid #b8860b;}
+
+.notif b{display:block;color:#3b2618;}
+
+.notif small{color:#777;white-space:pre-line;}
+
+.pay-ok{background:#e7f6ea;color:#16834a;}
+
+.pay-cod{background:#eef2f6;color:#33475b;}
+
+.btn-sm{padding:7px 11px;margin:2px;font-size:13px;}
+
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr);}}
 
 @media(max-width:600px){
 
-  .stats{
-    grid-template-columns:1fr;
-  }
+  .stats{grid-template-columns:1fr;}
 
-  table{
-    display:block;
-    overflow-x:auto;
-    white-space:nowrap;
-  }
+  table{display:block;overflow-x:auto;white-space:nowrap;}
 
-  header{
-    padding:15px;
-  }
+  header{padding:15px;}
 
-  header h2{
-    font-size:18px;
-  }
+  header h2{font-size:18px;}
 
-  .container{
-    padding:0 12px;
-  }
+  .container{padding:0 12px;}
 
 }
 
@@ -257,11 +117,7 @@ input{
 
   <h2>👑 PS Mart Admin</h2>
 
-  <button
-    class="logout"
-    onclick="logoutAdmin()">
-    Logout
-  </button>
+  <button class="logout" onclick="logoutAdmin()">Logout</button>
 
 </header>
 
@@ -270,54 +126,28 @@ input{
 
   <h1>Admin Dashboard</h1>
 
-  <div id="message" class="message">
-    Loading...
-  </div>
+  <div id="message" class="message">Loading...</div>
 
 
   <!-- ================= STATS ================= -->
 
   <div class="stats">
 
-    <div class="stat">
-      <p>👤 Customers</p>
-      <h2 id="totalCustomers">0</h2>
-    </div>
+    <div class="stat"><p>👤 Customers</p><h2 id="totalCustomers">0</h2></div>
 
-    <div class="stat">
-      <p>🏪 Sellers</p>
-      <h2 id="totalSellers">0</h2>
-    </div>
+    <div class="stat"><p>🏪 Sellers</p><h2 id="totalSellers">0</h2></div>
 
-    <div class="stat">
-      <p>📦 Products</p>
-      <h2 id="totalProducts">0</h2>
-    </div>
+    <div class="stat"><p>📦 Products</p><h2 id="totalProducts">0</h2></div>
 
-    <div class="stat">
-      <p>🛒 Orders</p>
-      <h2 id="totalOrders">0</h2>
-    </div>
+    <div class="stat"><p>🛒 Orders</p><h2 id="totalOrders">0</h2></div>
 
-    <div class="stat">
-      <p>💰 Total Sales</p>
-      <h2 id="totalSales">₹0</h2>
-    </div>
+    <div class="stat"><p>💰 Total Sales</p><h2 id="totalSales">₹0</h2></div>
 
-    <div class="stat">
-      <p>💵 Commission</p>
-      <h2 id="totalCommission">₹0</h2>
-    </div>
+    <div class="stat"><p>💵 Commission</p><h2 id="totalCommission">₹0</h2></div>
 
-    <div class="stat">
-      <p>💸 Seller Earnings</p>
-      <h2 id="sellerEarnings">₹0</h2>
-    </div>
+    <div class="stat"><p>💸 Seller Earnings</p><h2 id="sellerEarnings">₹0</h2></div>
 
-    <div class="stat">
-      <p>⚙️ Commission Rate</p>
-      <h2 id="commissionRate">0%</h2>
-    </div>
+    <div class="stat"><p>⚙️ Commission Rate</p><h2 id="commissionRate">0%</h2></div>
 
   </div>
 
@@ -326,328 +156,199 @@ input{
 
   <div class="tabs">
 
-    <button
-      class="tab active"
-      onclick="showSection('sellersSection',this)">
-      🏪 Sellers
-    </button>
+    <button class="tab active" onclick="showSection('sellersSection',this)">🏪 Sellers</button>
 
-    <button
-      class="tab"
-      onclick="showSection('productsSection',this)">
-      📦 Products
-    </button>
+    <button class="tab" onclick="showSection('productsSection',this)">📦 Products</button>
 
-    <button
-      class="tab"
-      onclick="showSection('ordersSection',this)">
-      🛒 Orders
-    </button>
+    <button class="tab" onclick="showSection('ordersSection',this)">🛒 Orders</button>
 
-    <button
-      class="tab"
-      onclick="showSection('customersSection',this)">
-      👤 Customers
-    </button>
+    <button class="tab" onclick="showSection('customersSection',this)">👤 Customers</button>
 
-    <button
-      class="tab"
-      onclick="showSection('financeSection',this)">
-      💰 Finance
-    </button>
+    <button class="tab" onclick="showSection('financeSection',this)">💰 Finance</button>
 
-    <button
-      class="tab"
-      onclick="showSection('settingsSection',this)">
-      ⚙️ Settings
-    </button>
-    
-    <button
-  class="tab"
-  onclick="showSection('giftCardsSection',this)">
-  🎁 Gift Cards
-</button>
-    
-    <button
-  class="tab"
-  onclick="window.location.href='admin-support.html'">
-  🆘 Support
-</button>
+    <button class="tab" onclick="showSection('settingsSection',this)">⚙️ Settings</button>
+
+    <button class="tab" onclick="showSection('giftCardsSection',this)">🎁 Gift Cards</button>
+
+    <button class="tab" onclick="showSection('notificationsSection',this);loadNotifications()">🔔 Notifications<span id="notifCount"></span></button>
+
+    <button class="tab" onclick="window.location.href='admin-support.html'">🆘 Support</button>
 
   </div>
 
 
   <!-- ================= SELLERS ================= -->
 
-  <div
-    id="sellersSection"
-    class="section">
+  <div id="sellersSection" class="section">
 
     <h2>🏪 Seller Management</h2>
 
-    <button
-      class="refresh"
-      onclick="loadSellers()">
-      🔄 Refresh Sellers
-    </button>
+    <button class="refresh" onclick="loadSellers()">🔄 Refresh Sellers</button>
 
-    <div id="sellers">
-      Loading sellers...
-    </div>
+    <div id="sellers">Loading sellers...</div>
 
   </div>
 
 
   <!-- ================= PRODUCTS ================= -->
 
-  <div
-    id="productsSection"
-    class="section hidden">
+  <div id="productsSection" class="section hidden">
 
     <h2>📦 Product Management</h2>
 
-    <button
-      class="refresh"
-      onclick="loadProducts()">
-      🔄 Refresh Products
-    </button>
+    <button class="refresh" onclick="loadProducts()">🔄 Refresh Products</button>
 
-    <div id="products">
-      Loading products...
-    </div>
+    <div id="products">Loading products...</div>
 
   </div>
 
 
   <!-- ================= ORDERS ================= -->
 
-  <div
-    id="ordersSection"
-    class="section hidden">
+  <div id="ordersSection" class="section hidden">
 
     <h2>🛒 Order Management</h2>
 
-    <button
-      class="refresh"
-      onclick="loadOrders()">
-      🔄 Refresh Orders
-    </button>
+    <button class="refresh" onclick="loadOrders()">🔄 Refresh Orders</button>
 
-    <div id="orders">
-      Loading orders...
-    </div>
+    <div id="orders">Loading orders...</div>
 
   </div>
 
 
   <!-- ================= CUSTOMERS ================= -->
 
-  <div
-    id="customersSection"
-    class="section hidden">
+  <div id="customersSection" class="section hidden">
 
     <h2>👤 Customer Management</h2>
 
-    <button
-      class="refresh"
-      onclick="loadCustomers()">
-      🔄 Refresh Customers
-    </button>
+    <button class="refresh" onclick="loadCustomers()">🔄 Refresh Customers</button>
 
-    <div id="customers">
-      Loading customers...
-    </div>
+    <div id="customers">Loading customers...</div>
 
   </div>
 
 
   <!-- ================= FINANCE ================= -->
 
-  <div
-    id="financeSection"
-    class="section hidden">
+  <div id="financeSection" class="section hidden">
 
     <h2>💰 Finance</h2>
 
-    <div id="finance">
-      Loading finance...
-    </div>
+    <div id="finance">Loading finance...</div>
 
   </div>
 
 
   <!-- ================= SETTINGS ================= -->
 
-  <div
-    id="settingsSection"
-    class="section hidden">
+  <div id="settingsSection" class="section hidden">
 
     <h2>⚙️ Marketplace Settings</h2>
 
-    <p>
-      Current Commission Rate:
-    </p>
+    <p>Current Commission Rate:</p>
 
-    <h2 id="settingsRate">
-      Loading...
-    </h2>
+    <h2 id="settingsRate">Loading...</h2>
 
-    <label>
-      Set Commission Rate (%)
-    </label>
+    <label>Set Commission Rate (%)</label>
 
     <br><br>
 
-    <input
-      type="number"
-      id="newCommissionRate"
-      min="0"
-      max="100"
-      step="0.1"
-      placeholder="Example: 15"
-    >
+    <input type="number" id="newCommissionRate" min="0" max="100" step="0.1" placeholder="Example: 15">
 
-    <button
-      class="gold"
-      onclick="saveCommission()">
-      💾 Save Commission
-    </button>
-    
-    </div>
-  
-    <!-- ================= GIFT CARDS ================= -->
-
-<div
-  id="giftCardsSection"
-  class="section hidden">
-
-  <h2>🎁 Gift Card Management</h2>
-  <div class="card">
-
-  <h3>📤 Send Gift Card to Customer</h3>
-
-  <label>Select Gift Card</label>
-  <br><br>
-
-  <select
-    id="sendGiftCard"
-    style="
-      padding:12px;
-      border:1px solid #ccc;
-      border-radius:7px;
-      font-size:16px;
-      width:100%;
-      max-width:500px;
-    "
-  >
-    <option value="">
-      Loading available gift cards...
-    </option>
-  </select>
-
-  <br><br>
-
-  <label>Select Customer</label>
-  <br><br>
-
-  <select
-    id="sendGiftCustomer"
-    style="
-      padding:12px;
-      border:1px solid #ccc;
-      border-radius:7px;
-      font-size:16px;
-      width:100%;
-      max-width:500px;
-    "
-  >
-    <option value="">
-      Loading customers...
-    </option>
-  </select>
-
-  <br><br>
-
-  <button
-    class="gold"
-    onclick="sendGiftCardToCustomer()"
-  >
-    📤 Send Gift Card
-  </button>
-
-  <p
-    id="sendGiftCardMessage"
-    style="
-      font-weight:bold;
-      margin-top:10px;
-    "
-  ></p>
-
-</div>
-
-  <div class="card">
-
-    <h3>➕ Create New Gift Card</h3>
-
-    <label>Gift Card Amount (₹)</label>
-    <br><br>
-
-    <input
-      type="number"
-      id="giftCardAmount"
-      min="1"
-      step="1"
-      placeholder="Example: 500">
-
-    <br><br>
-
-    <label>Expiry Date</label>
-    <br><br>
-
-    <input
-      type="date"
-      id="giftCardExpiry">
-
-    <br><br>
-
-    <label>Number of Cards</label>
-    <br><br>
-
-    <input
-      type="number"
-      id="giftCardQuantity"
-      min="1"
-      max="50"
-      value="1"
-      placeholder="Example: 5">
-
-    <br><br>
-
-    <button
-      class="gold"
-      onclick="createGiftCards()">
-      🎁 Generate Gift Card(s)
-    </button>
+    <button class="gold" onclick="saveCommission()">💾 Save Commission</button>
 
   </div>
 
-  <div class="card">
+  <!-- ================= GIFT CARDS ================= -->
 
-    <h3>🎟️ Gift Cards</h3>
+  <div id="giftCardsSection" class="section hidden">
 
-    <button
-      class="refresh"
-      onclick="loadGiftCards()">
-      🔄 Refresh Gift Cards
-    </button>
+    <h2>🎁 Gift Card Management</h2>
 
-    <div id="giftCardsList">
-      Loading gift cards...
+    <div class="card">
+
+      <h3>📤 Send Gift Card to Customer</h3>
+
+      <label>Select Gift Card</label>
+      <br><br>
+
+      <select id="sendGiftCard" style="padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:100%;max-width:500px;">
+        <option value="">Loading available gift cards...</option>
+      </select>
+
+      <br><br>
+
+      <label>Select Customer</label>
+      <br><br>
+
+      <select id="sendGiftCustomer" style="padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:100%;max-width:500px;">
+        <option value="">Loading customers...</option>
+      </select>
+
+      <br><br>
+
+      <button class="gold" onclick="sendGiftCardToCustomer()">📤 Send Gift Card</button>
+
+      <p id="sendGiftCardMessage" style="font-weight:bold;margin-top:10px;"></p>
+
+    </div>
+
+    <div class="card">
+
+      <h3>➕ Create New Gift Card</h3>
+
+      <label>Gift Card Amount (₹)</label>
+      <br><br>
+
+      <input type="number" id="giftCardAmount" min="1" step="1" placeholder="Example: 500">
+
+      <br><br>
+
+      <label>Expiry Date</label>
+      <br><br>
+
+      <input type="date" id="giftCardExpiry">
+
+      <br><br>
+
+      <label>Number of Cards</label>
+      <br><br>
+
+      <input type="number" id="giftCardQuantity" min="1" max="50" value="1" placeholder="Example: 5">
+
+      <br><br>
+
+      <button class="gold" onclick="createGiftCards()">🎁 Generate Gift Card(s)</button>
+
+    </div>
+
+    <div class="card">
+
+      <h3>🎟️ Gift Cards</h3>
+
+      <button class="refresh" onclick="loadGiftCards()">🔄 Refresh Gift Cards</button>
+
+      <div id="giftCardsList">Loading gift cards...</div>
+
     </div>
 
   </div>
 
-</div>
+
+  <!-- ================= NOTIFICATIONS (NEW) ================= -->
+
+  <div id="notificationsSection" class="section hidden">
+
+    <h2>🔔 Notifications</h2>
+
+    <button class="refresh" onclick="loadNotifications()">🔄 Refresh</button>
+
+    <button class="refresh" onclick="readAllNotifs()">✔️ Sab padha hua mark karein</button>
+
+    <div id="notifications">Loading notifications...</div>
+
+  </div>
 
 
 </div>
@@ -666,6 +367,16 @@ window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
+
+
+/* ================= SMALL HELPERS (NEW) ================= */
+
+function esc(v){
+  return String(v == null ? "" : v)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
 
 
 /* ================= LOGIN CHECK ================= */
@@ -1065,7 +776,68 @@ async function updateProduct(id,status){
 }
 
 
-/* ================= ORDERS ================= */
+/* ================= ORDERS (payment + action columns added) ================= */
+
+function orderOverall(order,ships){
+
+  if(String(order.status || "").toLowerCase() === "cancelled"){
+    return "cancelled";
+  }
+
+  const list =
+    (ships || []).filter(
+      s => String(s.order_id) === String(order.id)
+    );
+
+  if(!list.length){
+    return String(order.status || "placed").toLowerCase();
+  }
+
+  if(list.every(s => s.status === "cancelled")){
+    return "cancelled";
+  }
+
+  const steps =
+    ["placed","confirmed","packed","shipped","out_for_delivery","delivered"];
+
+  return steps[
+    Math.min.apply(
+      null,
+      list.map(s => {
+        const i = steps.indexOf(s.status);
+        return i < 0 ? 0 : i;
+      })
+    )
+  ];
+
+}
+
+function orderPay(order){
+
+  const m = String(order.payment_method || "");
+
+  const utr =
+    order.upi_utr ||
+    ((m.match(/UTR\s*(\d{12})/) || [])[1]) ||
+    "";
+
+  if(/^COD/i.test(m)){
+    return {kind:"cod",text:"💵 COD",utr:""};
+  }
+
+  if(/gift/i.test(m)){
+    return {kind:"ok",text:"🎁 Gift Card (paid)",utr:""};
+  }
+
+  if(/^UPI/i.test(m)){
+    return order.payment_status === "paid"
+      ? {kind:"ok",text:"✅ UPI paid",utr:utr}
+      : {kind:"wait",text:"⏳ UPI verify baaki",utr:utr};
+  }
+
+  return {kind:"cod",text:esc(m || "-"),utr:""};
+
+}
 
 async function loadOrders(){
 
@@ -1102,6 +874,19 @@ async function loadOrders(){
   }
 
 
+  let ships = [];
+
+  const shipRes =
+    await supabaseClient
+    .from("seller_orders")
+    .select("order_id,status")
+    .in("order_id",orders.map(o => o.id));
+
+  if(!shipRes.error && shipRes.data){
+    ships = shipRes.data;
+  }
+
+
   let html = `
 
     <table>
@@ -1110,14 +895,52 @@ async function loadOrders(){
         <th>Order</th>
         <th>Customer</th>
         <th>Amount</th>
+        <th>Payment</th>
         <th>Status</th>
         <th>Address</th>
+        <th>Action</th>
       </tr>
 
   `;
 
 
   orders.forEach(order => {
+
+    const overall = orderOverall(order,ships);
+
+    const pay = orderPay(order);
+
+    let actions = "";
+
+    if(overall === "placed"){
+
+      actions +=
+        `<button class="approve btn-sm"
+          onclick="orderAction('admin_accept_order','${esc(order.id)}',this)">
+          ✅ Accept
+        </button>`;
+
+    }
+
+    if(pay.kind === "wait" && overall !== "cancelled"){
+
+      actions +=
+        `<button class="gold btn-sm"
+          onclick="orderAction('admin_confirm_payment','${esc(order.id)}',this)">
+          💰 Payment mila
+        </button>`;
+
+    }
+
+    if(overall !== "cancelled" && overall !== "delivered"){
+
+      actions +=
+        `<button class="reject btn-sm"
+          onclick="orderAction('admin_cancel_order','${esc(order.id)}',this,true)">
+          ❌ Cancel
+        </button>`;
+
+    }
 
     html += `
 
@@ -1136,13 +959,24 @@ async function loadOrders(){
         </td>
 
         <td>
+          <span class="status ${pay.kind === "ok" ? "pay-ok" : pay.kind === "cod" ? "pay-cod" : ""}">
+            ${pay.text}
+          </span>
+          ${pay.utr ? "<br><small>UTR: " + esc(pay.utr) + "</small>" : ""}
+        </td>
+
+        <td>
           <span class="status">
-            ${order.status || "placed"}
+            ${overall}
           </span>
         </td>
 
         <td>
-          ${order.address || "Not provided"}
+          ${esc(order.address || "Not provided")}
+        </td>
+
+        <td>
+          ${actions || "-"}
         </td>
 
       </tr>
@@ -1156,6 +990,38 @@ async function loadOrders(){
 
 
   box.innerHTML = html;
+
+}
+
+
+/* ================= ORDER ACTION (NEW) ================= */
+
+async function orderAction(fn,id,btn,ask){
+
+  if(ask && !confirm("Pakka cancel karna hai?")){
+    return;
+  }
+
+  btn.disabled = true;
+
+  const {data,error} =
+    await supabaseClient.rpc(fn,{p_order_id:String(id)});
+
+  if(error || !data || data.success !== true){
+
+    alert(
+      "Nahi ho paya: " +
+      ((error && error.message) ||
+       (data && data.message) ||
+       "ps-mart-admin.sql Supabase mein run kiya hai?")
+    );
+
+    btn.disabled = false;
+
+    return;
+  }
+
+  await loadOrders();
 
 }
 
@@ -1519,6 +1385,8 @@ async function loadDashboardCounts(){
     orders.count || 0;
 
 }
+
+
 /* ================= GIFT CARDS ================= */
 
 function generateGiftCardCode(){
@@ -1816,6 +1684,89 @@ async function loadGiftCards(){
 
 }
 
+
+/* ================= NOTIFICATIONS (NEW) ================= */
+
+async function loadNotifications(){
+
+  const box =
+    document.getElementById("notifications");
+
+  const {data,error} =
+    await supabaseClient
+    .from("admin_notifications")
+    .select("*")
+    .order("id",{ascending:false})
+    .limit(60);
+
+  if(error){
+
+    box.innerHTML =
+      "❌ " + esc(error.message) +
+      "<br><small>ps-mart-admin.sql Supabase mein run kiya hai?</small>";
+
+    return;
+  }
+
+  const unread =
+    (data || []).filter(n => !n.is_read).length;
+
+  document.getElementById("notifCount").innerHTML =
+    unread ? '<span class="cnt">' + unread + '</span>' : "";
+
+  document.title =
+    (unread ? "(" + unread + ") " : "") +
+    "PS Mart Admin Dashboard";
+
+  if(!data || data.length === 0){
+
+    box.innerHTML =
+      "<div class='empty'>Abhi koi notification nahi.</div>";
+
+    return;
+  }
+
+  box.innerHTML =
+    '<div style="border:1px solid #eee;border-radius:10px;overflow:hidden;margin-top:12px">' +
+    data.map(n => `
+
+      <div class="notif ${n.is_read ? "" : "unread"}"
+           onclick="readNotif(${Number(n.id)})">
+
+        <b>${esc(n.title)}</b>
+
+        <small>${esc(n.body || "")}\n${esc(new Date(n.created_at).toLocaleString("en-IN"))}</small>
+
+      </div>
+
+    `).join("") +
+    "</div>";
+
+}
+
+async function readNotif(id){
+
+  await supabaseClient
+    .from("admin_notifications")
+    .update({is_read:true})
+    .eq("id",id);
+
+  loadNotifications();
+
+}
+
+async function readAllNotifs(){
+
+  await supabaseClient
+    .from("admin_notifications")
+    .update({is_read:true})
+    .eq("is_read",false);
+
+  loadNotifications();
+
+}
+
+
 /* ================= LOGOUT ================= */
 
 async function logoutAdmin(){
@@ -1853,12 +1804,16 @@ async function logoutAdmin(){
 
   await loadFinance();
 
-   await loadGiftCards();
+  await loadGiftCards();
 
   loadSendGiftCardOptions();
-  
+
+  await loadNotifications();
+
+  setInterval(loadNotifications,30000);
 
 })();
+
 async function loadSendGiftCardOptions() {
 
   const giftSelect = document.getElementById("sendGiftCard");
@@ -1956,9 +1911,10 @@ if (customerError) {
       `;
     });
   }
-}    
 }
-  async function sendGiftCardToCustomer() {
+}
+
+async function sendGiftCardToCustomer() {
 
   const giftCardId =
     document.getElementById("sendGiftCard").value;
@@ -2135,7 +2091,7 @@ if (customerError) {
   await loadGiftCards();
   await loadSendGiftCardOptions();
 }
-  
+
 </script>
 
 </body>
