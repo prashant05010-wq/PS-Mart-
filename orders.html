@@ -1,1176 +1,277 @@
 <!doctype html>
 <html lang="en">
-
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>My Orders | PS Mart</title>
-
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-
 <style>
+:root{--esp:#24150b;--brown:#43250f;--gold:#f0bd50;--gdeep:#c9922e;--gsoft:#f7dd9b;--cream:#fbf6ea;--page:#f6f1e7;--ink:#2a1a0e;--muted:#7c6a58;--line:#e6dac3;--green:#188038;--red:#c62828;--serif:"Cormorant Garamond",Georgia,serif;--sans:Inter,"Segoe UI",Arial,sans-serif;--ggrad:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);--bgrad:linear-gradient(110deg,#24150b,#43250f 55%,#6c3e17)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);font-family:var(--sans);color:var(--ink);padding-bottom:70px}
+button,input,select{font-family:inherit}
+.pm-head{background:var(--bgrad);color:#fff;padding:12px 4%;display:flex;align-items:center;gap:22px;position:sticky;top:0;z-index:1000;border-bottom:2px solid var(--gdeep);box-shadow:0 4px 18px rgba(36,21,11,.35)}
+.pm-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;font:700 28px var(--serif);white-space:nowrap}
+.pm-logo i{width:42px;height:42px;border-radius:50%;background:var(--ggrad);color:var(--esp);display:flex;align-items:center;justify-content:center;font:700 20px var(--serif);font-style:normal;box-shadow:0 0 0 3px rgba(240,189,80,.3)}
+.pm-search{flex:1;max-width:700px;display:flex;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--gdeep)}
+.pm-search input{flex:1;border:0;outline:0;padding:13px 16px;font-size:15px;color:var(--ink)}
+.pm-search button{width:56px;border:0;background:var(--ggrad);font-size:20px;cursor:pointer}
+.pm-links{display:flex;align-items:center;gap:20px;white-space:nowrap;margin-left:auto}
+.pm-links a{color:#fff;text-decoration:none;font-weight:600;font-size:14px}.pm-links a:hover{color:var(--gold)}
+#count{font-style:normal;background:var(--gold);color:var(--esp);padding:2px 7px;border-radius:10px;font-size:11px;font-weight:700}
+.pm-wrap{max-width:1200px;margin:auto;padding:20px 4%}
+.pm-title{margin:0 0 16px;font:700 34px var(--serif);color:var(--brown)}
+.goldbtn{display:inline-block;text-decoration:none;background:var(--ggrad);color:var(--esp);padding:12px 22px;border-radius:8px;font-weight:700;border:0;cursor:pointer}
+.empty{padding:40px 20px;text-align:center;background:#fff;border:1px dashed var(--gdeep);border-radius:12px;color:var(--muted)}
+.pm-mnav{display:none}
+@media(max-width:700px){
+.pm-head{padding:10px 12px;gap:10px;flex-wrap:wrap}.pm-logo{font-size:22px}.pm-logo i{width:36px;height:36px;font-size:17px}.pm-search{order:3;flex-basis:100%;height:40px}.pm-search input{padding:10px;font-size:14px}.pm-search button{width:45px}.pm-links{display:none}
+.pm-wrap{padding:12px 10px}.pm-title{font-size:26px}
+.pm-mnav{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);bottom:0;left:0;right:0;height:65px;padding-bottom:env(safe-area-inset-bottom,0);background:var(--esp);border-top:2px solid var(--gdeep);z-index:2000}
+.pm-mnav a{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#cdbda3;text-decoration:none;font-size:11px;gap:3px}
+.pm-mnav a.on{color:var(--gold);font-weight:700}.pm-mnav span{font-size:24px;line-height:25px}}
 
-.orders-page{
-  max-width:1100px;
-  margin:30px auto;
-  padding:0 15px;
-}
-
-.order-card{
-  background:#fff;
-  border:1px solid #ddd;
-  border-radius:10px;
-  margin-bottom:25px;
-  overflow:hidden;
-  box-shadow:0 2px 8px rgba(0,0,0,.06);
-}
-
-.order-top{
-  background:#f7f7f7;
-  padding:15px 20px;
-  display:flex;
-  justify-content:space-between;
-  gap:15px;
-  flex-wrap:wrap;
-}
-
-.order-id{
-  font-weight:bold;
-}
-
-.order-status{
-  font-weight:bold;
-  text-transform:capitalize;
-}
-
-.status-placed{color:#2874f0;}
-.status-confirmed{color:#2874f0;}
-.status-packed{color:#9c27b0;}
-.status-shipped{color:#ff9800;}
-.status-out_for_delivery{color:#e65100;}
-.status-delivered{color:#008000;}
-.status-cancelled{color:#d32f2f;}
-
-.order-body{
-  padding:20px;
-}
-
-.product-row{
-  display:flex;
-  gap:20px;
-  align-items:center;
-  padding-bottom:20px;
-  margin-bottom:20px;
-  border-bottom:1px solid #eee;
-}
-
-.product-image{
-  width:110px;
-  height:110px;
-  border:1px solid #eee;
-  border-radius:8px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  flex-shrink:0;
-}
-
-.product-image img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-}
-
-.product-info{
-  flex:1;
-}
-
-.product-info h3{
-  margin:0 0 8px;
-}
-
-.product-info p{
-  margin:5px 0;
-}
-
-.price{
-  font-size:20px;
-  font-weight:bold;
-}
-
-.order-summary{
-  display:flex;
-  justify-content:space-between;
-  gap:20px;
-  flex-wrap:wrap;
-  margin-top:20px;
-}
-
-.address{
-  flex:1;
-  min-width:250px;
-}
-
-.total{
-  min-width:180px;
-}
-
-.total h2{
-  margin:0;
-}
-
-/* SELLER SHIPMENT */
-
-.seller-shipment{
-  margin-top:25px;
-  padding:20px;
-  background:#fafafa;
-  border:1px solid #eee;
-  border-radius:8px;
-}
-
-.seller-shipment h3{
-  margin-top:0;
-}
-
-.seller-status{
-  font-weight:bold;
-  text-transform:capitalize;
-  margin-bottom:15px;
-}
-
-/* TRACKING */
-
-.tracking{
-  margin-top:20px;
-  padding:18px;
-  background:#fff;
-  border-radius:8px;
-  border:1px solid #eee;
-}
-
-.tracking h4{
-  margin:0 0 15px;
-}
-
-.timeline{
-  display:flex;
-  justify-content:space-between;
-  position:relative;
-  margin:25px 10px 10px;
-}
-
-.timeline:before{
-  content:"";
-  position:absolute;
-  top:15px;
-  left:5%;
-  right:5%;
-  height:3px;
-  background:#ddd;
-  z-index:0;
-}
-
-.step{
-  position:relative;
-  z-index:1;
-  text-align:center;
-  width:20%;
-}
-
-.circle{
-  width:30px;
-  height:30px;
-  border-radius:50%;
-  background:#ddd;
-  color:#777;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  margin:auto;
-  font-weight:bold;
-}
-
-.step.done .circle{
-  background:#008000;
-  color:white;
-}
-
-.step span{
-  display:block;
-  margin-top:8px;
-  font-size:13px;
-}
-
-.track-note{
-  margin-top:18px;
-  font-size:14px;
-  color:#555;
-}
-
-.tracking-info{
-  margin-top:12px;
-  padding:10px;
-  background:#f7f7f7;
-  border-radius:6px;
-  font-size:14px;
-}
-
-/* EMPTY */
-
-.empty-orders{
-  text-align:center;
-  padding:60px 20px;
-  background:#fff;
-  border-radius:10px;
-  border:1px solid #ddd;
-}
-
-.empty-orders h2{
-  margin-bottom:10px;
-}
-
-.loading{
-  text-align:center;
-  padding:50px;
-}
-
-/* MOBILE */
-
-@media(max-width:600px){
-
-  .product-row{
-    align-items:flex-start;
-  }
-
-  .product-image{
-    width:80px;
-    height:80px;
-  }
-
-  .timeline{
-    margin-left:0;
-    margin-right:0;
-  }
-
-  .timeline:before{
-    left:10%;
-    right:10%;
-  }
-
-  .step span{
-    font-size:10px;
-  }
-
-  .circle{
-    width:26px;
-    height:26px;
-    font-size:12px;
-  }
-
-}
-
+.o-wrap{max-width:1000px;margin:auto;padding:20px 4%}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+.chip{border:1px solid var(--gdeep);background:#fff;color:var(--brown);border-radius:20px;padding:8px 16px;font-weight:700;font-size:14px;cursor:pointer}
+.chip.on{background:var(--brown);color:var(--gold);border-color:var(--brown)}
+.order-card{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:20px;overflow:hidden;box-shadow:0 2px 10px rgba(67,37,15,.06)}
+.order-top{background:var(--cream);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:center}
+.order-top .id{font-weight:700;color:var(--brown)}.order-top small{color:var(--muted)}
+.badge{display:inline-block;padding:5px 12px;border-radius:14px;font-size:13px;font-weight:700}
+.b-placed,.b-confirmed{background:#e7efff;color:#1f4fb8}.b-packed{background:#f1e4f7;color:#7b1fa2}
+.b-shipped,.b-out_for_delivery{background:#fff0d6;color:#b86500}.b-delivered{background:#e7f6ea;color:var(--green)}
+.b-cancelled{background:#fdeaea;color:var(--red)}
+.pay-ok{background:#e7f6ea;color:var(--green)}.pay-wait{background:#fff4d8;color:#8a5a00}.pay-cod{background:#eef2f6;color:#33475b}
+.order-body{padding:18px 20px}
+.product-row{display:flex;gap:16px;align-items:center;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--line)}
+.product-image{width:96px;height:96px;border:1px solid var(--line);border-radius:10px;background:var(--cream);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;font-size:32px}
+.product-image img{width:100%;height:100%;object-fit:contain}
+.product-info{flex:1;min-width:0}
+.product-info a{color:var(--ink);text-decoration:none;font-weight:700;font-size:16px}.product-info a:hover{color:var(--gdeep)}
+.product-info p{margin:5px 0;font-size:14px;color:var(--muted)}
+.price{font-size:19px;font-weight:700;color:var(--brown)}
+.sum-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.sum-row h3{margin:0 0 6px;font:700 20px var(--serif);color:var(--brown)}
+.sum-row p{margin:4px 0;font-size:14px}
+.eta{display:inline-flex;gap:6px;align-items:center;background:#fff4d8;border:1px dashed var(--gdeep);border-radius:8px;padding:8px 12px;font-size:14px;margin-top:10px}
+.ship{margin-top:18px;padding:16px;background:#fffdf6;border:1px solid var(--line);border-radius:10px}
+.ship h3{margin:0 0 8px;font:700 20px var(--serif);color:var(--brown)}
+.track-info{margin-top:8px;padding:9px 12px;background:var(--cream);border-radius:8px;font-size:14px}
+.timeline{display:flex;justify-content:space-between;position:relative;margin:22px 6px 8px}
+.timeline:before{content:"";position:absolute;top:15px;left:6%;right:6%;height:3px;background:var(--line)}
+.step{position:relative;z-index:1;text-align:center;flex:1}
+.circle{width:30px;height:30px;border-radius:50%;background:var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;margin:auto;font-weight:700;font-size:13px}
+.step.done .circle{background:var(--green);color:#fff}
+.step span{display:block;margin-top:8px;font-size:12px;color:var(--muted)}.step.done span{color:var(--ink);font-weight:600}
+.track-note{margin-top:12px;font-size:14px;color:var(--muted)}
+.cancel-btn{background:#fff;color:var(--red);border:1px solid var(--red);padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:700;margin-top:16px}
+.cancel-btn:hover{background:var(--red);color:#fff}
+.loading{text-align:center;padding:50px;color:var(--muted)}
+@media(max-width:600px){.product-image{width:72px;height:72px}.order-top{padding:12px}.order-body{padding:14px}.step span{font-size:10px}.circle{width:26px;height:26px;font-size:12px}}
 </style>
-
 </head>
-
-
 <body>
 
-<header class="header">
-
-  <a class="logo" href="index.html">
-    🛍️ <b>PS</b> Mart
-  </a>
-
-</header>
-
-
-<main class="orders-page">
-
-<h1>My Orders</h1>
-
-<div id="orders">
-
-  <div class="loading">
-    Loading your orders...
+<div class="pm-head" role="banner">
+  <a class="pm-logo" href="index.html"><i>PS</i><span>PS Mart</span></a>
+  <div class="pm-search">
+    <input id="search" type="text" placeholder="Search for Products, Brands and More" onkeydown="if(event.key==='Enter') search()">
+    <button onclick="search()" aria-label="Search">🔍</button>
   </div>
-
+  <div class="pm-links">
+    <a href="login.html">👤 Login</a>
+    <a href="wishlist.html">♡</a>
+    <a href="cart.html">🛒 Cart <em id="count">0</em></a>
+  </div>
 </div>
 
+<main class="o-wrap">
+  <h1 class="pm-title">My Orders</h1>
+  <div class="chips" id="chips"></div>
+  <div id="orders"><div class="loading">Loading your orders...</div></div>
 </main>
 
+<div class="pm-mnav">
+  <a href="index.html"><span>🏠</span>Home</a>
+  <a href="products.html"><span>▦</span>Categories</a>
+  <a href="profile.html"><span>👤</span>Account</a>
+  <a href="cart.html"><span>🛒</span>Cart</a>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script src="data.js"></script>
 <script src="app.js"></script>
-
-
 <script>
+var DELIVERY_DAYS = 5;   /* checkout.html wali value jaisi hi rakhein */
+var STATUS_LIST = ["placed","confirmed","packed","shipped","out_for_delivery","delivered"];
+var LABELS = ["Ordered","Confirmed","Packed","Shipped","Out for Delivery","Delivered"];
+var STATE = {orders:[],items:[],products:[],sellerOrders:[]};
+var FILTER = "all";
 
-/* =========================
-   STATUS ORDER
-========================= */
+function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+function inr(n){return "₹"+Number(n||0).toLocaleString("en-IN");}
+function fmtStatus(s){return String(s||"placed").replace(/_/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();});}
+function statusLabel(s){
+  return ({confirmed:"✓ Confirmed",packed:"📦 Packed",shipped:"🚚 Shipped",out_for_delivery:"🛵 Out for Delivery",delivered:"✓ Delivered",cancelled:"✕ Cancelled"})[s]||"📦 Order Placed";
+}
+function fmtDate(d,opt){return new Date(d).toLocaleDateString("en-IN",opt||{weekday:"short",day:"numeric",month:"short"});}
 
-const STATUS_LIST = [
-  "placed",
-  "confirmed",
-  "packed",
-  "shipped",
-  "out_for_delivery",
-  "delivered"
-];
-
-
-/* =========================
-   FORMAT STATUS
-========================= */
-
-function formatStatus(status){
-
-  return String(status || "placed")
-    .replaceAll("_"," ")
-    .replace(/\b\w/g, c => c.toUpperCase());
-
+/* order ka overall status */
+function overallStatus(order){
+  if(String(order.status).toLowerCase()==="cancelled") return "cancelled";
+  var list=STATE.sellerOrders.filter(function(s){return String(s.order_id)===String(order.id);});
+  if(!list.length) return String(order.status||"placed").toLowerCase();
+  var idx=Math.min.apply(null,list.map(function(s){var i=STATUS_LIST.indexOf(s.status);return i<0?0:i;}));
+  if(list.every(function(s){return s.status==="cancelled";})) return "cancelled";
+  return STATUS_LIST[idx];
 }
 
-
-/* =========================
-   STATUS ICON
-========================= */
-
-function statusLabel(status){
-
-  switch(status){
-
-    case "confirmed":
-      return "✓ Confirmed";
-
-    case "packed":
-      return "📦 Packed";
-
-    case "shipped":
-      return "🚚 Shipped";
-
-    case "out_for_delivery":
-      return "🛵 Out for Delivery";
-
-    case "delivered":
-      return "✓ Delivered";
-
-    case "cancelled":
-      return "✕ Cancelled";
-
-    default:
-      return "📦 Order Placed";
-
+/* payment badge */
+function paymentInfo(o){
+  var m=String(o.payment_method||""),st=o.payment_status;
+  var utr=o.upi_utr||((m.match(/UTR\s*(\d{12})/)||[])[1])||"";
+  if(/^COD/i.test(m)) return {cls:"pay-cod",text:"💵 Delivery par "+inr(o.total_amount)+" dijiye",utr:""};
+  if(/gift/i.test(m)) return {cls:"pay-ok",text:"🎁 Gift Card se paid",utr:""};
+  if(/^UPI/i.test(m)){
+    if(st==="paid") return {cls:"pay-ok",text:"✅ UPI payment mil gaya",utr:utr};
+    return {cls:"pay-wait",text:"⏳ UPI payment verify ho raha hai",utr:utr};
   }
-
+  return {cls:"pay-cod",text:esc(m||"Payment"),utr:""};
 }
 
-
-/* =========================
-   TRACKING
-========================= */
-
-function tracking(status){
-
-  status =
-    String(status || "placed")
-    .toLowerCase()
-    .replaceAll(" ","_");
-
-
-  if(status === "cancelled"){
-
-    return `
-
-      <div class="tracking">
-
-        <h4>🚚 Order Tracking</h4>
-
-        <div class="track-note"
-             style="color:#d32f2f;font-weight:bold;">
-
-          ❌ This shipment has been cancelled.
-
-        </div>
-
-      </div>
-
-    `;
-
+function timeline(status){
+  status=String(status||"placed").toLowerCase().replace(/ /g,"_");
+  if(status==="cancelled"){
+    return '<div class="track-note" style="color:var(--red);font-weight:700">❌ Ye shipment cancel ho gaya hai.</div>';
   }
+  var cur=STATUS_LIST.indexOf(status);if(cur<0)cur=0;
+  return '<div class="timeline">'+LABELS.map(function(l,i){
+    return '<div class="step '+(cur>=i?"done":"")+'"><div class="circle">'+(cur>=i?"✓":(i+1))+'</div><span>'+l+'</span></div>';
+  }).join("")+'</div><div class="track-note">Current status: <b>'+fmtStatus(status)+'</b></div>';
+}
 
+function renderChips(){
+  var opts=[["all","Sab"],["active","Chal rahe"],["delivered","Delivered"],["cancelled","Cancelled"]];
+  document.getElementById("chips").innerHTML=opts.map(function(o){
+    return '<button class="chip '+(FILTER===o[0]?"on":"")+'" onclick="setFilter(\''+o[0]+'\')">'+o[1]+'</button>';
+  }).join("");
+}
+function setFilter(f){FILTER=f;renderChips();renderOrders();}
 
-  let current =
-    STATUS_LIST.indexOf(status);
-
-
-  if(current < 0){
-    current = 0;
+function renderOrders(){
+  var box=document.getElementById("orders");
+  var list=STATE.orders.filter(function(o){
+    var s=overallStatus(o);
+    if(FILTER==="active") return s!=="delivered"&&s!=="cancelled";
+    if(FILTER==="delivered") return s==="delivered";
+    if(FILTER==="cancelled") return s==="cancelled";
+    return true;
+  });
+  if(!list.length){
+    box.innerHTML='<div class="empty"><h2 style="margin:0 0 8px">Is filter mein koi order nahi</h2></div>';return;
   }
-
-
-  const labels = [
-    "Ordered",
-    "Confirmed",
-    "Packed",
-    "Shipped",
-    "Out for Delivery",
-    "Delivered"
-  ];
-
-
-  return `
-
-    <div class="tracking">
-
-      <h4>🚚 Shipment Tracking</h4>
-
-      <div class="timeline">
-
-        ${labels.map((label,index) => `
-
-          <div class="step ${
-            current >= index ? "done" : ""
-          }">
-
-            <div class="circle">
-
-              ${
-                current >= index
-                ? "✓"
-                : index + 1
-              }
-
-            </div>
-
-            <span>${label}</span>
-
-          </div>
-
-        `).join("")}
-
-      </div>
-
-      <div class="track-note">
-
-        Current Status:
-        <b>${formatStatus(status)}</b>
-
-      </div>
-
-    </div>
-
-  `;
-
+  box.innerHTML=list.map(orderCard).join("");
 }
 
+function orderCard(order){
+  var os=overallStatus(order);
+  var items=STATE.items.filter(function(i){return String(i.order_id)===String(order.id);});
+  var rows=items.map(function(item){
+    var p=STATE.products.find(function(p){return String(p.id)===String(item.product_id);});
+    if(!p) return "";
+    var img=p.image_url?'<img src="'+esc(p.image_url)+'" alt="'+esc(p.name)+'">':"🛍️";
+    return '<div class="product-row"><div class="product-image">'+img+'</div><div class="product-info">'
+      +'<a href="product.html?id='+encodeURIComponent(p.id)+'">'+esc(p.name)+'</a>'
+      +'<p>Quantity: <b>'+Number(item.quantity||1)+'</b></p><div class="price">'+inr(item.price)+'</div></div></div>';
+  }).join("");
 
-/* =========================
-   LOAD ORDERS
-========================= */
+  var ships=STATE.sellerOrders.filter(function(s){return String(s.order_id)===String(order.id);});
+  var shipHtml=(ships.length?ships:[{status:os==="cancelled"?"cancelled":"placed"}]).map(function(so){
+    return '<div class="ship"><h3>🚚 Shipment Tracking</h3>'
+      +'<span class="badge b-'+esc(so.status||"placed")+'">'+statusLabel(so.status)+'</span>'
+      +(so.tracking_number?'<div class="track-info">📦 Tracking Number: <b>'+esc(so.tracking_number)+'</b></div>':'')
+      +(so.shipping_provider?'<div class="track-info">🏢 Courier: <b>'+esc(so.shipping_provider)+'</b></div>':'')
+      +timeline(so.status)+'</div>';
+  }).join("");
 
-async function loadOrders(){
+  var pay=paymentInfo(order);
+  var date=order.created_at?fmtDate(order.created_at,{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}):"Date not available";
+  var eta="";
+  if(order.created_at&&os!=="delivered"&&os!=="cancelled"){
+    var d=new Date(order.created_at);d.setDate(d.getDate()+DELIVERY_DAYS);
+    eta='<div class="eta">🚚 Expected delivery: <b>'+fmtDate(d)+'</b></div>';
+  }
+  var cancel=(String(order.status).toLowerCase()==="placed"&&os==="placed")
+    ?'<button class="cancel-btn" data-id="'+esc(order.id)+'" onclick="cancelOrder(this.dataset.id)">❌ Order Cancel Karein</button>':"";
 
-  const box =
-    document.getElementById("orders");
-
-
- const {
-  data: sessionData,
-  error: sessionError
-} = await supabaseClient.auth.getSession();
-
-const user =
-  sessionData &&
-  sessionData.session
-    ? sessionData.session.user
-    : null;
-
-if (sessionError) {
-  console.log("Session error:", sessionError);
+  return '<div class="order-card"><div class="order-top"><div><div class="id">Order ID: #'+esc(order.id)+'</div><small>'+esc(date)+'</small></div>'
+    +'<div><span class="badge b-'+esc(os)+'">'+statusLabel(os)+'</span></div></div>'
+    +'<div class="order-body">'+rows
+    +'<div class="sum-row"><div style="flex:1;min-width:240px"><h3>📍 Delivery Address</h3><p>'+esc(order.address||"Not available")+'</p>'+eta+'</div>'
+    +'<div style="min-width:200px"><h3>Payment</h3><div class="price">'+inr(order.total_amount)+'</div>'
+    +'<p><span class="badge '+pay.cls+'">'+pay.text+'</span></p>'
+    +(pay.utr?'<p style="color:var(--muted)">UTR: '+esc(pay.utr)+'</p>':'')+'</div></div>'
+    +shipHtml+cancel+'</div></div>';
 }
 
-
+async function loadOrders(silent){
+  var box=document.getElementById("orders");
+  var s=await supabaseClient.auth.getSession();
+  var user=s.data&&s.data.session?s.data.session.user:null;
   if(!user){
-
-    box.innerHTML = `
-
-      <div class="empty-orders">
-
-        <h2>🔐 Please Login</h2>
-
-        <p>
-          Login to see your orders.
-        </p>
-
-        <br>
-
-        <a
-          class="goldbtn"
-          href="login.html">
-
-          Login
-
-        </a>
-
-      </div>
-
-    `;
-
+    box.innerHTML='<div class="empty"><h2>🔐 Please Login</h2><p>Apne orders dekhne ke liye login kijiye.</p><br><a class="goldbtn" href="login.html">Login</a></div>';
     return;
-
   }
-
-
-  /* =========================
-     ORDERS
-  ========================= */
-
-  const {
-    data:orders,
-    error:orderError
-  } =
-    await supabaseClient
-    .from("orders")
-    .select("*")
-    .eq("customer_id",user.id)
-    .order(
-      "created_at",
-      {
-        ascending:false
-      }
-    );
-
-
-  if(orderError){
-
-    console.log(
-      "Orders error:",
-      orderError
-    );
-
-    box.innerHTML = `
-
-      <div class="empty-orders">
-
-        <h2>
-          Unable to load orders
-        </h2>
-
-        <p>
-          ${orderError.message}
-        </p>
-
-      </div>
-
-    `;
-
+  var o=await supabaseClient.from("orders").select("*").eq("customer_id",user.id).order("created_at",{ascending:false});
+  if(o.error){
+    console.log("Orders error:",o.error);
+    box.innerHTML='<div class="empty"><h2>Orders load nahi ho paye</h2><p>'+esc(o.error.message)+'</p></div>';return;
+  }
+  if(!o.data||!o.data.length){
+    document.getElementById("chips").innerHTML="";
+    box.innerHTML='<div class="empty"><h2>🛒 Abhi koi order nahi</h2><p>Aapne abhi tak koi order nahi diya.</p><br><a class="goldbtn" href="products.html">Shopping shuru karein</a></div>';
     return;
-
   }
-
-
-  if(!orders || !orders.length){
-
-    box.innerHTML = `
-
-      <div class="empty-orders">
-
-        <h2>
-          🛒 No Orders Yet
-        </h2>
-
-        <p>
-          You haven't placed any order yet.
-        </p>
-
-        <br>
-
-        <a
-          class="goldbtn"
-          href="products.html">
-
-          Start Shopping
-
-        </a>
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-  /* =========================
-     ORDER IDS
-  ========================= */
-
-  const orderIds =
-    orders.map(
-      order => order.id
-    );
-
-
-  /* =========================
-     ORDER ITEMS
-  ========================= */
-
-  const {
-    data:items,
-    error:itemError
-  } =
-    await supabaseClient
-    .from("order_items")
-    .select("*")
-    .in("order_id",orderIds);
-
-
-  if(itemError){
-
-    console.log(
-      "Order items error:",
-      itemError
-    );
-
-  }
-
-
-  /* =========================
-     PRODUCTS
-  ========================= */
-
-  const productIds =
-    (items || []).map(
-      item => item.product_id
-    );
-
-
-  let products = [];
-
-
-  if(productIds.length){
-
-    const {
-      data:productData
-    } =
-      await supabaseClient
-      .from("products")
-      .select("*")
-      .in("id",productIds);
-
-
-    products =
-      productData || [];
-
-  }
-
-
-  /* =========================
-     SELLER ORDERS
-  ========================= */
-
-  const {
-    data:sellerOrders,
-    error:sellerOrderError
-  } =
-    await supabaseClient
-    .from("seller_orders")
-    .select("*")
-    .in("order_id",orderIds);
-
-
-  if(sellerOrderError){
-
-    console.log(
-      "Seller orders error:",
-      sellerOrderError
-    );
-
-  }
-
-
-  /* =========================
-     CREATE ORDER CARDS
-  ========================= */
-
-  box.innerHTML =
-    orders.map(order => {
-
-
-      const orderItems =
-        (items || [])
-        .filter(
-          item =>
-            String(item.order_id) ===
-            String(order.id)
-        );
-
-
-      /* =========================
-         PRODUCTS HTML
-      ========================= */
-
-      const productHTML =
-        orderItems.map(item => {
-
-
-          const product =
-            products.find(
-              p =>
-                String(p.id) ===
-                String(item.product_id)
-            );
-
-
-          if(!product){
-            return "";
-          }
-
-
-          const qty =
-            Number(item.quantity || 1);
-
-
-          const price =
-            Number(item.price || 0);
-
-
-          return `
-
-            <div class="product-row">
-
-              <div class="product-image">
-
-                ${
-                  product.image_url
-
-                  ?
-
-                  `
-
-                  <img
-                    src="${product.image_url}"
-                    alt="${product.name}"
-                  >
-
-                  `
-
-                  :
-
-                  "🛍️"
-
-                }
-
-              </div>
-
-
-              <div class="product-info">
-
-                <h3>
-                  ${product.name}
-                </h3>
-
-                <p>
-                  Quantity:
-                  <b>${qty}</b>
-                </p>
-
-                <p class="price">
-                  ₹${price.toLocaleString("en-IN")}
-                </p>
-
-              </div>
-
-            </div>
-
-          `;
-
-        }).join("");
-
-
-      /* =========================
-         SELLER SHIPMENTS
-      ========================= */
-
-      const orderSellerOrders =
-        (sellerOrders || [])
-        .filter(
-          so =>
-            String(so.order_id) ===
-            String(order.id)
-        );
-
-
-      let sellerHTML = "";
-
-
-      if(orderSellerOrders.length){
-
-        sellerHTML =
-          orderSellerOrders.map(so => {
-
-            return `
-
-              <div class="seller-shipment">
-
-                <h3>
-                  🏪 Seller Shipment
-                </h3>
-
-                <div class="
-                  seller-status
-                  status-${so.status}
-                ">
-
-                  ${statusLabel(so.status)}
-
-                </div>
-
-                ${
-                  so.tracking_number
-
-                  ?
-
-                  `<div class="tracking-info">
-                    📦 Tracking Number:
-                    <b>${so.tracking_number}</b>
-                  </div>`
-
-                  :
-
-                  ""
-                }
-
-                ${
-                  so.shipping_provider
-
-                  ?
-
-                  `<div class="tracking-info">
-                    🚚 Shipping Provider:
-                    <b>${so.shipping_provider}</b>
-                  </div>`
-
-                  :
-
-                  ""
-                }
-
-                ${tracking(so.status)}
-
-              </div>
-
-            `;
-
-          }).join("");
-
-      }
-      else{
-
-        sellerHTML = `
-
-          <div class="seller-shipment">
-
-            <h3>
-              🏪 Seller Shipment
-            </h3>
-
-            ${tracking("placed")}
-
-          </div>
-
-        `;
-
-      }
-
-
-      /* =========================
-         DATE
-      ========================= */
-
-      const date =
-        order.created_at
-
-        ?
-
-        new Date(
-          order.created_at
-        ).toLocaleString("en-IN")
-
-        :
-
-        "Date not available";
-
-
-      /* =========================
-         CARD
-      ========================= */
-
-      return `
-
-        <div class="order-card">
-
-
-          <div class="order-top">
-
-            <div>
-
-              <div class="order-id">
-                Order ID: ${order.id}
-              </div>
-
-              <small>
-                ${date}
-              </small>
-
-            </div>
-
-
-            <div class="order-status">
-
-              📦 Order
-
-            </div>
-
-          </div>
-
-
-          <div class="order-body">
-
-            ${productHTML}
-
-
-            <div class="order-summary">
-
-              <div class="address">
-
-                <h3>
-                  📍 Delivery Address
-                </h3>
-
-                <p>
-                  ${order.address || "Not available"}
-                </p>
-
-              </div>
-
-
-              <div class="total">
-
-                <p>
-                  Payment
-                </p>
-
-                <h2>
-                  ₹${Number(
-                    order.total_amount || 0
-                  ).toLocaleString("en-IN")}
-                </h2>
-
-                <small>
-                  Total Amount
-                </small>
-
-              </div>
-
-            </div>
-
-
-            <!-- SELLER TRACKING -->
-
-            ${sellerHTML}
-
-
-            ${
-              String(order.status).toLowerCase() ===
-              "placed"
-
-              ?
-
-              `
-
-              <div style="margin-top:20px;">
-
-                <button
-                  onclick="cancelOrder(${order.id})"
-                  style="
-                    background:#d32f2f;
-                    color:white;
-                    border:none;
-                    padding:12px 22px;
-                    border-radius:6px;
-                    cursor:pointer;
-                    font-weight:bold;
-                  ">
-
-                  ❌ Cancel Order
-
-                </button>
-
-              </div>
-
-              `
-
-              :
-
-              ""
-
-            }
-
-          </div>
-
-        </div>
-
-      `;
-
-    }).join("");
-
+  var ids=o.data.map(function(x){return x.id;});
+  var it=await supabaseClient.from("order_items").select("*").in("order_id",ids);
+  if(it.error) console.log("Order items error:",it.error);
+  var items=it.data||[];
+  var pids=items.map(function(i){return i.product_id;});
+  var products=[];
+  if(pids.length){var pr=await supabaseClient.from("products").select("*").in("id",pids);products=pr.data||[];}
+  var so=await supabaseClient.from("seller_orders").select("*").in("order_id",ids);
+  if(so.error) console.log("Seller orders error:",so.error);
+  STATE={orders:o.data,items:items,products:products,sellerOrders:so.data||[]};
+  if(!silent||!document.getElementById("chips").innerHTML) renderChips();
+  renderOrders();
 }
-
-
-/* =========================
-   CANCEL ORDER
-========================= */
 
 async function cancelOrder(orderId){
-
-  const confirmCancel =
-    confirm(
-      "Are you sure you want to cancel this order?"
-    );
-
-
-  if(!confirmCancel){
-    return;
-  }
-
-
-  const {
-    error
-  } =
-    await supabaseClient
-    .from("orders")
-    .update({
-      status:"cancelled"
-    })
-    .eq("id",orderId);
-
-
-  if(error){
-
-    alert(
-      "Unable to cancel order ❌"
-    );
-
-    console.log(error);
-
-    return;
-
-  }
-
-
-  alert(
-    "Order cancelled successfully ✅"
-  );
-
-
+  if(!confirm("Kya aap sach mein ye order cancel karna chahte hain?")) return;
+  var r=await supabaseClient.from("orders").update({status:"cancelled"}).eq("id",orderId);
+  if(r.error){alert("Order cancel nahi ho paya ❌");console.log(r.error);return;}
+  alert("Order cancel ho gaya ✅");
   loadOrders();
-
 }
-
-
-/* =========================
-   AUTO REFRESH
-   Seller status changes
-   will appear automatically
-========================= */
 
 loadOrders();
 
-setInterval(async () => {
-
-  try {
-
-    const {
-      data: {
-        user
-      }
-    } = await supabaseClient.auth.getUser();
-
-    if (!user) return;
-
-    const {
-      data: sellerOrders,
-      error
-    } = await supabaseClient
-      .from("seller_orders")
-      .select("order_id,status,tracking_number,shipping_provider,updated_at");
-
-    if (error) {
-      console.log("Background status check:", error);
-      return;
-    }
-
-    if (!sellerOrders) return;
-
-    /*
-      Only reload the visible order data if
-      a seller status actually changed.
-    */
-
-    const currentData =
-      JSON.stringify(
-        sellerOrders.map(x => ({
-          order_id: x.order_id,
-          status: x.status,
-          tracking_number: x.tracking_number,
-          shipping_provider: x.shipping_provider,
-          updated_at: x.updated_at
-        }))
-      );
-
-    const oldData =
-      sessionStorage.getItem(
-        "psmart-seller-order-status"
-      );
-
-    if (oldData && oldData !== currentData) {
-
-      sessionStorage.setItem(
-        "psmart-seller-order-status",
-        currentData
-      );
-
-      await loadOrders();
-
-    } else if (!oldData) {
-
-      sessionStorage.setItem(
-        "psmart-seller-order-status",
-        currentData
-      );
-
-    }
-
-  } catch (err) {
-
-    console.log(
-      "Background refresh error:",
-      err
-    );
-
-  }
-
-}, 15000);
+/* seller ke status badalne par apne aap refresh */
+var lastSig="";
+setInterval(async function(){
+  try{
+    if(!STATE.orders.length) return;
+    var ids=STATE.orders.map(function(x){return x.id;});
+    var a=await supabaseClient.from("seller_orders").select("order_id,status,tracking_number,shipping_provider,updated_at").in("order_id",ids);
+    var b=await supabaseClient.from("orders").select("id,status,payment_status").in("id",ids);
+    if(a.error||b.error) return;
+    var sig=JSON.stringify([a.data,b.data]);
+    if(lastSig&&sig!==lastSig) await loadOrders(true);
+    lastSig=sig;
+  }catch(e){console.log("Background refresh error:",e);}
+},15000);
 </script>
-
 </body>
 </html>
