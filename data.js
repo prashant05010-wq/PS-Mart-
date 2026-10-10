@@ -96,6 +96,10 @@ function syncWishlistHearts(){
 }
 document.addEventListener("DOMContentLoaded",function(){
   applySavedLocation();
+  /* saved-address.html ka "Add New Address" button index.html?addAddress=1 kholta hai */
+  try{
+    if(new URLSearchParams(location.search).get("addAddress")==="1"){setTimeout(openLocation,300);}
+  }catch(e){}
   var t=null;
   new MutationObserver(function(){clearTimeout(t);t=setTimeout(syncWishlistHearts,80);})
     .observe(document.body,{childList:true,subtree:true});
