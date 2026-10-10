@@ -1,1103 +1,408 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-
 <meta charset="utf-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1">
-
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Checkout | PS Mart</title>
-
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+:root{--esp:#24150b;--brown:#43250f;--gold:#f0bd50;--gdeep:#c9922e;--gsoft:#f7dd9b;--cream:#fbf6ea;--page:#f6f1e7;--ink:#2a1a0e;--muted:#7c6a58;--line:#e6dac3;--green:#188038;--red:#c62828;--serif:"Cormorant Garamond",Georgia,serif;--sans:Inter,"Segoe UI",Arial,sans-serif;--ggrad:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);--bgrad:linear-gradient(110deg,#24150b,#43250f 55%,#6c3e17)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);font-family:var(--sans);color:var(--ink);padding-bottom:70px}
+button,input,select{font-family:inherit}
+.pm-head{background:var(--bgrad);color:#fff;padding:12px 4%;display:flex;align-items:center;gap:22px;position:sticky;top:0;z-index:1000;border-bottom:2px solid var(--gdeep);box-shadow:0 4px 18px rgba(36,21,11,.35)}
+.pm-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;font:700 28px var(--serif);white-space:nowrap}
+.pm-logo i{width:42px;height:42px;border-radius:50%;background:var(--ggrad);color:var(--esp);display:flex;align-items:center;justify-content:center;font:700 20px var(--serif);font-style:normal;box-shadow:0 0 0 3px rgba(240,189,80,.3)}
+.pm-search{flex:1;max-width:700px;display:flex;background:#fff;border-radius:8px;overflow:hidden;border:1px solid var(--gdeep)}
+.pm-search input{flex:1;border:0;outline:0;padding:13px 16px;font-size:15px;color:var(--ink)}
+.pm-search button{width:56px;border:0;background:var(--ggrad);font-size:20px;cursor:pointer}
+.pm-links{display:flex;align-items:center;gap:20px;white-space:nowrap;margin-left:auto}
+.pm-links a{color:#fff;text-decoration:none;font-weight:600;font-size:14px}.pm-links a:hover{color:var(--gold)}
+#count{font-style:normal;background:var(--gold);color:var(--esp);padding:2px 7px;border-radius:10px;font-size:11px;font-weight:700}
+.pm-wrap{max-width:1200px;margin:auto;padding:20px 4%}
+.pm-title{margin:0 0 16px;font:700 34px var(--serif);color:var(--brown)}
+.goldbtn{display:inline-block;text-decoration:none;background:var(--ggrad);color:var(--esp);padding:12px 22px;border-radius:8px;font-weight:700;border:0;cursor:pointer}
+.empty{padding:40px 20px;text-align:center;background:#fff;border:1px dashed var(--gdeep);border-radius:12px;color:var(--muted)}
+.pm-mnav{display:none}
+@media(max-width:700px){
+.pm-head{padding:10px 12px;gap:10px;flex-wrap:wrap}.pm-logo{font-size:22px}.pm-logo i{width:36px;height:36px;font-size:17px}.pm-search{order:3;flex-basis:100%;height:40px}.pm-search input{padding:10px;font-size:14px}.pm-search button{width:45px}.pm-links{display:none}
+.pm-wrap{padding:12px 10px}.pm-title{font-size:26px}
+.pm-mnav{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);bottom:0;left:0;right:0;height:65px;padding-bottom:env(safe-area-inset-bottom,0);background:var(--esp);border-top:2px solid var(--gdeep);z-index:2000}
+.pm-mnav a{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#cdbda3;text-decoration:none;font-size:11px;gap:3px}
+.pm-mnav a.on{color:var(--gold);font-weight:700}.pm-mnav span{font-size:24px;line-height:25px}}
 
+.co-layout{display:grid;grid-template-columns:1fr 380px;gap:18px;align-items:start}
+.co-box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:14px}
+.co-box h2{margin:0 0 4px;font:700 24px var(--serif);color:var(--brown)}
+.co-box .sub{margin:0 0 14px;font-size:13px;color:var(--muted)}
+.co-num{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--brown);color:var(--gold);align-items:center;justify-content:center;font:700 14px var(--sans);margin-right:8px}
+.co-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.co-grid .full{grid-column:1/-1}
+.co-box label.f{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px}
+.co-box input[type=text],.co-box input[type=tel],.co-box input:not([type]),.co-box select,.co-box input[type=number]{width:100%;padding:12px;border:1px solid var(--gdeep);border-radius:8px;font-size:15px;outline:0;background:#fff;color:var(--ink)}
+.co-box input:focus,.co-box select:focus{box-shadow:0 0 0 3px rgba(240,189,80,.4)}
+.co-note{display:flex;gap:8px;align-items:center;background:#fff4d8;border:1px dashed var(--gdeep);border-radius:8px;padding:10px 12px;margin-top:12px;font-size:14px}
+.co-link{background:none;border:1px solid var(--gdeep);color:var(--brown);border-radius:8px;padding:8px 12px;font-weight:700;cursor:pointer;font-size:13px}
+.pay-opt{display:flex;align-items:flex-start;gap:10px;padding:14px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;cursor:pointer;transition:.2s}
+.pay-opt:hover{border-color:var(--gdeep)}
+.pay-opt.on{border:2px solid var(--gdeep);background:#fff9e8}
+.pay-opt.off{opacity:.55;cursor:not-allowed}
+.pay-opt b{display:block;color:var(--brown)}.pay-opt small{color:var(--muted)}
+.pay-opt input{margin-top:4px;accent-color:var(--brown)}
+#upiPanel{display:none;margin:0 0 12px;padding:16px;border:1px solid var(--gdeep);border-radius:10px;background:#fffdf6}
+.upi-top{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+#upiQr{background:#fff;padding:8px;border:1px solid var(--line);border-radius:10px;min-width:196px;min-height:196px;display:flex;align-items:center;justify-content:center}
+.upi-steps{flex:1;min-width:220px;font-size:14px;line-height:1.7}
+.upi-id{display:inline-flex;gap:8px;align-items:center;background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-weight:700;color:var(--brown);margin:4px 0}
+.upi-warn{background:#fdeaea;border:1px solid #e3a3a3;color:var(--red);padding:10px 12px;border-radius:8px;font-size:14px;margin-bottom:10px}
+.placebtn{width:100%;padding:16px;border:0;border-radius:10px;background:var(--ggrad);color:var(--esp);font-size:17px;font-weight:700;cursor:pointer;margin-top:6px}
+.placebtn:disabled{opacity:.6;cursor:not-allowed}
+.co-right{position:sticky;top:84px}
+#summary.box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:14px}
+#summary h2{margin:0 0 10px;font:700 24px var(--serif);color:var(--brown)}
+#summary hr{border:0;border-top:1px solid var(--line);margin:12px 0}
+#summary .goldbtn.block{display:block;text-align:center}
+.pay-strip{background:var(--brown);color:#fff;border-radius:12px;padding:16px 20px}
+.pay-strip .row{display:flex;justify-content:space-between;font-size:14px;padding:3px 0;color:#eadfcb}
+.pay-strip .tot{font-size:22px;font-weight:700;color:var(--gold);border-top:1px solid rgba(255,255,255,.2);margin-top:8px;padding-top:10px}
+.pay-strip .free{color:#7fe3a0;font-weight:700}
+.trust{font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
+.login-note{background:#fdeaea;border:1px solid #e3a3a3;color:var(--red);padding:12px 16px;border-radius:10px;margin-bottom:14px;font-weight:600}
+.login-note a{color:var(--brown)}
+.done{max-width:620px;margin:20px auto;background:#fff;border:2px solid var(--gdeep);border-radius:16px;padding:30px;text-align:center}
+.done .tick{width:70px;height:70px;border-radius:50%;background:#e7f6ea;color:var(--green);font-size:38px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.done h1{margin:0 0 6px;font:700 34px var(--serif);color:var(--brown)}
+.done .info{text-align:left;background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:16px 0;font-size:15px;line-height:1.9}
+@media(max-width:900px){.co-layout{grid-template-columns:1fr}.co-right{position:static}}
+@media(max-width:560px){.co-grid{grid-template-columns:1fr}.co-box{padding:14px}}
+</style>
 </head>
-
 <body>
 
-<header class="header">
-
-  <a class="logo" href="index.html">
-    🛍️ <b>PS</b> Mart
-  </a>
-
-</header>
-
-
-<main>
-
-<h1>Checkout</h1>
-
-
-<div class="checkout">
-
-
-<!-- DELIVERY ADDRESS -->
-
-<div class="box">
-
-<h2>1. Delivery Address</h2>
-
-<input
-  id="fullName"
-  placeholder="Full name"
-  required
->
-
-<input
-  id="phone"
-  placeholder="Mobile number"
-  type="tel"
-  required
->
-
-<input
-  id="address"
-  placeholder="Address"
-  required
->
-
-<input
-  id="city"
-  placeholder="City"
-  required
->
-
-<input
-  id="pincode"
-  placeholder="PIN code"
-  type="number"
-  required
->
-<!-- GIFT CARD -->
-
-<div
-  id="giftCardCheckoutBox"
-  style="
-    margin:20px 0;
-    padding:18px;
-    border:1px solid #e4c77d;
-    border-radius:14px;
-    background:#fffaf0;
-  "
->
-
-  <h2 style="margin-top:0;">
-    🎁 Gift Card
-  </h2>
-
-  <p>
-    Have a PS Mart Gift Card? Use it on this order.
-  </p>
-
-  <div
-    style="
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    "
-  >
-
-    <input
-      id="checkoutGiftCardCode"
-      type="text"
-      placeholder="Enter gift card code"
-      autocomplete="off"
-      style="
-        flex:1;
-        min-width:220px;
-        padding:12px;
-        border:1px solid #ddd;
-        border-radius:10px;
-        text-transform:uppercase;
-      "
-    >
-
-    <button
-      type="button"
-      class="goldbtn"
-      onclick="checkCheckoutGiftCard()"
-    >
-      Apply Gift Card
-    </button>
-
-  </div>
-
-  <div
-    id="checkoutGiftCardMessage"
-    style="
-      margin-top:12px;
-      font-weight:bold;
-    "
-  ></div>
-
+<div class="pm-head" role="banner">
+  <a class="pm-logo" href="index.html"><i>PS</i><span>PS Mart</span></a>
+  <div class="pm-links"><span style="font-size:14px">🔒 100% Secure Checkout</span><span id="count" style="display:none">0</span></div>
 </div>
 
-<!-- PAYMENT METHOD -->
+<div class="pm-wrap" id="checkoutPage">
+  <h1 class="pm-title">Checkout</h1>
+  <div id="loginNote"></div>
 
-<h2>2. Payment Method</h2>
+  <div class="co-layout">
+    <div>
 
+      <!-- 1. ADDRESS -->
+      <div class="co-box">
+        <h2><span class="co-num">1</span>Delivery Address</h2>
+        <p class="sub">Jahan order bhejna hai wahan ka poora address bhariye.</p>
+        <div class="co-grid">
+          <div><label class="f" for="fullName">Full Name *</label><input id="fullName" placeholder="Aapka naam" autocomplete="name"></div>
+          <div><label class="f" for="phone">Mobile Number *</label><input id="phone" type="tel" maxlength="10" inputmode="numeric" placeholder="10 digit number" autocomplete="tel"></div>
+          <div><label class="f" for="pincode">Pincode *</label><input id="pincode" type="tel" maxlength="6" inputmode="numeric" placeholder="6 digit pincode" autocomplete="postal-code"></div>
+          <div><label class="f" for="city">City / District *</label><input id="city" placeholder="City" autocomplete="address-level2"></div>
+          <div class="full"><label class="f" for="state">State *</label><select id="state"><option value="">Select state</option></select></div>
+          <div class="full"><label class="f" for="address">Flat, House no., Building, Area, Street *</label><input id="address" placeholder="Poora address" autocomplete="street-address"></div>
+          <div class="full"><label class="f" for="landmark">Landmark (optional)</label><input id="landmark" placeholder="Jaise: school ke paas"></div>
+        </div>
+        <div class="co-note">🚚 <span>Estimated delivery: <b id="etaText">-</b> &nbsp;•&nbsp; <span style="color:var(--green);font-weight:700">FREE Delivery</span></span></div>
+        <div style="margin-top:12px"><button type="button" class="co-link" onclick="openLocation()">📍 Saved address use karein / badlein</button></div>
+      </div>
 
-<label>
+      <!-- GIFT CARD -->
+      <div class="co-box" id="giftCardCheckoutBox">
+        <h2>🎁 Gift Card</h2>
+        <p class="sub">PS Mart Gift Card hai? Is order par use kijiye.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <input id="checkoutGiftCardCode" type="text" placeholder="Enter gift card code" autocomplete="off" style="flex:1;min-width:200px;text-transform:uppercase">
+          <button type="button" class="goldbtn" onclick="checkCheckoutGiftCard()">Apply</button>
+        </div>
+        <div id="checkoutGiftCardMessage" style="margin-top:10px;font-weight:700"></div>
+      </div>
 
-<input
-  type="radio"
-  name="pay"
-  value="UPI"
-  checked
-  onchange="showPaymentSection()"
->
+      <!-- 2. PAYMENT -->
+      <div class="co-box">
+        <h2><span class="co-num">2</span>Payment Method</h2>
+        <p class="sub">Apna payment tareeka chuniye.</p>
 
-UPI
+        <label class="pay-opt on" id="optUPI"><input type="radio" name="pay" value="UPI" checked onchange="showPaymentSection()">
+          <span><b>📱 UPI</b><small>Google Pay, PhonePe, Paytm ya koi bhi UPI app</small></span></label>
 
-</label>
+        <div id="upiPanel">
+          <div id="upiWarn"></div>
+          <div class="upi-top">
+            <div id="upiQr"></div>
+            <div class="upi-steps">
+              <div><b>1.</b> Neeche wale amount ko UPI se pay kijiye:</div>
+              <div style="font-size:24px;font-weight:700;color:var(--brown)" id="upiAmount">₹0</div>
+              <div>Pay to: <b id="upiName"></b></div>
+              <div class="upi-id"><span id="upiIdText"></span><button type="button" class="co-link" onclick="copyUpiId()">Copy</button></div>
+              <div style="margin-top:8px"><a class="goldbtn" id="upiAppBtn" href="#" style="padding:10px 16px;font-size:14px">📲 UPI app se pay karein</a></div>
+              <div style="font-size:12px;color:var(--muted);margin-top:6px">Phone par button dabaiye. Computer par QR scan kijiye.</div>
+            </div>
+          </div>
+          <div style="margin-top:14px">
+            <label class="f" for="upiUtr"><b>2.</b> Payment ke baad UPI app mein dikhne wala 12 digit UTR / Ref No. daaliye *</label>
+            <input id="upiUtr" type="tel" maxlength="12" inputmode="numeric" placeholder="12 digit UTR number">
+            <div style="font-size:12px;color:var(--muted);margin-top:6px">Hum aapka payment verify karke order confirm karenge.</div>
+          </div>
+        </div>
 
+        <label class="pay-opt" id="optCOD"><input type="radio" name="pay" value="COD" onchange="showPaymentSection()">
+          <span><b>💵 Cash on Delivery</b><small>Saaman milne par paise dijiye</small></span></label>
 
-<label>
+        <label class="pay-opt off" id="optCard"><input type="radio" name="pay" value="Card" disabled>
+          <span><b>💳 Credit / Debit Card</b><small>Jaldi aa raha hai</small></span></label>
 
-<input
-  type="radio"
-  name="pay"
-  value="Card"
-  onchange="showPaymentSection()"
->
-
-Credit / Debit Card
-
-</label>
-
-
-<!-- SAVED CARDS -->
-
-<div
-  id="savedCardSection"
-  style="display:none;margin-top:15px;"
->
-
-  <div
-    style="
-      padding:15px;
-      border:1px solid #ddd;
-      border-radius:12px;
-      background:#fffaf0;
-    "
-  >
-
-    <h3 style="margin-top:0;">
-      💳 Saved Cards
-    </h3>
-
-    <div id="savedCardsList">
-      Loading saved cards...
+        <button type="button" class="placebtn" id="placeBtn" onclick="placeOrder()">🛍️ Place Order</button>
+        <div class="trust">🔒 Aapki jaankari surakshit hai</div>
+      </div>
     </div>
 
-    <a
-      href="saved-cards.html"
-      style="
-        display:inline-block;
-        margin-top:12px;
-        color:#b8860b;
-        font-weight:bold;
-        text-decoration:none;
-      "
-    >
-      ➕ Manage / Add Saved Card
-    </a>
-
+    <div class="co-right">
+      <div id="summary" class="box"></div>
+      <div class="pay-strip" id="payStrip">Loading...</div>
+    </div>
   </div>
-
 </div>
 
-
-<label>
-
-<input
-  type="radio"
-  name="pay"
-  value="COD"
-  onchange="showPaymentSection()"
->
-
-Cash on Delivery
-
-</label>
-
-
-<button
-  type="button"
-  class="goldbtn block"
-  onclick="placeOrder()"
->
-
-🛍️ Place Order
-
-</button>
-
-</div>
-
-
-<!-- ORDER SUMMARY -->
-
-<div
-  id="summary"
-  class="box"
-></div>
-
-
-</div>
-
-</main>
-
+<div id="doneBox" style="display:none"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="data.js"></script>
-
 <script src="app.js"></script>
-
-
 <script>
+/* =====================================================
+   SETTINGS - sirf yahan badlav karein
+===================================================== */
+var UPI_ID        = "7307453683@ybl";   /* <-- apni asli UPI ID likhiye, jaise ps.mart@okaxis */
+var UPI_NAME      = "PS Mart";            /* <-- customer ko payment ke waqt ye naam dikhega */
+var DELIVERY_DAYS = 5;                    /* <-- delivery mein kitne din lagte hain */
 
-let selectedSavedCardId = null;
+var placing = false;
+var checkoutGiftCard = null;
 
+function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+function $(id){return document.getElementById(id);}
+function inr(n){return "₹"+Number(n||0).toLocaleString("en-IN");}
+function etaDate(days){
+  var d=new Date();d.setDate(d.getDate()+days);
+  return d.toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"});
+}
+function upiReady(){return UPI_ID && UPI_ID.indexOf("@")>0 && UPI_ID.indexOf("YOUR")<0;}
 
-/* =========================
-   PAYMENT METHOD
-========================= */
+/* ---------- address prefill ---------- */
+function fillAddress(a){
+  if(!a) return;
+  var set=function(id,v){var el=$(id);if(el&&v&&!el.value) el.value=v;};
+  set("fullName",a.name);set("phone",a.mobile);set("pincode",a.pincode);set("city",a.city);
+  if(a.state&&!$("state").value) $("state").value=a.state;
+  set("address",[a.house,a.area].filter(Boolean).join(", "));
+  set("landmark",a.landmark);
+}
+function initStates(){
+  var s=$("state");
+  if(typeof PM_STATES!=="undefined"){PM_STATES.forEach(function(x){var o=document.createElement("option");o.textContent=x;o.value=x;s.appendChild(o);});}
+}
+document.addEventListener("psmart:address",function(e){
+  ["fullName","phone","pincode","city","address","landmark"].forEach(function(id){$(id).value="";});
+  $("state").value="";fillAddress(e.detail);
+});
 
-function showPaymentSection() {
-
-  const selected =
-    document.querySelector(
-      'input[name="pay"]:checked'
-    )?.value;
-
-
-  const section =
-    document.getElementById(
-      "savedCardSection"
-    );
-
-
-  if (!section) return;
-
-
-  if (selected === "Card") {
-
-    section.style.display = "block";
-
-    loadSavedCards();
-
-  } else {
-
-    section.style.display = "none";
-
-  }
-
+/* ---------- totals ---------- */
+async function getTotals(){
+  var c=cart();
+  if(!c.length) return null;
+  var r=await supabaseClient.from("products").select("*").in("id",c.map(function(x){return x.id;})).eq("status","approved");
+  if(r.error||!r.data) return null;
+  var total=0;
+  c.forEach(function(item){
+    var p=r.data.find(function(p){return String(p.id)===String(item.id);});
+    if(p) total+=Number(p.price)*Number(item.qty||1);
+  });
+  var coupon=0,sc=null;
+  try{sc=JSON.parse(localStorage.getItem("psmart-applied-coupon")||"null");}catch(e){}
+  if(sc) coupon=Number(sc.discount||0);
+  var gift=0;
+  if(checkoutGiftCard) gift=Math.min(Number(checkoutGiftCard.balance||0),Math.max(0,total-coupon));
+  return {c:c,products:r.data,total:total,coupon:coupon,gift:gift,final:Math.max(0,total-coupon-gift)};
 }
 
+async function refreshPayBox(){
+  var t=await getTotals(), box=$("payStrip");
+  if(!t){box.innerHTML="Cart khali hai.";return;}
+  box.innerHTML='<div class="row"><span>Items total</span><span>'+inr(t.total)+'</span></div>'
+   +(t.coupon?'<div class="row"><span>Coupon discount</span><span>-'+inr(t.coupon)+'</span></div>':'')
+   +(t.gift?'<div class="row"><span>Gift card</span><span>-'+inr(t.gift)+'</span></div>':'')
+   +'<div class="row"><span>Delivery</span><span class="free">FREE</span></div>'
+   +'<div class="row tot"><span>Amount payable</span><span>'+inr(t.final)+'</span></div>';
+  renderUpi(t.final);
+}
 
-/* =========================
-   LOAD SAVED CARDS
-========================= */
+/* ---------- UPI panel ---------- */
+function renderUpi(amount){
+  $("upiAmount").textContent=inr(amount);
+  $("upiName").textContent=UPI_NAME;
+  $("upiIdText").textContent=upiReady()?UPI_ID:"(set nahi hai)";
+  var qr=$("upiQr");qr.innerHTML="";
+  if(!upiReady()){
+    $("upiWarn").innerHTML='<div class="upi-warn">⚠️ UPI ID abhi set nahi hui. Is page ke code mein <b>UPI_ID</b> mein apni UPI ID likhiye.</div>';
+    $("upiAppBtn").style.display="none";return;
+  }
+  $("upiWarn").innerHTML="";$("upiAppBtn").style.display="";
+  var link="upi://pay?pa="+encodeURIComponent(UPI_ID)+"&pn="+encodeURIComponent(UPI_NAME)+"&am="+Number(amount).toFixed(2)+"&cu=INR&tn="+encodeURIComponent("PS Mart order");
+  $("upiAppBtn").href=link;
+  if(typeof QRCode!=="undefined"&&amount>0){try{new QRCode(qr,{text:link,width:180,height:180});}catch(e){}}
+  else if(amount<=0){qr.textContent="Payment ki zaroorat nahi";}
+  else{qr.textContent="QR load nahi hua";}
+}
+function copyUpiId(){
+  if(!upiReady()) return;
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(UPI_ID).then(function(){alert("UPI ID copy ho gayi: "+UPI_ID);});}
+  else{alert("UPI ID: "+UPI_ID);}
+}
 
-async function loadSavedCards() {
+function showPaymentSection(){
+  var m=(document.querySelector('input[name="pay"]:checked')||{}).value;
+  $("upiPanel").style.display=(m==="UPI")?"block":"none";
+  $("optUPI").classList.toggle("on",m==="UPI");
+  $("optCOD").classList.toggle("on",m==="COD");
+  $("placeBtn").textContent=(m==="COD")?"🛍️ Place Order (Cash on Delivery)":"🛍️ Place Order";
+  if(m==="UPI") refreshPayBox();
+}
 
-  const box =
-    document.getElementById(
-      "savedCardsList"
-    );
+/* ---------- gift card (pehle jaisa) ---------- */
+async function checkCheckoutGiftCard(){
+  var input=$("checkoutGiftCardCode"),msg=$("checkoutGiftCardMessage");
+  var code=input.value.trim().toUpperCase();
+  var bad=function(t){msg.style.color="red";msg.textContent=t;};
+  if(!code) return bad("❌ Please enter a gift card code.");
+  var u=(await supabaseClient.auth.getUser()).data.user;
+  if(!u) return bad("❌ Please login first.");
+  var r=await supabaseClient.from("gift_cards").select("*").eq("code",code).eq("user_id",u.id).maybeSingle();
+  if(r.error){console.error(r.error);return bad("❌ Unable to check gift card.");}
+  var card=r.data;
+  if(!card) return bad("❌ Gift card not found in your account.");
+  if(card.status!=="active") return bad("❌ This gift card is not active.");
+  if(card.expires_at&&new Date(card.expires_at)<new Date()) return bad("❌ This gift card has expired.");
+  if(Number(card.balance||0)<=0) return bad("❌ This gift card has no balance.");
+  checkoutGiftCard=card;
+  msg.style.color="green";
+  msg.textContent="✅ Gift Card applied! Balance: ₹"+Number(card.balance).toFixed(2);
+  refreshPayBox();
+}
 
+/* ---------- place order ---------- */
+async function placeOrder(){
+  if(placing) return;
+  var v=function(id){return $(id).value.trim();};
+  var fullName=v("fullName"),phone=v("phone"),address=v("address"),city=v("city"),pincode=v("pincode"),state=$("state").value,landmark=v("landmark");
+  var method=(document.querySelector('input[name="pay"]:checked')||{}).value||"UPI";
 
-  if (!box) return;
+  if(!fullName||!phone||!address||!city||!pincode||!state){alert("Please fill all delivery details.");return;}
+  if(!/^[6-9][0-9]{9}$/.test(phone)){alert("Sahi 10 digit mobile number daaliye.");return;}
+  if(!/^[1-9][0-9]{5}$/.test(pincode)){alert("Sahi 6 digit pincode daaliye.");return;}
 
+  var user=(await supabaseClient.auth.getUser()).data.user;
+  if(!user){alert("Please login first.");location.href="login.html";return;}
 
-  box.innerHTML =
-    "Loading saved cards...";
+  placing=true;var btn=$("placeBtn");btn.disabled=true;btn.textContent="Order ho raha hai...";
+  var reset=function(){placing=false;btn.disabled=false;showPaymentSection();};
 
+  try{
+    var pr=await supabaseClient.from("profiles").select("id, role").eq("id",user.id).maybeSingle();
+    if(pr.error||!pr.data){alert("Customer profile not found.");return reset();}
+    var profile=pr.data;
 
-  const {
-    data: {
-      user
+    var t=await getTotals();
+    if(!t||!t.c.length){alert("Your cart is empty.");return reset();}
+    if(t.total<=0){alert("Unable to calculate order total.");return reset();}
+
+    var paymentMethod=method,paymentStatus="pending",utr=null;
+    if(t.final<=0){paymentMethod="Gift Card";paymentStatus="paid";}
+    else if(method==="COD"){paymentStatus="cod";}
+    else{
+      if(!upiReady()){alert("UPI abhi chalu nahi hai. Kripya Cash on Delivery chuniye.");return reset();}
+      utr=v("upiUtr");
+      if(!/^[0-9]{12}$/.test(utr)){alert("Pehle UPI se pay kijiye, phir 12 digit UTR number daaliye.");return reset();}
     }
-  } =
-    await supabaseClient.auth.getUser();
 
-
-  if (!user) {
-
-    box.innerHTML = `
-      <p>
-        Please login first to use saved cards.
-      </p>
-    `;
-
-    return;
-
-  }
-
-
-  const {
-    data: cards,
-    error
-  } =
-    await supabaseClient
-      .from("saved_cards")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("is_default", {
-        ascending: false
-      })
-      .order("created_at", {
-        ascending: false
-      });
-
-
-  if (error) {
-
-    console.log(error);
-
-    box.innerHTML = `
-      <p>
-        Unable to load saved cards.
-      </p>
-    `;
-
-    return;
-
-  }
-
-
-  if (!cards || !cards.length) {
-
-    box.innerHTML = `
-      <div
-        style="
-          padding:12px;
-          border:1px dashed #bbb;
-          border-radius:10px;
-        "
-      >
-
-        <p style="margin:0 0 8px;">
-          No saved cards found.
-        </p>
-
-        <a
-          href="saved-cards.html"
-          style="
-            color:#b8860b;
-            font-weight:bold;
-          "
-        >
-          Add a Credit / Debit Card →
-        </a>
-
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  const defaultCard =
-    cards.find(
-      card => card.is_default
-    ) || cards[0];
-
-
-  selectedSavedCardId =
-    defaultCard.id;
-
-
-  box.innerHTML =
-    cards.map(card => `
-
-      <label
-        style="
-          display:block;
-          margin-bottom:10px;
-          cursor:pointer;
-        "
-      >
-
-        <input
-          type="radio"
-          name="savedCard"
-          value="${card.id}"
-          ${card.id === defaultCard.id ? "checked" : ""}
-          onchange="selectedSavedCardId=${card.id}"
-        >
-
-        💳
-        <b>${escapeHtml(card.brand)}</b>
-        •••• ${escapeHtml(card.last4)}
-
-        ${
-          card.is_default
-            ? `
-              <span
-                style="
-                  color:#b8860b;
-                  font-weight:bold;
-                "
-              >
-                &nbsp; Default
-              </span>
-            `
-            : ""
-        }
-
-        <br>
-
-        <small>
-          ${escapeHtml(card.cardholder_name)}
-          •
-          ${String(card.expiry_month).padStart(2, "0")}/${card.expiry_year}
-        </small>
-
-      </label>
-
-    `).join("");
-
-}
-
-
-/* =========================
-   SAFE TEXT
-========================= */
-
-function escapeHtml(value) {
-
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
-}
-  /* =========================
-   CHECKOUT GIFT CARD
-========================= */
-
-let checkoutGiftCard = null;
-
-async function checkCheckoutGiftCard() {
-
-  const input =
-    document.getElementById("checkoutGiftCardCode");
-
-  const message =
-    document.getElementById("checkoutGiftCardMessage");
-
-  const code =
-    input.value.trim().toUpperCase();
-
-  if (!code) {
-
-    message.style.color = "red";
-    message.textContent =
-      "❌ Please enter a gift card code.";
-
-    return;
-  }
-
-  const {
-    data: { user }
-  } =
-    await supabaseClient.auth.getUser();
-
-  if (!user) {
-
-    message.style.color = "red";
-    message.textContent =
-      "❌ Please login first.";
-
-    return;
-  }
-
-  const {
-    data: card,
-    error
-  } =
-    await supabaseClient
-      .from("gift_cards")
-      .select("*")
-      .eq("code", code)
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-  if (error) {
-
-    console.error(error);
-
-    message.style.color = "red";
-    message.textContent =
-      "❌ Unable to check gift card.";
-
-    return;
-  }
-
-  if (!card) {
-
-    message.style.color = "red";
-    message.textContent =
-      "❌ Gift card not found in your account.";
-
-    return;
-  }
-
-  if (card.status !== "active") {
-
-    message.style.color = "red";
-    message.textContent =
-      "❌ This gift card is not active.";
-
-    return;
-  }
-
-  if (
-    card.expires_at &&
-    new Date(card.expires_at) < new Date()
-  ) {
-
-    message.style.color = "red";
-    message.textContent =
-      "❌ This gift card has expired.";
-
-    return;
-  }
-
-  if (Number(card.balance || 0) <= 0) {
-
-    message.style.color = "red";
-    message.textContent =
-      "❌ This gift card has no balance.";
-
-    return;
-  }
-
-  checkoutGiftCard = card;
-
-  message.style.color = "green";
-
-  message.textContent =
-    "✅ Gift Card applied! Balance: ₹" +
-    Number(card.balance).toFixed(2);
-
-}
-
-
-/* =========================
-   PLACE ORDER
-========================= */
-
-async function placeOrder() {
-
-  const fullName =
-    document
-      .getElementById("fullName")
-      .value
-      .trim();
-
-
-  const phone =
-    document
-      .getElementById("phone")
-      .value
-      .trim();
-
-
-  const address =
-    document
-      .getElementById("address")
-      .value
-      .trim();
-
-
-  const city =
-    document
-      .getElementById("city")
-      .value
-      .trim();
-
-
-  const pincode =
-    document
-      .getElementById("pincode")
-      .value
-      .trim();
-
-
-  const paymentMethod =
-    document.querySelector(
-      'input[name="pay"]:checked'
-    )?.value || "UPI";
-
-
-  /* =========================
-     VALIDATE DELIVERY
-  ========================= */
-
-  if (
-    !fullName ||
-    !phone ||
-    !address ||
-    !city ||
-    !pincode
-  ) {
-
-    alert(
-      "Please fill all delivery details."
-    );
-
-    return;
-
-  }
-
-
-  /* =========================
-     LOGIN CHECK
-  ========================= */
-
-  const {
-    data: {
-      user
+    var deliveryAddress=[fullName,phone,address,landmark,city+", "+state+" - "+pincode].filter(Boolean).join(", ");
+    var base={customer_id:profile.id,total_amount:t.final,status:"placed",address:deliveryAddress,payment_method:paymentMethod};
+
+    var ins=await supabaseClient.from("orders").insert(Object.assign({},base,{payment_status:paymentStatus,upi_utr:utr})).select().single();
+    if(ins.error){
+      if(ins.error.code==="23505"){alert("Ye UTR number pehle hi kisi order mein use ho chuka hai. Sahi UTR daaliye.");return reset();}
+      if(/column|schema cache/i.test(ins.error.message||"")){
+        /* payment columns abhi database mein nahi hain - purane tareeke se order banao */
+        var legacy=Object.assign({},base);
+        if(utr) legacy.payment_method=paymentMethod+" | UTR "+utr+" | Pending verification";
+        ins=await supabaseClient.from("orders").insert(legacy).select().single();
+      }
     }
-  } =
-    await supabaseClient.auth.getUser();
-
-
-  if (!user) {
-
-    alert("Please login first.");
-
-    window.location.href =
-      "login.html";
-
-    return;
-
-  }
-
-
-  /* =========================
-     PROFILE
-  ========================= */
-
-  const {
-    data: profile,
-    error: profileError
-  } =
-    await supabaseClient
-      .from("profiles")
-      .select("id, role")
-      .eq("id", user.id)
-      .maybeSingle();
-
-
-  if (profileError || !profile) {
-
-    console.log(
-      "Profile error:",
-      profileError
-    );
-
-    alert(
-      "Customer profile not found."
-    );
-
-    return;
-
-  }
-
-
-  /* =========================
-     CART
-  ========================= */
-
-  const c = cart();
-
-
-  if (!c.length) {
-
-    alert(
-      "Your cart is empty."
-    );
-
-    return;
-
-  }
-
-
-  /* =========================
-     LOAD PRODUCTS
-  ========================= */
-
-  const ids =
-    c.map(
-      x => x.id
-    );
-
-
-  const {
-    data: products,
-    error: productError
-  } =
-    await supabaseClient
-      .from("products")
-      .select("*")
-      .in("id", ids)
-      .eq("status", "approved");
-
-
-  if (productError) {
-
-    console.log(
-      productError
-    );
-
-    alert(
-      "Unable to load products."
-    );
-
-    return;
-
-  }
-
-
-  /* =========================
-     CALCULATE TOTAL
-  ========================= */
-
-  let total = 0;
-
-
-  for (const item of c) {
-
-    const product =
-      products.find(
-        p =>
-          String(p.id) ===
-          String(item.id)
-      );
-
-
-    if (!product) continue;
-
-
-    total +=
-      Number(product.price) *
-      item.qty;
-
-  }
-
-
-  if (total <= 0) {
-
-    alert(
-      "Unable to calculate order total."
-    );
-
-    return;
-
-  }
-
-
-  /* =========================
-     COUPON
-  ========================= */
-
-  let couponDiscount = 0;
-
-
-  const savedCoupon =
-    JSON.parse(
-      localStorage.getItem(
-        "psmart-applied-coupon"
-      ) || "null"
-    );
-
-
-  if (savedCoupon) {
-
-    couponDiscount =
-      Number(
-        savedCoupon.discount || 0
-      );
-
-  }
-
-/* =========================
-   GIFT CARD DISCOUNT
-========================= */
-
-let giftCardDiscount = 0;
-
-if (checkoutGiftCard) {
-
-  giftCardDiscount =
-    Math.min(
-      Number(checkoutGiftCard.balance || 0),
-      Math.max(0, total - couponDiscount)
-    );
-
-}
-  const finalTotal =
-  Math.max(
-    0,
-    total -
-    couponDiscount -
-    giftCardDiscount
-  );
-
-  console.log(
-    "Cart Total:",
-    total
-  );
-
-  console.log(
-    "Coupon Discount:",
-    couponDiscount
-  );
-
-  console.log(
-    "Final Total:",
-    finalTotal
-  );
-
-
-  /* =========================
-     DELIVERY ADDRESS
-  ========================= */
-
-  const deliveryAddress =
-    `${fullName}, ${phone}, ${address}, ${city} - ${pincode}`;
-
-
-  /* =========================
-     CREATE ORDER
-  ========================= */
-
-  const {
-    data: order,
-    error: orderError
-  } =
-    await supabaseClient
-      .from("orders")
-      .insert({
-
-        customer_id:
-          profile.id,
-
-        total_amount:
-          finalTotal,
-
-        status:
-          "placed",
-
-        address:
-          deliveryAddress,
-
-        payment_method:
-          paymentMethod
-
-      })
-      .select()
-      .single();
-
-
-  if (orderError) {
-
-    console.log(
-      orderError
-    );
-
-    alert(
-      "Order could not be created: " +
-      orderError.message
-    );
-
-    return;
-
-  }
-
-
-  /* =========================
-     CREATE ORDER ITEMS
-  ========================= */
-
-  const orderItems = [];
-
-
-  for (const item of c) {
-
-    const product =
-      products.find(
-        p =>
-          String(p.id) ===
-          String(item.id)
-      );
-
-
-    if (!product) continue;
-
-
-    orderItems.push({
-
-      order_id:
-        order.id,
-
-      product_id:
-        product.id,
-
-      seller_id:
-        product.seller_id,
-
-      quantity:
-        item.qty,
-
-      price:
-        product.price
-
+    if(ins.error){console.log(ins.error);alert("Order could not be created: "+ins.error.message);return reset();}
+    var order=ins.data;
+
+    var items=[];
+    t.c.forEach(function(item){
+      var p=t.products.find(function(p){return String(p.id)===String(item.id);});
+      if(p) items.push({order_id:order.id,product_id:p.id,seller_id:p.seller_id,quantity:Number(item.qty||1),price:p.price});
     });
-
-  }
-
-
-  if (!orderItems.length) {
-
-    alert(
-      "No valid products found for this order."
-    );
-
-    return;
-
-  }
-
-
-  const {
-    error: itemError
-  } =
-    await supabaseClient
-      .from("order_items")
-      .insert(orderItems);
-
-
-  if (itemError) {
-
-    console.log(
-      itemError
-    );
-
-    alert(
-      "Order created but items could not be saved."
-    );
-
-    return;
-
-  }
-  /* =========================
-     USE GIFT CARD
-  ========================= */
-
-  if (checkoutGiftCard && giftCardDiscount > 0) {
-
-    const {
-      data: giftResult,
-      error: giftError
-    } =
-      await supabaseClient
-        .rpc("use_gift_card", {
-          p_card_id:
-            checkoutGiftCard.id,
-
-          p_amount:
-            giftCardDiscount
-        });
-
-    if (giftError) {
-
-      console.error(
-        "Gift card error:",
-        giftError
-      );
-
-      alert(
-        "⚠️ Order created, but gift card could not be used.\n\n" +
-        giftError.message
-      );
-
-      return;
-
+    if(!items.length){alert("No valid products found for this order.");return reset();}
+    var ie=(await supabaseClient.from("order_items").insert(items)).error;
+    if(ie){
+      console.log(ie);
+      try{await supabaseClient.from("orders").update({status:"cancelled"}).eq("id",order.id);}catch(e){}
+      alert("Order save nahi ho paya, kripya dobara try kijiye.");return reset();
     }
 
-    if (
-      !giftResult ||
-      giftResult.success !== true
-    ) {
-
-      alert(
-        "⚠️ Order created, but gift card could not be used.\n\n" +
-        (
-          giftResult?.message ||
-          "Gift card error."
-        )
-      );
-
-      return;
-
+    var giftNote="";
+    if(checkoutGiftCard&&t.gift>0){
+      var g=await supabaseClient.rpc("use_gift_card",{p_card_id:checkoutGiftCard.id,p_amount:t.gift});
+      if(g.error||!g.data||g.data.success!==true){
+        console.error("Gift card error:",g.error||g.data);
+        giftNote="⚠️ Gift card use nahi ho paya. Support se sampark karein.";
+      }
     }
 
-    console.log(
-      "Gift Card Used:",
-      giftResult.used_amount
-    );
-
-    console.log(
-      "Remaining Gift Card Balance:",
-      giftResult.remaining_balance
-    );
-
+    ["psmart-cart","psmart-applied-coupon","psmart-auto-apply-coupon"].forEach(function(k){localStorage.removeItem(k);});
+    try{updateCount();}catch(e){}
+    showDone(order,paymentMethod,paymentStatus,t.final,giftNote);
+  }catch(err){
+    console.error(err);alert("Kuch galat ho gaya. Dobara try kijiye.");reset();
   }
-
-  /* =========================
-     CLEAR CART
-  ========================= */
-
-  localStorage.removeItem(
-    "psmart-cart"
-  );
-
-
-  localStorage.removeItem(
-    "psmart-applied-coupon"
-  );
-
-
-  localStorage.removeItem(
-    "psmart-auto-apply-coupon"
-  );
-
-
-  updateCount();
-
-
-  alert(
-    "Order placed successfully! 🎉"
-  );
-
-
-  window.location.href =
-    "orders.html";
-
 }
 
+function showDone(order,method,status,total,note){
+  var payText=method==="COD"?("💵 Delivery par "+inr(total)+" dijiye")
+    :status==="paid"?"✅ Payment complete"
+    :"⏳ UPI payment verify ho raha hai";
+  $("checkoutPage").style.display="none";
+  var d=$("doneBox");d.style.display="block";
+  d.innerHTML='<div class="pm-wrap"><div class="done"><div class="tick">✓</div><h1>Order Placed!</h1>'
+   +'<p style="color:var(--muted);margin:0">Shukriya! Aapka order mil gaya hai.</p>'
+   +'<div class="info"><div>🧾 Order ID: <b>#'+esc(order.id)+'</b></div>'
+   +'<div>🚚 Expected delivery: <b>'+esc(etaDate(DELIVERY_DAYS))+'</b></div>'
+   +'<div>💰 Total: <b>'+inr(total)+'</b></div><div>'+payText+'</div>'
+   +(note?'<div style="color:var(--red)">'+esc(note)+'</div>':'')+'</div>'
+   +'<a class="goldbtn" href="orders.html">Order track karein</a> &nbsp; '
+   +'<a class="goldbtn" href="products.html" style="background:#fff;border:1px solid var(--gdeep)">Shopping jaari rakhein</a></div></div>';
+  window.scrollTo(0,0);
+}
+
+/* ---------- start ---------- */
+document.addEventListener("DOMContentLoaded",async function(){
+  initStates();
+  $("etaText").textContent=etaDate(DELIVERY_DAYS);
+  try{fillAddress(JSON.parse(localStorage.getItem("psmart_address")||"null"));}catch(e){}
+  showPaymentSection();
+  refreshPayBox();
+  var u=(await supabaseClient.auth.getUser()).data.user;
+  if(!u){
+    $("loginNote").innerHTML='<div class="login-note">🔐 Order karne ke liye pehle <a href="login.html">Login</a> kijiye.</div>';
+  }
+});
 </script>
-
 </body>
-
 </html>
