@@ -1,968 +1,432 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>My Account | PS Mart</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f6f1e7;
-  color:#2a1a0e;
-}
-
-header{
-  background:linear-gradient(110deg,#24150b,#43250f 55%,#6c3e17);
-  color:white;
-  padding:16px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:2px solid #c9922e;
-}
-
-header a{
-  color:white;
-  text-decoration:none;
-}
-
-.container{
-  max-width:900px;
-  margin:25px auto;
-  padding:15px;
-}
-
-.card{
-  background:white;
-  border:1px solid #e6dac3;
-  border-radius:14px;
-  padding:22px;
-  margin-bottom:18px;
-  box-shadow:0 4px 15px rgba(67,37,15,.10);
-}
-
-.profile-head{
-  display:flex;
-  align-items:center;
-  gap:18px;
-  margin-bottom:20px;
-}
-
-.avatar{
-  width:70px;
-  height:70px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);
-  color:#24150b;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:30px;
-  font-weight:bold;
-}
-
-h2{
-  margin-top:0;
-  color:#43250f;
-}
-
-.info{
-  padding:13px 0;
-  border-bottom:1px solid #eee;
-}
-
-.info:last-child{
-  border-bottom:none;
-}
-
-.info strong{
-  display:inline-block;
-  width:90px;
-}
-
-input{
-  width:100%;
-  padding:12px;
-  margin:7px 0;
-  border:1px solid #c9922e;
-  border-radius:7px;
-  font-size:15px;
-}
-
-button,
-.btn{
-  display:block;
-  width:100%;
-  padding:13px;
-  margin-top:10px;
-  border:none;
-  border-radius:8px;
-  background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);
-  color:#24150b;
-  font-weight:bold;
-  text-align:center;
-  text-decoration:none;
-  cursor:pointer;
-  font-size:15px;
-}
-
-.secondary{
-  background:#43250f;
-  color:#f0bd50;
-}
-
-.cancel{
-  background:#777;
-  color:white;
-}
-
-.logout{
-  background:#8b2e2e !important;
-  color:white !important;
-}
-
-.hidden{
-  display:none;
-}
-
-.menu{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-}
-
-.menu a{
-  text-decoration:none;
-  background:#fbf6ea;
-  border:1px solid #e6dac3;
-  border-radius:10px;
-  padding:18px;
-  color:#43250f;
-  font-weight:bold;
-}
-
-.menu a:hover{
-  background:#f7dd9b;
-}
-
-.message{
-  margin-top:10px;
-  font-weight:bold;
-}
-
-.success{
-  color:green;
-}
-
-.error{
-  color:#c62828;
-}
-
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f6f1e7;color:#2a1a0e}
+header{background:linear-gradient(110deg,#24150b,#43250f 55%,#6c3e17);color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #c9922e}
+header a{color:white;text-decoration:none}
+.container{max-width:900px;margin:25px auto;padding:15px}
+.card{background:white;border:1px solid #e6dac3;border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 4px 15px rgba(67,37,15,.10)}
+.profile-head{display:flex;align-items:center;gap:18px;margin-bottom:20px}
+.avatar{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);color:#24150b;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:bold;overflow:hidden;flex-shrink:0}
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.photo-actions{display:flex;gap:10px;margin:0 0 18px}
+.photo-actions button{width:auto;flex:1;margin-top:0}
+.photo-actions .remove-photo{background:#777;color:white}
+#avatarMessage{margin:0 0 15px}
+h2{margin-top:0;color:#43250f}
+.info{padding:13px 0;border-bottom:1px solid #eee}
+.info:last-child{border-bottom:none}
+.info strong{display:inline-block;width:90px}
+input{width:100%;padding:12px;margin:7px 0;border:1px solid #c9922e;border-radius:7px;font-size:15px}
+button,.btn{display:block;width:100%;padding:13px;margin-top:10px;border:none;border-radius:8px;background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);color:#24150b;font-weight:bold;text-align:center;text-decoration:none;cursor:pointer;font-size:15px}
+.secondary{background:#43250f;color:#f0bd50}
+.cancel{background:#777;color:white}
+.logout{background:#8b2e2e!important;color:white!important}
+.hidden{display:none}
+.menu{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.menu a{text-decoration:none;background:#fbf6ea;border:1px solid #e6dac3;border-radius:10px;padding:18px;color:#43250f;font-weight:bold}
+.menu a:hover{background:#f7dd9b}
+.message{margin-top:10px;font-weight:bold}
+.success{color:green}
+.error{color:#c62828}
 @media(max-width:600px){
-
-  header{
-    padding:14px;
-  }
-
-  .menu{
-    grid-template-columns:1fr;
-  }
-
-  .info strong{
-    width:75px;
-  }
-
+header{padding:14px}
+.menu{grid-template-columns:1fr}
+.info strong{width:75px}
 }
-
 </style>
-
 </head>
-
-
 <body>
-
-
 <header>
-
-  <a href="index.html">
-    🛍️ <b>PS</b> Mart
-  </a>
-
-  <a href="index.html">
-    🏠 Home
-  </a>
-
+<a href="index.html">🛍️ <b>PS</b> Mart</a>
+<a href="index.html">🏠 Home</a>
 </header>
 
-
 <div class="container">
-
-
-<!-- =========================
-     PROFILE
-========================= -->
-
+<!-- PROFILE -->
 <div class="card">
-
-  <div class="profile-head">
-
-    <div class="avatar" id="avatar">
-      👤
-    </div>
-
-    <div>
-
-      <h2 style="margin-bottom:5px;">
-        My Profile
-      </h2>
-
-      <span id="email">
-        Loading...
-      </span>
-
-    </div>
-
-  </div>
-
-
-  <div class="info">
-
-    <strong>Name:</strong>
-
-    <span id="name">
-      Loading...
-    </span>
-
-  </div>
-
-
-  <div class="info">
-
-    <strong>Phone:</strong>
-
-    <span id="phone">
-      Loading...
-    </span>
-
-  </div>
-
-
-  <div class="info">
-
-    <strong>Role:</strong>
-
-    <span id="role">
-      Loading...
-    </span>
-
-  </div>
-
-
-  <button
-    onclick="showEdit()">
-
-    ✏️ Edit Profile
-
-  </button>
-
-
+<div class="profile-head">
+<div class="avatar" id="avatar">👤</div>
+<div>
+<h2 style="margin-bottom:5px;">My Profile</h2>
+<span id="email">Loading...</span>
+</div>
 </div>
 
+<input type="file" id="avatarFile" accept="image/*" class="hidden" onchange="uploadAvatar(event)">
+<div class="photo-actions">
+<button type="button" onclick="selectAvatar()">📷 Change Photo</button>
+<button type="button" class="remove-photo" onclick="removeAvatar()">🗑️ Remove Photo</button>
+</div>
+<div id="avatarMessage" class="message"></div>
 
-<!-- =========================
-     EDIT PROFILE
-========================= -->
-
-<div
-  class="card hidden"
-  id="editCard">
-
-  <h2>
-    ✏️ Edit Profile
-  </h2>
-
-
-  <input
-    id="editName"
-    placeholder="Full name"
-  >
-
-
-  <input
-    id="editPhone"
-    type="tel"
-    placeholder="Mobile number"
-  >
-
-
-  <button
-    onclick="saveProfile()">
-
-    💾 Save Changes
-
-  </button>
-
-
-  <button
-    class="cancel"
-    onclick="hideEdit()">
-
-    Cancel
-
-  </button>
-
-
-  <div
-    id="editMessage"
-    class="message">
-  </div>
-
+<div class="info"><strong>Name:</strong> <span id="name">Loading...</span></div>
+<div class="info"><strong>Phone:</strong> <span id="phone">Loading...</span></div>
+<div class="info"><strong>Role:</strong> <span id="role">Loading...</span></div>
+<button onclick="showEdit()">✏️ Edit Profile</button>
 </div>
 
+<!-- EDIT PROFILE -->
+<div class="card hidden" id="editCard">
+<h2>✏️ Edit Profile</h2>
+<input id="editName" placeholder="Full name">
+<input id="editPhone" type="tel" placeholder="Mobile number">
+<button onclick="saveProfile()">💾 Save Changes</button>
+<button class="cancel" onclick="hideEdit()">Cancel</button>
+<div id="editMessage" class="message"></div>
+</div>
 
-<!-- =========================
-     QUICK MENU
-========================= -->
-
+<!-- QUICK MENU -->
 <div class="card">
-
-  <h2>
-    🛍️ My Account
-  </h2>
-
-
-  <div class="menu">
-
-
-    <a href="orders.html">
-
-      📦<br>
-      My Orders
-
-    </a>
-
-
-    <a href="cart.html">
-
-      🛒<br>
-      My Cart
-
-    </a>
-
-
-    <a href="wishlist.html">
-
-      ❤️<br>
-      Wishlist
-
-    </a>
-
-
-    <a href="products.html">
-
-      🔎<br>
-      Continue Shopping
-
-    </a>
-
-
-  </div>
-
+<h2>🛍️ My Account</h2>
+<div class="menu">
+<a href="orders.html">📦<br>My Orders</a>
+<a href="cart.html">🛒<br>My Cart</a>
+<a href="wishlist.html">❤️<br>Wishlist</a>
+<a href="products.html">🔎<br>Continue Shopping</a>
+</div>
 </div>
 
-<!-- =========================
-     PROFILE OPTIONS
-========================= -->
-
+<!-- PROFILE OPTIONS -->
 <div class="card">
-
-  <h2>
-    👤 Account &amp; Services
-  </h2>
-
-  <div class="menu">
-
-    <a href="saved-address.html">
-      📍<br>
-      Saved Addresses
-    </a>
-
-    <a href="language.html">
-      🌐<br>
-      Select Language
-    </a>
-
-    <a href="notifications.html">
-      🔔<br>
-      Notifications
-    </a>
-
-    <a href="settings.html">
-      ⚙️<br>
-      Settings
-    </a>
-
-    <a href="privacy-center.html">
-      🔒<br>
-      Privacy Center
-    </a>
-
-    <a href="reviews.html">
-      ⭐<br>
-      Reviews
-    </a>
-
-    <a href="questions.html">
-      ❓<br>
-      Questions &amp; Answers
-    </a>
-
-    <a href="feedback.html">
-      💬<br>
-      Feedback
-    </a>
-
-    <a href="information.html">
-      ℹ️<br>
-      Information
-    </a>
-
-    <a href="terms.html">
-      📜<br>
-      Terms
-    </a>
-
-    <a href="policies.html">
-      📋<br>
-      Policies
-    </a>
-
-    <a href="license.html">
-      📄<br>
-      License
-    </a>
-
-    <a href="browser-faqs.html">
-      ❓<br>
-      Browser FAQs
-    </a>
-
-    <a href="coupons.html">
-      🎟️<br>
-      Coupons
-    </a>
-
-    <a href="my-support.html">
-      🆘<br>
-      My Support Requests
-    </a>
-
-    <a href="help-center.html">
-      🆘<br>
-      Help Center
-    </a>
-
-    <a href="saved-cards.html">
-      💳<br>
-      Saved Credit &amp; Debit Cards
-    </a>
-
-    <a href="gift-cards.html">
-      🎁<br>
-      Gift Cards
-    </a>
-
-  </div>
-
+<h2>👤 Account &amp; Services</h2>
+<div class="menu">
+<a href="saved-address.html">📍<br>Saved Addresses</a>
+<a href="language.html">🌐<br>Select Language</a>
+<a href="notifications.html">🔔<br>Notifications</a>
+<a href="settings.html">⚙️<br>Settings</a>
+<a href="privacy-center.html">🔒<br>Privacy Center</a>
+<a href="reviews.html">⭐<br>Reviews</a>
+<a href="questions.html">❓<br>Questions &amp; Answers</a>
+<a href="feedback.html">💬<br>Feedback</a>
+<a href="information.html">ℹ️<br>Information</a>
+<a href="terms.html">📜<br>Terms</a>
+<a href="policies.html">📋<br>Policies</a>
+<a href="license.html">📄<br>License</a>
+<a href="browser-faqs.html">❓<br>Browser FAQs</a>
+<a href="coupons.html">🎟️<br>Coupons</a>
+<a href="my-support.html">🆘<br>My Support Requests</a>
+<a href="help-center.html">🆘<br>Help Center</a>
+<a href="saved-cards.html">💳<br>Saved Credit &amp; Debit Cards</a>
+<a href="gift-cards.html">🎁<br>Gift Cards</a>
+</div>
 </div>
 
-
-<!-- =========================
-     SELLER
-========================= -->
-
-<div
-  class="card"
-  id="sellerSection">
-
-  <h2>
-    🏪 Sell on PS Mart
-  </h2>
-
-  <p>
-    Become a seller and start selling your products.
-  </p>
-
-  <a
-    class="btn"
-    id="registerSellerBtn"
-    href="seller-register.html">
-
-    Register as Seller
-
-  </a>
-
-
-  <a
-    class="btn secondary"
-    id="sellerDashBtn"
-    href="seller-dashboard.html">
-
-    Seller Dashboard
-
-  </a>
-
+<!-- SELLER -->
+<div class="card" id="sellerSection">
+<h2>🏪 Sell on PS Mart</h2>
+<p>Become a seller and start selling your products.</p>
+<a class="btn" id="registerSellerBtn" href="seller-register.html">Register as Seller</a>
+<a class="btn secondary" id="sellerDashBtn" href="seller-dashboard.html">Seller Dashboard</a>
 </div>
 
-
-<!-- =========================
-     ADMIN
-     (sirf admin ko dikhta hai; baaki sab ke liye page se hata diya jata hai)
-========================= -->
-
-<div
-  class="card hidden"
-  id="adminSection">
-
-  <h2>
-    ⚙️ Admin
-  </h2>
-
-  <a
-    class="btn"
-    href="admin-dashboard.html">
-
-    Admin Dashboard
-
-  </a>
-
+<!-- ADMIN -->
+<div class="card hidden" id="adminSection">
+<h2>⚙️ Admin</h2>
+<a class="btn" href="admin-dashboard.html">Admin Dashboard</a>
 </div>
 
-
-<!-- =========================
-     LOGOUT
-========================= -->
-
+<!-- LOGOUT -->
 <div class="card">
-
-  <button
-    class="logout"
-    onclick="logout()">
-
-    🚪 Logout
-
-  </button>
-
+<button class="logout" onclick="logout()">🚪 Logout</button>
 </div>
-
-
 </div>
-
 
 <script>
+/* SUPABASE */
+const SUPABASE_URL = "https://nctscffhnztscczjxhat.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0IiwiaWF0IjoxNzkwNDQzNDI1LCJleHAiOjIxMDYwMTk0MjV9.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-
-/* =========================
-   SUPABASE
-========================= */
-
-const SUPABASE_URL =
-"https://nctscffhnztscczjxhat.supabase.co";
-
-const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
-
-
-const supabaseClient =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-
-/* =========================
-   LOAD PROFILE
-========================= */
-
+/* LOAD PROFILE */
 async function loadProfile(){
-
-  const {
-    data:{
-      user
-    },
-    error
-  } =
-    await supabaseClient
-    .auth
-    .getUser();
-
+  const {data:{user},error} = await supabaseClient.auth.getUser();
 
   if(error || !user){
-
-    window.location.href =
-      "login.html";
-
+    window.location.href = "login.html";
     return;
-
   }
 
+  document.getElementById("email").textContent = user.email || "Not available";
 
-  document.getElementById(
-    "email"
-  ).textContent =
-    user.email || "Not available";
-
-
-  const {
-    data:profile,
-    error:profileError
-  } =
-    await supabaseClient
-
+  const {data:profile,error:profileError} = await supabaseClient
     .from("profiles")
-
-    .select(
-      "full_name, phone, role"
-    )
-
-    .eq(
-      "id",
-      user.id
-    )
-
+    .select("full_name, phone, role, avatar_url")
+    .eq("id",user.id)
     .maybeSingle();
 
+  if(profileError) console.log("Profile error:",profileError);
 
-  if(profileError){
+  const name = profile?.full_name || "Not added";
+  const phone = profile?.phone || "Not added";
+  const role = profile?.role || "customer";
 
-    console.log(
-      "Profile error:",
-      profileError
-    );
+  document.getElementById("name").textContent = name;
+  document.getElementById("phone").textContent = phone;
+  document.getElementById("role").textContent = role;
 
+  /* Profile photo, otherwise show name initial */
+  const avatarElement = document.getElementById("avatar");
+  if(profile?.avatar_url){
+    const image = document.createElement("img");
+    image.src = profile.avatar_url;
+    image.alt = "Profile photo";
+    avatarElement.replaceChildren(image);
+  }else{
+    avatarElement.textContent = name !== "Not added" ? name.charAt(0).toUpperCase() : "👤";
   }
 
-
-  const name =
-    profile?.full_name ||
-    "Not added";
-
-
-  const phone =
-    profile?.phone ||
-    "Not added";
-
-
-  const role =
-    profile?.role ||
-    "customer";
-
-
-  document.getElementById(
-    "name"
-  ).textContent = name;
-
-
-  document.getElementById(
-    "phone"
-  ).textContent = phone;
-
-
-  document.getElementById(
-    "role"
-  ).textContent = role;
-
-
-  /* Avatar */
-
-  if(name !== "Not added"){
-
-    document.getElementById(
-      "avatar"
-    ).textContent =
-      name.charAt(0).toUpperCase();
-
-  }
-
-
-  /* Admin: sirf admin ko dikhao, baaki sab ke liye page se hata do */
-
-  const adminBox =
-    document.getElementById(
-      "adminSection"
-    );
-
+  /* Admin section */
+  const adminBox = document.getElementById("adminSection");
   if(role === "admin"){
-
-    adminBox.classList.remove(
-      "hidden"
-    );
-
-  }
-  else if(adminBox){
-
+    adminBox.classList.remove("hidden");
+  }else if(adminBox){
     adminBox.remove();
-
   }
 
-
-  /* Seller */
-
+  /* Seller section */
   if(role === "seller"){
-
-    document
-    .getElementById(
-      "sellerSection"
-    )
-    .querySelector(
-      "h2"
-    )
-    .textContent =
-      "🏪 Seller Account";
-
+    document.getElementById("sellerSection").querySelector("h2").textContent = "🏪 Seller Account";
   }
 
-
-  /* Seller buttons: jiska seller account hai use Dashboard,
-     baaki sabko Register dikhao (check fail ho to dono dikhte rahenge) */
-
-  const sellerCheck =
-    await supabaseClient
-
+  /* Seller buttons */
+  const sellerCheck = await supabaseClient
     .from("sellers")
-
     .select("id")
-
-    .eq(
-      "user_id",
-      user.id
-    )
-
+    .eq("user_id",user.id)
     .maybeSingle();
 
   if(!sellerCheck.error){
-
-    const registerBtn =
-      document.getElementById(
-        "registerSellerBtn"
-      );
-
-    const dashBtn =
-      document.getElementById(
-        "sellerDashBtn"
-      );
+    const registerBtn = document.getElementById("registerSellerBtn");
+    const dashBtn = document.getElementById("sellerDashBtn");
 
     if(sellerCheck.data){
-
-      if(registerBtn){
-        registerBtn.classList.add("hidden");
-      }
-
+      if(registerBtn) registerBtn.classList.add("hidden");
+    }else{
+      if(dashBtn) dashBtn.classList.add("hidden");
     }
-    else{
-
-      if(dashBtn){
-        dashBtn.classList.add("hidden");
-      }
-
-    }
-
   }
-
 
   /* Fill edit fields */
-
-  document.getElementById(
-    "editName"
-  ).value =
-    profile?.full_name || "";
-
-
-  document.getElementById(
-    "editPhone"
-  ).value =
-    profile?.phone || "";
-
+  document.getElementById("editName").value = profile?.full_name || "";
+  document.getElementById("editPhone").value = profile?.phone || "";
 }
 
-
-/* =========================
-   SHOW EDIT
-========================= */
-
-function showEdit(){
-
-  document
-  .getElementById(
-    "editCard"
-  )
-  .classList.remove(
-    "hidden"
-  );
-
+/* PROFILE PHOTO */
+function showAvatarMessage(text,type){
+  const message = document.getElementById("avatarMessage");
+  message.textContent = text;
+  message.className = "message " + (type || "");
 }
 
-
-/* =========================
-   HIDE EDIT
-========================= */
-
-function hideEdit(){
-
-  document
-  .getElementById(
-    "editCard"
-  )
-  .classList.add(
-    "hidden"
-  );
-
+function selectAvatar(){
+  document.getElementById("avatarFile").click();
 }
 
+function getAvatarStoragePath(publicUrl){
+  if(!publicUrl) return null;
+  const marker = "/object/public/profile-photos/";
+  const position = publicUrl.indexOf(marker);
+  if(position === -1) return null;
 
-/* =========================
-   SAVE PROFILE
-========================= */
+  try{
+    return decodeURIComponent(publicUrl.substring(position + marker.length));
+  }catch(error){
+    return publicUrl.substring(position + marker.length);
+  }
+}
 
-async function saveProfile(){
+async function uploadAvatar(event){
+  const file = event.target.files && event.target.files[0];
+  event.target.value = "";
+  if(!file) return;
 
-  const message =
-    document.getElementById(
-      "editMessage"
-    );
-
-
-  const name =
-    document.getElementById(
-      "editName"
-    ).value.trim();
-
-
-  const phone =
-    document.getElementById(
-      "editPhone"
-    ).value.trim();
-
-
-  if(!name){
-
-    message.textContent =
-      "Please enter your name.";
-
-    message.className =
-      "message error";
-
+  if(!file.type || !file.type.startsWith("image/")){
+    showAvatarMessage("Please choose an image file.","error");
     return;
-
   }
 
-
-  const {
-    data:{
-      user
-    }
-  } =
-    await supabaseClient
-    .auth
-    .getUser();
-
-
-  if(!user){
-
-    window.location.href =
-      "login.html";
-
+  if(file.size > 5 * 1024 * 1024){
+    showAvatarMessage("Photo must be 5 MB or smaller.","error");
     return;
-
   }
 
+  showAvatarMessage("Uploading photo...","");
 
-  const {
-    error
-  } =
-    await supabaseClient
+  const {data:{user},error:userError} = await supabaseClient.auth.getUser();
+  if(userError || !user){
+    showAvatarMessage("Please log in again.","error");
+    return;
+  }
 
+  const extension = (file.name.split(".").pop() || "jpg")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g,"") || "jpg";
+
+  const filePath = user.id + "/" + Date.now() + "." + extension;
+
+  const {error:uploadError} = await supabaseClient
+    .storage
+    .from("profile-photos")
+    .upload(filePath,file,{
+      cacheControl:"3600",
+      upsert:false,
+      contentType:file.type
+    });
+
+  if(uploadError){
+    console.error("Photo upload error:",uploadError);
+    showAvatarMessage("Photo upload failed: " + uploadError.message,"error");
+    return;
+  }
+
+  const {data:publicData} = supabaseClient
+    .storage
+    .from("profile-photos")
+    .getPublicUrl(filePath);
+
+  const newAvatarUrl = publicData.publicUrl;
+
+  const {data:oldProfile} = await supabaseClient
     .from("profiles")
+    .select("avatar_url")
+    .eq("id",user.id)
+    .maybeSingle();
 
-    .update({
+  const {error:updateError} = await supabaseClient
+    .from("profiles")
+    .update({avatar_url:newAvatarUrl})
+    .eq("id",user.id);
 
-      full_name:name,
-      phone:phone
-
-    })
-
-    .eq(
-      "id",
-      user.id
-    );
-
-
-  if(error){
-
-    console.log(error);
-
-    message.textContent =
-      "Profile update failed: " +
-      error.message;
-
-    message.className =
-      "message error";
-
+  if(updateError){
+    console.error("Photo profile update error:",updateError);
+    await supabaseClient.storage.from("profile-photos").remove([filePath]);
+    showAvatarMessage("Photo uploaded, but saving failed: " + updateError.message,"error");
     return;
-
   }
 
-
-  message.textContent =
-    "Profile updated successfully ✓";
-
-  message.className =
-    "message success";
-
+  if(oldProfile?.avatar_url){
+    const oldPath = getAvatarStoragePath(oldProfile.avatar_url);
+    if(oldPath && oldPath !== filePath){
+      const {error:removeOldError} = await supabaseClient
+        .storage
+        .from("profile-photos")
+        .remove([oldPath]);
+      if(removeOldError) console.warn("Old photo could not be removed:",removeOldError);
+    }
+  }
 
   await loadProfile();
-
+  showAvatarMessage("Profile photo updated successfully ✓","success");
 }
 
+async function removeAvatar(){
+  const {data:{user},error:userError} = await supabaseClient.auth.getUser();
 
-/* =========================
-   LOGOUT
-========================= */
+  if(userError || !user){
+    showAvatarMessage("Please log in again.","error");
+    return;
+  }
 
+  const {data:profile,error:readError} = await supabaseClient
+    .from("profiles")
+    .select("avatar_url")
+    .eq("id",user.id)
+    .maybeSingle();
+
+  if(readError){
+    showAvatarMessage("Could not load profile photo: " + readError.message,"error");
+    return;
+  }
+
+  if(!profile?.avatar_url){
+    showAvatarMessage("No profile photo to remove.","");
+    return;
+  }
+
+  const {error:updateError} = await supabaseClient
+    .from("profiles")
+    .update({avatar_url:null})
+    .eq("id",user.id);
+
+  if(updateError){
+    showAvatarMessage("Could not remove photo: " + updateError.message,"error");
+    return;
+  }
+
+  const oldPath = getAvatarStoragePath(profile.avatar_url);
+  if(oldPath){
+    const {error:removeError} = await supabaseClient
+      .storage
+      .from("profile-photos")
+      .remove([oldPath]);
+    if(removeError) console.warn("Photo record cleared, but stored file could not be deleted:",removeError);
+  }
+
+  await loadProfile();
+  showAvatarMessage("Profile photo removed successfully ✓","success");
+}
+
+/* SHOW EDIT */
+function showEdit(){
+  document.getElementById("editCard").classList.remove("hidden");
+}
+
+/* HIDE EDIT */
+function hideEdit(){
+  document.getElementById("editCard").classList.add("hidden");
+}
+
+/* SAVE PROFILE */
+async function saveProfile(){
+  const message = document.getElementById("editMessage");
+  const name = document.getElementById("editName").value.trim();
+  const phone = document.getElementById("editPhone").value.trim();
+
+  if(!name){
+    message.textContent = "Please enter your name.";
+    message.className = "message error";
+    return;
+  }
+
+  const {data:{user}} = await supabaseClient.auth.getUser();
+  if(!user){
+    window.location.href = "login.html";
+    return;
+  }
+
+  const {error} = await supabaseClient
+    .from("profiles")
+    .update({full_name:name,phone:phone})
+    .eq("id",user.id);
+
+  if(error){
+    console.log(error);
+    message.textContent = "Profile update failed: " + error.message;
+    message.className = "message error";
+    return;
+  }
+
+  message.textContent = "Profile updated successfully ✓";
+  message.className = "message success";
+  await loadProfile();
+}
+
+/* LOGOUT */
 async function logout(){
-
-  await supabaseClient
-    .auth
-    .signOut();
-
-
-  window.location.href =
-    "index.html";
-
+  await supabaseClient.auth.signOut();
+  window.location.href = "index.html";
 }
 
-
-/* =========================
-   START
-========================= */
-
+/* START */
 loadProfile();
-
 </script>
-
-
 </body>
-
 </html>
