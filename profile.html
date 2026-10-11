@@ -6,6 +6,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.postalpincode.in; object-src 'none'; base-uri 'self'; form-action 'self'">
+<script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
 <title>My Account | PS Mart</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -186,6 +188,79 @@ button,
 
 }
 
+
+.avatar-wrap{
+  position:relative;
+  width:70px;
+  height:70px;
+  flex-shrink:0;
+}
+
+.avatar{
+  overflow:hidden;
+}
+
+.avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.cam{
+  position:absolute;
+  right:-6px;
+  bottom:-6px;
+  width:30px;
+  height:30px;
+  padding:0;
+  margin:0;
+  border-radius:50%;
+  border:2px solid #fff;
+  font-size:14px;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.editor{
+  text-align:center;
+}
+
+.editor canvas{
+  width:240px;
+  height:240px;
+  border-radius:50%;
+  border:3px solid #c9922e;
+  background:#fbf6ea;
+  max-width:100%;
+}
+
+.editor label{
+  display:block;
+  text-align:left;
+  font-size:13px;
+  font-weight:bold;
+  color:#7c6a58;
+  margin-top:12px;
+}
+
+.editor input[type=range]{
+  padding:0;
+  border:0;
+  margin:4px 0;
+}
+
+.btn-row{
+  display:flex;
+  gap:10px;
+}
+
+.btn-row button{
+  flex:1;
+}
+
 </style>
 
 </head>
@@ -218,8 +293,26 @@ button,
 
   <div class="profile-head">
 
-    <div class="avatar" id="avatar">
-      👤
+    <div class="avatar-wrap">
+
+      <div class="avatar" id="avatar">
+        👤
+      </div>
+
+      <button
+        type="button"
+        class="cam"
+        title="Photo badlein"
+        onclick="document.getElementById('photoInput').click()">
+        📷
+      </button>
+
+      <input
+        type="file"
+        id="photoInput"
+        accept="image/png,image/jpeg,image/webp"
+        class="hidden">
+
     </div>
 
     <div>
@@ -326,6 +419,53 @@ button,
 
   <div
     id="editMessage"
+    class="message">
+  </div>
+
+</div>
+
+
+<!-- =========================
+     PROFILE PHOTO EDITOR
+========================= -->
+
+<div
+  class="card hidden editor"
+  id="photoCard">
+
+  <h2>
+    📷 Profile Photo
+  </h2>
+
+  <canvas
+    id="photoCanvas"
+    width="240"
+    height="240">
+  </canvas>
+
+  <label>Zoom</label>
+  <input type="range" id="pzoom" min="100" max="300" value="100" oninput="drawPreview()">
+
+  <label>Left / Right</label>
+  <input type="range" id="px" min="-100" max="100" value="0" oninput="drawPreview()">
+
+  <label>Up / Down</label>
+  <input type="range" id="py" min="-100" max="100" value="0" oninput="drawPreview()">
+
+  <div class="btn-row">
+
+    <button onclick="savePhoto()" id="photoSaveBtn">
+      💾 Photo Save Karein
+    </button>
+
+    <button class="cancel" onclick="closePhotoEditor()">
+      Cancel
+    </button>
+
+  </div>
+
+  <div
+    id="photoMessage"
     class="message">
   </div>
 
@@ -685,16 +825,11 @@ async function loadProfile(){
   ).textContent = role;
 
 
-  /* Avatar */
+  /* Avatar (photo ya naam ka pehla akshar) */
 
-  if(name !== "Not added"){
+  currentUser = user;
 
-    document.getElementById(
-      "avatar"
-    ).textContent =
-      name.charAt(0).toUpperCase();
-
-  }
+  await loadAvatar(name);
 
 
   /* Admin: sirf admin ko dikhao, baaki sab ke liye page se hata do */
@@ -950,6 +1085,375 @@ async function logout(){
 
   window.location.href =
     "index.html";
+
+}
+
+
+/* =========================
+   PROFILE PHOTO
+========================= */
+
+let currentUser = null;
+let photoImg = null;
+let hasPhoto = false;
+
+const AVATAR_PREFIX =
+  SUPABASE_URL + "/storage/v1/object/public/avatars/";
+
+
+function showAvatar(url, name){
+
+  const box =
+    document.getElementById("avatar");
+
+  box.textContent = "";
+
+  if(url){
+
+    const img =
+      document.createElement("img");
+
+    img.alt = "Profile photo";
+
+    img.src = url;
+
+    img.onerror = function(){
+      showAvatar("", name);
+    };
+
+    box.appendChild(img);
+
+    hasPhoto = true;
+
+  }
+  else{
+
+    hasPhoto = false;
+
+    box.textContent =
+      (name && name !== "Not added")
+        ? name.charAt(0).toUpperCase()
+        : "👤";
+
+  }
+
+  updatePhotoButtons();
+
+}
+
+
+async function loadAvatar(name){
+
+  let url = "";
+
+  const r =
+    await supabaseClient
+      .from("profiles")
+      .select("avatar_url")
+      .eq("id", currentUser.id)
+      .maybeSingle();
+
+  if(!r.error && r.data && r.data.avatar_url){
+
+    if(r.data.avatar_url.indexOf(AVATAR_PREFIX) === 0){
+      url = r.data.avatar_url;
+    }
+
+  }
+
+  showAvatar(url, name);
+
+}
+
+
+function updatePhotoButtons(){
+
+  let rm =
+    document.getElementById("removePhotoBtn");
+
+  if(hasPhoto && !rm){
+
+    rm = document.createElement("button");
+
+    rm.id = "removePhotoBtn";
+    rm.className = "cancel";
+    rm.textContent = "🗑 Photo Hatayein";
+    rm.onclick = removePhoto;
+
+    const info =
+      document.getElementById("editCard");
+
+    info.parentNode.insertBefore(rm, info);
+
+  }
+
+  if(!hasPhoto && rm){
+    rm.remove();
+  }
+
+}
+
+
+document
+  .getElementById("photoInput")
+  .addEventListener("change", function(){
+
+    const file = this.files && this.files[0];
+
+    this.value = "";
+
+    if(!file){
+      return;
+    }
+
+    if(!/^image\/(jpeg|png|webp)$/.test(file.type)){
+      alert("Sirf JPG, PNG ya WEBP photo chuniye.");
+      return;
+    }
+
+    if(file.size > 8 * 1024 * 1024){
+      alert("Photo 8 MB se choti honi chahiye.");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(){
+
+      const img = new Image();
+
+      img.onload = function(){
+
+        photoImg = img;
+
+        document.getElementById("pzoom").value = 100;
+        document.getElementById("px").value = 0;
+        document.getElementById("py").value = 0;
+
+        document
+          .getElementById("photoMessage")
+          .textContent = "";
+
+        document
+          .getElementById("photoCard")
+          .classList.remove("hidden");
+
+        drawPreview();
+
+        document
+          .getElementById("photoCard")
+          .scrollIntoView({behavior:"smooth"});
+
+      };
+
+      img.onerror = function(){
+        alert("Ye photo khul nahi payi. Dusri photo chuniye.");
+      };
+
+      img.src = reader.result;
+
+    };
+
+    reader.readAsDataURL(file);
+
+  });
+
+
+function paintPhoto(canvas, size){
+
+  const ctx = canvas.getContext("2d");
+
+  const zoom =
+    Number(document.getElementById("pzoom").value) / 100;
+
+  const ox =
+    Number(document.getElementById("px").value) / 100;
+
+  const oy =
+    Number(document.getElementById("py").value) / 100;
+
+  const base =
+    Math.max(
+      size / photoImg.width,
+      size / photoImg.height
+    ) * zoom;
+
+  const w = photoImg.width * base;
+  const h = photoImg.height * base;
+
+  const dx = (size - w) / 2 + ox * (w - size) / 2;
+  const dy = (size - h) / 2 + oy * (h - size) / 2;
+
+  ctx.fillStyle = "#fbf6ea";
+  ctx.fillRect(0, 0, size, size);
+  ctx.drawImage(photoImg, dx, dy, w, h);
+
+}
+
+
+function drawPreview(){
+
+  if(!photoImg){
+    return;
+  }
+
+  paintPhoto(
+    document.getElementById("photoCanvas"),
+    240
+  );
+
+}
+
+
+function closePhotoEditor(){
+
+  photoImg = null;
+
+  document
+    .getElementById("photoCard")
+    .classList.add("hidden");
+
+}
+
+
+async function savePhoto(){
+
+  const msg =
+    document.getElementById("photoMessage");
+
+  const btn =
+    document.getElementById("photoSaveBtn");
+
+  if(!photoImg || !currentUser){
+    return;
+  }
+
+  btn.disabled = true;
+
+  msg.textContent = "Save ho rahi hai...";
+  msg.className = "message";
+
+  const out =
+    document.createElement("canvas");
+
+  out.width = 400;
+  out.height = 400;
+
+  paintPhoto(out, 400);
+
+  const blob =
+    await new Promise(function(resolve){
+      out.toBlob(resolve, "image/jpeg", 0.85);
+    });
+
+  if(!blob){
+
+    msg.textContent = "Photo bana nahi payi.";
+    msg.className = "message error";
+    btn.disabled = false;
+
+    return;
+
+  }
+
+  const path =
+    currentUser.id + "/avatar.jpg";
+
+  const up =
+    await supabaseClient
+      .storage
+      .from("avatars")
+      .upload(path, blob, {
+        upsert: true,
+        contentType: "image/jpeg",
+        cacheControl: "3600"
+      });
+
+  if(up.error){
+
+    console.log(up.error);
+
+    msg.textContent =
+      "Upload nahi hua: " + up.error.message +
+      " (ps-mart-all-in-one.sql run kiya hai?)";
+
+    msg.className = "message error";
+    btn.disabled = false;
+
+    return;
+
+  }
+
+  const url =
+    AVATAR_PREFIX + path + "?v=" + Date.now();
+
+  const sv =
+    await supabaseClient
+      .from("profiles")
+      .update({avatar_url: url})
+      .eq("id", currentUser.id);
+
+  if(sv.error){
+
+    console.log(sv.error);
+
+    msg.textContent =
+      "Photo save ho gayi par profile mein jud nahi payi: " + sv.error.message;
+
+    msg.className = "message error";
+    btn.disabled = false;
+
+    return;
+
+  }
+
+  btn.disabled = false;
+
+  closePhotoEditor();
+
+  showAvatar(
+    url,
+    document.getElementById("name").textContent
+  );
+
+  alert("Profile photo badal gayi ✓");
+
+}
+
+
+async function removePhoto(){
+
+  if(!currentUser){
+    return;
+  }
+
+  if(!confirm("Profile photo hata dein?")){
+    return;
+  }
+
+  await supabaseClient
+    .storage
+    .from("avatars")
+    .remove([currentUser.id + "/avatar.jpg"]);
+
+  const sv =
+    await supabaseClient
+      .from("profiles")
+      .update({avatar_url: null})
+      .eq("id", currentUser.id);
+
+  if(sv.error){
+
+    alert("Photo hatayi nahi ja saki: " + sv.error.message);
+
+    return;
+
+  }
+
+  showAvatar(
+    "",
+    document.getElementById("name").textContent
+  );
 
 }
 
