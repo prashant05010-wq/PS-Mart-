@@ -1,2192 +1,2113 @@
-/* =========================
-   PS MART + SUPABASE
-========================= */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-const SUPABASE_URL = "https://nctscffhnztscczjxhat.supabase.co";
+<title>PS Mart Admin Dashboard</title>
 
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 
-const supabaseClient = window.supabase.createClient(
+<script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{box-sizing:border-box;}
+
+body{margin:0;font-family:Arial,sans-serif;background:#f7f1e8;color:#3b2618;}
+
+header{background:#3b2618;color:#f5c76a;padding:18px 25px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;}
+
+header h2{margin:0;}
+
+.logout{background:#f5c76a;color:#3b2618;border:0;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:bold;}
+
+.container{max-width:1200px;margin:30px auto;padding:0 20px;}
+
+.message{background:white;padding:15px;border-radius:10px;margin-bottom:20px;}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:25px;}
+
+.stat{background:white;padding:20px;border-radius:14px;box-shadow:0 4px 15px rgba(0,0,0,.08);text-align:center;}
+
+.stat h2{margin:8px 0 0;color:#b8860b;font-size:27px;}
+
+.stat p{margin:0;color:#777;}
+
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+
+.tab{background:#3b2618;color:#f5c76a;border:0;padding:11px 15px;border-radius:8px;cursor:pointer;font-weight:bold;}
+
+.tab.active{background:#f5c76a;color:#3b2618;}
+
+.section{background:white;padding:20px;border-radius:14px;margin-bottom:25px;box-shadow:0 4px 15px rgba(0,0,0,.08);}
+
+.section h2{margin-top:0;}
+
+.card{border:1px solid #ddd;border-radius:10px;padding:15px;margin:12px 0;}
+
+.card h3{margin-top:0;}
+
+button{border:0;padding:9px 14px;border-radius:7px;cursor:pointer;margin:5px;font-weight:bold;}
+
+.approve{background:#198754;color:white;}
+
+.reject{background:#dc3545;color:white;}
+
+.refresh{background:#3b2618;color:#f5c76a;}
+
+.gold{background:#b8860b;color:white;}
+
+.status{display:inline-block;padding:5px 9px;border-radius:6px;background:#fff3cd;color:#856404;font-size:13px;}
+
+.empty{color:#777;padding:15px;}
+
+table{width:100%;border-collapse:collapse;margin-top:15px;}
+
+th,td{border-bottom:1px solid #ddd;padding:11px;text-align:left;font-size:14px;}
+
+th{background:#f1e7dc;}
+
+.commission{color:#d32f2f;font-weight:bold;}
+
+.earning{color:#16834a;font-weight:bold;}
+
+.hidden{display:none;}
+
+input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:250px;}
+
+/* ===== NEW: notifications + order actions ===== */
+
+.cnt{display:inline-block;background:#dc3545;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:5px;}
+
+.notif{padding:12px 14px;border-bottom:1px solid #eee;cursor:pointer;background:#fff;}
+
+.notif.unread{background:#fff9e8;border-left:4px solid #b8860b;}
+
+.notif b{display:block;color:#3b2618;}
+
+.notif small{color:#777;white-space:pre-line;}
+
+.pay-ok{background:#e7f6ea;color:#16834a;}
+
+.pay-cod{background:#eef2f6;color:#33475b;}
+
+.btn-sm{padding:7px 11px;margin:2px;font-size:13px;}
+
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr);}}
+
+@media(max-width:600px){
+
+  .stats{grid-template-columns:1fr;}
+
+  table{display:block;overflow-x:auto;white-space:nowrap;}
+
+  header{padding:15px;}
+
+  header h2{font-size:18px;}
+
+  .container{padding:0 12px;}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <h2>👑 PS Mart Admin</h2>
+
+  <button class="logout" onclick="logoutAdmin()">Logout</button>
+
+</header>
+
+
+<div class="container">
+
+  <h1>Admin Dashboard</h1>
+
+  <div id="message" class="message">Loading...</div>
+
+
+  <!-- ================= STATS ================= -->
+
+  <div class="stats">
+
+    <div class="stat"><p>👤 Customers</p><h2 id="totalCustomers">0</h2></div>
+
+    <div class="stat"><p>🏪 Sellers</p><h2 id="totalSellers">0</h2></div>
+
+    <div class="stat"><p>📦 Products</p><h2 id="totalProducts">0</h2></div>
+
+    <div class="stat"><p>🛒 Orders</p><h2 id="totalOrders">0</h2></div>
+
+    <div class="stat"><p>💰 Total Sales</p><h2 id="totalSales">₹0</h2></div>
+
+    <div class="stat"><p>💵 Commission</p><h2 id="totalCommission">₹0</h2></div>
+
+    <div class="stat"><p>💸 Seller Earnings</p><h2 id="sellerEarnings">₹0</h2></div>
+
+    <div class="stat"><p>⚙️ Commission Rate</p><h2 id="commissionRate">0%</h2></div>
+
+  </div>
+
+
+  <!-- ================= TABS ================= -->
+
+  <div class="tabs">
+
+    <button class="tab active" onclick="showSection('sellersSection',this)">🏪 Sellers</button>
+
+    <button class="tab" onclick="showSection('productsSection',this)">📦 Products</button>
+
+    <button class="tab" onclick="showSection('ordersSection',this)">🛒 Orders</button>
+
+    <button class="tab" onclick="showSection('customersSection',this)">👤 Customers</button>
+
+    <button class="tab" onclick="showSection('financeSection',this)">💰 Finance</button>
+
+    <button class="tab" onclick="showSection('settingsSection',this)">⚙️ Settings</button>
+
+    <button class="tab" onclick="showSection('giftCardsSection',this)">🎁 Gift Cards</button>
+
+    <button class="tab" onclick="showSection('notificationsSection',this);loadNotifications()">🔔 Notifications<span id="notifCount"></span></button>
+
+    <button class="tab" onclick="window.location.href='admin-support.html'">🆘 Support</button>
+
+    <button class="tab" onclick="window.location.href='admin-selftest.html'">🧪 Self-Test</button>
+
+  </div>
+
+
+  <!-- ================= SELLERS ================= -->
+
+  <div id="sellersSection" class="section">
+
+    <h2>🏪 Seller Management</h2>
+
+    <button class="refresh" onclick="loadSellers()">🔄 Refresh Sellers</button>
+
+    <div id="sellers">Loading sellers...</div>
+
+  </div>
+
+
+  <!-- ================= PRODUCTS ================= -->
+
+  <div id="productsSection" class="section hidden">
+
+    <h2>📦 Product Management</h2>
+
+    <button class="refresh" onclick="loadProducts()">🔄 Refresh Products</button>
+
+    <div id="products">Loading products...</div>
+
+  </div>
+
+
+  <!-- ================= ORDERS ================= -->
+
+  <div id="ordersSection" class="section hidden">
+
+    <h2>🛒 Order Management</h2>
+
+    <button class="refresh" onclick="loadOrders()">🔄 Refresh Orders</button>
+
+    <div id="orders">Loading orders...</div>
+
+  </div>
+
+
+  <!-- ================= CUSTOMERS ================= -->
+
+  <div id="customersSection" class="section hidden">
+
+    <h2>👤 Customer Management</h2>
+
+    <button class="refresh" onclick="loadCustomers()">🔄 Refresh Customers</button>
+
+    <div id="customers">Loading customers...</div>
+
+  </div>
+
+
+  <!-- ================= FINANCE ================= -->
+
+  <div id="financeSection" class="section hidden">
+
+    <h2>💰 Finance</h2>
+
+    <div id="finance">Loading finance...</div>
+
+  </div>
+
+
+  <!-- ================= SETTINGS ================= -->
+
+  <div id="settingsSection" class="section hidden">
+
+    <h2>⚙️ Marketplace Settings</h2>
+
+    <p>Current Commission Rate:</p>
+
+    <h2 id="settingsRate">Loading...</h2>
+
+    <label>Set Commission Rate (%)</label>
+
+    <br><br>
+
+    <input type="number" id="newCommissionRate" min="0" max="100" step="0.1" placeholder="Example: 15">
+
+    <button class="gold" onclick="saveCommission()">💾 Save Commission</button>
+
+  </div>
+
+  <!-- ================= GIFT CARDS ================= -->
+
+  <div id="giftCardsSection" class="section hidden">
+
+    <h2>🎁 Gift Card Management</h2>
+
+    <div class="card">
+
+      <h3>📤 Send Gift Card to Customer</h3>
+
+      <label>Select Gift Card</label>
+      <br><br>
+
+      <select id="sendGiftCard" style="padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:100%;max-width:500px;">
+        <option value="">Loading available gift cards...</option>
+      </select>
+
+      <br><br>
+
+      <label>Select Customer</label>
+      <br><br>
+
+      <select id="sendGiftCustomer" style="padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:100%;max-width:500px;">
+        <option value="">Loading customers...</option>
+      </select>
+
+      <br><br>
+
+      <button class="gold" onclick="sendGiftCardToCustomer()">📤 Send Gift Card</button>
+
+      <p id="sendGiftCardMessage" style="font-weight:bold;margin-top:10px;"></p>
+
+    </div>
+
+    <div class="card">
+
+      <h3>➕ Create New Gift Card</h3>
+
+      <label>Gift Card Amount (₹)</label>
+      <br><br>
+
+      <input type="number" id="giftCardAmount" min="1" step="1" placeholder="Example: 500">
+
+      <br><br>
+
+      <label>Expiry Date</label>
+      <br><br>
+
+      <input type="date" id="giftCardExpiry">
+
+      <br><br>
+
+      <label>Number of Cards</label>
+      <br><br>
+
+      <input type="number" id="giftCardQuantity" min="1" max="50" value="1" placeholder="Example: 5">
+
+      <br><br>
+
+      <button class="gold" onclick="createGiftCards()">🎁 Generate Gift Card(s)</button>
+
+    </div>
+
+    <div class="card">
+
+      <h3>🎟️ Gift Cards</h3>
+
+      <button class="refresh" onclick="loadGiftCards()">🔄 Refresh Gift Cards</button>
+
+      <div id="giftCardsList">Loading gift cards...</div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= NOTIFICATIONS (NEW) ================= -->
+
+  <div id="notificationsSection" class="section hidden">
+
+    <h2>🔔 Notifications</h2>
+
+    <button class="refresh" onclick="loadNotifications()">🔄 Refresh</button>
+
+    <button class="refresh" onclick="readAllNotifs()">✔️ Sab padha hua mark karein</button>
+
+    <div id="notifications">Loading notifications...</div>
+
+  </div>
+
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+"https://nctscffhnztscczjxhat.supabase.co";
+
+const SUPABASE_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+
+const supabaseClient =
+window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
 
-/* =========================
-   MONEY
-========================= */
+/* ================= SMALL HELPERS (NEW) ================= */
 
-const money = n =>
-  "₹" + Number(n || 0).toLocaleString("en-IN");
-
-
-/* =========================
-   LOCAL CART
-========================= */
-
-function cart() {
-  return JSON.parse(
-    localStorage.getItem("psmart-cart") || "[]"
-  );
+function esc(v){
+  return String(v == null ? "" : v)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 }
 
 
-function saveCart(c) {
-  localStorage.setItem(
-    "psmart-cart",
-    JSON.stringify(c)
-  );
+/* ================= LOGIN CHECK ================= */
 
-  updateCount();
-}
-
-
-function updateCount() {
-
-  const n = cart().reduce(
-    (sum, item) =>
-      sum + Number(item.qty || 0),
-    0
-  );
-
-  document
-    .querySelectorAll("#count")
-    .forEach(e => {
-      e.textContent = n;
-    });
-}
-
-
-/* =========================
-   ADD TO CART
-========================= */
-
-async function add(id) {
-
-  let c = cart();
-
-  let item = c.find(
-    x => String(x.id) === String(id)
-  );
-
-  if (item) {
-
-    item.qty =
-      Number(item.qty || 0) + 1;
-
-  } else {
-
-    c.push({
-      id: id,
-      qty: 1
-    });
-
-  }
-
-  saveCart(c);
-
-  alert("Added to cart ✓");
-}
-
-
-/* =========================
-   REMOVE FROM CART
-========================= */
-
-async function remove(id) {
-
-  let c = cart();
-
-  c = c.filter(
-    item =>
-      String(item.id) !== String(id)
-  );
-
-  saveCart(c);
-
-  await renderCart();
-}
-
-
-/* =========================
-   SEARCH
-========================= */
-
-function search() {
-
-  const input =
-    document.querySelector("#search");
-
-  if (!input) return;
-
-  const q =
-    input.value.trim();
-
-  if (q) {
-
-    location.href =
-      "products.html?q=" +
-      encodeURIComponent(q);
-
-  }
-}
-
-
-/* =========================
-   PRODUCT CARD
-========================= */
-
-function card(p) {
-
-  let discount = 0;
-
-  if (
-    p.old_price &&
-    Number(p.old_price) > Number(p.price)
-  ) {
-
-    discount = Math.round(
-      (
-        (Number(p.old_price) - Number(p.price)) /
-        Number(p.old_price)
-      ) * 100
-    );
-
-  }
-
-
-  const rating =
-    Number(p.rating || 4.0);
-
-  const reviewCount =
-    Number(
-      p.review_count ||
-      p.reviews_count ||
-      100
-    );
-
-
-  return `
-
-    <article class="product">
-
-      <div style="
-        position:relative;
-      ">
-
-        <a href="product.html?id=${p.id}">
-
-          <div class="pic">
-
-            ${
-              p.image_url
-                ? `
-                  <img
-                    src="${p.image_url}"
-                    alt="${p.name}"
-                    style="
-                      width:100%;
-                      height:100%;
-                      object-fit:contain;
-                    "
-                  >
-                `
-                : "🛍️"
-            }
-
-          </div>
-
-        </a>
-
-
-        <!-- WISHLIST -->
-
-        <button
-          onclick="
-            event.preventDefault();
-            event.stopPropagation();
-            toggleWishlist('${p.id}', this)
-          "
-          style="
-            position:absolute;
-            top:8px;
-            right:8px;
-            width:38px;
-            height:38px;
-            border-radius:50%;
-            border:none;
-            background:transparent;
-            color:#b8860b;
-            font-size:24px;
-            cursor:pointer;
-           box-shadow:none;
-          "
-        >
-          ♡
-        </button>
-
-
-        <!-- DISCOUNT BADGE -->
-
-        ${
-          discount > 0
-            ? `
-              <span style="
-                position:absolute;
-                left:8px;
-                top:8px;
-                background:#188038;
-                color:white;
-                padding:5px 8px;
-                border-radius:5px;
-                font-size:12px;
-                font-weight:bold;
-              ">
-                ${discount}% OFF
-              </span>
-            `
-            : ""
-        }
-
-      </div>
-
-
-      <!-- SELLER -->
-
-      <small>
-        PS Mart Seller
-      </small>
-
-
-      <!-- PRODUCT NAME -->
-
-      <h3>
-        ${p.name}
-      </h3>
-
-
-      ${
-        p.rating
-          ? `
-      <!-- RATING -->
-
-      <div style="
-        display:flex;
-        align-items:center;
-        gap:6px;
-        margin:6px 0;
-      ">
-
-        <span style="
-          background:#388e3c;
-          color:white;
-          padding:3px 7px;
-          border-radius:4px;
-          font-size:12px;
-          font-weight:bold;
-        ">
-          ★ ${rating.toFixed(1)}
-        </span>
-
-        <span style="
-          color:#777;
-          font-size:12px;
-        ">
-          ${reviewCount.toLocaleString("en-IN")} Ratings & Reviews
-        </span>
-
-      </div>
-
-
-          `
-          : ""
-      }
-
-
-      <!-- PRICE -->
-
-      <div style="
-        display:flex;
-        align-items:center;
-        gap:8px;
-        flex-wrap:wrap;
-      ">
-
-        <b style="
-          font-size:18px;
-        ">
-          ${money(p.price)}
-        </b>
-
-
-        ${
-          p.old_price
-            ? `
-              <del style="
-                color:#888;
-                font-size:13px;
-              ">
-                ${money(p.old_price)}
-              </del>
-            `
-            : ""
-        }
-
-
-        ${
-          discount > 0
-            ? `
-              <span style="
-                color:#188038;
-                font-size:13px;
-                font-weight:bold;
-              ">
-                ${discount}% OFF
-              </span>
-            `
-            : ""
-        }
-
-      </div>
-
-
-      <!-- COUPON OFFER BUTTON -->
-
-      <a
-        href="coupons.html"
-        style="
-          display:block;
-          margin-top:8px;
-          padding:9px 10px;
-          border-radius:6px;
-          background:#fff8e7;
-          border:1px dashed #d6a63c;
-          color:#79520f;
-          font-size:13px;
-          font-weight:bold;
-          text-align:center;
-          text-decoration:none;
-        "
-      >
-        🎟️ View & Apply Coupons →
-      </a>
-
-
-      <!-- VIEW PRODUCT -->
-
-      <a
-        href="product.html?id=${p.id}"
-        class="goldbtn block"
-        style="
-          margin-top:12px;
-        "
-      >
-        View Product →
-      </a>
-
-
-    </article>
-
-  `;
-}
-
-/* =========================
-   LOAD APPROVED PRODUCTS
-========================= */
-
-async function loadProductsFromSupabase() {
+async function checkAdmin(){
 
   const {
-    data,
-    error
+    data:{user}
   } =
+  await supabaseClient.auth.getUser();
+
+  if(!user){
+
+    document.getElementById("message").innerText =
+      "❌ Please login first.";
+
+    return false;
+  }
+
+
+  const {data:profile,error} =
     await supabaseClient
-      .from("products")
-      .select("*")
-      .eq("status", "approved");
+    .from("profiles")
+    .select("role,full_name")
+    .eq("id",user.id)
+    .single();
 
-  if (error) {
 
-    console.log(
-      "Supabase products error:",
+  if(error){
+
+    console.log(error);
+
+    document.getElementById("message").innerText =
+      "❌ Profile not found.";
+
+    return false;
+  }
+
+
+  if(profile.role !== "admin"){
+
+    document.getElementById("message").innerText =
+      "❌ Access denied. Admin only.";
+
+    return false;
+  }
+
+
+  document.getElementById("message").innerText =
+    "✅ Welcome Admin " +
+    (profile.full_name || "");
+
+  return true;
+}
+
+
+/* ================= TABS ================= */
+
+function showSection(id,button){
+
+  document
+    .querySelectorAll(".section")
+    .forEach(section => {
+
+      section.classList.add("hidden");
+
+    });
+
+
+  document
+    .querySelectorAll(".tab")
+    .forEach(tab => {
+
+      tab.classList.remove("active");
+
+    });
+
+
+  document
+    .getElementById(id)
+    .classList.remove("hidden");
+
+
+  button.classList.add("active");
+
+}
+
+
+/* ================= SELLERS ================= */
+
+async function loadSellers(){
+
+  const {data,error} =
+    await supabaseClient
+    .from("sellers")
+    .select("*");
+
+
+  const box =
+    document.getElementById("sellers");
+
+
+  if(error){
+
+    box.innerHTML =
+      "❌ " + error.message;
+
+    return;
+  }
+
+
+  document.getElementById("totalSellers").innerText =
+    data?.length || 0;
+
+
+  if(!data || data.length === 0){
+
+    box.innerHTML =
+      "<div class='empty'>No sellers found.</div>";
+
+    return;
+  }
+
+
+  box.innerHTML = "";
+
+
+  data.forEach(seller => {
+
+    const card =
+      document.createElement("div");
+
+    card.className = "card";
+
+
+    card.innerHTML = `
+
+      <h3>
+        🏪 ${esc(seller.shop_name || "No Shop Name")}
+      </h3>
+
+      <p>
+        <b>Phone:</b>
+        ${esc(seller.phone || "Not provided")}
+      </p>
+
+      <p>
+        <b>Status:</b>
+        <span class="status">
+          ${esc(seller.status)}
+        </span>
+      </p>
+
+      ${
+        seller.status === "pending"
+        ?
+        `
+        <button
+          class="approve"
+          onclick="updateSeller('${esc(seller.id)}','approved')">
+          ✅ Approve
+        </button>
+
+        <button
+          class="reject"
+          onclick="updateSeller('${esc(seller.id)}','rejected')">
+          ❌ Reject
+        </button>
+        `
+        :
+        ""
+      }
+
+    `;
+
+
+    box.appendChild(card);
+
+  });
+
+}
+
+
+/* ================= UPDATE SELLER ================= */
+
+async function updateSeller(id,status){
+
+  const {error} =
+    await supabaseClient
+    .from("sellers")
+    .update({
+      status:status
+    })
+    .eq("id",id);
+
+
+  if(error){
+
+    alert(
+      "Seller update failed:\n" +
       error.message
     );
 
-    return [];
-
-  }
-
-  return data || [];
-}
-
-
-/* =========================
-   PRODUCTS PAGE
-========================= */
-async function renderProducts() {
-
-  const el = document.querySelector("#products");
-
-  if (!el) return;
-
-  const params = new URLSearchParams(location.search);
-
-  const cat = (params.get("cat") || "").trim();
-
-  const categoryId = cat ? Number(cat) : null;
-
-  const q = (params.get("q") || "")
-    .toLowerCase()
-    .trim();
-
-  const products = await loadProductsFromSupabase();
-
-  const categoryNames = {
-    1: "Mobiles",
-    2: "Electronics",
-    3: "Fashion",
-    4: "Beauty",
-    5: "Home",
-    6: "Grocery",
-    7: "Accessories"
-  };
-
-  const priceRanges = [
-    ...document.querySelectorAll(".price-filter:checked")
-  ].map(c => {
-    const [lo, hi] = c.value.split("-");
-    return [Number(lo) || 0, hi === "" ? Infinity : Number(hi)];
-  });
-
-  let filtered = products.filter(p => {
-
-    const name = String(p.name || "")
-      .toLowerCase();
-
-    const description = String(p.description || "")
-      .toLowerCase();
-
-    const productCategoryId =
-      Number(p.category_id || 0);
-
-    const matchesCategory =
-      !categoryId ||
-      productCategoryId === categoryId;
-
-    const matchesSearch =
-      !q ||
-      name.includes(q) ||
-      description.includes(q);
-
-    const price = Number(p.price || 0);
-
-    const matchesPrice =
-      !priceRanges.length ||
-      priceRanges.some(([lo, hi]) => price >= lo && price <= hi);
-
-    return (
-      matchesCategory &&
-      matchesSearch &&
-      matchesPrice
-    );
-
-  });
-
-  const sort =
-    document.querySelector("#sort")?.value;
-
-  if (sort === "low") {
-
-    filtered.sort(
-      (a, b) =>
-        Number(a.price) -
-        Number(b.price)
-    );
-
-  }
-
-  if (sort === "high") {
-
-    filtered.sort(
-      (a, b) =>
-        Number(b.price) -
-        Number(a.price)
-    );
-
-  }
-
-  const title =
-    document.querySelector("#title");
-
-  if (title) {
-
-    if (q) {
-
-      title.textContent =
-        `Search: ${q}`;
-
-    } else if (categoryId) {
-
-      title.textContent =
-        `${categoryNames[categoryId] || "Category"} Products`;
-
-    } else {
-
-      title.textContent =
-        "All Products";
-
-    }
-
-  }
-
-  if (filtered.length) {
-
-    el.innerHTML =
-      filtered
-        .map(card)
-        .join("");
-
-  } else {
-
-    const categoryText =
-      categoryId
-        ? categoryNames[categoryId] || "this category"
-        : "";
-
-    el.innerHTML = `
-      <div class="empty">
-
-        <h3>
-          No products found
-        </h3>
-
-        <p>
-          ${
-            categoryText
-              ? `No approved products available in "${categoryText}".`
-              : "Try another search."
-          }
-        </p>
-
-      </div>
-    `;
-
-  }
-
-}
-
-/* =========================
-   HOME PRODUCTS
-========================= */
-
-function pickUnique(list, used, n) {
-  const out = list.filter(p => !used.has(p.id)).slice(0, n);
-  if (out.length < n) {
-    list.forEach(p => { if (out.length < n && !out.includes(p)) out.push(p); });
-  }
-  out.forEach(p => used.add(p.id));
-  return out;
-}
-
-async function renderHome() {
-
-  const products = await loadProductsFromSupabase();
-  const usedHome = new Set(products.slice(0, 5).map(p => p.id));
-
-  /* =========================
-     FLASH DEALS & MAIN HOME
-  ========================= */
-
-  const flash = document.querySelector("#flashDeals");
-  if (flash) {
-    flash.innerHTML = products
-      .slice(0, 5)
-      .map(card)
-      .join("");
-
-    if (!products.length) {
-      flash.innerHTML = `
-        <div class="empty">
-          No products available yet.
-        </div>
-      `;
-    }
-  }
-
-  const home = document.querySelector("#homeProducts");
-
-  if (home) {
-    home.innerHTML = products
-      .slice(0, 5)
-      .map(card)
-      .join("");
-
-    if (!products.length) {
-      home.innerHTML = `
-        <div class="empty">
-          No products available yet.
-        </div>
-      `;
-    }
-  }
-
-
-  /* =========================
-     TRENDING PICKS
-  ========================= */
-
-  const trending =
-    document.querySelector("#trendingProducts");
-
-  if (trending) {
-
-    const trendingProducts =
-      pickUnique([...products]
-        .sort((a, b) => {
-
-          const aRating = Number(a.rating || 0);
-          const bRating = Number(b.rating || 0);
-
-          if (bRating !== aRating) {
-            return bRating - aRating;
-          }
-
-          return Number(b.review_count || 0) -
-                 Number(a.review_count || 0);
-        })
-        , usedHome, 5);
-
-    trending.innerHTML =
-      trendingProducts
-        .map(card)
-        .join("");
-
-    if (!trendingProducts.length) {
-      trending.innerHTML = `
-        <div class="empty">
-          No trending products available yet.
-        </div>
-      `;
-    }
-  }
-
-
-  /* =========================
-     NEW ARRIVALS
-  ========================= */
-
-  const arrivals =
-    document.querySelector("#newArrivals");
-
-  if (arrivals) {
-
-    const newProducts =
-      pickUnique([...products]
-        .sort((a, b) => {
-          return new Date(b.created_at || 0) -
-                 new Date(a.created_at || 0);
-        })
-        , usedHome, 5);
-
-    arrivals.innerHTML =
-      newProducts
-        .map(card)
-        .join("");
-
-    if (!newProducts.length) {
-      arrivals.innerHTML = `
-        <div class="empty">
-          No new products available yet.
-        </div>
-      `;
-    }
-  }
-
-}
-
-
-/* =========================
-   PRODUCT DETAIL
-========================= */
-
-async function detail() {
-
-  const e =
-    document.querySelector("#detail");
-
-  if (!e) return;
-
-  const id =
-    new URLSearchParams(
-      location.search
-    ).get("id");
-
-  if (!id) {
-
-    e.innerHTML =
-      "<div class='empty'>Product not found.</div>";
-
     return;
   }
 
 
-  const {
-    data: p,
-    error
-  } =
+  alert(
+    status === "approved"
+    ?
+    "Seller approved successfully ✅"
+    :
+    "Seller rejected ❌"
+  );
+
+
+  loadSellers();
+
+}
+
+
+/* ================= PRODUCTS ================= */
+
+async function loadProducts(){
+
+  const {data,error} =
     await supabaseClient
-      .from("products")
-      .select("*")
-      .eq("id", id)
-      .eq("status", "approved")
-      .maybeSingle();
-
-
-  if (error || !p) {
-
-    console.log(
-      "Product detail error:",
-      error
-    );
-
-    e.innerHTML =
-      "<div class='empty'>Product not found.</div>";
-
-    return;
-  }
-
-
-  let discount = 0;
-
-  if (
-    p.old_price &&
-    Number(p.old_price) > Number(p.price)
-  ) {
-
-    discount = Math.round(
-      (
-        (Number(p.old_price) - Number(p.price)) /
-        Number(p.old_price)
-      ) * 100
-    );
-
-  }
-
-
-  e.innerHTML = `
-
-    <div class="detail-top">
-
-      <div>
-
-        <div class="detail-image-box">
-
-          ${
-            p.image_url
-              ? `
-                <img
-                  src="${p.image_url}"
-                  alt="${p.name}"
-                >
-              `
-              : `
-                <div style="
-                  font-size:120px;
-                  display:flex;
-                  align-items:center;
-                  justify-content:center;
-                  width:100%;
-                  height:100%;
-                ">
-                  🛍️
-                </div>
-              `
-          }
-
-        </div>
-
-      </div>
-
-
-      <div class="detail-info">
-
-        <small>
-          PS Mart Seller
-        </small>
-
-        <h1>
-          ${p.name}
-        </h1>
-
-        ${
-          p.rating
-            ? `
-              <div class="detail-rating">★ ${Number(p.rating).toFixed(1)}</div>
-              <span style="color:#777;font-size:13px;">${Number(p.review_count || 0).toLocaleString("en-IN")} Ratings & Reviews</span>
-            `
-            : ""
-        }
-
-
-        <div class="detail-price">
-
-          ${money(p.price)}
-
-          ${
-            p.old_price
-              ? `
-                <del>
-                  ${money(p.old_price)}
-                </del>
-              `
-              : ""
-          }
-
-          ${
-            discount > 0
-              ? `
-                <span class="discount">
-                  ${discount}% off
-                </span>
-              `
-              : ""
-          }
-
-        </div>
-
-
-        <p style="color:#777;">
-          Inclusive of all taxes
-        </p>
-
-
-        <div class="offer-box">
-
-          <h3>
-            🎁 Available Offers
-          </h3>
-
-          <div class="offer">
-            🏷️ Special price available on PS Mart
-          </div>
-
-          <div class="offer">
-            💳 Secure payment on all orders
-          </div>
-
-          <div class="offer">
-            🚚 Free delivery available
-          </div>
-
-          <div class="offer">
-            🔄 Easy return available
-          </div>
-
-        </div>
-
-
-        <div class="delivery-box">
-
-          <h3>
-            🚚 Delivery
-          </h3>
-
-          <p>
-            Enter your location to check delivery availability.
-          </p>
-
-          <a
-            href="#"
-            onclick="openLocation(); return false;"
-            style="
-              color:#9b681b;
-              font-weight:bold;
-              text-decoration:none;
-            "
-          >
-            Select Delivery Location →
-          </a>
-
-        </div>
-
-
-        <p>
-
-          ${
-            Number(p.stock || 0) > 0
-              ? `
-                <span class="green">
-                  ✓ In Stock
-                </span>
-
-                ${
-                  Number(p.stock) <= 5
-                    ? `
-                      <span style="color:#d28a00;">
-                        Only ${p.stock} left
-                      </span>
-                    `
-                    : ""
-                }
-              `
-              : `
-                <span style="color:#d32f2f;">
-                  ✕ Out of Stock
-                </span>
-              `
-          }
-
-        </p>
-
-
-        <p>
-
-          ${
-            p.description ||
-            "Premium quality product available on PS Mart."
-          }
-
-        </p>
-
-
-        <div class="action-buttons">
-
-          <button
-            class="cart-btn"
-            onclick="add('${p.id}')"
-            ${
-              Number(p.stock || 0) <= 0
-                ? "disabled"
-                : ""
-            }
-          >
-            🛒 Add to Cart
-          </button>
-
-
-          <button
-            class="buy-btn"
-            onclick="buyNow('${p.id}')"
-            ${
-              Number(p.stock || 0) <= 0
-                ? "disabled"
-                : ""
-            }
-          >
-            ⚡ Buy Now
-          </button>
-
-        </div>
-
-
-        <div class="info-section">
-
-          <h2>
-            Product Description
-          </h2>
-
-          <p>
-            ${
-              p.description ||
-              "Product details will appear here."
-            }
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div class="info-section">
-
-      <h2>
-        Specifications
-      </h2>
-
-      <table class="spec-table">
-
-        <tr>
-          <td>Product Name</td>
-          <td>${p.name}</td>
-        </tr>
-
-        <tr>
-          <td>Category</td>
-          <td>${({1:"Mobiles",2:"Electronics",3:"Fashion",4:"Beauty",5:"Home",6:"Grocery",7:"Accessories"})[Number(p.category_id)] || "General"}</td>
-        </tr>
-
-        <tr>
-          <td>Availability</td>
-          <td>
-            ${
-              Number(p.stock || 0) > 0
-                ? "In Stock"
-                : "Out of Stock"
-            }
-          </td>
-        </tr>
-
-        <tr>
-          <td>Seller</td>
-          <td>PS Mart Seller</td>
-        </tr>
-
-      </table>
-
-    </div>
-
-
-    <div class="info-section">
-
-      <h2>
-        Seller Information
-      </h2>
-
-      <div class="seller-box">
-
-        <h3>
-          🏪 PS Mart Seller
-        </h3>
-
-        <p>
-          ✓ Verified product seller
-        </p>
-
-        <p>
-          ✓ Secure packaging
-        </p>
-
-        <p>
-          ✓ Reliable delivery
-        </p>
-
-      </div>
-
-    </div>
-
-
-    <div class="info-section">
-
-      <h2>
-        Ratings & Reviews
-      </h2>
-
-      <div class="review-box">
-
-        <b>
-          No reviews yet
-        </b>
-
-        <p>
-          Be the first customer to review this product.
-        </p>
-
-      </div>
-
-    </div>
-
-    <div class="info-section">
-
-      <h2>❓ Questions & Answers</h2>
-
-      <p style="color:#777;">
-        Have a question about this product?
-      </p>
-
-      <a href="questions.html?id=${encodeURIComponent(p.id)}&name=${encodeURIComponent(p.name)}"
-        style="
-          display:inline-block;
-          background:#9b681b;
-          color:white;
-          padding:12px 20px;
-          border-radius:8px;
-          text-decoration:none;
-          font-weight:bold;
-        "
-      >
-        ❓ Ask a Question
-      </a>
-
-    </div>
-  `;
-
-}
-
-
-/* =========================
-   BUY NOW
-========================= */
-
-function buyNow(id) {
-
-  let c = cart();
-
-  const existing =
-    c.find(
-      item =>
-        String(item.id) === String(id)
-    );
-
-
-  if (existing) {
-
-    existing.qty =
-      Number(existing.qty || 0) + 1;
-
-  } else {
-
-    c.push({
-      id: id,
-      qty: 1
-    });
-
-  }
-
-
-  saveCart(c);
-
-  window.location.href =
-    "checkout.html";
-}
-
-
-/* =========================
-   CART PAGE
-========================= */
-
-async function renderCart() {
-
-  const e =
-    document.querySelector("#cart");
-
-  if (!e) return;
-
-
-  const c = cart();
-
-
-  if (!c.length) {
-
-    e.innerHTML = `
-
-      <div class="empty">
-
-        Your cart is empty 🛒
-
-        <br><br>
-
-        <a href="products.html">
-          Continue Shopping
-        </a>
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-  const ids =
-    c.map(
-      item => item.id
-    );
-
-
-  const {
-    data: products,
-    error
-  } =
-    await supabaseClient
-      .from("products")
-      .select("*")
-      .in("id", ids)
-      .eq("status", "approved");
-
-
-  if (error) {
-
-    console.log(
-      "Cart products error:",
-      error
-    );
-
-    e.innerHTML = `
-      <div class="empty">
-        Unable to load cart.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  let total = 0;
-
-
-  const rows =
-    c.map(item => {
-
-      const p =
-        products.find(
-          product =>
-            String(product.id) ===
-            String(item.id)
-        );
-
-
-      if (!p) return "";
-
-
-      const qty =
-        Number(item.qty || 1);
-
-
-      const amount =
-        Number(p.price) * qty;
-
-
-      total += amount;
-
-
-      return `
-
-        <div class="cartrow">
-
-          <div class="pic mini">
-
-            ${
-              p.image_url
-                ? `
-                  <img
-                    src="${p.image_url}"
-                    alt="${p.name}"
-                    style="
-                      width:100%;
-                      height:100%;
-                      object-fit:contain;
-                    "
-                  >
-                `
-                : "🛍️️"
-            }
-
-          </div>
-
-
-          <div>
-
-            <b>
-              ${p.name}
-            </b>
-
-            <p>
-              ${money(p.price)} × ${qty}
-            </p>
-
-            <p>
-              Subtotal:
-              <b>
-                ${money(amount)}
-              </b>
-            </p>
-
-            <div>
-
-              <button
-                onclick="decreaseQty('${p.id}')">
-                −
-              </button>
-
-              <b style="margin:0 10px;">
-                ${qty}
-              </b>
-
-              <button
-                onclick="increaseQty('${p.id}')">
-                +
-              </button>
-
-            </div>
-
-          </div>
-
-
-          <button
-            onclick="remove('${p.id}')">
-            ❌ Remove
-          </button>
-
-        </div>
-
-      `;
-
-    })
-    .join("");
-
-  /* =========================
-     COUPON + CART SUMMARY
-  ========================= */
-
-  let couponDiscount = 0; // बग फिक्स: घोषित किया गया
-
-  const savedCoupon =
-    JSON.parse(
-      localStorage.getItem("psmart-applied-coupon") || "null"
-    );
-
-  if (savedCoupon) {
-    // यदि कार्ट का कुल मूल्य न्यूनतम ऑर्डर से कम हो गया हो तो कूपन स्वतः हटा दें
-    if (savedCoupon.minimum_order && total < savedCoupon.minimum_order) {
-      localStorage.removeItem("psmart-applied-coupon");
-      couponDiscount = 0;
-    } else {
-      couponDiscount = Number(savedCoupon.discount || 0);
-    }
-  }
-
-  const finalTotal =
-    Math.max(0, total - couponDiscount);
-
-
-  e.innerHTML = `
-
-    <div>
-
-      ${rows}
-
-    </div>
-
-
-    <div class="summary">
-
-      <h2>
-        Price Details
-      </h2>
-
-
-      <p>
-        Total
-        <b>
-          ${money(total)}
-        </b>
-      </p>
-
-
-      <!-- COUPON BOX -->
-
-      <div style="
-        margin:15px 0;
-        padding:16px;
-        border-radius:12px;
-        background:linear-gradient(135deg,#fff8e7,#f8ead0);
-        border:1px solid #e0b45a;
-        box-shadow:0 3px 12px rgba(0,0,0,.08);
-      ">
-
-        <div style="
-          font-weight:bold;
-          color:#6f4612;
-          font-size:16px;
-          margin-bottom:10px;
-        ">
-          🎟️ Have a Coupon?
-        </div>
-
-
-        ${
-          savedCoupon && couponDiscount > 0
-            ? `
-
-              <div style="
-                background:#fff;
-                padding:12px;
-                border-radius:8px;
-                border:1px solid #d8b35c;
-              ">
-
-                <div style="
-                  color:#8a5a12;
-                  font-weight:bold;
-                ">
-                  🎉 ${savedCoupon.code}
-                </div>
-
-                <div style="
-                  color:#188038;
-                  margin-top:5px;
-                  font-weight:bold;
-                ">
-                  You saved ${money(couponDiscount)}
-                </div>
-
-
-                <button
-                  onclick="removeCoupon()"
-                  style="
-                    margin-top:10px;
-                    border:0;
-                    background:#f3eeee;
-                    color:#b3261e;
-                    padding:7px 12px;
-                    border-radius:6px;
-                    cursor:pointer;
-                    font-weight:bold;
-                  "
-                >
-                  Remove Coupon
-                </button>
-
-              </div>
-
-            `
-            : `
-
-              <div style="
-                display:flex;
-                gap:8px;
-              ">
-
-                <input
-                  id="couponInput"
-                  type="text"
-                  placeholder="Enter coupon code"
-                  style="
-                    flex:1;
-                    min-width:0;
-                    padding:12px;
-                    border:1px solid #c9a24d;
-                    border-radius:7px;
-                    outline:none;
-                    box-sizing:border-box;
-                    text-transform:uppercase;
-                  "
-                >
-
-                <button
-                  onclick="applyCoupon()"
-                  style="
-                    padding:12px 16px;
-                    border:0;
-                    border-radius:7px;
-                    background:linear-gradient(135deg,#d8a83e,#9b681b);
-                    color:white;
-                    font-weight:bold;
-                    cursor:pointer;
-                    white-space:nowrap;
-                  "
-                >
-                  Apply
-                </button>
-
-              </div>
-
-              <div style="
-                margin-top:8px;
-                font-size:12px;
-                color:#777;
-              ">
-                💡 Apply a valid coupon and save instantly.
-              </div>
-
-            `
-        }
-
-      </div>
-
-
-      ${
-        couponDiscount > 0
-          ? `
-
-            <p style="color:#188038;">
-              Coupon Discount
-              <b>
-                − ${money(couponDiscount)}
-              </b>
-            </p>
-
-          `
-          : ""
-      }
-
-
-      <p>
-        Delivery
-        <b class="green">
-          FREE
-        </b>
-      </p>
-
-
-      <hr>
-
-
-      <h2>
-        Total:
-        ${money(finalTotal)}
-      </h2>
-
-
-      ${
-        couponDiscount > 0
-          ? `
-            <p style="
-              color:#188038;
-              font-weight:bold;
-              font-size:13px;
-            ">
-              🎉 You saved ${money(couponDiscount)} on this order!
-            </p>
-          `
-          : ""
-      }
-
-
-      <a
-        class="goldbtn block"
-        href="checkout.html">
-        Proceed to Checkout →
-      </a>
-
-    </div>
-
-  `;
-}
-
-/* =========================
-   PS MART COUPON SYSTEM
-========================= */
-
-let appliedCoupon = null;
-let couponDiscount = 0;
-
-async function applyCoupon() {
-
-  const input = document.getElementById("couponInput");
-
-  if (!input) return;
-
-  const code = input.value.trim().toUpperCase();
-
-  if (!code) {
-    alert("Please enter a coupon code.");
-    return;
-  }
-
-  const c = cart();
-
-  if (!c.length) {
-    alert("Your cart is empty.");
-    return;
-  }
-
-  const ids = c.map(item => item.id);
-
-  const {
-    data: products,
-    error: productError
-  } = await supabaseClient
     .from("products")
-    .select("*")
-    .in("id", ids)
-    .eq("status", "approved");
+    .select(`
+      id,
+      name,
+      description,
+      price,
+      old_price,
+      stock,
+      image_url,
+      status,
+      sellers(shop_name)
+    `);
 
-  if (productError) {
-    alert("Unable to calculate cart total.");
+
+  const box =
+    document.getElementById("products");
+
+
+  if(error){
+
+    box.innerHTML =
+      "❌ " + error.message;
+
     return;
   }
 
-  let subtotal = 0;
 
-  c.forEach(item => {
+  document.getElementById("totalProducts").innerText =
+    data?.length || 0;
 
-    const p = products.find(
-      product =>
-        String(product.id) === String(item.id)
-    );
 
-    if (p) {
-      subtotal +=
-        Number(p.price) *
-        Number(item.qty || 1);
-    }
+  if(!data || data.length === 0){
+
+    box.innerHTML =
+      "<div class='empty'>No products found.</div>";
+
+    return;
+  }
+
+
+  box.innerHTML = "";
+
+
+  data.forEach(product => {
+
+    const card =
+      document.createElement("div");
+
+    card.className = "card";
+
+
+    card.innerHTML = `
+
+      <h3>
+        📦 ${esc(product.name || "Unnamed Product")}
+      </h3>
+
+      <p>
+        <b>Seller:</b>
+        ${esc(product.sellers?.shop_name || "Unknown")}
+      </p>
+
+      <p>
+        <b>Price:</b>
+        ₹${Number(product.price || 0).toFixed(2)}
+      </p>
+
+      <p>
+        <b>Old Price:</b>
+        ₹${Number(product.old_price || 0).toFixed(2)}
+      </p>
+
+      <p>
+        <b>Stock:</b>
+        ${product.stock || 0}
+      </p>
+
+      <p>
+        <b>Status:</b>
+        <span class="status">
+          ${esc(product.status)}
+        </span>
+      </p>
+
+      ${
+        product.image_url
+        ?
+        `
+        <img
+          src="${esc(product.image_url)}"
+          style="
+            width:100px;
+            height:100px;
+            object-fit:cover;
+            border-radius:8px;
+          "
+        >
+        `
+        :
+        ""
+      }
+
+      ${
+        product.status === "pending"
+        ?
+        `
+        <br>
+
+        <button
+          class="approve"
+          onclick="updateProduct('${esc(product.id)}','approved')">
+          ✅ Approve
+        </button>
+
+        <button
+          class="reject"
+          onclick="updateProduct('${esc(product.id)}','rejected')">
+          ❌ Reject
+        </button>
+        `
+        :
+        ""
+      }
+
+    `;
+
+
+    box.appendChild(card);
 
   });
 
-  const {
-    data: coupon,
-    error
-  } = await supabaseClient
-    .from("coupons")
-    .select("*")
-    .eq("code", code)
-    .eq("active", true)
-    .maybeSingle();
+}
 
-  if (error || !coupon) {
 
-    appliedCoupon = null;
-    couponDiscount = 0;
+/* ================= UPDATE PRODUCT ================= */
 
-    alert("❌ Invalid or unavailable coupon code.");
-    await renderCart();
+async function updateProduct(id,status){
 
-    return;
-  }
+  const {error} =
+    await supabaseClient
+    .from("products")
+    .update({
+      status:status
+    })
+    .eq("id",id);
 
-  /* EXPIRY CHECK */
 
-  if (
-    coupon.expires_at &&
-    new Date(coupon.expires_at) < new Date()
-  ) {
-
-    alert("⏰ This coupon has expired.");
-    return;
-  }
-
-  /* MINIMUM ORDER CHECK */
-
-  if (
-    Number(subtotal) <
-    Number(coupon.minimum_order || 0)
-  ) {
+  if(error){
 
     alert(
-      "🛍 Minimum order value for this coupon is " +
-      money(coupon.minimum_order) +
-      ". Please add more items to your cart."
+      "Product update failed:\n" +
+      error.message
     );
 
     return;
   }
 
-  /* USAGE LIMIT CHECK */
-
-  if (
-    coupon.usage_limit !== null &&
-    coupon.usage_limit !== undefined &&
-    Number(coupon.used_count || 0) >=
-    Number(coupon.usage_limit)
-  ) {
-
-    alert("😔 This coupon has reached its usage limit.");
-    return;
-  }
-
-  /* CALCULATE DISCOUNT */
-
-  let discount = 0;
-
-  if (
-    coupon.discount_type === "percentage"
-  ) {
-
-    discount =
-      subtotal *
-      Number(coupon.discount_value || 0) /
-      100;
-
-  } else {
-
-    discount =
-      Number(coupon.discount_value || 0);
-
-  }
-
-  /* MAXIMUM DISCOUNT */
-
-  if (
-    coupon.maximum_discount !== null &&
-    coupon.maximum_discount !== undefined
-  ) {
-
-    discount =
-      Math.min(
-        discount,
-        Number(coupon.maximum_discount)
-      );
-
-  }
-
-  /* NEVER DISCOUNT MORE THAN CART */
-
-  discount =
-    Math.min(discount, subtotal);
-
-  appliedCoupon = coupon;
-  couponDiscount = discount;
-
-  localStorage.setItem(
-    "psmart-applied-coupon",
-    JSON.stringify({
-      id: coupon.id,
-      code: coupon.code,
-      title: coupon.title,
-      discount: discount,
-      minimum_order: coupon.minimum_order
-    })
-  );
 
   alert(
-    "🎉 Coupon applied successfully!\n\n" +
-    coupon.code +
-    " → You saved " +
-    money(discount)
+    status === "approved"
+    ?
+    "Product approved successfully ✅"
+    :
+    "Product rejected ❌"
   );
 
-  await renderCart();
-}
 
-
-/* REMOVE COUPON */
-
-function removeCoupon() {
-
-  appliedCoupon = null;
-  couponDiscount = 0;
-
-  localStorage.removeItem(
-    "psmart-applied-coupon"
-  );
-
-  renderCart();
+  loadProducts();
 
 }
 
-/* =========================
-   INCREASE QUANTITY
-========================= */
 
-async function increaseQty(id) {
+/* ================= ORDERS (payment + action columns added) ================= */
 
-  let c = cart();
+function orderOverall(order,ships){
 
-  const item =
-    c.find(
-      x =>
-        String(x.id) ===
-        String(id)
-    );
-
-  if (item) {
-
-    item.qty =
-      Number(item.qty || 0) + 1;
-
+  if(String(order.status || "").toLowerCase() === "cancelled"){
+    return "cancelled";
   }
 
-  saveCart(c);
-
-  await renderCart();
-}
-
-
-/* =========================
-   DECREASE QUANTITY
-========================= */
-
-async function decreaseQty(id) {
-
-  let c = cart();
-
-  const item =
-    c.find(
-      x =>
-        String(x.id) ===
-        String(id)
+  const list =
+    (ships || []).filter(
+      s => String(s.order_id) === String(order.id)
     );
 
-  if (!item) return;
-
-
-  item.qty =
-    Number(item.qty || 1) - 1;
-
-
-  if (item.qty <= 0) {
-
-    c =
-      c.filter(
-        x =>
-          String(x.id) !==
-          String(id)
-      );
-
+  if(!list.length){
+    return String(order.status || "placed").toLowerCase();
   }
 
-  saveCart(c);
+  if(list.every(s => s.status === "cancelled")){
+    return "cancelled";
+  }
 
-  await renderCart();
+  const steps =
+    ["placed","confirmed","packed","shipped","out_for_delivery","delivered"];
+
+  return steps[
+    Math.min.apply(
+      null,
+      list.map(s => {
+        const i = steps.indexOf(s.status);
+        return i < 0 ? 0 : i;
+      })
+    )
+  ];
+
 }
 
+function orderPay(order){
 
-/* =========================
-   CHECKOUT SUMMARY
-========================= */
+  const m = String(order.payment_method || "");
 
-async function summary() {
+  const utr =
+    order.upi_utr ||
+    ((m.match(/UTR\s*(\d{12})/) || [])[1]) ||
+    "";
 
-  const e =
-    document.querySelector("#summary");
-
-  if (!e) return;
-
-
-  const c = cart();
-
-
-  if (!c.length) {
-
-    e.innerHTML = `
-
-      <h2>
-        Order Summary
-      </h2>
-
-      <p>
-        Your cart is empty.
-      </p>
-
-      <a
-        class="goldbtn block"
-        href="products.html">
-        Continue Shopping
-      </a>
-
-    `;
-
-    return;
-
+  if(/^COD/i.test(m)){
+    return {kind:"cod",text:"💵 COD",utr:""};
   }
 
+  if(/gift/i.test(m)){
+    return {kind:"ok",text:"🎁 Gift Card (paid)",utr:""};
+  }
 
-  const ids =
-    c.map(
-      item => item.id
-    );
+  if(/^UPI/i.test(m)){
+    return order.payment_status === "paid"
+      ? {kind:"ok",text:"✅ UPI paid",utr:utr}
+      : {kind:"wait",text:"⏳ UPI verify baaki",utr:utr};
+  }
+
+  return {kind:"cod",text:esc(m || "-"),utr:""};
+
+}
+
+async function loadOrders(){
+
+  const box =
+    document.getElementById("orders");
 
 
-  const {
-    data: products,
-    error
-  } =
+  const {data:orders,error} =
     await supabaseClient
-      .from("products")
-      .select("*")
-      .in("id", ids)
-      .eq("status", "approved");
+    .from("orders")
+    .select("*")
+    .order("id",{ascending:false});
 
 
-  if (error) {
+  if(error){
 
-    console.log(
-      "Checkout summary error:",
-      error
-    );
-
-    e.innerHTML =
-      "<p>Unable to load order summary.</p>";
+    box.innerHTML =
+      "❌ " + error.message;
 
     return;
-
   }
 
 
-  let total = 0;
+  document.getElementById("totalOrders").innerText =
+    orders?.length || 0;
 
 
-  c.forEach(item => {
+  if(!orders || orders.length === 0){
 
-    const p =
-      products.find(
-        product =>
-          String(product.id) ===
-          String(item.id)
-      );
+    box.innerHTML =
+      "<div class='empty'>No orders found.</div>";
+
+    return;
+  }
 
 
-    if (p) {
+  let ships = [];
 
-      total +=
-        Number(p.price) *
-        Number(item.qty || 1);
+  const shipRes =
+    await supabaseClient
+    .from("seller_orders")
+    .select("order_id,status")
+    .in("order_id",orders.map(o => o.id));
+
+  if(!shipRes.error && shipRes.data){
+    ships = shipRes.data;
+  }
+
+
+  let html = `
+
+    <table>
+
+      <tr>
+        <th>Order</th>
+        <th>Customer</th>
+        <th>Amount</th>
+        <th>Payment</th>
+        <th>Status</th>
+        <th>Address</th>
+        <th>Action</th>
+      </tr>
+
+  `;
+
+
+  orders.forEach(order => {
+
+    const overall = orderOverall(order,ships);
+
+    const pay = orderPay(order);
+
+    let actions = "";
+
+    if(overall === "placed"){
+
+      actions +=
+        `<button class="approve btn-sm"
+          onclick="orderAction('admin_accept_order','${esc(order.id)}',this)">
+          ✅ Accept
+        </button>`;
 
     }
+
+    if(pay.kind === "wait" && overall !== "cancelled"){
+
+      actions +=
+        `<button class="gold btn-sm"
+          onclick="orderAction('admin_confirm_payment','${esc(order.id)}',this)">
+          💰 Payment mila
+        </button>`;
+
+    }
+
+    if(overall !== "cancelled" && overall !== "delivered"){
+
+      actions +=
+        `<button class="reject btn-sm"
+          onclick="orderAction('admin_cancel_order','${esc(order.id)}',this,true)">
+          ❌ Cancel
+        </button>`;
+
+    }
+
+    html += `
+
+      <tr>
+
+        <td>
+          #${esc(order.id)}
+        </td>
+
+        <td>
+          ${esc(order.customer_id || "Unknown")}
+        </td>
+
+        <td>
+          ₹${Number(order.total_amount || 0).toFixed(2)}
+        </td>
+
+        <td>
+          <span class="status ${pay.kind === "ok" ? "pay-ok" : pay.kind === "cod" ? "pay-cod" : ""}">
+            ${pay.text}
+          </span>
+          ${pay.utr ? "<br><small>UTR: " + esc(pay.utr) + "</small>" : ""}
+        </td>
+
+        <td>
+          <span class="status">
+            ${esc(overall)}
+          </span>
+        </td>
+
+        <td>
+          ${esc(order.address || "Not provided")}
+        </td>
+
+        <td>
+          ${actions || "-"}
+        </td>
+
+      </tr>
+
+    `;
 
   });
 
 
-  const items =
-    c.reduce(
-      (sum, item) =>
-        sum +
-        Number(item.qty || 0),
-      0
+  html += "</table>";
+
+
+  box.innerHTML = html;
+
+}
+
+
+/* ================= ORDER ACTION (NEW) ================= */
+
+async function orderAction(fn,id,btn,ask){
+
+  if(ask && !confirm("Pakka cancel karna hai?")){
+    return;
+  }
+
+  btn.disabled = true;
+
+  const {data,error} =
+    await supabaseClient.rpc(fn,{p_order_id:String(id)});
+
+  if(error || !data || data.success !== true){
+
+    alert(
+      "Nahi ho paya: " +
+      ((error && error.message) ||
+       (data && data.message) ||
+       "ps-mart-admin.sql Supabase mein run kiya hai?")
     );
 
+    btn.disabled = false;
 
-  // चेकाउट में कूपन डिस्काउंट शामिल करें
-  let summaryDiscount = 0;
-  const savedCoupon = JSON.parse(
-    localStorage.getItem("psmart-applied-coupon") || "null"
-  );
-
-  if (savedCoupon) {
-    summaryDiscount = Number(savedCoupon.discount || 0);
+    return;
   }
 
-  const finalCheckoutTotal = Math.max(0, total - summaryDiscount);
+  if(fn === "admin_accept_order" && data.updated === 0 && data.created === 0){
+
+    alert(
+      "Order accept ho gaya, par is order ka seller shipment row nahi mila. " +
+      "Self-Test page se check kijiye."
+    );
+
+  }
+
+  await loadOrders();
+
+}
 
 
-  e.innerHTML = `
+/* ================= CUSTOMERS ================= */
 
-    <h2>
-      Order Summary
-    </h2>
+async function loadCustomers(){
 
-    <p>
-      Items:
-      <b>
-        ${items}
-      </b>
-    </p>
+  const box =
+    document.getElementById("customers");
 
-    <p>
-      Subtotal:
-      <b>
-        ${money(total)}
-      </b>
-    </p>
 
-    ${
-      summaryDiscount > 0
-        ? `
-          <p style="color:#188038;">
-            Coupon Discount (${savedCoupon.code}):
-            <b>
-              − ${money(summaryDiscount)}
-            </b>
-          </p>
-        `
-        : ""
-    }
+  const {data,error} =
+    await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("role","customer");
 
-    <p>
-      Delivery:
-      <b class="green">
-        FREE
-      </b>
-    </p>
 
-    <hr>
+  if(error){
 
-    <h2>
-      Total:
-      ${money(finalCheckoutTotal)}
-    </h2>
+    box.innerHTML =
+      "❌ " + error.message;
+
+    return;
+  }
+
+
+  document.getElementById("totalCustomers").innerText =
+    data?.length || 0;
+
+
+  if(!data || data.length === 0){
+
+    box.innerHTML =
+      "<div class='empty'>No customers found.</div>";
+
+    return;
+  }
+
+
+  let html = `
+
+    <table>
+
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Role</th>
+      </tr>
 
   `;
+
+
+  data.forEach(customer => {
+
+    html += `
+
+      <tr>
+
+        <td>
+          ${esc(customer.full_name || "No Name")}
+        </td>
+
+        <td>
+          ${esc(customer.phone || "Not provided")}
+        </td>
+
+        <td>
+          ${esc(customer.role)}
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+
+  html += "</table>";
+
+
+  box.innerHTML = html;
+
 }
 
 
-/* =========================
-   SIGN UP
-========================= */
+/* ================= COMMISSION ================= */
 
-async function signUpUser(
-  email,
-  password,
-  fullName
-) {
+async function getCommissionRate(){
 
-  const {
-    data,
-    error
-  } =
-    await supabaseClient.auth.signUp({
-
-      email,
-      password,
-
-      options: {
-        data: {
-          full_name:
-            fullName
-        }
-      }
-
-    });
+  const {data,error} =
+    await supabaseClient
+    .from("marketplace_settings")
+    .select("commission_rate")
+    .limit(1)
+    .single();
 
 
-  if (error) {
+  if(error){
 
-    alert(error.message);
+    console.log(error);
 
-    return null;
+    return 10;
 
   }
 
 
-  return data;
+  return Number(data.commission_rate);
+
 }
 
 
-/* =========================
-   PASSWORD LOGIN
-========================= */
+/* ================= FINANCE ================= */
 
-async function loginUser(
-  email,
-  password
-) {
+async function loadFinance(){
 
-  const {
-    data,
-    error
-  } =
+  const rate =
+    await getCommissionRate();
+
+
+  const {data:items,error} =
     await supabaseClient
-      .auth
-      .signInWithPassword({
-        email,
-        password
-      });
+    .from("order_items")
+    .select(`
+      quantity,
+      price,
+      orders(status)
+    `);
 
 
-  if (error) {
+  if(error){
 
-    alert(error.message);
-
-    return null;
-
-  }
-
-
-  alert(
-    "Login successful ✓"
-  );
-
-
-  return data;
-}
-
-
-/* =========================
-   LOGOUT
-========================= */
-
-async function logoutUser() {
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .auth
-      .signOut();
-
-
-  if (error) {
-
-    alert(error.message);
+    document.getElementById("finance").innerHTML =
+      "❌ " + error.message;
 
     return;
 
   }
 
 
-  location.href =
-    "index.html";
+  let sales = 0;
+
+
+  (items || []).forEach(item => {
+
+    const status =
+      item.orders?.status;
+
+
+    if(status === "cancelled"){
+      return;
+    }
+
+
+    sales +=
+      Number(item.price || 0) *
+      Number(item.quantity || 0);
+
+  });
+
+
+  const commission =
+    sales * (rate / 100);
+
+
+  const earnings =
+    sales - commission;
+
+
+  document.getElementById("totalSales").innerText =
+    "₹" + sales.toFixed(2);
+
+
+  document.getElementById("totalCommission").innerText =
+    "₹" + commission.toFixed(2);
+
+
+  document.getElementById("sellerEarnings").innerText =
+    "₹" + earnings.toFixed(2);
+
+
+  document.getElementById("commissionRate").innerText =
+    rate + "%";
+
+
+  document.getElementById("settingsRate").innerText =
+    rate + "%";
+
+
+  document.getElementById("finance").innerHTML = `
+
+    <div class="card">
+
+      <h3>💰 Sales Summary</h3>
+
+      <p>
+        <b>Total Sales:</b>
+        ₹${sales.toFixed(2)}
+      </p>
+
+      <p class="commission">
+        <b>PS Mart Commission:</b>
+        ₹${commission.toFixed(2)}
+      </p>
+
+      <p class="earning">
+        <b>Seller Earnings:</b>
+        ₹${earnings.toFixed(2)}
+      </p>
+
+      <p>
+        <b>Commission Rate:</b>
+        ${rate}%
+      </p>
+
+    </div>
+
+  `;
+
 }
 
 
-/* =========================
-   CURRENT USER
-========================= */
+/* ================= SAVE COMMISSION ================= */
 
-async function getCurrentUser() {
+async function saveCommission(){
 
-  const {
-    data: {
-      user
-    }
-  } =
-    await supabaseClient
-      .auth
-      .getUser();
-
-
-  return user;
-}
-
-
-/* =========================
-   LOGIN / PROFILE STATE
-========================= */
-
-async function updateLoginState() {
-
-  const {
-    data: {
-      user
-    }
-  } =
-    await supabaseClient
-      .auth
-      .getUser();
-
-
-  const loginLinks =
-    document.querySelectorAll(
-      'a[href="login.html"]'
+  const rate =
+    Number(
+      document.getElementById(
+        "newCommissionRate"
+      ).value
     );
 
 
-  if (user) {
+  if(
+    isNaN(rate) ||
+    rate < 0 ||
+    rate > 100
+  ){
 
-    loginLinks.forEach(link => {
+    alert(
+      "Please enter a commission between 0 and 100."
+    );
 
-      link.textContent =
-        "👤 Profile";
+    return;
 
-      link.href =
-        "profile.html";
+  }
+
+
+  const {data,error} =
+    await supabaseClient
+    .from("marketplace_settings")
+    .select("id")
+    .limit(1)
+    .single();
+
+
+  if(error){
+
+    alert(
+      "Commission setting not found."
+    );
+
+    return;
+
+  }
+
+
+  const {error:updateError} =
+    await supabaseClient
+    .from("marketplace_settings")
+    .update({
+      commission_rate:rate,
+      updated_at:new Date().toISOString()
+    })
+    .eq("id",data.id);
+
+
+  if(updateError){
+
+    alert(
+      "Commission update failed:\n" +
+      updateError.message
+    );
+
+    return;
+
+  }
+
+
+  alert(
+    "Commission rate updated successfully ✅"
+  );
+
+
+  document.getElementById(
+    "settingsRate"
+  ).innerText =
+    rate + "%";
+
+
+  document.getElementById(
+    "commissionRate"
+  ).innerText =
+    rate + "%";
+
+
+  document.getElementById(
+    "newCommissionRate"
+  ).value = "";
+
+
+  loadFinance();
+
+}
+
+
+/* ================= DASHBOARD COUNTS ================= */
+
+async function loadDashboardCounts(){
+
+  const customers =
+    await supabaseClient
+    .from("profiles")
+    .select("id",{count:"exact",head:true})
+    .eq("role","customer");
+
+
+  const sellers =
+    await supabaseClient
+    .from("sellers")
+    .select("id",{count:"exact",head:true});
+
+
+  const products =
+    await supabaseClient
+    .from("products")
+    .select("id",{count:"exact",head:true});
+
+
+  const orders =
+    await supabaseClient
+    .from("orders")
+    .select("id",{count:"exact",head:true});
+
+
+  document.getElementById("totalCustomers").innerText =
+    customers.count || 0;
+
+
+  document.getElementById("totalSellers").innerText =
+    sellers.count || 0;
+
+
+  document.getElementById("totalProducts").innerText =
+    products.count || 0;
+
+
+  document.getElementById("totalOrders").innerText =
+    orders.count || 0;
+
+}
+
+
+/* ================= GIFT CARDS ================= */
+
+function generateGiftCardCode(){
+
+  const chars =
+    "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+  let code = "PSM-";
+
+  for(let i = 0; i < 12; i++){
+
+    if(i > 0 && i % 4 === 0){
+      code += "-";
+    }
+
+    code +=
+      chars.charAt(
+        Math.floor(Math.random() * chars.length)
+      );
+
+  }
+
+  return code;
+}
+
+
+/* ================= CREATE GIFT CARDS ================= */
+
+async function createGiftCards(){
+
+  const amount =
+    Number(
+      document.getElementById(
+        "giftCardAmount"
+      ).value
+    );
+
+  const expiry =
+    document.getElementById(
+      "giftCardExpiry"
+    ).value;
+
+  const quantity =
+    Number(
+      document.getElementById(
+        "giftCardQuantity"
+      ).value
+    );
+
+
+  if(
+    !amount ||
+    amount <= 0
+  ){
+
+    alert(
+      "Please enter a valid gift card amount."
+    );
+
+    return;
+  }
+
+
+  if(
+    !expiry
+  ){
+
+    alert(
+      "Please select an expiry date."
+    );
+
+    return;
+  }
+
+
+  if(
+    !quantity ||
+    quantity < 1 ||
+    quantity > 50
+  ){
+
+    alert(
+      "Quantity must be between 1 and 50."
+    );
+
+    return;
+  }
+
+
+  const expiryDate =
+    new Date(
+      expiry + "T23:59:59"
+    ).toISOString();
+
+
+  const cards = [];
+
+
+  for(
+    let i = 0;
+    i < quantity;
+    i++
+  ){
+
+    cards.push({
+
+      code:
+        generateGiftCardCode(),
+
+      initial_balance:
+        amount,
+
+      balance:
+        amount,
+
+      status:
+        "active",
+
+      expires_at:
+        expiryDate
 
     });
 
   }
 
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+    .from("gift_cards")
+    .insert(cards)
+    .select();
+
+
+  if(error){
+
+    console.error(error);
+
+    alert(
+      "❌ Gift card creation failed:\n\n" +
+      error.message
+    );
+
+    return;
+  }
+
+
+  alert(
+    "🎉 " +
+    data.length +
+    " Gift Card(s) created successfully!"
+  );
+
+
+  document.getElementById(
+    "giftCardAmount"
+  ).value = "";
+
+  document.getElementById(
+    "giftCardExpiry"
+  ).value = "";
+
+  document.getElementById(
+    "giftCardQuantity"
+  ).value = "1";
+
+
+  loadGiftCards();
+
 }
 
 
-/* =========================
-   AUTH STATE CHANGE
-========================= */
+/* ================= LOAD GIFT CARDS ================= */
 
-supabaseClient.auth.onAuthStateChange(
-  (event, session) => {
+async function loadGiftCards(){
 
-    updateLoginState();
+  const box =
+    document.getElementById(
+      "giftCardsList"
+    );
 
+
+  box.innerHTML =
+    "Loading gift cards...";
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+    .from("gift_cards")
+    .select("*")
+    .order(
+      "id",
+      {
+        ascending:false
+      }
+    );
+
+
+  if(error){
+
+    box.innerHTML =
+      "❌ " +
+      error.message;
+
+    return;
   }
-);
-/* =========================
-   PAGE INITIALIZATION
-========================= */
 
-document.addEventListener("DOMContentLoaded", async () => {
 
-  updateCount();
-  updateLoginState();
+  if(
+    !data ||
+    data.length === 0
+  ){
 
-  await renderHome();
-  await renderProducts();
-  await renderCart();
-  await summary();
-  await detail();
+    box.innerHTML =
+      "<div class='empty'>" +
+      "No gift cards found." +
+      "</div>";
 
-});
+    return;
+  }
+
+
+  let html = "";
+
+
+  data.forEach(card => {
+
+    const expiry =
+      card.expires_at
+      ?
+      new Date(
+        card.expires_at
+      ).toLocaleDateString()
+      :
+      "No expiry";
+
+
+    html += `
+
+      <div class="card">
+
+        <h3>
+          🎟️ ${esc(card.code)}
+        </h3>
+
+        <p>
+          <b>Initial Balance:</b>
+          ₹${Number(
+            card.initial_balance || 0
+          ).toFixed(2)}
+        </p>
+
+        <p>
+          <b>Current Balance:</b>
+          ₹${Number(
+            card.balance || 0
+          ).toFixed(2)}
+        </p>
+
+        <p>
+          <b>Status:</b>
+          <span class="status">
+            ${esc(card.status)}
+          </span>
+        </p>
+
+        <p>
+          <b>Expiry:</b>
+          ${expiry}
+        </p>
+
+        <p>
+          <b>User:</b>
+          ${
+            esc(card.user_id
+            ||
+            "Not redeemed")
+          }
+        </p>
+
+      </div>
+
+    `;
+
+  });
+
+
+  box.innerHTML =
+    html;
+
+}
+
+
+/* ================= NOTIFICATIONS (NEW) ================= */
+
+async function loadNotifications(){
+
+  const box =
+    document.getElementById("notifications");
+
+  const {data,error} =
+    await supabaseClient
+    .from("admin_notifications")
+    .select("*")
+    .order("id",{ascending:false})
+    .limit(60);
+
+  if(error){
+
+    box.innerHTML =
+      "❌ " + esc(error.message) +
+      "<br><small>ps-mart-admin.sql Supabase mein run kiya hai?</small>";
+
+    return;
+  }
+
+  const unread =
+    (data || []).filter(n => !n.is_read).length;
+
+  document.getElementById("notifCount").innerHTML =
+    unread ? '<span class="cnt">' + unread + '</span>' : "";
+
+  document.title =
+    (unread ? "(" + unread + ") " : "") +
+    "PS Mart Admin Dashboard";
+
+  if(!data || data.length === 0){
+
+    box.innerHTML =
+      "<div class='empty'>Abhi koi notification nahi.</div>";
+
+    return;
+  }
+
+  box.innerHTML =
+    '<div style="border:1px solid #eee;border-radius:10px;overflow:hidden;margin-top:12px">' +
+    data.map(n => `
+
+      <div class="notif ${n.is_read ? "" : "unread"}"
+           onclick="readNotif(${Number(n.id)})">
+
+        <b>${esc(n.title)}</b>
+
+        <small>${esc(n.body || "")}\n${esc(new Date(n.created_at).toLocaleString("en-IN"))}</small>
+
+      </div>
+
+    `).join("") +
+    "</div>";
+
+}
+
+async function readNotif(id){
+
+  await supabaseClient
+    .from("admin_notifications")
+    .update({is_read:true})
+    .eq("id",id);
+
+  loadNotifications();
+
+}
+
+async function readAllNotifs(){
+
+  await supabaseClient
+    .from("admin_notifications")
+    .update({is_read:true})
+    .eq("is_read",false);
+
+  loadNotifications();
+
+}
+
+
+/* ================= LOGOUT ================= */
+
+async function logoutAdmin(){
+
+  await supabaseClient.auth.signOut();
+
+  window.location.href =
+    "login.html";
+
+}
+
+
+/* ================= START ================= */
+
+(async function(){
+
+  const allowed =
+    await checkAdmin();
+
+
+  if(!allowed){
+    return;
+  }
+
+
+  await loadDashboardCounts();
+
+  await loadSellers();
+
+  await loadProducts();
+
+  await loadOrders();
+
+  await loadCustomers();
+
+  await loadFinance();
+
+  await loadGiftCards();
+
+  loadSendGiftCardOptions();
+
+  await loadNotifications();
+
+  setInterval(loadNotifications,30000);
+
+})();
+
+async function loadSendGiftCardOptions() {
+
+  const giftSelect = document.getElementById("sendGiftCard");
+  const customerSelect = document.getElementById("sendGiftCustomer");
+
+  if (!giftSelect || !customerSelect) return;
+
+  // Load available gift cards
+  const { data: cards, error: cardError } =
+    await supabaseClient
+      .from("gift_cards")
+      .select("id, code, balance, expires_at")
+      .is("user_id", null)
+      .eq("status", "active")
+      .order("id", { ascending: false });
+
+  if (cardError) {
+    console.error(cardError);
+    giftSelect.innerHTML =
+      '<option value="">Unable to load gift cards</option>';
+  } else {
+
+    giftSelect.innerHTML =
+      '<option value="">Select Gift Card</option>';
+
+    if (!cards || cards.length === 0) {
+
+      giftSelect.innerHTML =
+        '<option value="">No available gift cards</option>';
+
+    } else {
+
+      cards.forEach(card => {
+
+        const expiry = card.expires_at
+          ? new Date(card.expires_at).toLocaleDateString()
+          : "No expiry";
+
+        giftSelect.innerHTML += `
+          <option value="${esc(card.id)}">
+            ${esc(card.code)} — ₹${Number(card.balance || 0).toFixed(2)}
+            — Exp: ${expiry}
+          </option>
+        `;
+      });
+    }
+  }
+
+
+  // Load customers
+  const { data: customers, error: customerError } =
+  await supabaseClient
+    .from("profiles")
+    .select("id, full_name, phone, email, role")
+    .eq("role", "customer")
+    .order("full_name", { ascending: true });
+
+if (customerError) {
+
+  console.error("Customer loading error:", customerError);
+
+  customerSelect.innerHTML =
+    '<option value="">Unable to load customers</option>';
+
+} else {
+
+  customerSelect.innerHTML =
+    '<option value="">Select Customer</option>';
+
+  if (!customers || customers.length === 0) {
+
+    customerSelect.innerHTML =
+      '<option value="">No customers found</option>';
+
+  } else {
+
+    customers.forEach(customer => {
+
+      const name =
+        customer.full_name ||
+        "Unnamed Customer";
+
+      const phone =
+        customer.phone ||
+        "No phone";
+
+      const email =
+        customer.email ||
+        "No email";
+
+      customerSelect.innerHTML += `
+        <option value="${esc(customer.id)}">
+          ${esc(name)} — ${esc(phone)} — ${esc(email)}
+        </option>
+      `;
+    });
+  }
+}
+}
+
+async function sendGiftCardToCustomer() {
+
+  const giftCardId =
+    document.getElementById("sendGiftCard").value;
+
+  const customerId =
+    document.getElementById("sendGiftCustomer").value;
+
+  const message =
+    document.getElementById("sendGiftCardMessage");
+
+  if (!giftCardId) {
+    message.style.color = "red";
+    message.textContent = "❌ Please select a gift card.";
+    return;
+  }
+
+  if (!customerId) {
+    message.style.color = "red";
+    message.textContent = "❌ Please select a customer.";
+    return;
+  }
+
+  if (!confirm(
+    "Are you sure you want to send this gift card to the selected customer?"
+  )) {
+    return;
+  }
+
+  message.style.color = "#b8860b";
+  message.textContent = "⏳ Sending gift card...";
+
+  /* Get selected customer */
+  const {
+    data: customer,
+    error: customerError
+  } = await supabaseClient
+    .from("profiles")
+    .select("id, full_name, email, phone")
+    .eq("id", customerId)
+    .single();
+
+  if (customerError || !customer) {
+    console.error(customerError);
+
+    message.style.color = "red";
+    message.textContent =
+      "❌ Customer information could not be loaded.";
+
+    return;
+  }
+
+  if (!customer.email) {
+    message.style.color = "red";
+    message.textContent =
+      "❌ This customer does not have an email address.";
+
+    return;
+  }
+
+  /* Get selected gift card */
+  const {
+    data: giftCard,
+    error: giftCardError
+  } = await supabaseClient
+    .from("gift_cards")
+    .select("id, code, balance, expires_at, status, user_id")
+    .eq("id", giftCardId)
+    .single();
+
+  if (giftCardError || !giftCard) {
+    console.error(giftCardError);
+
+    message.style.color = "red";
+    message.textContent =
+      "❌ Gift card could not be found.";
+
+    return;
+  }
+
+  /* Make sure card is still available */
+  if (giftCard.user_id !== null) {
+    message.style.color = "red";
+    message.textContent =
+      "❌ This gift card has already been assigned.";
+
+    return;
+  }
+
+  if (giftCard.status !== "active") {
+    message.style.color = "red";
+    message.textContent =
+      "❌ This gift card is not active.";
+
+    return;
+  }
+
+  /* Assign gift card to customer */
+  const {
+    data: assignedCard,
+    error: assignError
+  } = await supabaseClient
+    .from("gift_cards")
+    .update({
+      user_id: customerId
+    })
+    .eq("id", giftCardId)
+    .is("user_id", null)
+    .eq("status", "active")
+    .select()
+    .single();
+
+  if (assignError || !assignedCard) {
+    console.error(assignError);
+
+    message.style.color = "red";
+    message.textContent =
+      "❌ Gift card could not be assigned.";
+
+    return;
+  }
+
+  /* Send email */
+  const {
+    data: emailResult,
+    error: emailError
+  } = await supabaseClient.functions.invoke(
+    "send-gift-card-email",
+    {
+      body: {
+        email: customer.email,
+        name: customer.full_name || "Customer",
+        code: assignedCard.code,
+        balance: assignedCard.balance,
+        expires_at: assignedCard.expires_at
+      }
+    }
+  );
+
+  if (emailError) {
+    console.error("Email error:", emailError);
+
+    message.style.color = "#b8860b";
+    message.textContent =
+      "⚠️ Gift card sent, but email could not be sent.";
+
+    await loadGiftCards();
+    await loadSendGiftCardOptions();
+
+    return;
+  }
+
+  if (!emailResult || emailResult.success !== true) {
+    console.error("Email result:", emailResult);
+
+    message.style.color = "#b8860b";
+    message.textContent =
+      "⚠️ Gift card sent, but email could not be sent.";
+
+    await loadGiftCards();
+    await loadSendGiftCardOptions();
+
+    return;
+  }
+
+  /* Success */
+  message.style.color = "green";
+  message.textContent =
+    "✅ Gift card sent successfully! Email sent to " +
+    customer.email;
+
+  document.getElementById("sendGiftCard").value = "";
+  document.getElementById("sendGiftCustomer").value = "";
+
+  await loadGiftCards();
+  await loadSendGiftCardOptions();
+}
+
+</script>
+
+</body>
+</html>
