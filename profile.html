@@ -19,17 +19,18 @@
 body{
   margin:0;
   font-family:Arial,sans-serif;
-  background:#f7f1e8;
-  color:#3b2416;
+  background:#f6f1e7;
+  color:#2a1a0e;
 }
 
 header{
-  background:#4b2e1f;
+  background:linear-gradient(110deg,#24150b,#43250f 55%,#6c3e17);
   color:white;
   padding:16px 20px;
   display:flex;
   justify-content:space-between;
   align-items:center;
+  border-bottom:2px solid #c9922e;
 }
 
 header a{
@@ -45,10 +46,11 @@ header a{
 
 .card{
   background:white;
+  border:1px solid #e6dac3;
   border-radius:14px;
   padding:22px;
   margin-bottom:18px;
-  box-shadow:0 4px 15px rgba(0,0,0,.10);
+  box-shadow:0 4px 15px rgba(67,37,15,.10);
 }
 
 .profile-head{
@@ -62,8 +64,8 @@ header a{
   width:70px;
   height:70px;
   border-radius:50%;
-  background:#b8860b;
-  color:white;
+  background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);
+  color:#24150b;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -73,7 +75,7 @@ header a{
 
 h2{
   margin-top:0;
-  color:#6b421f;
+  color:#43250f;
 }
 
 .info{
@@ -94,7 +96,7 @@ input{
   width:100%;
   padding:12px;
   margin:7px 0;
-  border:1px solid #ccc;
+  border:1px solid #c9922e;
   border-radius:7px;
   font-size:15px;
 }
@@ -107,8 +109,9 @@ button,
   margin-top:10px;
   border:none;
   border-radius:8px;
-  background:#b8860b;
-  color:white;
+  background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);
+  color:#24150b;
+  font-weight:bold;
   text-align:center;
   text-decoration:none;
   cursor:pointer;
@@ -116,15 +119,18 @@ button,
 }
 
 .secondary{
-  background:#6b421f;
+  background:#43250f;
+  color:#f0bd50;
 }
 
 .cancel{
   background:#777;
+  color:white;
 }
 
 .logout{
   background:#8b2e2e !important;
+  color:white !important;
 }
 
 .hidden{
@@ -139,16 +145,16 @@ button,
 
 .menu a{
   text-decoration:none;
-  background:#faf6ef;
-  border:1px solid #e5ddd2;
+  background:#fbf6ea;
+  border:1px solid #e6dac3;
   border-radius:10px;
   padding:18px;
-  color:#3b2416;
+  color:#43250f;
   font-weight:bold;
 }
 
 .menu a:hover{
-  background:#f1e7d8;
+  background:#f7dd9b;
 }
 
 .message{
@@ -375,14 +381,15 @@ button,
   </div>
 
 </div>
-  <!-- =========================
+
+<!-- =========================
      PROFILE OPTIONS
 ========================= -->
 
 <div class="card">
 
   <h2>
-    👤 Account & Services
+    👤 Account &amp; Services
   </h2>
 
   <div class="menu">
@@ -392,65 +399,90 @@ button,
       Saved Addresses
     </a>
 
-    <a href="language.html">🌐 Select Language</a>
-   <a href="notifications.html">
-  🔔<br>
-  Notifications
-</a>
+    <a href="language.html">
+      🌐<br>
+      Select Language
+    </a>
 
-   <a href="settings.html">
-  ⚙️<br>
-  Settings
-</a>
+    <a href="notifications.html">
+      🔔<br>
+      Notifications
+    </a>
+
+    <a href="settings.html">
+      ⚙️<br>
+      Settings
+    </a>
 
     <a href="privacy-center.html">
-  <strong>🔒</strong>
-  <strong>Privacy Center⭐</strong>
-</a>
-    <a href="reviews.html">Reviews❓</a>
+      🔒<br>
+      Privacy Center
+    </a>
 
-   <a href="questions.html">
-  ❓<br>
-  Questions & Answers
-</a>
+    <a href="reviews.html">
+      ⭐<br>
+      Reviews
+    </a>
+
+    <a href="questions.html">
+      ❓<br>
+      Questions &amp; Answers
+    </a>
+
     <a href="feedback.html">
-  💬<br>
-  Feedback
-</a>
+      💬<br>
+      Feedback
+    </a>
 
     <a href="information.html">
-  ℹ️<br>
-  Information
-</a>
+      ℹ️<br>
+      Information
+    </a>
 
     <a href="terms.html">
-  📜<br>
-  Terms
-</a>
-   <a href="policies.html">
-  📋<br>
-  Policies
-</a>
+      📜<br>
+      Terms
+    </a>
 
-   <a href="license.html">
-  📄<br>
-  License
-</a>
+    <a href="policies.html">
+      📋<br>
+      Policies
+    </a>
 
-    <a href="browser-faqs.html">❓<br>Browser FAQs</a>
+    <a href="license.html">
+      📄<br>
+      License
+    </a>
 
-   <a href="coupons.html">🎟️<br>Coupons</a>
-<a href="my-support.html">🆘<br>My Support Requests</a>
-   <a href="help-center.html">🆘<br>Help Center</a>
+    <a href="browser-faqs.html">
+      ❓<br>
+      Browser FAQs
+    </a>
+
+    <a href="coupons.html">
+      🎟️<br>
+      Coupons
+    </a>
+
+    <a href="my-support.html">
+      🆘<br>
+      My Support Requests
+    </a>
+
+    <a href="help-center.html">
+      🆘<br>
+      Help Center
+    </a>
+
     <a href="saved-cards.html">
-  💳<br>
-  Saved Credit & Debit Cards
-</a>
+      💳<br>
+      Saved Credit &amp; Debit Cards
+    </a>
 
-   <a href="gift-cards.html">
-  🎁<br>
-  Gift Cards
-</a>
+    <a href="gift-cards.html">
+      🎁<br>
+      Gift Cards
+    </a>
 
   </div>
 
@@ -475,6 +507,7 @@ button,
 
   <a
     class="btn"
+    id="registerSellerBtn"
     href="seller-register.html">
 
     Register as Seller
@@ -484,6 +517,7 @@ button,
 
   <a
     class="btn secondary"
+    id="sellerDashBtn"
     href="seller-dashboard.html">
 
     Seller Dashboard
@@ -495,6 +529,7 @@ button,
 
 <!-- =========================
      ADMIN
+     (sirf admin ko dikhta hai; baaki sab ke liye page se hata diya jata hai)
 ========================= -->
 
 <div
@@ -662,17 +697,23 @@ async function loadProfile(){
   }
 
 
-  /* Admin */
+  /* Admin: sirf admin ko dikhao, baaki sab ke liye page se hata do */
+
+  const adminBox =
+    document.getElementById(
+      "adminSection"
+    );
 
   if(role === "admin"){
 
-    document
-    .getElementById(
-      "adminSection"
-    )
-    .classList.remove(
+    adminBox.classList.remove(
       "hidden"
     );
+
+  }
+  else if(adminBox){
+
+    adminBox.remove();
 
   }
 
@@ -690,6 +731,53 @@ async function loadProfile(){
     )
     .textContent =
       "🏪 Seller Account";
+
+  }
+
+
+  /* Seller buttons: jiska seller account hai use Dashboard,
+     baaki sabko Register dikhao (check fail ho to dono dikhte rahenge) */
+
+  const sellerCheck =
+    await supabaseClient
+
+    .from("sellers")
+
+    .select("id")
+
+    .eq(
+      "user_id",
+      user.id
+    )
+
+    .maybeSingle();
+
+  if(!sellerCheck.error){
+
+    const registerBtn =
+      document.getElementById(
+        "registerSellerBtn"
+      );
+
+    const dashBtn =
+      document.getElementById(
+        "sellerDashBtn"
+      );
+
+    if(sellerCheck.data){
+
+      if(registerBtn){
+        registerBtn.classList.add("hidden");
+      }
+
+    }
+    else{
+
+      if(dashBtn){
+        dashBtn.classList.add("hidden");
+      }
+
+    }
 
   }
 
