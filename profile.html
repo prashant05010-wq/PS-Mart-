@@ -303,7 +303,7 @@ button,
         type="button"
         class="cam"
         title="Photo badlein"
-        onclick="document.getElementById('photoInput').click()">
+        onclick="openPhotoMenu()">
         📷
       </button>
 
@@ -437,30 +437,57 @@ button,
     📷 Profile Photo
   </h2>
 
-  <canvas
-    id="photoCanvas"
-    width="240"
-    height="240">
-  </canvas>
+  <!-- MENU: add / change / remove ek hi jagah -->
+  <div id="photoMenu">
 
-  <label>Zoom</label>
-  <input type="range" id="pzoom" min="100" max="300" value="100" oninput="drawPreview()">
+    <div
+      id="menuPreview"
+      style="width:140px;height:140px;margin:10px auto 16px;border-radius:50%;overflow:hidden;border:3px solid #c9922e;background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);color:#24150b;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:bold;">
+    </div>
 
-  <label>Left / Right</label>
-  <input type="range" id="px" min="-100" max="100" value="0" oninput="drawPreview()">
-
-  <label>Up / Down</label>
-  <input type="range" id="py" min="-100" max="100" value="0" oninput="drawPreview()">
-
-  <div class="btn-row">
-
-    <button onclick="savePhoto()" id="photoSaveBtn">
-      💾 Photo Save Karein
+    <button onclick="document.getElementById('photoInput').click()" id="chooseBtn">
+      📁 Photo Chuniye
     </button>
 
-    <button class="cancel" onclick="closePhotoEditor()">
-      Cancel
+    <button class="logout" onclick="removePhoto()" id="removeBtn">
+      🗑 Photo Hatayein
     </button>
+
+    <button class="cancel" onclick="closePhotoCard()">
+      Band Karein
+    </button>
+
+  </div>
+
+  <!-- EDITOR: photo chunne ke baad -->
+  <div id="photoEditor" class="hidden">
+
+    <canvas
+      id="photoCanvas"
+      width="240"
+      height="240">
+    </canvas>
+
+    <label>Zoom</label>
+    <input type="range" id="pzoom" min="100" max="300" value="100" oninput="drawPreview()">
+
+    <label>Left / Right</label>
+    <input type="range" id="px" min="-100" max="100" value="0" oninput="drawPreview()">
+
+    <label>Up / Down</label>
+    <input type="range" id="py" min="-100" max="100" value="0" oninput="drawPreview()">
+
+    <div class="btn-row">
+
+      <button onclick="savePhoto()" id="photoSaveBtn">
+        💾 Save Karein
+      </button>
+
+      <button class="cancel" onclick="backToPhotoMenu()">
+        Wapas
+      </button>
+
+    </div>
 
   </div>
 
@@ -1137,7 +1164,7 @@ function showAvatar(url, name){
 
   }
 
-  updatePhotoButtons();
+  refreshPhotoMenu();
 
 }
 
@@ -1166,30 +1193,91 @@ async function loadAvatar(name){
 }
 
 
-function updatePhotoButtons(){
+function refreshPhotoMenu(){
 
-  let rm =
-    document.getElementById("removePhotoBtn");
+  const rm =
+    document.getElementById("removeBtn");
 
-  if(hasPhoto && !rm){
+  const choose =
+    document.getElementById("chooseBtn");
 
-    rm = document.createElement("button");
+  if(rm){
+    rm.style.display = hasPhoto ? "" : "none";
+  }
 
-    rm.id = "removePhotoBtn";
-    rm.className = "cancel";
-    rm.textContent = "🗑 Photo Hatayein";
-    rm.onclick = removePhoto;
+  if(choose){
+    choose.textContent =
+      hasPhoto ? "📁 Photo Badlein" : "📁 Photo Chuniye";
+  }
 
-    const info =
-      document.getElementById("editCard");
+  const prev =
+    document.getElementById("menuPreview");
 
-    info.parentNode.insertBefore(rm, info);
+  const av =
+    document.getElementById("avatar");
+
+  if(prev && av){
+
+    prev.textContent = "";
+
+    const img = av.querySelector("img");
+
+    if(img){
+
+      const c = document.createElement("img");
+
+      c.src = img.src;
+      c.alt = "Profile photo";
+      c.style.cssText =
+        "width:100%;height:100%;object-fit:cover;display:block;";
+
+      prev.appendChild(c);
+
+    }
+    else{
+
+      prev.textContent = av.textContent;
+
+    }
 
   }
 
-  if(!hasPhoto && rm){
-    rm.remove();
-  }
+}
+
+
+function openPhotoMenu(){
+
+  document.getElementById("photoMessage").textContent = "";
+
+  document.getElementById("photoEditor").classList.add("hidden");
+
+  document.getElementById("photoMenu").classList.remove("hidden");
+
+  refreshPhotoMenu();
+
+  const card = document.getElementById("photoCard");
+
+  card.classList.remove("hidden");
+
+  card.scrollIntoView({behavior:"smooth"});
+
+}
+
+
+function backToPhotoMenu(){
+
+  photoImg = null;
+
+  openPhotoMenu();
+
+}
+
+
+function closePhotoCard(){
+
+  photoImg = null;
+
+  document.getElementById("photoCard").classList.add("hidden");
 
 }
 
@@ -1233,6 +1321,14 @@ document
         document
           .getElementById("photoMessage")
           .textContent = "";
+
+        document
+          .getElementById("photoMenu")
+          .classList.add("hidden");
+
+        document
+          .getElementById("photoEditor")
+          .classList.remove("hidden");
 
         document
           .getElementById("photoCard")
@@ -1301,17 +1397,6 @@ function drawPreview(){
     document.getElementById("photoCanvas"),
     240
   );
-
-}
-
-
-function closePhotoEditor(){
-
-  photoImg = null;
-
-  document
-    .getElementById("photoCard")
-    .classList.add("hidden");
 
 }
 
@@ -1409,7 +1494,7 @@ async function savePhoto(){
 
   btn.disabled = false;
 
-  closePhotoEditor();
+  closePhotoCard();
 
   showAvatar(
     url,
@@ -1454,6 +1539,8 @@ async function removePhoto(){
     "",
     document.getElementById("name").textContent
   );
+
+  closePhotoCard();
 
 }
 
