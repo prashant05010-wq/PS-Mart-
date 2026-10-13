@@ -13,6 +13,20 @@ const supabaseClient = window.supabase.createClient(
 
 
 /* =========================
+   SAFE TEXT (XSS se bachav)
+========================= */
+
+function psEsc(v) {
+  return String(v == null ? "" : v)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+/* =========================
    MONEY
 ========================= */
 
@@ -182,8 +196,8 @@ function card(p) {
               p.image_url
                 ? `
                   <img
-                    src="${p.image_url}"
-                    alt="${p.name}"
+                    src="${psEsc(p.image_url)}"
+                    alt="${psEsc(p.name)}"
                     style="
                       width:100%;
                       height:100%;
@@ -261,7 +275,7 @@ function card(p) {
       <!-- PRODUCT NAME -->
 
       <h3>
-        ${p.name}
+        ${psEsc(p.name)}
       </h3>
 
 
@@ -785,8 +799,8 @@ async function detail() {
             p.image_url
               ? `
                 <img
-                  src="${p.image_url}"
-                  alt="${p.name}"
+                  src="${psEsc(p.image_url)}"
+                  alt="${psEsc(p.name)}"
                 >
               `
               : `
@@ -815,7 +829,7 @@ async function detail() {
         </small>
 
         <h1>
-          ${p.name}
+          ${psEsc(p.name)}
         </h1>
 
         ${
@@ -923,7 +937,7 @@ async function detail() {
                   Number(p.stock) <= 5
                     ? `
                       <span style="color:#d28a00;">
-                        Only ${p.stock} left
+                        Only ${Number(p.stock)} left
                       </span>
                     `
                     : ""
@@ -942,8 +956,8 @@ async function detail() {
         <p>
 
           ${
-            p.description ||
-            "Premium quality product available on PS Mart."
+            psEsc(p.description ||
+            "Premium quality product available on PS Mart.")
           }
 
         </p>
@@ -987,8 +1001,8 @@ async function detail() {
 
           <p>
             ${
-              p.description ||
-              "Product details will appear here."
+              psEsc(p.description ||
+              "Product details will appear here.")
             }
           </p>
 
@@ -1009,7 +1023,7 @@ async function detail() {
 
         <tr>
           <td>Product Name</td>
-          <td>${p.name}</td>
+          <td>${psEsc(p.name)}</td>
         </tr>
 
         <tr>
@@ -1263,8 +1277,8 @@ async function renderCart() {
               p.image_url
                 ? `
                   <img
-                    src="${p.image_url}"
-                    alt="${p.name}"
+                    src="${psEsc(p.image_url)}"
+                    alt="${psEsc(p.name)}"
                     style="
                       width:100%;
                       height:100%;
@@ -1281,7 +1295,7 @@ async function renderCart() {
           <div>
 
             <b>
-              ${p.name}
+              ${psEsc(p.name)}
             </b>
 
             <p>
@@ -1413,7 +1427,7 @@ async function renderCart() {
                   color:#8a5a12;
                   font-weight:bold;
                 ">
-                  🎉 ${savedCoupon.code}
+                  🎉 ${psEsc(savedCoupon.code)}
                 </div>
 
                 <div style="
@@ -1968,7 +1982,7 @@ async function summary() {
       summaryDiscount > 0
         ? `
           <p style="color:#188038;">
-            Coupon Discount (${savedCoupon.code}):
+            Coupon Discount (${psEsc(savedCoupon.code)}):
             <b>
               − ${money(summaryDiscount)}
             </b>
@@ -2128,6 +2142,53 @@ async function getCurrentUser() {
    LOGIN / PROFILE STATE
 ========================= */
 
+/* chhota gol profile photo (photo na ho to naam ka pehla akshar) */
+function psAvatarNode(url, letter, size) {
+
+  const px = (size || 26) + "px";
+
+  function letterNode() {
+
+    const span = document.createElement("span");
+
+    span.textContent = letter || "U";
+
+    span.style.cssText =
+      "display:inline-flex;align-items:center;justify-content:center;" +
+      "width:" + px + ";height:" + px + ";border-radius:50%;" +
+      "background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);" +
+      "color:#24150b;font-weight:bold;font-size:" +
+      Math.round((size || 26) * 0.5) + "px;" +
+      "border:2px solid #f0bd50;vertical-align:middle;line-height:1;";
+
+    return span;
+
+  }
+
+  if (!url) {
+    return letterNode();
+  }
+
+  const img = document.createElement("img");
+
+  img.src = url;
+  img.alt = "Profile";
+
+  img.style.cssText =
+    "width:" + px + ";height:" + px + ";border-radius:50%;" +
+    "object-fit:cover;border:2px solid #f0bd50;" +
+    "vertical-align:middle;background:#fbf6ea;";
+
+  img.onerror = function () {
+    if (img.parentNode) {
+      img.parentNode.replaceChild(letterNode(), img);
+    }
+  };
+
+  return img;
+
+}
+
 async function updateLoginState() {
 
   const {
@@ -2148,15 +2209,68 @@ async function updateLoginState() {
 
   if (user) {
 
+    let letter =
+      (user.email || "U").charAt(0).toUpperCase();
+
+    let avatarUrl = "";
+
+    try {
+
+      const pr =
+        await supabaseClient
+          .from("profiles")
+          .select("full_name, avatar_url")
+          .eq("id", user.id)
+          .maybeSingle();
+
+      if (!pr.error && pr.data) {
+
+        if (pr.data.full_name && pr.data.full_name.trim()) {
+          letter = pr.data.full_name.trim().charAt(0).toUpperCase();
+        }
+
+        avatarUrl = pr.data.avatar_url || "";
+
+      }
+
+    } catch (e) {}
+
+
+    /* sirf apne Supabase ke avatars folder ki photo maani jayegi */
+    const safeUrl =
+      avatarUrl.indexOf(
+        SUPABASE_URL + "/storage/v1/object/public/avatars/"
+      ) === 0
+        ? avatarUrl
+        : "";
+
+
     loginLinks.forEach(link => {
 
-      link.textContent =
-        "👤 Profile";
+      link.textContent = "";
+
+      link.appendChild(psAvatarNode(safeUrl, letter, 26));
+
+      link.appendChild(document.createTextNode(" Profile"));
 
       link.href =
         "profile.html";
 
     });
+
+
+    /* phone ke neeche wale menu ka Account button */
+    document
+      .querySelectorAll(
+        '.mobile-nav a[href="profile.html"] span, .pm-mnav a[href="profile.html"] span'
+      )
+      .forEach(sp => {
+
+        sp.textContent = "";
+
+        sp.appendChild(psAvatarNode(safeUrl, letter, 26));
+
+      });
 
   }
 
