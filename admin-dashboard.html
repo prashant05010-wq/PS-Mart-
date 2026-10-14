@@ -6,6 +6,10 @@
 
 <title>PS Mart Admin Dashboard</title>
 
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+
+<script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -173,6 +177,8 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
     <button class="tab" onclick="showSection('notificationsSection',this);loadNotifications()">🔔 Notifications<span id="notifCount"></span></button>
 
     <button class="tab" onclick="window.location.href='admin-support.html'">🆘 Support</button>
+
+    <button class="tab" onclick="window.location.href='admin-selftest.html'">🧪 Self-Test</button>
 
   </div>
 
@@ -515,18 +521,18 @@ async function loadSellers(){
     card.innerHTML = `
 
       <h3>
-        🏪 ${seller.shop_name || "No Shop Name"}
+        🏪 ${esc(seller.shop_name || "No Shop Name")}
       </h3>
 
       <p>
         <b>Phone:</b>
-        ${seller.phone || "Not provided"}
+        ${esc(seller.phone || "Not provided")}
       </p>
 
       <p>
         <b>Status:</b>
         <span class="status">
-          ${seller.status}
+          ${esc(seller.status)}
         </span>
       </p>
 
@@ -536,13 +542,13 @@ async function loadSellers(){
         `
         <button
           class="approve"
-          onclick="updateSeller('${seller.id}','approved')">
+          onclick="updateSeller('${esc(seller.id)}','approved')">
           ✅ Approve
         </button>
 
         <button
           class="reject"
-          onclick="updateSeller('${seller.id}','rejected')">
+          onclick="updateSeller('${esc(seller.id)}','rejected')">
           ❌ Reject
         </button>
         `
@@ -658,12 +664,12 @@ async function loadProducts(){
     card.innerHTML = `
 
       <h3>
-        📦 ${product.name || "Unnamed Product"}
+        📦 ${esc(product.name || "Unnamed Product")}
       </h3>
 
       <p>
         <b>Seller:</b>
-        ${product.sellers?.shop_name || "Unknown"}
+        ${esc(product.sellers?.shop_name || "Unknown")}
       </p>
 
       <p>
@@ -684,7 +690,7 @@ async function loadProducts(){
       <p>
         <b>Status:</b>
         <span class="status">
-          ${product.status}
+          ${esc(product.status)}
         </span>
       </p>
 
@@ -693,7 +699,7 @@ async function loadProducts(){
         ?
         `
         <img
-          src="${product.image_url}"
+          src="${esc(product.image_url)}"
           style="
             width:100px;
             height:100px;
@@ -714,13 +720,13 @@ async function loadProducts(){
 
         <button
           class="approve"
-          onclick="updateProduct('${product.id}','approved')">
+          onclick="updateProduct('${esc(product.id)}','approved')">
           ✅ Approve
         </button>
 
         <button
           class="reject"
-          onclick="updateProduct('${product.id}','rejected')">
+          onclick="updateProduct('${esc(product.id)}','rejected')">
           ❌ Reject
         </button>
         `
@@ -947,11 +953,11 @@ async function loadOrders(){
       <tr>
 
         <td>
-          #${order.id}
+          #${esc(order.id)}
         </td>
 
         <td>
-          ${order.customer_id || "Unknown"}
+          ${esc(order.customer_id || "Unknown")}
         </td>
 
         <td>
@@ -967,7 +973,7 @@ async function loadOrders(){
 
         <td>
           <span class="status">
-            ${overall}
+            ${esc(overall)}
           </span>
         </td>
 
@@ -1019,6 +1025,15 @@ async function orderAction(fn,id,btn,ask){
     btn.disabled = false;
 
     return;
+  }
+
+  if(fn === "admin_accept_order" && data.updated === 0 && data.created === 0){
+
+    alert(
+      "Order accept ho gaya, par is order ka seller shipment row nahi mila. " +
+      "Self-Test page se check kijiye."
+    );
+
   }
 
   await loadOrders();
@@ -1083,15 +1098,15 @@ async function loadCustomers(){
       <tr>
 
         <td>
-          ${customer.full_name || "No Name"}
+          ${esc(customer.full_name || "No Name")}
         </td>
 
         <td>
-          ${customer.phone || "Not provided"}
+          ${esc(customer.phone || "Not provided")}
         </td>
 
         <td>
-          ${customer.role}
+          ${esc(customer.role)}
         </td>
 
       </tr>
@@ -1634,7 +1649,7 @@ async function loadGiftCards(){
       <div class="card">
 
         <h3>
-          🎟️ ${card.code}
+          🎟️ ${esc(card.code)}
         </h3>
 
         <p>
@@ -1654,7 +1669,7 @@ async function loadGiftCards(){
         <p>
           <b>Status:</b>
           <span class="status">
-            ${card.status}
+            ${esc(card.status)}
           </span>
         </p>
 
@@ -1666,9 +1681,9 @@ async function loadGiftCards(){
         <p>
           <b>User:</b>
           ${
-            card.user_id
+            esc(card.user_id
             ||
-            "Not redeemed"
+            "Not redeemed")
           }
         </p>
 
@@ -1853,8 +1868,8 @@ async function loadSendGiftCardOptions() {
           : "No expiry";
 
         giftSelect.innerHTML += `
-          <option value="${card.id}">
-            ${card.code} — ₹${Number(card.balance || 0).toFixed(2)}
+          <option value="${esc(card.id)}">
+            ${esc(card.code)} — ₹${Number(card.balance || 0).toFixed(2)}
             — Exp: ${expiry}
           </option>
         `;
@@ -1905,8 +1920,8 @@ if (customerError) {
         "No email";
 
       customerSelect.innerHTML += `
-        <option value="${customer.id}">
-          ${name} — ${phone} — ${email}
+        <option value="${esc(customer.id)}">
+          ${esc(name)} — ${esc(phone)} — ${esc(email)}
         </option>
       `;
     });
