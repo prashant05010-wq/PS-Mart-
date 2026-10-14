@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
+<title>PS Mart Self-Test</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f7f1e8;color:#3b2618}
+header{background:#3b2618;color:#f5c76a;padding:16px 22px;display:flex;justify-content:space-between;align-items:center}
+header h2{margin:0;font-size:20px}header a{color:#f5c76a;text-decoration:none;font-weight:bold}
+.wrap{max-width:900px;margin:22px auto;padding:0 14px}
+.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 4px 15px rgba(0,0,0,.08)}
+button{border:0;border-radius:8px;padding:11px 18px;font-weight:bold;cursor:pointer;background:#b8860b;color:#fff;margin:4px 6px 4px 0}
+button.dark{background:#3b2618;color:#f5c76a}
+button:disabled{opacity:.6;cursor:not-allowed}
+.r{padding:10px 12px;border-radius:8px;margin:7px 0;font-size:14px;line-height:1.5;border:1px solid #eee}
+.ok{background:#e7f6ea;border-color:#9bd3a6}.bad{background:#fdeaea;border-color:#e3a3a3}.warn{background:#fff4d8;border-color:#e6c26a}.info{background:#eef2f6;border-color:#cfd8e3}
+.r b{display:block}.r small{color:#555;white-space:pre-wrap;word-break:break-word}
+h3{margin:0 0 8px;color:#6b421f}
+.sum{font-size:18px;font-weight:bold;margin:8px 0}
+label{font-size:14px;display:block;margin:8px 0}
+</style>
+</head>
+<body>
+<header><h2>🧪 PS Mart Self-Test</h2><a href="admin-dashboard.html">← Dashboard</a></header>
+<div class="wrap">
+
+  <div class="card">
+    <h3>Ye page kya karta hai?</h3>
+    <p style="margin:0 0 10px;font-size:14px">Aapke apne browser mein, aapke login se, site ki jaanch chalata hai: admin function, email, aur suraksha (koi hacker / customer kya dekh ya badal sakta hai). Kuch badalta nahi, sirf check karta hai.</p>
+    <label><input type="checkbox" id="optRole"> Role badalne ki koshish bhi test karein <small>(sirf <b>customer test account</b> se; asli account se mat chalaiye)</small></label>
+    <label><input type="checkbox" id="optOrder"> Seedha order banane ki koshish test karein <small>(suraksha kamzor ho to ek nakli cancelled order ban sakta hai)</small></label>
+    <button onclick="runAll()" id="runBtn">▶ Jaanch shuru karein</button>
+    <button class="dark" onclick="copyReport()">📋 Report copy karein</button>
+    <div class="sum" id="sum"></div>
+  </div>
+
+  <div class="card" id="emailCard" style="display:none">
+    <h3>📧 Email</h3>
+    <button onclick="testEmail()" id="mailBtn">Test email bhejein</button>
+    <div id="mailOut"></div>
+  </div>
+
+  <div id="out"></div>
+</div>
+
+<script src="app.js"></script>
+<script>
+var OUT=[];
+function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function logR(level,title,detail){OUT.push({level:level,title:title,detail:detail||""});paint();}
+function paint(){
+  var icon={ok:"✅",bad:"❌",warn:"⚠️",info:"ℹ️"};
+  document.getElementById("out").innerHTML='<div class="card">'+OUT.map(function(o){
+    return '<div class="r '+o.level+'"><b>'+icon[o.level]+' '+esc(o.title)+'</b>'+(o.detail?'<small>'+esc(o.detail)+'</small>':'')+'</div>';}).join("")+'</div>';
+  var c={ok:0,bad:0,warn:0};OUT.forEach(function(o){if(c[o.level]!==undefined)c[o.level]++;});
+  document.getElementById("sum").textContent="✅ "+c.ok+"   ❌ "+c.bad+"   ⚠️ "+c.warn;
+}
+function copyReport(){
+  var t=OUT.map(function(o){return o.level.toUpperCase()+" | "+o.title+(o.detail?" | "+o.detail:"");}).join("\n");
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){alert("Report copy ho gayi. Mujhe bhej dijiye.");});}
+  else{prompt("Report copy karein:",t);}
+}
+var anon=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+
+/* table padhne ki koshish: kitni "galat" rows dikhin */
+async function leak(client,table,badFn){
+  var r=await client.from(table).select("*").limit(200);
+  if(r.error) return {n:0,note:"band ("+(r.error.code||r.error.message)+")"};
+  var rows=r.data||[];
+  var bad=badFn?rows.filter(badFn):rows;
+  return {n:bad.length,note:rows.length+" row mili"};
+}
+
+async function runAll(){
+  OUT=[];paint();
+  var btn=document.getElementById("runBtn");btn.disabled=true;
+  try{
+    var s=(await supabaseClient.auth.getSession()).data.session;
+    var user=s&&s.user, role="anonymous", isAdmin=false;
+    if(user){
+      var p=await supabaseClient.from("profiles").select("role").eq("id",user.id).maybeSingle();
+      role=p.data?p.data.role:"(profile nahi mila)";
+      var a=await supabaseClient.rpc("is_admin");
+      isAdmin=a.data===true;
+      logR("info","Login: "+user.email,"Role: "+role+" | is_admin(): "+isAdmin);
+      if(role==="admin"&&!isAdmin) logR("bad","Profile role 'admin' hai par is_admin() false","ps-mart-admin.sql run karni hogi.");
+    }else{
+      logR("info","Aap login nahi hain","Sirf bina-login (hacker jaisi) jaanch chalegi. Admin aur customer jaanch ke liye login karke dobara chalaiye.");
+    }
+
+    /* ---------- bina login (anonymous) ---------- */
+    logR("info","— Bina login wale ke liye jaanch —");
+    var anonTables=["profiles","orders","order_items","seller_orders","gift_cards","saved_cards","admin_notifications","psmart_settings"];
+    for(var i=0;i<anonTables.length;i++){
+      var t=anonTables[i],x=await leak(anon,t);
+      logR(x.n?"bad":"ok","Anonymous '"+t+"' padh sakta hai?",x.n?"HAAN: "+x.n+" row dikh rahi hain. RLS policy theek karni hogi.":"Nahi ("+x.note+")");
+    }
+    var ins=await anon.from("orders").insert({total_amount:1,status:"cancelled",address:"selftest"}).select();
+    logR(ins.error?"ok":"bad","Anonymous order bana sakta hai?",ins.error?"Nahi ("+(ins.error.code||ins.error.message)+")":"HAAN - bahut khatarnak!");
+    var rp=await anon.rpc("admin_accept_order",{p_order_id:"0"});
+    logR(rp.error?"ok":"bad","Anonymous admin function chala sakta hai?",rp.error?"Nahi ("+(rp.error.code||rp.error.message)+")":"Function chala (result: "+JSON.stringify(rp.data)+")");
+
+    if(user&&isAdmin) await adminChecks();
+    if(user&&!isAdmin) await customerChecks(user);
+    if(user&&isAdmin) logR("info","Customer-side suraksha jaanch","Ye sirf customer login se chalti hai. Ek test customer account se login karke ye page dobara chalaiye.");
+  }catch(e){logR("bad","Jaanch beech mein ruk gayi",String(e&&e.message||e));}
+  btn.disabled=false;
+}
+
+async function adminChecks(){
+  logR("info","— Admin ke liye jaanch —");
+  document.getElementById("emailCard").style.display="block";
+  var tabs=["orders","order_items","seller_orders","products","sellers","profiles","admin_notifications"];
+  for(var i=0;i<tabs.length;i++){
+    var r=await supabaseClient.from(tabs[i]).select("*",{count:"exact",head:true});
+    logR(r.error?"bad":"ok","Admin '"+tabs[i]+"' padh sakta hai?",r.error?r.error.message:r.count+" row");
+  }
+  var fns=[["place_order",{p_items:[],p_address:"",p_method:"COD"},"Cart khali"],["admin_accept_order",{p_order_id:"0"},null],["admin_confirm_payment",{p_order_id:"0"},null],["admin_cancel_order",{p_order_id:"0"},null],["admin_set_product_status",{p_product_id:"0",p_status:"approved"},null],["admin_email_debug",{},null],["admin_security_report",{},null]];
+  for(var j=0;j<fns.length;j++){
+    var f=fns[j],r2=await supabaseClient.rpc(f[0],f[1]);
+    var missing=r2.error&&(r2.error.code==="PGRST202"||/could not find/i.test(r2.error.message||""));
+    var okfn=!missing&&(!r2.error||(f[2]&&(r2.error.message||"").indexOf(f[2])>-1)||r2.error.code==="P0001");
+    logR(okfn?"ok":"bad","Function '"+f[0]+"' maujood hai?",missing?"NAHI - SQL file run karni hogi":"Haan");
+  }
+
+  /* order -> shipment row */
+  var o=await supabaseClient.from("orders").select("id,status,payment_method,payment_status,created_at").order("created_at",{ascending:false}).limit(5);
+  if(!o.error&&o.data&&o.data.length){
+    var ids=o.data.map(function(x){return x.id;});
+    var so=await supabaseClient.from("seller_orders").select("order_id,status").in("order_id",ids);
+    var have={};(so.data||[]).forEach(function(x){have[String(x.order_id)]=x.status;});
+    o.data.forEach(function(x){
+      var st=have[String(x.id)];
+      logR(st?"ok":"warn","Order #"+x.id+": shipment row "+(st?"hai (status: "+st+")":"NAHI hai"),"orders.status="+x.status+" | payment="+x.payment_method+"/"+x.payment_status+(st?"":"\nAccept dabane par ye row ab apne aap ban jayegi (ps-mart-phase3.sql ke baad)."));
+    });
+  }else logR("info","Abhi koi order nahi mila");
+
+  /* security report */
+  var sr=await supabaseClient.rpc("admin_security_report");
+  if(sr.error||!sr.data||sr.data.error){logR("warn","Security report nahi mili","ps-mart-phase3.sql run karein.");}
+  else{
+    var sensitive=["profiles","orders","order_items","seller_orders","gift_cards","saved_cards","coupons","products","sellers","admin_notifications","psmart_settings","marketplace_settings"];
+    sr.data.tables.forEach(function(t){
+      if(sensitive.indexOf(t.table)>-1) logR(t.rls?"ok":"bad","RLS '"+t.table+"' par "+(t.rls?"chalu hai":"BAND hai"),t.rls?"":"Bina RLS ke table sabke liye khula hai.");
+    });
+    var other=sr.data.tables.filter(function(t){return !t.rls&&sensitive.indexOf(t.table)<0;}).map(function(t){return t.table;});
+    if(other.length) logR("warn","In tables par bhi RLS band hai",other.join(", "));
+    var writeOpen=sr.data.policies.filter(function(p){return (p.cmd==="INSERT"||p.cmd==="ALL")&&(p.table==="orders"||p.table==="order_items");});
+    logR(writeOpen.length?"warn":"ok","orders/order_items par seedha INSERT policy",writeOpen.length?writeOpen.map(function(p){return p.table+": "+p.name+" ("+p.cmd+")";}).join("\n")+"\n(Test ke baad ps-mart-lockdown.sql chalaiye)":"Nahi hai - order sirf server function se banta hai");
+    window.__pol=sr.data.policies;
+  }
+}
+
+async function customerChecks(user){
+  logR("info","— Customer account ke liye jaanch —");
+  var me=user.id;
+  var mine=await supabaseClient.from("orders").select("id").eq("customer_id",me);
+  var myIds=(mine.data||[]).map(function(x){return String(x.id);});
+  var checks=[
+    ["profiles",function(r){return r.id!==me;},"dusron ka profile (naam, phone) dikh raha hai"],
+    ["orders",function(r){return r.customer_id!==me;},"dusron ke orders dikh rahe hain"],
+    ["order_items",function(r){return myIds.indexOf(String(r.order_id))<0;},"dusron ke order items dikh rahe hain (seller ho to normal)"],
+    ["seller_orders",function(r){return r.seller_id!==me&&myIds.indexOf(String(r.order_id))<0;},"dusron ke shipment dikh rahe hain"],
+    ["gift_cards",function(r){return r.user_id!==me;},"dusron ke / bina-malik wale gift card CODE dikh rahe hain"],
+    ["saved_cards",function(r){return r.user_id!==me;},"dusron ke saved cards dikh rahe hain"],
+    ["admin_notifications",null,"admin notifications dikh rahi hain"],
+    ["psmart_settings",null,"secret settings dikh rahi hain"]
+  ];
+  for(var i=0;i<checks.length;i++){
+    var c=checks[i],x=await leak(supabaseClient,c[0],c[1]);
+    logR(x.n?"bad":"ok","Customer '"+c[0]+"' mein leak?",x.n?"HAAN: "+x.n+" row - "+c[2]:"Nahi ("+x.note+")");
+  }
+
+  /* likhne (write) ki koshish - sab "same value" se, kuch badalta nahi */
+  var pr=await supabaseClient.from("products").select("id,price,status").limit(1);
+  if(pr.data&&pr.data[0]){
+    var u=await supabaseClient.from("products").update({price:pr.data[0].price}).eq("id",pr.data[0].id).select();
+    logR(u.data&&u.data.length?"warn":"ok","Customer product badal sakta hai?",u.data&&u.data.length?"Haan - agar ye aapka apna product nahi to RLS theek karein":"Nahi");
+  }
+  var ms=await supabaseClient.from("marketplace_settings").select("id,commission_rate").limit(1);
+  if(ms.data&&ms.data[0]){
+    var u2=await supabaseClient.from("marketplace_settings").update({commission_rate:ms.data[0].commission_rate}).eq("id",ms.data[0].id).select();
+    logR(u2.data&&u2.data.length?"bad":"ok","Customer commission badal sakta hai?",u2.data&&u2.data.length?"HAAN - khatarnak!":"Nahi");
+  }
+  var sl=await supabaseClient.from("sellers").select("id,status").neq("user_id",me).limit(1);
+  if(sl.data&&sl.data[0]){
+    var u3=await supabaseClient.from("sellers").update({status:sl.data[0].status}).eq("id",sl.data[0].id).select();
+    logR(u3.data&&u3.data.length?"bad":"ok","Customer dusre seller ko badal sakta hai?",u3.data&&u3.data.length?"HAAN - khatarnak!":"Nahi");
+  }
+  var code="SELFTEST"+Math.floor(Math.random()*1e6);
+  var ci=await supabaseClient.from("coupons").insert({code:code,discount_type:"flat",discount_value:1,active:false}).select();
+  if(ci.data&&ci.data.length){logR("bad","Customer coupon bana sakta hai?","HAAN - khatarnak! (test coupon hata raha hoon)");await supabaseClient.from("coupons").delete().eq("code",code);}
+  else logR("ok","Customer coupon bana sakta hai?","Nahi");
+  var gi=await supabaseClient.from("gift_cards").insert({code:"ST"+Math.floor(Math.random()*1e6),initial_balance:1,balance:1,status:"inactive",user_id:me}).select();
+  if(gi.data&&gi.data.length){logR("bad","Customer gift card bana sakta hai?","HAAN - khatarnak! (test card hata raha hoon)");await supabaseClient.from("gift_cards").delete().eq("id",gi.data[0].id);}
+  else logR("ok","Customer gift card bana sakta hai?","Nahi");
+
+  if(document.getElementById("optRole").checked){
+    var cur=(await supabaseClient.from("profiles").select("role").eq("id",me).maybeSingle()).data;
+    await supabaseClient.from("profiles").update({role:"admin"}).eq("id",me);
+    var now=(await supabaseClient.from("profiles").select("role").eq("id",me).maybeSingle()).data;
+    var esc2=now&&now.role==="admin";
+    if(esc2&&cur&&cur.role!=="admin") await supabaseClient.from("profiles").update({role:cur.role}).eq("id",me);
+    logR(esc2?"bad":"ok","Customer khud ko admin bana sakta hai?",esc2?"HAAN - bahut khatarnak! ps-mart-security.sql turant run karein (role wapas kar diya gaya hai).":"Nahi - role nahi badla");
+  }else logR("info","Role badalne ka test chhoda gaya","Upar ka checkbox tick karke (test customer account se) chalaiye.");
+
+  if(document.getElementById("optOrder").checked){
+    var oi=await supabaseClient.from("orders").insert({customer_id:me,total_amount:1,status:"cancelled",address:"SELFTEST - ignore",payment_method:"COD"}).select();
+    if(oi.data&&oi.data.length) logR("bad","Customer seedha order bana sakta hai (nakli total ke saath)?","HAAN - ps-mart-lockdown.sql chalaiye. (Ye nakli order #"+oi.data[0].id+" cancelled hai.)");
+    else logR("ok","Customer seedha order bana sakta hai?","Nahi - sirf place_order function se banega");
+  }else logR("info","Seedha order ka test chhoda gaya","Upar ka checkbox tick karke chalaiye.");
+}
+
+async function testEmail(){
+  var out=document.getElementById("mailOut"),b=document.getElementById("mailBtn");
+  b.disabled=true;out.innerHTML="Bhej raha hoon...";
+  var s=await supabaseClient.rpc("admin_send_test_email");
+  if(s.error||!s.data||s.data.sent!==true){
+    out.innerHTML='<div class="r bad"><b>❌ Test email nahi gayi</b><small>'+esc((s.error&&s.error.message)||(s.data&&s.data.message)||"ps-mart-phase3.sql run kiya hai?")+'</small></div>';b.disabled=false;return;
+  }
+  setTimeout(async function(){
+    var d=await supabaseClient.rpc("admin_email_debug");
+    var h="";
+    if(d.error||!d.data||d.data.error){h='<div class="r bad"><b>❌ Debug info nahi mili</b><small>'+esc((d.error&&d.error.message)||"")+'</small></div>';}
+    else{
+      var x=d.data;
+      h+='<div class="r '+(x.pg_net?"ok":"bad")+'"><b>'+(x.pg_net?"✅":"❌")+' pg_net extension</b></div>';
+      h+='<div class="r '+(x.url_set?"ok":"bad")+'"><b>'+(x.url_set?"✅":"❌")+' notify_url set hai</b>'+(x.url_set?"":"<small>ps-mart-admin.sql ke step 7 ki insert query run karein</small>")+'</div>';
+      h+='<div class="r '+(x.secret_set?"ok":"bad")+'"><b>'+(x.secret_set?"✅":"❌")+' notify_secret set hai</b></div>';
+      var rs=Array.isArray(x.responses)?x.responses:[];
+      if(!rs.length) h+='<div class="r warn"><b>⚠️ Abhi koi jawab nahi aaya</b><small>5-10 second ruk kar "Test email bhejein" dobara dabaiye.</small></div>';
+      rs.forEach(function(r,i){
+        var code=r.status_code,hint="";
+        if(code===200||code===201) hint="Email Brevo ko chali gayi. Inbox/Spam dekhiye, aur Brevo -> Transactional -> Logs.";
+        else if(code===401) hint="Edge Function mein 'Verify JWT' ko OFF karein.";
+        else if(code===403) hint="NOTIFY_SECRET Supabase Secrets aur psmart_settings mein ek jaisa nahi hai.";
+        else if(code===404) hint="Function ka naam 'notify' hona chahiye, aur deploy hona chahiye.";
+        else if(code===400) hint="Brevo ne mana kiya: sender email verified nahi hai ya BREVO_SENDER_EMAIL/ADMIN_EMAIL galat hai.";
+        else if(code===500||code===502) hint="Function andar fail hui: Secrets (BREVO_API_KEY etc.) check karein.";
+        else if(code==null) hint=r.error_msg||"Function tak request nahi pahunchi (notify_url galat?).";
+        h+='<div class="r '+((code===200||code===201)?"ok":"bad")+'"><b>'+(i===0?"Sabse naya jawab":"Purana jawab")+': status '+esc(code)+'</b><small>'+esc(hint)+'\n'+esc(r.content||"")+'</small></div>';
+      });
+    }
+    out.innerHTML=h;b.disabled=false;
+  },5000);
+}
+
+document.addEventListener("DOMContentLoaded",function(){paint();});
+</script>
+</body>
+</html>
