@@ -237,10 +237,11 @@ async function testEmail(){
       rs.forEach(function(r,i){
         var code=r.status_code,hint="";
         if(code===200||code===201) hint="Email Brevo ko chali gayi. Inbox/Spam dekhiye, aur Brevo -> Transactional -> Logs.";
-        else if(code===401) hint="Edge Function mein 'Verify JWT' ko OFF karein.";
+        else if(code===401&&/key not found/i.test(r.content||"")) hint="Function chal gayi, par Brevo ne API key nahi pehchani. Supabase Secrets mein BREVO_API_KEY naam ka secret sahi (xkeysib-...) key ke saath daaliye.";
+        else if(code===401) hint="Edge Function mein 'Verify JWT' OFF karein, ya ps-mart-email-fix.sql run karein.";
         else if(code===403) hint="NOTIFY_SECRET Supabase Secrets aur psmart_settings mein ek jaisa nahi hai.";
         else if(code===404) hint="Function ka naam 'notify' hona chahiye, aur deploy hona chahiye.";
-        else if(code===400) hint="Brevo ne mana kiya: sender email verified nahi hai ya BREVO_SENDER_EMAIL/ADMIN_EMAIL galat hai.";
+        else if(code===400) hint="Brevo ne mana kiya: sender email Brevo mein verified nahi hai, ya BREVO_SENDER_EMAIL / ADMIN_EMAIL galat hai.";
         else if(code===500||code===502) hint="Function andar fail hui: Secrets (BREVO_API_KEY etc.) check karein.";
         else if(code==null) hint=r.error_msg||"Function tak request nahi pahunchi (notify_url galat?).";
         h+='<div class="r '+((code===200||code===201)?"ok":"bad")+'"><b>'+(i===0?"Sabse naya jawab":"Purana jawab")+': status '+esc(code)+'</b><small>'+esc(hint)+'\n'+esc(r.content||"")+'</small></div>';

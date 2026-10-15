@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.postalpincode.in; object-src 'none'; base-uri 'self'; form-action 'self'">
+<script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
 <title>Checkout | PS Mart</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -170,15 +172,17 @@ button,input,select{font-family:inherit}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="config.js"></script>
 <script src="data.js"></script>
 <script src="app.js"></script>
 <script>
 /* =====================================================
    SETTINGS - sirf yahan badlav karein
 ===================================================== */
-var UPI_ID        = "7307453683@ybl";   /* <-- apni asli UPI ID likhiye, jaise ps.mart@okaxis */
-var UPI_NAME      = "PS Mart";            /* <-- customer ko payment ke waqt ye naam dikhega */
-var DELIVERY_DAYS = 5;                    /* <-- delivery mein kitne din lagte hain */
+var CFG          = window.PSMART_CONFIG || {};      /* settings config.js mein hain */
+var UPI_ID       = CFG.upiId || "YOUR-UPI-ID@bank";
+var UPI_NAME     = CFG.upiName || "PS Mart";
+var DELIVERY_DAYS = CFG.deliveryDays || 5;
 
 var placing = false;
 var checkoutGiftCard = null;
@@ -293,7 +297,7 @@ async function checkCheckoutGiftCard(){
   refreshPayBox();
 }
 
-/* ---------- place order ---------- */
+/* ---------- place order (ab server function place_order se) ---------- */
 async function placeOrder(){
   if(placing) return;
   var v=function(id){return $(id).value.trim();};
@@ -311,64 +315,46 @@ async function placeOrder(){
   var reset=function(){placing=false;btn.disabled=false;showPaymentSection();};
 
   try{
-    var pr=await supabaseClient.from("profiles").select("id, role").eq("id",user.id).maybeSingle();
-    if(pr.error||!pr.data){alert("Customer profile not found.");return reset();}
-    var profile=pr.data;
+    var c=cart();
+    if(!c.length){alert("Your cart is empty.");return reset();}
 
-    var t=await getTotals();
-    if(!t||!t.c.length){alert("Your cart is empty.");return reset();}
-    if(t.total<=0){alert("Unable to calculate order total.");return reset();}
-
-    var paymentMethod=method,paymentStatus="pending",utr=null;
-    if(t.final<=0){paymentMethod="Gift Card";paymentStatus="paid";}
-    else if(method==="COD"){paymentStatus="cod";}
-    else{
-      if(!upiReady()){alert("UPI abhi chalu nahi hai. Kripya Cash on Delivery chuniye.");return reset();}
-      utr=v("upiUtr");
-      if(!/^[0-9]{12}$/.test(utr)){alert("Pehle UPI se pay kijiye, phir 12 digit UTR number daaliye.");return reset();}
+    var utr=null;
+    if(method==="UPI"){
+      var t=await getTotals();
+      if(t&&t.final>0){
+        if(!upiReady()){alert("UPI abhi chalu nahi hai. Kripya Cash on Delivery chuniye.");return reset();}
+        utr=v("upiUtr");
+        if(!/^[0-9]{12}$/.test(utr)){alert("Pehle UPI se pay kijiye, phir 12 digit UTR number daaliye.");return reset();}
+      }
     }
+
+    var coupon=null;
+    try{var sc=JSON.parse(localStorage.getItem("psmart-applied-coupon")||"null");if(sc&&sc.code)coupon=sc.code;}catch(e){}
 
     var deliveryAddress=[fullName,phone,address,landmark,city+", "+state+" - "+pincode].filter(Boolean).join(", ");
-    var base={customer_id:profile.id,total_amount:t.final,status:"placed",address:deliveryAddress,payment_method:paymentMethod};
 
-    var ins=await supabaseClient.from("orders").insert(Object.assign({},base,{payment_status:paymentStatus,upi_utr:utr})).select().single();
-    if(ins.error){
-      if(ins.error.code==="23505"){alert("Ye UTR number pehle hi kisi order mein use ho chuka hai. Sahi UTR daaliye.");return reset();}
-      if(/column|schema cache/i.test(ins.error.message||"")){
-        /* payment columns abhi database mein nahi hain - purane tareeke se order banao */
-        var legacy=Object.assign({},base);
-        if(utr) legacy.payment_method=paymentMethod+" | UTR "+utr+" | Pending verification";
-        ins=await supabaseClient.from("orders").insert(legacy).select().single();
-      }
-    }
-    if(ins.error){console.log(ins.error);alert("Order could not be created: "+ins.error.message);return reset();}
-    var order=ins.data;
-
-    var items=[];
-    t.c.forEach(function(item){
-      var p=t.products.find(function(p){return String(p.id)===String(item.id);});
-      if(p) items.push({order_id:order.id,product_id:p.id,seller_id:p.seller_id,quantity:Number(item.qty||1),price:p.price});
+    var r=await supabaseClient.rpc("place_order",{
+      p_items:c.map(function(i){return {id:String(i.id),qty:Number(i.qty||1)};}),
+      p_address:deliveryAddress,
+      p_method:method,
+      p_utr:utr,
+      p_coupon_code:coupon,
+      p_gift_card_id:checkoutGiftCard?String(checkoutGiftCard.id):null
     });
-    if(!items.length){alert("No valid products found for this order.");return reset();}
-    var ie=(await supabaseClient.from("order_items").insert(items)).error;
-    if(ie){
-      console.log(ie);
-      try{await supabaseClient.from("orders").update({status:"cancelled"}).eq("id",order.id);}catch(e){}
-      alert("Order save nahi ho paya, kripya dobara try kijiye.");return reset();
+
+    if(r.error){
+      console.log(r.error);
+      var m=r.error.message||"Order nahi ho paya.";
+      if(r.error.code==="23505") m="Ye UTR number pehle hi kisi order mein use ho chuka hai. Sahi UTR daaliye.";
+      else if(r.error.code==="PGRST202") m="Setup adhura hai: ps-mart-phase2.sql ko Supabase SQL Editor mein run kijiye.";
+      if(/coupon/i.test(m)){localStorage.removeItem("psmart-applied-coupon");}
+      alert(m);return reset();
     }
 
-    var giftNote="";
-    if(checkoutGiftCard&&t.gift>0){
-      var g=await supabaseClient.rpc("use_gift_card",{p_card_id:checkoutGiftCard.id,p_amount:t.gift});
-      if(g.error||!g.data||g.data.success!==true){
-        console.error("Gift card error:",g.error||g.data);
-        giftNote="⚠️ Gift card use nahi ho paya. Support se sampark karein.";
-      }
-    }
-
+    var res=r.data;
     ["psmart-cart","psmart-applied-coupon","psmart-auto-apply-coupon"].forEach(function(k){localStorage.removeItem(k);});
     try{updateCount();}catch(e){}
-    showDone(order,paymentMethod,paymentStatus,t.final,giftNote);
+    showDone({id:res.order_id},res.payment_method,res.payment_status,res.final,"");
   }catch(err){
     console.error(err);alert("Kuch galat ho gaya. Dobara try kijiye.");reset();
   }
