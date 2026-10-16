@@ -835,6 +835,12 @@ function orderPay(order){
     return {kind:"ok",text:"🎁 Gift Card (paid)",utr:""};
   }
 
+  if(/^ONLINE/i.test(m)){
+    return order.payment_status === "paid"
+      ? {kind:"ok",text:"✅ Online paid",utr:""}
+      : {kind:"onl",text:"⏳ Online payment baaki",utr:""};
+  }
+
   if(/^UPI/i.test(m)){
     return order.payment_status === "paid"
       ? {kind:"ok",text:"✅ UPI paid",utr:utr}
@@ -918,7 +924,7 @@ async function loadOrders(){
 
     let actions = "";
 
-    if(overall === "placed"){
+    if(overall === "placed" && pay.kind !== "onl"){
 
       actions +=
         `<button class="approve btn-sm"

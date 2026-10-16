@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.postalpincode.in; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://checkout.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.postalpincode.in https://api.razorpay.com https://lumberjack.razorpay.com https://lumberjack-cx.razorpay.com; frame-src https://api.razorpay.com https://checkout.razorpay.com; object-src 'none'; base-uri 'self'">
 <script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
 <title>My Orders | PS Mart</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -103,6 +103,7 @@ button,input,select{font-family:inherit}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="config.js"></script>
 <script src="data.js"></script>
 <script src="app.js"></script>
@@ -137,6 +138,10 @@ function paymentInfo(o){
   var utr=o.upi_utr||((m.match(/UTR\s*(\d{12})/)||[])[1])||"";
   if(/^COD/i.test(m)) return {cls:"pay-cod",text:"💵 Delivery par "+inr(o.total_amount)+" dijiye",utr:""};
   if(/gift/i.test(m)) return {cls:"pay-ok",text:"🎁 Gift Card se paid",utr:""};
+  if(/^ONLINE/i.test(m)){
+    if(st==="paid") return {cls:"pay-ok",text:"✅ Online payment ho gaya",utr:""};
+    return {cls:"pay-wait",text:"⏳ Payment baaki hai",utr:""};
+  }
   if(/^UPI/i.test(m)){
     if(st==="paid") return {cls:"pay-ok",text:"✅ UPI payment mil gaya",utr:utr};
     return {cls:"pay-wait",text:"⏳ UPI payment verify ho raha hai",utr:utr};
@@ -206,6 +211,8 @@ function orderCard(order){
     var d=new Date(order.created_at);d.setDate(d.getDate()+DELIVERY_DAYS);
     eta='<div class="eta">🚚 Expected delivery: <b>'+fmtDate(d)+'</b></div>';
   }
+  var payBtn=(/^ONLINE/i.test(String(order.payment_method||""))&&order.payment_status!=="paid"&&os!=="cancelled")
+    ?'<button class="goldbtn" style="margin-top:14px" data-id="'+esc(order.id)+'" onclick="payNow(this.dataset.id,this)">💳 Abhi Pay Karein</button>':"";
   var cancel=(String(order.status).toLowerCase()==="placed"&&os==="placed")
     ?'<button class="cancel-btn" data-id="'+esc(order.id)+'" onclick="cancelOrder(this.dataset.id)">❌ Order Cancel Karein</button>':"";
 
@@ -216,7 +223,7 @@ function orderCard(order){
     +'<div style="min-width:200px"><h3>Payment</h3><div class="price">'+inr(order.total_amount)+'</div>'
     +'<p><span class="badge '+pay.cls+'">'+pay.text+'</span></p>'
     +(pay.utr?'<p style="color:var(--muted)">UTR: '+esc(pay.utr)+'</p>':'')+'</div></div>'
-    +shipHtml+cancel+'</div></div>';
+    +shipHtml+payBtn+cancel+'</div></div>';
 }
 
 async function loadOrders(silent){
@@ -249,6 +256,33 @@ async function loadOrders(silent){
   STATE={orders:o.data,items:items,products:products,sellerOrders:so.data||[]};
   if(!silent||!document.getElementById("chips").innerHTML) renderChips();
   renderOrders();
+}
+
+async function payNow(orderId,btn){
+  btn.disabled=true;var old=btn.textContent;btn.textContent="Payment khul raha hai...";
+  var user=(await supabaseClient.auth.getUser()).data.user;
+  var r=await supabaseClient.functions.invoke("payments",{body:{action:"create",order_id:orderId}});
+  if(r.error||!r.data||r.data.error){
+    alert((r.data&&r.data.error)||(r.error&&r.error.message)||"Payment shuru nahi ho paya.");
+    btn.disabled=false;btn.textContent=old;return;
+  }
+  var d=r.data,settled=false;
+  var rzp=new Razorpay({
+    key:d.key_id,amount:d.amount,currency:d.currency||"INR",order_id:d.razorpay_order_id,
+    name:"PS Mart",description:"Order #"+orderId,
+    prefill:{email:(user&&user.email)||""},theme:{color:"#43250f"},
+    handler:async function(resp){
+      settled=true;
+      var v=await supabaseClient.functions.invoke("payments",{body:{action:"verify",
+        razorpay_order_id:resp.razorpay_order_id,razorpay_payment_id:resp.razorpay_payment_id,razorpay_signature:resp.razorpay_signature}});
+      if(v.error||!v.data||v.data.success!==true) alert("Payment hua par verify nahi ho paya. Order ID #"+orderId+" ke saath support se sampark karein.");
+      else alert("Payment ho gaya ✅");
+      loadOrders();
+    },
+    modal:{ondismiss:function(){if(!settled){btn.disabled=false;btn.textContent=old;}}}
+  });
+  rzp.on("payment.failed",function(resp){alert((resp&&resp.error&&resp.error.description)||"Payment fail ho gaya.");btn.disabled=false;btn.textContent=old;});
+  rzp.open();
 }
 
 async function cancelOrder(orderId){

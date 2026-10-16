@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.postalpincode.in; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://checkout.razorpay.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.postalpincode.in https://api.razorpay.com https://lumberjack.razorpay.com https://lumberjack-cx.razorpay.com; frame-src https://api.razorpay.com https://checkout.razorpay.com; object-src 'none'; base-uri 'self'">
 <script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
 <title>Checkout | PS Mart</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -127,34 +127,11 @@ button,input,select{font-family:inherit}
         <h2><span class="co-num">2</span>Payment Method</h2>
         <p class="sub">Apna payment tareeka chuniye.</p>
 
-        <label class="pay-opt on" id="optUPI"><input type="radio" name="pay" value="UPI" checked onchange="showPaymentSection()">
-          <span><b>📱 UPI</b><small>Google Pay, PhonePe, Paytm ya koi bhi UPI app</small></span></label>
-
-        <div id="upiPanel">
-          <div id="upiWarn"></div>
-          <div class="upi-top">
-            <div id="upiQr"></div>
-            <div class="upi-steps">
-              <div><b>1.</b> Neeche wale amount ko UPI se pay kijiye:</div>
-              <div style="font-size:24px;font-weight:700;color:var(--brown)" id="upiAmount">₹0</div>
-              <div>Pay to: <b id="upiName"></b></div>
-              <div class="upi-id"><span id="upiIdText"></span><button type="button" class="co-link" onclick="copyUpiId()">Copy</button></div>
-              <div style="margin-top:8px"><a class="goldbtn" id="upiAppBtn" href="#" style="padding:10px 16px;font-size:14px">📲 UPI app se pay karein</a></div>
-              <div style="font-size:12px;color:var(--muted);margin-top:6px">Phone par button dabaiye. Computer par QR scan kijiye.</div>
-            </div>
-          </div>
-          <div style="margin-top:14px">
-            <label class="f" for="upiUtr"><b>2.</b> Payment ke baad UPI app mein dikhne wala 12 digit UTR / Ref No. daaliye *</label>
-            <input id="upiUtr" type="tel" maxlength="12" inputmode="numeric" placeholder="12 digit UTR number">
-            <div style="font-size:12px;color:var(--muted);margin-top:6px">Hum aapka payment verify karke order confirm karenge.</div>
-          </div>
-        </div>
+        <label class="pay-opt on" id="optOnline"><input type="radio" name="pay" value="ONLINE" checked onchange="showPaymentSection()">
+          <span><b>💳 Online Payment</b><small>UPI (GPay, PhonePe, Paytm), Debit / Credit Card, Net Banking, Wallet</small></span></label>
 
         <label class="pay-opt" id="optCOD"><input type="radio" name="pay" value="COD" onchange="showPaymentSection()">
           <span><b>💵 Cash on Delivery</b><small>Saaman milne par paise dijiye</small></span></label>
-
-        <label class="pay-opt off" id="optCard"><input type="radio" name="pay" value="Card" disabled>
-          <span><b>💳 Credit / Debit Card</b><small>Jaldi aa raha hai</small></span></label>
 
         <button type="button" class="placebtn" id="placeBtn" onclick="placeOrder()">🛍️ Place Order</button>
         <div class="trust">🔒 Aapki jaankari surakshit hai</div>
@@ -171,7 +148,7 @@ button,input,select{font-family:inherit}
 <div id="doneBox" style="display:none"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="config.js"></script>
 <script src="data.js"></script>
 <script src="app.js"></script>
@@ -180,8 +157,6 @@ button,input,select{font-family:inherit}
    SETTINGS - sirf yahan badlav karein
 ===================================================== */
 var CFG          = window.PSMART_CONFIG || {};      /* settings config.js mein hain */
-var UPI_ID       = CFG.upiId || "YOUR-UPI-ID@bank";
-var UPI_NAME     = CFG.upiName || "PS Mart";
 var DELIVERY_DAYS = CFG.deliveryDays || 5;
 
 var placing = false;
@@ -194,7 +169,6 @@ function etaDate(days){
   var d=new Date();d.setDate(d.getDate()+days);
   return d.toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"});
 }
-function upiReady(){return UPI_ID && UPI_ID.indexOf("@")>0 && UPI_ID.indexOf("YOUR")<0;}
 
 /* ---------- address prefill ---------- */
 function fillAddress(a){
@@ -241,39 +215,13 @@ async function refreshPayBox(){
    +(t.gift?'<div class="row"><span>Gift card</span><span>-'+inr(t.gift)+'</span></div>':'')
    +'<div class="row"><span>Delivery</span><span class="free">FREE</span></div>'
    +'<div class="row tot"><span>Amount payable</span><span>'+inr(t.final)+'</span></div>';
-  renderUpi(t.final);
-}
-
-/* ---------- UPI panel ---------- */
-function renderUpi(amount){
-  $("upiAmount").textContent=inr(amount);
-  $("upiName").textContent=UPI_NAME;
-  $("upiIdText").textContent=upiReady()?UPI_ID:"(set nahi hai)";
-  var qr=$("upiQr");qr.innerHTML="";
-  if(!upiReady()){
-    $("upiWarn").innerHTML='<div class="upi-warn">⚠️ UPI ID abhi set nahi hui. Is page ke code mein <b>UPI_ID</b> mein apni UPI ID likhiye.</div>';
-    $("upiAppBtn").style.display="none";return;
-  }
-  $("upiWarn").innerHTML="";$("upiAppBtn").style.display="";
-  var link="upi://pay?pa="+encodeURIComponent(UPI_ID)+"&pn="+encodeURIComponent(UPI_NAME)+"&am="+Number(amount).toFixed(2)+"&cu=INR&tn="+encodeURIComponent("PS Mart order");
-  $("upiAppBtn").href=link;
-  if(typeof QRCode!=="undefined"&&amount>0){try{new QRCode(qr,{text:link,width:180,height:180});}catch(e){}}
-  else if(amount<=0){qr.textContent="Payment ki zaroorat nahi";}
-  else{qr.textContent="QR load nahi hua";}
-}
-function copyUpiId(){
-  if(!upiReady()) return;
-  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(UPI_ID).then(function(){alert("UPI ID copy ho gayi: "+UPI_ID);});}
-  else{alert("UPI ID: "+UPI_ID);}
 }
 
 function showPaymentSection(){
   var m=(document.querySelector('input[name="pay"]:checked')||{}).value;
-  $("upiPanel").style.display=(m==="UPI")?"block":"none";
-  $("optUPI").classList.toggle("on",m==="UPI");
+  $("optOnline").classList.toggle("on",m==="ONLINE");
   $("optCOD").classList.toggle("on",m==="COD");
-  $("placeBtn").textContent=(m==="COD")?"🛍️ Place Order (Cash on Delivery)":"🛍️ Place Order";
-  if(m==="UPI") refreshPayBox();
+  $("placeBtn").textContent=(m==="COD")?"🛍️ Place Order (Cash on Delivery)":"💳 Pay & Place Order";
 }
 
 /* ---------- gift card (pehle jaisa) ---------- */
@@ -297,12 +245,41 @@ async function checkCheckoutGiftCard(){
   refreshPayBox();
 }
 
-/* ---------- place order (ab server function place_order se) ---------- */
+/* ---------- Razorpay payment ---------- */
+function openRazorpay(orderId,prefill){
+  return new Promise(async function(resolve){
+    var r=await supabaseClient.functions.invoke("payments",{body:{action:"create",order_id:orderId}});
+    if(r.error||!r.data||r.data.error){
+      var m=(r.data&&r.data.error)||(r.error&&r.error.message)||"Payment shuru nahi ho paya.";
+      return resolve({ok:false,msg:m});
+    }
+    var d=r.data,settled=false;
+    var rzp=new Razorpay({
+      key:d.key_id,amount:d.amount,currency:d.currency||"INR",order_id:d.razorpay_order_id,
+      name:"PS Mart",description:"Order #"+orderId,
+      prefill:prefill||{},theme:{color:"#43250f"},
+      handler:async function(resp){
+        settled=true;
+        var v=await supabaseClient.functions.invoke("payments",{body:{action:"verify",
+          razorpay_order_id:resp.razorpay_order_id,razorpay_payment_id:resp.razorpay_payment_id,razorpay_signature:resp.razorpay_signature}});
+        if(v.error||!v.data||v.data.success!==true) return resolve({ok:false,msg:"Payment hua par verify nahi ho paya. Order ID #"+orderId+" ke saath support se sampark karein."});
+        resolve({ok:true});
+      },
+      modal:{ondismiss:function(){if(!settled)resolve({ok:false,msg:"Payment poora nahi hua."});}}
+    });
+    rzp.on("payment.failed",function(resp){
+      if(!settled){settled=true;resolve({ok:false,msg:(resp&&resp.error&&resp.error.description)||"Payment fail ho gaya."});}
+    });
+    rzp.open();
+  });
+}
+
+/* ---------- place order (server function place_order se) ---------- */
 async function placeOrder(){
   if(placing) return;
   var v=function(id){return $(id).value.trim();};
   var fullName=v("fullName"),phone=v("phone"),address=v("address"),city=v("city"),pincode=v("pincode"),state=$("state").value,landmark=v("landmark");
-  var method=(document.querySelector('input[name="pay"]:checked')||{}).value||"UPI";
+  var method=(document.querySelector('input[name="pay"]:checked')||{}).value||"ONLINE";
 
   if(!fullName||!phone||!address||!city||!pincode||!state){alert("Please fill all delivery details.");return;}
   if(!/^[6-9][0-9]{9}$/.test(phone)){alert("Sahi 10 digit mobile number daaliye.");return;}
@@ -318,16 +295,6 @@ async function placeOrder(){
     var c=cart();
     if(!c.length){alert("Your cart is empty.");return reset();}
 
-    var utr=null;
-    if(method==="UPI"){
-      var t=await getTotals();
-      if(t&&t.final>0){
-        if(!upiReady()){alert("UPI abhi chalu nahi hai. Kripya Cash on Delivery chuniye.");return reset();}
-        utr=v("upiUtr");
-        if(!/^[0-9]{12}$/.test(utr)){alert("Pehle UPI se pay kijiye, phir 12 digit UTR number daaliye.");return reset();}
-      }
-    }
-
     var coupon=null;
     try{var sc=JSON.parse(localStorage.getItem("psmart-applied-coupon")||"null");if(sc&&sc.code)coupon=sc.code;}catch(e){}
 
@@ -337,7 +304,6 @@ async function placeOrder(){
       p_items:c.map(function(i){return {id:String(i.id),qty:Number(i.qty||1)};}),
       p_address:deliveryAddress,
       p_method:method,
-      p_utr:utr,
       p_coupon_code:coupon,
       p_gift_card_id:checkoutGiftCard?String(checkoutGiftCard.id):null
     });
@@ -345,16 +311,25 @@ async function placeOrder(){
     if(r.error){
       console.log(r.error);
       var m=r.error.message||"Order nahi ho paya.";
-      if(r.error.code==="23505") m="Ye UTR number pehle hi kisi order mein use ho chuka hai. Sahi UTR daaliye.";
-      else if(r.error.code==="PGRST202") m="Setup adhura hai: ps-mart-phase2.sql ko Supabase SQL Editor mein run kijiye.";
+      if(r.error.code==="PGRST202") m="Setup adhura hai: ps-mart-razorpay.sql ko Supabase SQL Editor mein run kijiye.";
       if(/coupon/i.test(m)){localStorage.removeItem("psmart-applied-coupon");}
       alert(m);return reset();
     }
 
     var res=r.data;
+    /* order ban gaya (stock reserve) - cart khali karo */
     ["psmart-cart","psmart-applied-coupon","psmart-auto-apply-coupon"].forEach(function(k){localStorage.removeItem(k);});
     try{updateCount();}catch(e){}
-    showDone({id:res.order_id},res.payment_method,res.payment_status,res.final,"");
+
+    var status=res.payment_status;
+    var note="";
+    if(res.payment_method==="ONLINE"&&status==="pending"){
+      btn.textContent="Payment khul raha hai...";
+      var pay=await openRazorpay(res.order_id,{name:fullName,contact:phone,email:user.email||""});
+      if(pay.ok){status="paid";}
+      else{note=(pay.msg||"Payment poora nahi hua.")+" Aapka order save hai. My Orders mein 'Abhi Pay Karein' dabaiye.";}
+    }
+    showDone({id:res.order_id},res.payment_method,status,res.final,note);
   }catch(err){
     console.error(err);alert("Kuch galat ho gaya. Dobara try kijiye.");reset();
   }
@@ -362,11 +337,11 @@ async function placeOrder(){
 
 function showDone(order,method,status,total,note){
   var payText=method==="COD"?("💵 Delivery par "+inr(total)+" dijiye")
-    :status==="paid"?"✅ Payment complete"
-    :"⏳ UPI payment verify ho raha hai";
+    :status==="paid"?"✅ Payment ho gaya"
+    :"⏳ Payment baaki hai";
   $("checkoutPage").style.display="none";
   var d=$("doneBox");d.style.display="block";
-  d.innerHTML='<div class="pm-wrap"><div class="done"><div class="tick">✓</div><h1>Order Placed!</h1>'
+  d.innerHTML='<div class="pm-wrap"><div class="done"><div class="tick">'+(status==="paid"||method==="COD"?"✓":"!")+'</div><h1>'+(status==="paid"||method==="COD"?"Order Placed!":"Order Save Hua")+'</h1>'
    +'<p style="color:var(--muted);margin:0">Shukriya! Aapka order mil gaya hai.</p>'
    +'<div class="info"><div>🧾 Order ID: <b>#'+esc(order.id)+'</b></div>'
    +'<div>🚚 Expected delivery: <b>'+esc(etaDate(DELIVERY_DAYS))+'</b></div>'

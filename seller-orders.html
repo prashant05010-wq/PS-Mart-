@@ -74,6 +74,7 @@ function payInfo(o){
   var m=String(o.payment_method||""),utr=o.upi_utr||((m.match(/UTR\s*(\d{12})/)||[])[1])||"";
   if(/^COD/i.test(m)) return {kind:"cod",text:"💵 Cash on Delivery: customer se "+inr(o.total_amount)+" lena hai",utr:""};
   if(/gift/i.test(m)) return {kind:"ok",text:"🎁 Gift Card se paid",utr:""};
+  if(/^ONLINE/i.test(m)) return o.payment_status==="paid"?{kind:"ok",text:"✅ Online payment ho chuka hai",utr:""}:{kind:"onl",text:"⏳ Online payment baaki hai: abhi saaman mat bhejiye",utr:""};
   if(/^UPI/i.test(m)) return o.payment_status==="paid"?{kind:"ok",text:"✅ UPI payment confirm ho chuka hai",utr:utr}:{kind:"wait",text:"⏳ UPI payment verify karna baaki hai",utr:utr};
   return {kind:"cod",text:esc(m||"Payment"),utr:""};
 }
@@ -151,7 +152,7 @@ function orderBox(so){
     return '<div class="item"><span class="label">Product:</span> '+esc(p.name||"Product")+' &nbsp;×&nbsp; <b>'+Number(i.quantity||1)+'</b><br><span class="label">Item amount:</span> '+inr(i.price)+'</div>';
   }).join(""):'<div class="row">Product information unavailable.</div>';
 
-  var pay=payInfo(order),payHtml='<div class="paybox '+(pay.kind==="wait"?"wait":pay.kind==="ok"?"ok":"")+'"><b>'+pay.text+'</b>'
+  var pay=payInfo(order),payHtml='<div class="paybox '+((pay.kind==="wait"||pay.kind==="onl")?"wait":pay.kind==="ok"?"ok":"")+'"><b>'+pay.text+'</b>'
     +(pay.utr?'<br>UTR number: <b>'+esc(pay.utr)+'</b> <small>(apne bank/UPI app mein check karein)</small>':'');
   if(pay.kind==="wait"&&DATA.hasPayCols&&!cancelled){
     payHtml+='<br><button class="btn gold" id="pay-'+esc(so.id)+'" data-order="'+esc(so.order_id)+'" onclick="confirmPayment(this)">✅ Payment mil gaya, confirm karein</button>';
@@ -200,6 +201,9 @@ async function updateStatus(btn){
   var sel=document.getElementById("status-"+id);
   if(!sel){alert("Status selector not found ❌");return;}
   var newStatus=sel.value;
+  if(btn.dataset.payment==="onl"&&["packed","shipped","out_for_delivery","delivered"].indexOf(newStatus)>-1){
+    alert("Is order ka online payment abhi nahi hua hai. Payment hone ke baad hi saaman bhejiye.");return;
+  }
   if(btn.dataset.payment==="wait"&&["packed","shipped","out_for_delivery","delivered"].indexOf(newStatus)>-1){
     if(!confirm("Is UPI order ka payment abhi verify nahi hua hai. Phir bhi aage badhna hai?")) return;
   }
