@@ -180,6 +180,8 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
 
     <button class="tab" onclick="window.location.href='admin-selftest.html'">🧪 Self-Test</button>
 
+    <button class="tab" onclick="showSection('returnsSection',this);loadReturns()">↩️ Returns</button>
+
   </div>
 
 
@@ -338,6 +340,19 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
       <div id="giftCardsList">Loading gift cards...</div>
 
     </div>
+
+  </div>
+
+
+  <!-- ================= RETURNS (NEW) ================= -->
+
+  <div id="returnsSection" class="section hidden">
+
+    <h2>↩️ Return / Refund Requests</h2>
+
+    <button class="refresh" onclick="loadReturns()">🔄 Refresh</button>
+
+    <div id="returns">Tab kholne par list aayegi...</div>
 
   </div>
 
@@ -1784,6 +1799,108 @@ async function readAllNotifs(){
     .eq("is_read",false);
 
   loadNotifications();
+
+}
+
+
+/* ================= RETURNS (NEW) ================= */
+
+async function loadReturns(){
+
+  const box = document.getElementById("returns");
+
+  const {data,error} =
+    await supabaseClient
+      .from("return_requests")
+      .select("*")
+      .order("id",{ascending:false})
+      .limit(100);
+
+  if(error){
+
+    box.innerHTML =
+      "❌ " + esc(error.message) +
+      "<br><small>ps-mart-returns.sql Supabase mein run kiya hai?</small>";
+
+    return;
+  }
+
+  if(!data || data.length === 0){
+
+    box.innerHTML = "<div class='empty'>Koi return request nahi.</div>";
+
+    return;
+  }
+
+  box.innerHTML = data.map(r => `
+
+    <div class="card">
+
+      <h3>↩️ Order #${esc(r.order_id)}</h3>
+
+      <p><b>Wajah:</b> ${esc(r.reason)}</p>
+
+      <p>
+        <b>Status:</b>
+        <span class="status">${esc(r.status)}</span>
+        ${r.admin_note ? " — " + esc(r.admin_note) : ""}
+      </p>
+
+      <p><small>${esc(new Date(r.created_at).toLocaleString("en-IN"))}</small></p>
+
+      ${
+        r.status === "requested"
+          ? `<button class="approve" onclick="setReturn('${esc(r.id)}','approved')">✅ Approve</button>
+             <button class="reject" onclick="setReturn('${esc(r.id)}','rejected')">❌ Reject</button>`
+          : ""
+      }
+
+      ${
+        r.status === "approved"
+          ? `<button class="gold" onclick="setReturn('${esc(r.id)}','refunded')">💰 Refund ho gaya</button>`
+          : ""
+      }
+
+    </div>
+
+  `).join("");
+
+}
+
+async function setReturn(id,status){
+
+  let note = null;
+
+  if(status !== "approved"){
+
+    note = prompt(
+      status === "rejected"
+        ? "Reject karne ki wajah (customer ko dikhegi):"
+        : "Refund ka note (jaise: UPI se bhej diya, Ref no.):",
+      ""
+    );
+
+    if(note === null){
+      return;
+    }
+
+  }
+
+  const {data,error} =
+    await supabaseClient.rpc("admin_set_return",{
+      p_id:String(id),
+      p_status:status,
+      p_note:note
+    });
+
+  if(error || !data || data.success !== true){
+
+    alert("Nahi ho paya: " + ((error && error.message) || (data && data.message) || ""));
+
+    return;
+  }
+
+  loadReturns();
 
 }
 

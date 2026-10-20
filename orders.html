@@ -111,7 +111,7 @@ button,input,select{font-family:inherit}
 var DELIVERY_DAYS = (window.PSMART_CONFIG&&PSMART_CONFIG.deliveryDays)||5;   /* config.js se */
 var STATUS_LIST = ["placed","confirmed","packed","shipped","out_for_delivery","delivered"];
 var LABELS = ["Ordered","Confirmed","Packed","Shipped","Out for Delivery","Delivered"];
-var STATE = {orders:[],items:[],products:[],sellerOrders:[]};
+var STATE = {orders:[],items:[],products:[],sellerOrders:[],returns:[]};
 var FILTER = "all";
 
 function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
@@ -213,6 +213,17 @@ function orderCard(order){
   }
   var payBtn=(/^ONLINE/i.test(String(order.payment_method||""))&&order.payment_status!=="paid"&&os!=="cancelled")
     ?'<button class="goldbtn" style="margin-top:14px" data-id="'+esc(order.id)+'" onclick="payNow(this.dataset.id,this)">💳 Abhi Pay Karein</button>':"";
+  var rr=(STATE.returns||[]).find(function(x){return String(x.order_id)===String(order.id);});
+  var retHtml="";
+  if(rr){
+    retHtml='<div class="eta" style="margin-top:14px">↩️ Return request: <b>'+esc(fmtStatus(rr.status))+'</b>'+(rr.admin_note?' — '+esc(rr.admin_note):'')+'</div>';
+  }else if(os==="delivered"){
+    var dts=ships.filter(function(s){return s.status==="delivered"&&s.updated_at;}).map(function(s){return new Date(s.updated_at).getTime();});
+    var dl=dts.length?Math.max.apply(null,dts):0;
+    if(dl&&Date.now()-dl<=7*86400000){
+      retHtml='<button class="cancel-btn" style="margin-top:14px" data-id="'+esc(order.id)+'" onclick="askReturn(this.dataset.id)">↩️ Return / Refund Request</button>';
+    }
+  }
   var cancel=(String(order.status).toLowerCase()==="placed"&&os==="placed")
     ?'<button class="cancel-btn" data-id="'+esc(order.id)+'" onclick="cancelOrder(this.dataset.id)">❌ Order Cancel Karein</button>':"";
 
@@ -223,7 +234,7 @@ function orderCard(order){
     +'<div style="min-width:200px"><h3>Payment</h3><div class="price">'+inr(order.total_amount)+'</div>'
     +'<p><span class="badge '+pay.cls+'">'+pay.text+'</span></p>'
     +(pay.utr?'<p style="color:var(--muted)">UTR: '+esc(pay.utr)+'</p>':'')+'</div></div>'
-    +shipHtml+payBtn+cancel+'</div></div>';
+    +shipHtml+payBtn+retHtml+cancel+'</div></div>';
 }
 
 async function loadOrders(silent){
@@ -253,9 +264,22 @@ async function loadOrders(silent){
   if(pids.length){var pr=await supabaseClient.from("products").select("*").in("id",pids);products=pr.data||[];}
   var so=await supabaseClient.from("seller_orders").select("*").in("order_id",ids);
   if(so.error) console.log("Seller orders error:",so.error);
-  STATE={orders:o.data,items:items,products:products,sellerOrders:so.data||[]};
+  var rq=await supabaseClient.from("return_requests").select("order_id,status,admin_note").in("order_id",ids.map(String));
+  STATE={orders:o.data,items:items,products:products,sellerOrders:so.data||[],returns:(rq&&rq.data)||[]};
   if(!silent||!document.getElementById("chips").innerHTML) renderChips();
   renderOrders();
+}
+
+async function askReturn(orderId){
+  var reason=prompt("Return / refund ki wajah likhiye (jaise: saaman kharab nikla, galat saaman aaya):");
+  if(reason===null) return;
+  var r=await supabaseClient.rpc("request_return",{p_order_id:String(orderId),p_reason:reason});
+  if(r.error||!r.data||r.data.success!==true){
+    alert((r.data&&r.data.message)||(r.error&&r.error.message)||"Request nahi ho paya. ps-mart-returns.sql run kiya hai?");
+    return;
+  }
+  alert("Return request bhej di gayi ✅");
+  loadOrders();
 }
 
 async function payNow(orderId,btn){
