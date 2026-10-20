@@ -318,7 +318,6 @@ async function cancelOrder(orderId){
 }
 
 loadOrders();
-document.addEventListener("visibilitychange",function(){if(!document.hidden)loadOrders(true);});
 
 /* seller ke status badalne par apne aap refresh */
 var lastSig="";
@@ -328,9 +327,8 @@ setInterval(async function(){
     var ids=STATE.orders.map(function(x){return x.id;});
     var a=await supabaseClient.from("seller_orders").select("order_id,status,tracking_number,shipping_provider,updated_at").in("order_id",ids);
     var b=await supabaseClient.from("orders").select("id,status,payment_status").in("id",ids);
-    var c=await supabaseClient.from("return_requests").select("order_id,status,admin_note,updated_at").in("order_id",ids.map(String));
     if(a.error||b.error) return;
-    var sig=JSON.stringify([a.data,b.data,c.data]);
+    var sig=JSON.stringify([a.data,b.data]);
     if(lastSig&&sig!==lastSig) await loadOrders(true);
     lastSig=sig;
   }catch(e){console.log("Background refresh error:",e);}
