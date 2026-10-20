@@ -182,6 +182,8 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
 
     <button class="tab" onclick="showSection('returnsSection',this);loadReturns()">↩️ Returns</button>
 
+    <button class="tab" onclick="showSection('payoutsSection',this);loadPayouts()">💸 Payouts</button>
+
   </div>
 
 
@@ -353,6 +355,23 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
     <button class="refresh" onclick="loadReturns()">🔄 Refresh</button>
 
     <div id="returns">Tab kholne par list aayegi...</div>
+
+  </div>
+
+
+  <!-- ================= PAYOUTS (NEW) ================= -->
+
+  <div id="payoutsSection" class="section hidden">
+
+    <h2>💸 Payouts &amp; Commission</h2>
+
+    <button class="refresh" onclick="loadPayouts()">🔄 Refresh</button>
+
+    <div id="payoutSummary">Tab kholne par aayega...</div>
+
+    <h3 style="margin-top:22px">Seller Withdraw Requests</h3>
+
+    <div id="payoutList"></div>
 
   </div>
 
@@ -1850,8 +1869,7 @@ async function loadReturns(){
 
       ${
         r.status === "requested"
-          ? `<button class="approve" onclick="setReturn('${esc(r.id)}','approved')">✅ Approve</button>
-             <button class="reject" onclick="setReturn('${esc(r.id)}','rejected')">❌ Reject</button>`
+          ? `<small>⏳ Seller ke faisle ka intezaar (Approve / Reject seller karta hai)</small>`
           : ""
       }
 
@@ -1901,6 +1919,166 @@ async function setReturn(id,status){
   }
 
   loadReturns();
+
+}
+
+
+/* ================= PAYOUTS (NEW) ================= */
+
+function rupee(n){
+  return "₹" + Number(n || 0).toLocaleString("en-IN", {maximumFractionDigits:2});
+}
+
+async function loadPayouts(){
+
+  const sum = document.getElementById("payoutSummary");
+  const list = document.getElementById("payoutList");
+
+  const f = await supabaseClient.rpc("admin_finance");
+
+  if(f.error || !f.data || f.data.error){
+
+    sum.innerHTML =
+      "❌ " + esc((f.error && f.error.message) || (f.data && f.data.error) || "") +
+      "<br><small>ps-mart-payouts.sql Supabase mein run kiya hai?</small>";
+
+    return;
+  }
+
+  const x = f.data;
+
+  sum.innerHTML = `
+
+    <div class="stats" style="margin-top:14px">
+
+      <div class="stat"><p>🛒 Deliver hui sales</p><h2>${rupee(x.sales_delivered)}</h2></div>
+
+      <div class="stat"><p>💵 Aapka Commission (${esc(x.rate)}%)</p><h2>${rupee(x.commission_earned)}</h2></div>
+
+      <div class="stat"><p>🏪 Sellers ko dena baaki</p><h2>${rupee(x.owed_to_sellers)}</h2></div>
+
+      <div class="stat"><p>⏳ Withdraw pending</p><h2>${rupee(x.payouts_pending)}</h2></div>
+
+      <div class="stat"><p>✅ Sellers ko diya</p><h2>${rupee(x.payouts_paid)}</h2></div>
+
+      <div class="stat"><p>🚚 COD ka commission baaki</p><h2>${rupee(x.cod_commission_due)}</h2></div>
+
+    </div>
+
+    <p><small>
+      Aapka commission Razorpay se aapke bank mein apne aap aata hai (sellers ka hissa usme shaamil hota hai).
+      Isliye sellers ko dene wala paisa (Sellers ko dena baaki) alag rakhiye.
+    </small></p>
+
+    <table>
+      <tr>
+        <th>Seller</th><th>Withdraw ke liye available</th><th>7 din ke hold mein</th>
+        <th>Request mein</th><th>Ab tak diya</th><th>COD commission</th>
+      </tr>
+      ${(x.sellers || []).map(s => `
+        <tr>
+          <td>${esc(s.shop || "-")}</td>
+          <td>${rupee(s.available)}</td>
+          <td>${rupee(s.pending)}</td>
+          <td>${rupee(s.reserved)}</td>
+          <td>${rupee(s.paid)}</td>
+          <td>${rupee(s.cod_due)}</td>
+        </tr>`).join("")}
+    </table>
+
+  `;
+
+  const r =
+    await supabaseClient
+      .from("payout_requests")
+      .select("*")
+      .order("id",{ascending:false})
+      .limit(100);
+
+  if(r.error){
+
+    list.innerHTML = "❌ " + esc(r.error.message);
+
+    return;
+  }
+
+  if(!r.data || r.data.length === 0){
+
+    list.innerHTML = "<div class='empty'>Koi withdraw request nahi.</div>";
+
+    return;
+  }
+
+  list.innerHTML = r.data.map(p => `
+
+    <div class="card">
+
+      <h3>${rupee(p.amount)}</h3>
+
+      <p><b>UPI ID:</b> ${esc(p.upi_id)}</p>
+
+      <p>
+        <b>Status:</b>
+        <span class="status">${esc(p.status)}</span>
+        ${p.paid_ref ? " — UTR: " + esc(p.paid_ref) : ""}
+        ${p.admin_note ? " — " + esc(p.admin_note) : ""}
+      </p>
+
+      <p><small>${esc(new Date(p.created_at).toLocaleString("en-IN"))}</small></p>
+
+      ${
+        p.status === "requested"
+          ? `<button class="approve" onclick="setPayout('${esc(p.id)}','paid')">✅ Paid (UTR daaliye)</button>
+             <button class="reject" onclick="setPayout('${esc(p.id)}','rejected')">❌ Reject</button>`
+          : ""
+      }
+
+    </div>
+
+  `).join("");
+
+}
+
+async function setPayout(id,status){
+
+  let ref = null;
+  let note = null;
+
+  if(status === "paid"){
+
+    ref = prompt("Seller ko UPI se bhejne ke baad, UTR / reference number daaliye:", "");
+
+    if(ref === null || !ref.trim()){
+      return;
+    }
+
+  }
+  else{
+
+    note = prompt("Reject karne ki wajah (seller ko dikhegi):", "");
+
+    if(note === null){
+      return;
+    }
+
+  }
+
+  const {data,error} =
+    await supabaseClient.rpc("admin_set_payout",{
+      p_id:String(id),
+      p_status:status,
+      p_ref:ref,
+      p_note:note
+    });
+
+  if(error || !data || data.success !== true){
+
+    alert("Nahi ho paya: " + ((error && error.message) || (data && data.message) || ""));
+
+    return;
+  }
+
+  loadPayouts();
 
 }
 

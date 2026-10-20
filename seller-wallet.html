@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'">
+<script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
+<title>Seller Wallet | PS Mart</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f6f1e7;color:#2a1a0e}
+header{background:linear-gradient(110deg,#24150b,#43250f 55%,#6c3e17);color:#fff;padding:14px 4%;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #c9922e}
+header h2{margin:0;font-size:24px}
+header a{color:#24150b;background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);padding:9px 15px;border-radius:8px;font-weight:bold;font-size:14px;text-decoration:none;margin-left:6px}
+.wrap{width:94%;max-width:900px;margin:22px auto}
+.card{background:#fff;border:1px solid #e6dac3;border-radius:14px;padding:18px;margin-bottom:16px}
+.card h3{margin:0 0 10px;color:#43250f}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.box{background:#fbf6ea;border:1px solid #e6dac3;border-radius:12px;padding:14px;text-align:center}
+.box b{display:block;font-size:24px;color:#43250f;margin-top:4px}
+.box span{font-size:12px;color:#7c6a58}
+.big b{font-size:30px;color:#188038}
+input{width:100%;padding:12px;border:1px solid #c9922e;border-radius:8px;font-size:16px;margin:6px 0}
+button{border:0;border-radius:8px;padding:13px 20px;font-weight:bold;cursor:pointer;background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);color:#24150b;font-size:15px}
+button:disabled{opacity:.6}
+.row{padding:10px 0;border-bottom:1px solid #eee;font-size:14px}
+.s{display:inline-block;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:bold}
+.s-requested{background:#fff4d8;color:#8a5a00}.s-paid{background:#e7f6ea;color:#188038}.s-rejected{background:#fdeaea;color:#c62828}
+.note{font-size:13px;color:#7c6a58;line-height:1.7}
+#msg{font-weight:bold;margin-top:8px}
+@media(max-width:600px){.grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header><h2>💰 Seller Wallet</h2><div><a href="seller-orders.html">Orders</a><a href="seller-dashboard.html">Dashboard</a></div></header>
+<div class="wrap">
+  <div id="top">Loading...</div>
+  <div class="card" id="withdrawCard" style="display:none">
+    <h3>Paisa Nikaaliye (Withdraw)</h3>
+    <label>Kitna nikaalna hai (₹)</label>
+    <input id="amt" type="number" min="100" step="1" placeholder="Kam se kam 100">
+    <label>Aapki UPI ID (jahan paisa bhejna hai)</label>
+    <input id="upi" placeholder="jaise naam@bank">
+    <button id="wbtn" onclick="withdraw()">💸 Withdraw Request Bhejein</button>
+    <div id="msg"></div>
+  </div>
+  <div class="card"><h3>Aapke Withdraw Requests</h3><div id="hist"></div></div>
+  <div class="card note">
+    <b>Paisa kaise judta hai?</b><br>
+    • Order deliver hone ke <b>7 din baad</b> (return ka samay khatam hone par) uska paisa aapke balance mein judta hai.<br>
+    • PS Mart ka <b>commission</b> kaat kar baaki paisa aapka hota hai.<br>
+    • Agar order par return request hai, to jab tak faisla na ho paisa nahi judta.<br>
+    • <b>COD</b> order ka paisa aapko courier se milta hai, isliye uska commission aapke balance se katta hai.<br>
+    • Withdraw request ke baad admin aapki UPI ID par paisa bhejkar request ko "paid" karte hain, aur aapko email aati hai.
+  </div>
+</div>
+<script src="app.js"></script>
+<script>
+function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+function inr(n){return "₹"+Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2});}
+
+async function load(){
+  var top=document.getElementById("top");
+  var u=(await supabaseClient.auth.getUser()).data.user;
+  if(!u){top.innerHTML='<div class="card">Pehle <a href="login.html">login</a> kijiye.</div>';return;}
+  var w=await supabaseClient.rpc("seller_wallet");
+  if(w.error||!w.data||w.data.error){
+    top.innerHTML='<div class="card">❌ '+esc((w.error&&w.error.message)||(w.data&&w.data.error)||"")+'<br><small>Aap approved seller hain? ps-mart-payouts.sql run hui hai?</small></div>';
+    return;
+  }
+  var x=w.data;
+  top.innerHTML='<div class="card"><div class="grid">'
+   +'<div class="box big"><span>Abhi nikaalne layak</span><b>'+inr(x.available)+'</b></div>'
+   +'<div class="box"><span>7 din ke hold mein</span><b>'+inr(x.hold)+'</b></div>'
+   +'<div class="box"><span>Withdraw request mein</span><b>'+inr(x.reserved)+'</b></div>'
+   +'<div class="box"><span>Ab tak mila</span><b>'+inr(x.paid)+'</b></div>'
+   +'<div class="box"><span>COD commission (katega)</span><b>'+inr(x.cod_due)+'</b></div>'
+   +'<div class="box"><span>PS Mart commission</span><b>'+esc(x.rate)+'%</b></div>'
+   +'</div></div>';
+  document.getElementById("withdrawCard").style.display="block";
+  var h=await supabaseClient.from("payout_requests").select("*").order("id",{ascending:false}).limit(50);
+  var box=document.getElementById("hist");
+  if(h.error){box.textContent=h.error.message;return;}
+  box.innerHTML=(h.data&&h.data.length)?h.data.map(function(p){
+    return '<div class="row"><b>'+inr(p.amount)+'</b> &nbsp;<span class="s s-'+esc(p.status)+'">'+esc(p.status)+'</span><br>UPI: '+esc(p.upi_id)
+      +(p.paid_ref?'<br>UTR: '+esc(p.paid_ref):'')+(p.admin_note?'<br>Note: '+esc(p.admin_note):'')
+      +'<br><small>'+esc(new Date(p.created_at).toLocaleString("en-IN"))+'</small></div>';}).join(""):'Abhi koi request nahi.';
+}
+
+async function withdraw(){
+  var b=document.getElementById("wbtn"),m=document.getElementById("msg");
+  var amt=Number(document.getElementById("amt").value),upi=document.getElementById("upi").value.trim();
+  m.style.color="#c62828";
+  if(!amt||amt<100){m.textContent="Kam se kam ₹100 daaliye.";return;}
+  if(!upi){m.textContent="UPI ID daaliye.";return;}
+  if(!confirm(inr(amt)+" ka withdraw request "+upi+" ke liye bhejna hai?")) return;
+  b.disabled=true;
+  var r=await supabaseClient.rpc("request_payout",{p_amount:amt,p_upi:upi});
+  b.disabled=false;
+  if(r.error||!r.data||r.data.success!==true){m.textContent=(r.data&&r.data.message)||(r.error&&r.error.message)||"Request nahi gayi.";return;}
+  m.style.color="#188038";m.textContent="✅ Request bhej di gayi. Admin jaldi paisa bhejenge.";
+  document.getElementById("amt").value="";
+  load();
+}
+load();
+</script>
+</body>
+</html>
