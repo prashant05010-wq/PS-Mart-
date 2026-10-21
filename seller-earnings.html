@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'">
+  <script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
 
   <title>Seller Earnings | PS Mart</title>
 
@@ -22,6 +24,21 @@
       padding:18px 20px;
       font-size:22px;
       font-weight:bold;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    header a{
+      color:#fff;
+      background:#6d4729;
+      text-decoration:none;
+      font-size:14px;
+      padding:8px 13px;
+      border-radius:7px;
+      margin-left:6px;
     }
 
     .container{
@@ -36,6 +53,21 @@
       margin-bottom:20px;
       border-radius:12px;
       box-shadow:0 3px 12px rgba(0,0,0,.08);
+    }
+
+    .note{
+      background:#fff4d8;
+      border:1px dashed #c9922e;
+      padding:12px 14px;
+      border-radius:10px;
+      margin-bottom:20px;
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .note a{
+      color:#4b2e1f;
+      font-weight:bold;
     }
 
     .stats{
@@ -97,6 +129,10 @@
       table{
         font-size:13px;
       }
+
+      .card{
+        overflow-x:auto;
+      }
     }
   </style>
 </head>
@@ -104,7 +140,11 @@
 <body>
 
 <header>
-  💰 PS Mart — Seller Earnings
+  <span>💰 PS Mart — Seller Earnings</span>
+  <span>
+    <a href="seller-wallet.html">💸 Wallet</a>
+    <a href="seller-dashboard.html">Dashboard</a>
+  </span>
 </header>
 
 <div class="container">
@@ -112,6 +152,13 @@
   <div class="card">
     <h2>Seller Earnings</h2>
     <p id="sellerInfo">Loading seller information...</p>
+  </div>
+
+  <div class="note">
+    💡 Ye page aapki <b>saari sales</b> ka hisaab dikhata hai.
+    <b>Paisa nikaalne (withdraw)</b> ke liye sirf wahi orders ginte hain jo
+    <b>deliver ho chuke hain aur 7 din purane</b> hain (return ka samay khatam).
+    Asli balance aur withdraw ke liye <a href="seller-wallet.html">Wallet</a> kholiye.
   </div>
 
   <div class="stats">
@@ -153,6 +200,20 @@ const SUPABASE_KEY =
 
 const supabaseClient =
 supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+/* safe text (script se bachav) */
+
+function esc(v){
+
+  return String(v == null ? "" : v)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
 
 
 async function loadEarnings(){
@@ -290,9 +351,9 @@ const commissionRate =
       
       html += `
         <tr>
-          <td>#${item.order_id}</td>
-          <td>${item.products?.name || "Product"}</td>
-          <td>${item.quantity}</td>
+          <td>#${esc(item.order_id)}</td>
+          <td>${esc(item.products?.name || "Product")}</td>
+          <td>${esc(item.quantity)}</td>
           <td>₹${Number(item.price * item.quantity).toFixed(2)}</td>
           <td>₹0</td>
           <td>₹0</td>
@@ -309,8 +370,8 @@ const commissionRate =
 
 
     /*
-      Temporary marketplace commission:
-      10%
+      Marketplace commission
+      (rate Admin dashboard ke Settings se aata hai)
     */
 
    const commission =
@@ -327,14 +388,14 @@ const commissionRate =
     html += `
       <tr>
 
-        <td>#${item.order_id}</td>
+        <td>#${esc(item.order_id)}</td>
 
         <td>
-          ${item.products?.name || "Product"}
+          ${esc(item.products?.name || "Product")}
         </td>
 
         <td>
-          ${item.quantity}
+          ${esc(item.quantity)}
         </td>
 
         <td>
@@ -350,7 +411,7 @@ const commissionRate =
         </td>
 
         <td>
-          ${status}
+          ${esc(status)}
         </td>
 
       </tr>
