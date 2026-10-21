@@ -1,593 +1,506 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Add Product | PS Mart</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <title>Add Product | PS Mart</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    *{
-      box-sizing:border-box;
-    }
-
-    body{
-      margin:0;
-      font-family:Arial,sans-serif;
-      background:#f7f1e8;
-      color:#3b2416;
-    }
-
-    header{
-      background:#3b2416;
-      color:white;
-      padding:18px 25px;
-    }
-
-    header h2{
-      margin:0;
-    }
-
-    .box{
-      width:92%;
-      max-width:600px;
-      margin:30px auto;
-      background:white;
-      padding:25px;
-      border-radius:14px;
-      box-shadow:0 4px 18px rgba(0,0,0,.1);
-    }
-
-    h1{
-      margin-top:0;
-      color:#8b5e34;
-    }
-
-    label{
-      display:block;
-      margin-top:15px;
-      font-weight:bold;
-    }
-
-    input,
-    textarea,
-    select{
-      width:100%;
-      padding:12px;
-      margin-top:7px;
-      border:1px solid #ccc;
-      border-radius:8px;
-      font-size:15px;
-    }
-
-    textarea{
-      min-height:100px;
-      resize:vertical;
-    }
-
-    button{
-      width:100%;
-      margin-top:22px;
-      padding:13px;
-      border:0;
-      border-radius:8px;
-      background:#8b5e34;
-      color:white;
-      font-size:16px;
-      cursor:pointer;
-    }
-
-    button:hover{
-      background:#6f4728;
-    }
-
-    #message{
-      text-align:center;
-      margin-top:18px;
-      font-weight:bold;
-    }
-
-    .back{
-      display:inline-block;
-      margin-top:15px;
-      color:#8b5e34;
-      text-decoration:none;
-    }
-
-    .image-preview{
-      width:100%;
-      max-height:220px;
-      object-fit:contain;
-      margin-top:12px;
-      border-radius:10px;
-      display:none;
-      background:#f7f1e8;
-      padding:8px;
-    }
-  </style>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f7f1e8;color:#3b2416}
+header{background:#3b2416;color:white;padding:18px}
+header h2{margin:0}
+.box{width:94%;max-width:760px;margin:22px auto;background:white;padding:20px;border-radius:14px;box-shadow:0 4px 18px #0001}
+h1{color:#8b5e34;margin-top:0}
+h3{margin-top:26px;padding-bottom:9px;border-bottom:1px solid #eadbc9}
+label{display:block;margin-top:14px;font-size:14px;font-weight:bold}
+input,textarea,select{width:100%;padding:12px;margin-top:7px;border:1px solid #d6c8b9;border-radius:8px;font-size:15px;background:white;color:#3b2416}
+textarea{min-height:90px;resize:vertical}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+button{padding:12px;border:0;border-radius:8px;background:#8b5e34;color:white;font-size:15px;cursor:pointer}
+button:disabled{opacity:.6;cursor:wait}
+.mainbtn{width:100%;margin-top:22px;background:#3b2416}
+.hint{font-size:12px;color:#786657;line-height:1.5}
+#message{margin-top:16px;text-align:center;overflow-wrap:anywhere;font-weight:bold}
+.back{display:inline-block;margin-top:18px;color:#8b5e34;text-decoration:none}
+#previews{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.photo{border:1px solid #e5d6c6;border-radius:10px;padding:8px;min-width:0}
+.photo img{width:100%;height:130px;object-fit:contain;background:#f7f1e8;border-radius:7px}
+.photo button{width:100%;margin-top:8px;padding:8px;background:#a43b2a;font-size:13px}
+.primary{border:2px solid #c9922e}
+.section-note{background:#f7f1e8;border-radius:8px;padding:10px;font-size:13px;line-height:1.5}
+@media(max-width:440px){.grid{grid-template-columns:1fr}.box{padding:15px}#previews{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
 </head>
-
 <body>
 
-<header>
-  <h2>🏪 PS Mart — Seller</h2>
-</header>
+<header><h2>🏪 PS Mart — Seller</h2></header>
 
 <div class="box">
+<h1>Add New Product</h1>
+<p class="hint">Complete product details carefully. Your listing will be submitted for admin approval.</p>
 
-  <h1>Add New Product</h1>
+<form id="productForm">
 
-  <label>Product Name</label>
-  <input
-    type="text"
-    id="productName"
-    placeholder="Enter product name"
-  >
+<h3>1. Basic Information</h3>
 
-  <label>Description</label>
-  <textarea
-    id="description"
-    placeholder="Enter product description"
-  ></textarea>
+<label>Product Name *</label>
+<input id="productName" required maxlength="180" placeholder="e.g. PEACE Android Smartphone">
 
-  <label>Category</label>
-  <select id="category">
-    <option value="">Select Category</option>
-    <option value="Mobiles">Mobiles</option>
-    <option value="Electronics">Electronics</option>
-    <option value="Fashion">Fashion</option>
-    <option value="Beauty">Beauty</option>
-    <option value="Home">Home</option>
-    <option value="Grocery">Grocery</option>
-    <option value="Accessories">Accessories</option>
-  </select>
+<div class="grid">
+<div>
+<label>Category *</label>
+<select id="category" required>
+<option value="">Select category</option>
+<option>Mobiles</option>
+<option>Electronics</option>
+<option>Fashion</option>
+<option>Beauty</option>
+<option>Home</option>
+<option>Grocery</option>
+<option>Accessories</option>
+</select>
+</div>
+<div>
+<label>Subcategory</label>
+<input id="subcategory" placeholder="e.g. Smartphones">
+</div>
+<div>
+<label>Brand</label>
+<input id="brand" placeholder="Brand name">
+</div>
+<div>
+<label>Model Number</label>
+<input id="model" placeholder="Model number">
+</div>
+</div>
 
-  <label>Price</label>
-  <input
-    type="number"
-    id="price"
-    placeholder="Enter selling price"
-  >
+<label>Product Description *</label>
+<textarea id="description" required maxlength="10000" placeholder="Describe the product, features and uses"></textarea>
 
-  <label>Old Price</label>
-  <input
-    type="number"
-    id="oldPrice"
-    placeholder="Enter old price"
-  >
+<label>Key Highlights</label>
+<textarea id="highlights" placeholder="Enter one feature per line"></textarea>
+<p class="hint">Example: 4GB RAM, 64GB storage, Dual SIM</p>
 
-  <label>Stock</label>
-  <input
-    type="number"
-    id="stock"
-    placeholder="Enter stock quantity"
-  >
+<h3>2. Product Images</h3>
+<div class="section-note">
+Select up to 5 images together. The first image is the main product image. You can remove photos before uploading.
+</div>
 
-  <label>Product Image</label>
+<label>Select Product Photos *</label>
+<input id="productImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple required>
+<p class="hint">Maximum 5 images, 5 MB each. Use actual product photos. JPG, PNG, WEBP or GIF.</p>
+<div id="previews"></div>
 
-  <input
-    type="file"
-    id="productImage"
-    accept="image/*"
-  >
+<h3>3. Price & Inventory</h3>
+<div class="grid">
+<div>
+<label>Selling Price (₹) *</label>
+<input id="price" type="number" min="0.01" step="0.01" required placeholder="999">
+</div>
+<div>
+<label>MRP / Old Price (₹)</label>
+<input id="oldPrice" type="number" min="0.01" step="0.01" placeholder="1299">
+</div>
+<div>
+<label>Available Stock *</label>
+<input id="stock" type="number" min="0" step="1" required placeholder="10">
+</div>
+<div>
+<label>SKU / Product Code</label>
+<input id="sku" maxlength="80" placeholder="Your unique product code">
+</div>
+</div>
+<p class="hint">MRP should be the genuine applicable maximum retail price, where required. Do not enter an invented discount price.</p>
 
-  <img
-    id="imagePreview"
-    class="image-preview"
-    alt="Product Preview"
-  >
+<h3>4. Product Specifications</h3>
+<div class="grid">
+<div>
+<label>Colour</label>
+<input id="color" placeholder="e.g. Black">
+</div>
+<div>
+<label>Size</label>
+<input id="size" placeholder="e.g. M, 128GB">
+</div>
+<div>
+<label>Material</label>
+<input id="material" placeholder="e.g. Cotton, plastic">
+</div>
+<div>
+<label>Weight</label>
+<input id="weight" placeholder="e.g. 500 g">
+</div>
+<div>
+<label>Warranty</label>
+<input id="warranty" placeholder="e.g. 1 year / No warranty">
+</div>
+<div>
+<label>Country of Origin</label>
+<input id="origin" placeholder="e.g. India">
+</div>
+</div>
 
-  <button onclick="addProduct()">
-    Add Product
-  </button>
+<label>Technical Specifications</label>
+<textarea id="specs" placeholder="Enter one specification per line, using Name: Value&#10;RAM: 4GB&#10;Storage: 64GB&#10;Display: 6.67 inches"></textarea>
+<p class="hint">Use the specifications relevant to your category. Do not guess unknown product details.</p>
 
-  <div id="message"></div>
+<h3>5. Package & Delivery</h3>
+<div class="grid">
+<div>
+<label>Package Length</label>
+<input id="length" placeholder="e.g. 20 cm">
+</div>
+<div>
+<label>Package Width</label>
+<input id="width" placeholder="e.g. 12 cm">
+</div>
+<div>
+<label>Package Height</label>
+<input id="height" placeholder="e.g. 8 cm">
+</div>
+<div>
+<label>Estimated Delivery</label>
+<select id="delivery">
+<option value="">Not specified</option>
+<option>1-2 days</option>
+<option>2-4 days</option>
+<option>3-5 days</option>
+<option>5-7 days</option>
+</select>
+</div>
+</div>
 
-  <a class="back" href="seller-dashboard.html">
-    ← Back to Seller Dashboard
-  </a>
+<label>Return / Replacement Policy</label>
+<select id="returns">
+<option value="">Use applicable PS Mart policy</option>
+<option>No returns</option>
+<option>Replacement only</option>
+<option>7-day return</option>
+<option>7-day replacement</option>
+</select>
+<p class="hint">Select only a policy supported by your actual marketplace rules and applicable consumer law.</p>
 
+<div class="section-note" style="margin-top:20px">
+<strong>Before submitting:</strong> Verify the price, stock, specifications and photos. Your product remains pending until admin approval.
+</div>
+
+<button class="mainbtn" id="submitBtn" type="submit">Submit Product for Approval</button>
+<div id="message" role="status" aria-live="polite"></div>
+</form>
+
+<a class="back" href="seller-dashboard.html">← Back to Seller Dashboard</a>
 </div>
 
 <script>
-
 const SUPABASE_URL =
 "https://nctscffhnztscczjxhat.supabase.co";
 
 const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0IiwiaWF0IjoxNzkwNDQzNDI1LCJleHAiOjIxMDYwMTk0MjV9.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
 
-const supabaseClient =
-window.supabase.createClient(
+const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
+const imageInput = document.getElementById("productImages");
+const previews = document.getElementById("previews");
+const message = document.getElementById("message");
+const submitBtn = document.getElementById("submitBtn");
 
-/* IMAGE PREVIEW */
+let selectedFiles = [];
+let previewUrls = [];
 
-document
-  .getElementById("productImage")
-  .addEventListener("change", function(){
+function showMessage(text, color="#8b5e34"){
+  message.style.color = color;
+  message.textContent = text;
+}
 
-    const file = this.files[0];
+function renderPreviews(){
+  previewUrls.forEach(url => URL.revokeObjectURL(url));
+  previewUrls = [];
+  previews.replaceChildren();
 
-    const preview =
-      document.getElementById("imagePreview");
+  selectedFiles.forEach((file,index)=>{
+    const card = document.createElement("div");
+    card.className = "photo" + (index===0 ? " primary" : "");
 
-    if(!file){
-      preview.style.display = "none";
-      preview.src = "";
+    const img = document.createElement("img");
+    const url = URL.createObjectURL(file);
+    previewUrls.push(url);
+    img.src = url;
+    img.alt = "Selected product photo " + (index+1);
+
+    const title = document.createElement("p");
+    title.className = "hint";
+    title.textContent = index===0
+      ? "Main product image"
+      : "Product image " + (index+1);
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.textContent = "Remove photo";
+    remove.addEventListener("click",()=>{
+      selectedFiles.splice(index,1);
+      syncInput();
+      renderPreviews();
+    });
+
+    card.append(img,title,remove);
+    previews.appendChild(card);
+  });
+}
+
+function syncInput(){
+  const transfer = new DataTransfer();
+  selectedFiles.forEach(file=>transfer.items.add(file));
+  imageInput.files = transfer.files;
+}
+
+imageInput.addEventListener("change",()=>{
+  const incoming = Array.from(imageInput.files || []);
+  const combined = [...selectedFiles,...incoming];
+
+  if(combined.length > 5){
+    showMessage("Maximum 5 photos allowed. Select fewer photos.","#b42318");
+    return;
+  }
+
+  for(const file of incoming){
+    if(!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type)){
+      showMessage("Use JPG, PNG, WEBP or GIF images.","#b42318");
+      return;
+    }
+    if(file.size > 5*1024*1024){
+      showMessage("Each photo must be 5 MB or smaller.","#b42318");
+      return;
+    }
+  }
+
+  selectedFiles = combined;
+  syncInput();
+  renderPreviews();
+  showMessage(selectedFiles.length + " photo(s) selected.");
+});
+
+function value(id){
+  return document.getElementById(id).value.trim();
+}
+
+function lines(text){
+  return text.split("\n").map(x=>x.trim()).filter(Boolean);
+}
+
+function parseSpecs(text){
+  const result = {};
+  lines(text).forEach(line=>{
+    const i = line.indexOf(":");
+    if(i > 0){
+      result[line.slice(0,i).trim()] = line.slice(i+1).trim();
+    }else{
+      result["Detail " + (Object.keys(result).length+1)] = line;
+    }
+  });
+  return result;
+}
+
+document.getElementById("productForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+
+  if(submitBtn.disabled) return;
+
+  const name = value("productName");
+  const categoryName = value("category");
+  const description = value("description");
+  const price = Number(value("price"));
+  const oldText = value("oldPrice");
+  const oldPrice = oldText ? Number(oldText) : null;
+  const stockText = value("stock");
+  const stock = Number(stockText);
+
+  if(!name || !categoryName || !description ||
+     !Number.isFinite(price) || price<=0 ||
+     stockText==="" || !Number.isInteger(stock) || stock<0){
+    showMessage("Please check all required fields and prices.","#b42318");
+    return;
+  }
+
+  if(oldPrice!==null && (!Number.isFinite(oldPrice) || oldPrice<=0)){
+    showMessage("Enter a valid MRP or leave it blank.","#b42318");
+    return;
+  }
+
+  if(oldPrice!==null && oldPrice<price){
+    showMessage("MRP / old price should not be lower than selling price.","#b42318");
+    return;
+  }
+
+  if(selectedFiles.length===0 || selectedFiles.length>5){
+    showMessage("Select between 1 and 5 product photos.","#b42318");
+    return;
+  }
+
+  submitBtn.disabled = true;
+  const uploadedPaths = [];
+
+  try{
+    showMessage("Checking login...");
+
+    const {data:authData,error:authError} =
+      await supabaseClient.auth.getUser();
+
+    const user = authData && authData.user;
+
+    if(authError || !user){
+      showMessage("Please login first.","#b42318");
       return;
     }
 
-    preview.src =
-      URL.createObjectURL(file);
-
-    preview.style.display = "block";
-
-  });
-
-
-/* ADD PRODUCT */
-
-async function addProduct(){
-
-  const message =
-    document.getElementById("message");
-
-
-  const name =
-    document
-      .getElementById("productName")
-      .value
-      .trim();
-
-
-  const description =
-    document
-      .getElementById("description")
-      .value
-      .trim();
-
-
-  const categoryName =
-    document
-      .getElementById("category")
-      .value;
-
-
-  const price =
-    Number(
-      document
-        .getElementById("price")
-        .value
-    );
-
-
-  const oldPriceValue =
-    document
-      .getElementById("oldPrice")
-      .value;
-
-
-  const oldPrice =
-    oldPriceValue
-      ? Number(oldPriceValue)
-      : null;
-
-
-  const stock =
-    Number(
-      document
-        .getElementById("stock")
-        .value
-    );
-
-
-  const imageFile =
-    document
-      .getElementById("productImage")
-      .files[0];
-
-
-  /* VALIDATION */
-
-  if(
-    !name ||
-    !categoryName ||
-    !price ||
-    stock < 0
-  ){
-
-    message.style.color = "red";
-
-    message.innerText =
-      "Please fill all required fields.";
-
-    return;
-  }
-
-
-  if(!imageFile){
-
-    message.style.color = "red";
-
-    message.innerText =
-      "Please select a product image.";
-
-    return;
-  }
-
-
-  /* LOGIN CHECK */
-
-  const {
-    data: { user },
-    error: authError
-  } =
-    await supabaseClient.auth.getUser();
-
-
-  if(authError || !user){
-
-    message.style.color = "red";
-
-    message.innerText =
-      "Please login first.";
-
-    return;
-  }
-
-
-  /* SELLER CHECK */
-
-  const {
-    data: seller,
-    error: sellerError
-  } =
-    await supabaseClient
-      .from("sellers")
-      .select("id,status")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-
-  if(sellerError){
-
-    message.style.color = "red";
-
-    message.innerText =
-      sellerError.message;
-
-    return;
-  }
-
-
-  if(!seller){
-
-    message.style.color = "red";
-
-    message.innerText =
-      "Seller account not found.";
-
-    return;
-  }
-
-
-  if(seller.status !== "approved"){
-
-    message.style.color = "#856404";
-
-    message.innerText =
-      "Your seller account is pending admin approval.";
-
-    return;
-  }
-
-
-  /* CATEGORY CHECK */
-
-  const {
-    data: category,
-    error: categoryError
-  } =
-    await supabaseClient
-      .from("categories")
-      .select("id")
-      .eq("name", categoryName)
-      .maybeSingle();
-
-
-  if(categoryError){
-
-    message.style.color = "red";
-
-    message.innerText =
-      categoryError.message;
-
-    return;
-  }
-
-
-  if(!category){
-
-    message.style.color = "red";
-
-    message.innerText =
-      "Category not found.";
-
-    return;
-  }
-
-
-  /* IMAGE UPLOAD */
-
-  message.style.color = "#8b5e34";
-
-  message.innerText =
-    "Uploading product image...";
-
-
-  const fileExt =
-    imageFile.name
-      .split(".")
-      .pop();
-
-
-  const fileName =
-    `${user.id}-${Date.now()}.${fileExt}`;
-
-
-  const filePath =
-    `products/${fileName}`;
-
-
-  const {
-    error: uploadError
-  } =
-    await supabaseClient
-      .storage
-      .from("product-images")
-      .upload(
-        filePath,
-        imageFile,
-        {
-          cacheControl: "3600",
-          upsert: false
-        }
-      );
-
-
-  if(uploadError){
-
-    message.style.color = "red";
-
-    message.innerText =
-      "Image upload failed: " +
-      uploadError.message;
-
-    return;
-  }
-
-
-  /* PUBLIC IMAGE URL */
-
-  const {
-    data: publicUrlData
-  } =
-    supabaseClient
-      .storage
-      .from("product-images")
-      .getPublicUrl(filePath);
-
-
-  const imageUrl =
-    publicUrlData.publicUrl;
-
-
-  /* SAVE PRODUCT */
-
-  message.innerText =
-    "Saving product...";
-
-
-  const { error } =
-    await supabaseClient
+    const {data:seller,error:sellerError} =
+      await supabaseClient
+        .from("sellers")
+        .select("id,status")
+        .eq("user_id",user.id)
+        .maybeSingle();
+
+    if(sellerError) throw sellerError;
+
+    if(!seller){
+      showMessage("Seller account not found.","#b42318");
+      return;
+    }
+
+    if(seller.status!=="approved"){
+      showMessage("Your seller account is pending admin approval.","#856404");
+      return;
+    }
+
+    showMessage("Checking category...");
+
+    const {data:category,error:categoryError} =
+      await supabaseClient
+        .from("categories")
+        .select("id")
+        .eq("name",categoryName)
+        .maybeSingle();
+
+    if(categoryError) throw categoryError;
+
+    if(!category){
+      showMessage("Category not found in database: " + categoryName,"#b42318");
+      return;
+    }
+
+    const imageUrls = [];
+
+    for(let i=0;i<selectedFiles.length;i++){
+      showMessage("Uploading photo " + (i+1) + " of " + selectedFiles.length + "...");
+
+      const file = selectedFiles[i];
+      const extension = file.name.split(".").pop().toLowerCase();
+      const filePath = "products/" + user.id + "-" +
+        Date.now() + "-" + i + "." + extension;
+
+      const {error:uploadError} = await supabaseClient
+        .storage
+        .from("product-images")
+        .upload(filePath,file,{
+          cacheControl:"3600",
+          upsert:false,
+          contentType:file.type
+        });
+
+      if(uploadError) throw uploadError;
+
+      uploadedPaths.push(filePath);
+
+      const {data:publicData} = supabaseClient
+        .storage
+        .from("product-images")
+        .getPublicUrl(filePath);
+
+      imageUrls.push(publicData.publicUrl);
+    }
+
+    showMessage("Saving product details...");
+
+    const specs = parseSpecs(value("specs"));
+    if(value("color")) specs["Colour"] = value("color");
+    if(value("size")) specs["Size"] = value("size");
+    if(value("material")) specs["Material"] = value("material");
+    if(value("weight")) specs["Weight"] = value("weight");
+
+    const product = {
+      seller_id:seller.id,
+      category_id:category.id,
+      name:name,
+      description:description,
+      price:price,
+      old_price:oldPrice,
+      stock:stock,
+      image_url:imageUrls[0],
+      image_urls:imageUrls,
+      status:"pending",
+      brand:value("brand") || null,
+      model_number:value("model") || null,
+      sku:value("sku") || null,
+      highlights:lines(value("highlights")),
+      specifications:specs,
+      subcategory:value("subcategory") || null,
+      color:value("color") || null,
+      size:value("size") || null,
+      material:value("material") || null,
+      weight:value("weight") || null,
+      warranty:value("warranty") || null,
+      country_of_origin:value("origin") || null,
+      package_length:value("length") || null,
+      package_width:value("width") || null,
+      package_height:value("height") || null,
+      return_policy:value("returns") || null,
+      delivery_days:value("delivery") || null
+    };
+
+    const {error:insertError} = await supabaseClient
       .from("products")
-      .insert({
+      .insert(product);
 
-        seller_id:
-          seller.id,
+    if(insertError) throw insertError;
 
-        category_id:
-          category.id,
+    showMessage(
+      "Product submitted successfully! Waiting for admin approval.",
+      "green"
+    );
 
-        name:
-          name,
+    document.getElementById("productForm").reset();
+    selectedFiles = [];
+    syncInput();
+    renderPreviews();
 
-        description:
-          description,
+  }catch(error){
+    console.error("PS Mart product submission:",error);
 
-        price:
-          price,
+    if(uploadedPaths.length){
+      const {error:cleanupError} = await supabaseClient
+        .storage
+        .from("product-images")
+        .remove(uploadedPaths);
 
-        old_price:
-          oldPrice,
+      if(cleanupError){
+        console.warn("Some uploaded photos may need cleanup:",cleanupError.message);
+      }
+    }
 
-        stock:
-          stock,
-
-        image_url:
-          imageUrl,
-
-        status:
-          "pending"
-
-      });
-
-
-  if(error){
-
-    message.style.color = "red";
-
-    message.innerText =
-      error.message;
-
-    return;
+    showMessage(
+      "Could not submit product: " + (error.message || "Unknown error"),
+      "#b42318"
+    );
+  }finally{
+    submitBtn.disabled = false;
   }
-
-
-  /* SUCCESS */
-
-  message.style.color = "green";
-
-  message.innerText =
-    "Product submitted successfully! Waiting for admin approval.";
-
-
-  document
-    .getElementById("productName")
-    .value = "";
-
-
-  document
-    .getElementById("description")
-    .value = "";
-
-
-  document
-    .getElementById("category")
-    .value = "";
-
-
-  document
-    .getElementById("price")
-    .value = "";
-
-
-  document
-    .getElementById("oldPrice")
-    .value = "";
-
-
-  document
-    .getElementById("stock")
-    .value = "";
-
-
-  document
-    .getElementById("productImage")
-    .value = "";
-document.getElementById("imagePreview")
-    .style.display = "none";
-
-  
-}
-
+});
 </script>
-
 </body>
   </html>
+  
