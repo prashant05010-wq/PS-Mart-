@@ -12,6 +12,189 @@ const supabaseClient = window.supabase.createClient(
 );
 
 
+
+/* =========================
+   PRODUCT GALLERY / DETAILS (multi photo)
+========================= */
+
+function psImages(p) {
+
+  let list = [];
+
+  const raw = p.image_urls;
+
+  if (Array.isArray(raw)) {
+    list = raw.slice();
+  }
+  else if (typeof raw === "string") {
+
+    try {
+      const j = JSON.parse(raw);
+      if (Array.isArray(j)) list = j;
+    } catch (e) {}
+
+  }
+
+  if (p.image_url && list.indexOf(p.image_url) < 0) {
+    list.unshift(p.image_url);
+  }
+
+  return list
+    .filter(u => typeof u === "string" && /^https:\/\//.test(u))
+    .slice(0, 10);
+
+}
+
+function psGalleryHtml(p) {
+
+  const imgs = psImages(p);
+
+  if (!imgs.length) {
+
+    return `
+      <div class="detail-image-box">
+        <div style="font-size:120px;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">🛍️</div>
+      </div>
+    `;
+
+  }
+
+  const main = `
+    <div class="detail-image-box">
+      <img id="mainProductImg" src="${psEsc(imgs[0])}" alt="${psEsc(p.name)}">
+    </div>
+  `;
+
+  if (imgs.length < 2) {
+    return main;
+  }
+
+  return main +
+    '<div class="thumbs">' +
+    imgs.map((u, i) =>
+      `<img class="thumb ${i === 0 ? "on" : ""}" src="${psEsc(u)}" alt="Photo ${i + 1}" onclick="psPickImage(this)">`
+    ).join("") +
+    "</div>";
+
+}
+
+function psPickImage(el) {
+
+  const m = document.getElementById("mainProductImg");
+
+  if (!m) return;
+
+  m.src = el.src;
+
+  document
+    .querySelectorAll(".thumbs .thumb")
+    .forEach(t => t.classList.remove("on"));
+
+  el.classList.add("on");
+
+}
+
+function psList(v) {
+
+  if (Array.isArray(v)) return v;
+
+  if (typeof v === "string" && v.trim()) {
+
+    try {
+      const j = JSON.parse(v);
+      if (Array.isArray(j)) return j;
+    } catch (e) {}
+
+    return v.split("\n");
+
+  }
+
+  return [];
+
+}
+
+function psHighlightsHtml(p) {
+
+  const items =
+    psList(p.highlights)
+      .map(x => String(x).trim())
+      .filter(Boolean);
+
+  if (!items.length) return "";
+
+  return `
+    <div class="info-section">
+      <h2>Key Features</h2>
+      <ul>
+        ${items.map(x => "<li>" + psEsc(x) + "</li>").join("")}
+      </ul>
+    </div>
+  `;
+
+}
+
+function psExtraSpecRows(p) {
+
+  const rows = [];
+
+  const add = (label, v) => {
+    if (v !== null && v !== undefined && String(v).trim() !== "") {
+      rows.push([label, v]);
+    }
+  };
+
+  add("Brand", p.brand);
+  add("Model Number", p.model_number);
+  add("Colour", p.color);
+  add("Size", p.size);
+  add("Material", p.material);
+  add("Weight", p.weight);
+  add("Warranty", p.warranty);
+  add("Country of Origin", p.country_of_origin);
+  add("Manufacturer", p.manufacturer);
+  add("Packer", p.packer);
+  add("In The Box", p.in_the_box);
+
+  if (p.package_length || p.package_width || p.package_height) {
+    add(
+      "Package Size",
+      [p.package_length, p.package_width, p.package_height]
+        .filter(Boolean)
+        .join(" x ")
+    );
+  }
+
+  let spec = p.specifications;
+
+  if (typeof spec === "string") {
+    try { spec = JSON.parse(spec); } catch (e) { spec = null; }
+  }
+
+  const shown = ["colour", "size", "material", "weight"];
+
+  if (spec && typeof spec === "object" && !Array.isArray(spec)) {
+
+    Object.keys(spec).forEach(k => {
+
+      if (shown.indexOf(k.toLowerCase()) < 0) {
+        add(k, spec[k]);
+      }
+
+    });
+
+  }
+
+  return rows
+    .map(r => `
+        <tr>
+          <td>${psEsc(r[0])}</td>
+          <td>${psEsc(r[1])}</td>
+        </tr>`)
+    .join("");
+
+}
+
+
 /* =========================
    SAFE TEXT (XSS se bachav)
 ========================= */
@@ -793,31 +976,7 @@ async function detail() {
 
       <div>
 
-        <div class="detail-image-box">
-
-          ${
-            p.image_url
-              ? `
-                <img
-                  src="${psEsc(p.image_url)}"
-                  alt="${psEsc(p.name)}"
-                >
-              `
-              : `
-                <div style="
-                  font-size:120px;
-                  display:flex;
-                  align-items:center;
-                  justify-content:center;
-                  width:100%;
-                  height:100%;
-                ">
-                  🛍️
-                </div>
-              `
-          }
-
-        </div>
+        ${psGalleryHtml(p)}
 
       </div>
 
@@ -1013,8 +1172,8 @@ async function detail() {
     </div>
 
 
+    ${psHighlightsHtml(p)}
     <div class="info-section">
-
       <h2>
         Specifications
       </h2>
@@ -1046,6 +1205,7 @@ async function detail() {
           <td>Seller</td>
           <td>PS Mart Seller</td>
         </tr>
+        ${psExtraSpecRows(p)}
 
       </table>
 
@@ -2209,6 +2369,8 @@ async function updateLoginState() {
 
   if (user) {
 
+    window.__psUid = user.id;
+
     let letter =
       (user.email || "U").charAt(0).toUpperCase();
 
@@ -2283,6 +2445,15 @@ async function updateLoginState() {
 
 supabaseClient.auth.onAuthStateChange(
   (event, session) => {
+
+    /* dusre tab mein kisi aur account se login hua to ye page refresh karo */
+    const newId =
+      session && session.user ? session.user.id : null;
+
+    if (window.__psUid && newId && newId !== window.__psUid) {
+      location.reload();
+      return;
+    }
 
     updateLoginState();
 
