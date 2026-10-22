@@ -62,6 +62,16 @@
 #detail .action-buttons button{flex:1;padding:14px;border:1px solid #ccc;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;background:#fff;color:#111}
 #detail .action-buttons button.ps-buy{background:#ffe11b;border-color:#ffe11b}
 #detail .action-buttons button:disabled{opacity:.5}
+#detail .ps-var{margin:14px 0 4px}
+#detail .ps-var-t{font-size:15px;margin-bottom:8px;color:#222}
+#detail .ps-chips{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+#detail .ps-chips::-webkit-scrollbar{display:none}
+#detail .ps-chip{flex:0 0 auto;min-width:130px;border:1px solid #ddd;border-radius:12px;padding:10px 12px;text-decoration:none;color:#222;background:#fff;display:flex;flex-direction:column;gap:3px;font-size:14px}
+#detail .ps-chip.on{border:2px solid #222;background:#f4f4f4}
+#detail .ps-chip em{font-style:normal;font-size:12px;color:#188038;font-weight:700}
+#detail .ps-chip em s{color:#888;font-weight:400;margin-left:4px}
+#detail .ps-chip b{font-size:16px}
+#detail .ps-chip.out{opacity:.5}
 @media(min-width:801px){
   #detail .ps-arrow{display:block}
   #detail .detail-top{align-items:start}
@@ -232,6 +242,32 @@ async function detail() {
     return;
   }
 
+  /* variants: same group_id wale products */
+  var variants = [];
+  if (p.group_id) {
+    try {
+      var vr = await supabaseClient
+        .from("products")
+        .select("id,price,old_price,variant_label,stock")
+        .eq("group_id", p.group_id)
+        .eq("status", "approved")
+        .order("price", { ascending: true });
+      variants = vr.data || [];
+    } catch (x) {}
+  }
+
+  var variantHtml = "";
+  if (variants.length > 1) {
+    variantHtml = '<div class="ps-var"><div class="ps-var-t">Variant: <b>' + psEsc(p.variant_label || "") + '</b></div><div class="ps-chips">' +
+      variants.map(function (v) {
+        var d = psDiscount(v);
+        return '<a class="ps-chip' + (String(v.id) === String(p.id) ? ' on' : '') + (Number(v.stock || 0) > 0 ? '' : ' out') + '" href="product.html?id=' + encodeURIComponent(v.id) + '">' +
+          '<span>' + psEsc(v.variant_label || "Option") + '</span>' +
+          (d > 0 ? '<em>↓' + d + '%<s>' + money(v.old_price) + '</s></em>' : '') +
+          '<b>' + money(v.price) + '</b></a>';
+      }).join("") + '</div></div>';
+  }
+
   var discount = psDiscount(p);
   var inStock = Number(p.stock || 0) > 0;
 
@@ -269,6 +305,7 @@ async function detail() {
         '<div class="ps-title">' + psEsc(p.name) + '</div>' +
         '<div>' + rating + '</div>' +
 
+        variantHtml +
         '<div class="ps-priceline">' +
           (discount > 0 ? '<span class="ps-off">↓' + discount + '%</span>' : '') +
           (p.old_price ? '<span class="ps-old">' + money(p.old_price) + '</span>' : '') +
