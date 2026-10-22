@@ -87,6 +87,22 @@ button:disabled{opacity:.6;cursor:wait}
 <label>SKU / Aapka Product Code</label>
 <input id="sku" maxlength="80" placeholder="Apna andar ka code (optional)">
 
+<div class="tip" style="margin-top:16px">
+🔗 <b>Ek hi product ke alag color / size?</b> Har variant ko alag product ki tarah add kijiye, bas niche ke 2 box mein <b>same Variant Group</b> likhiye. Customer ko product page par sab variants ek saath chune hue dikhenge. Sirf ek hi variant hai to ye khali chhod dijiye.
+</div>
+<div class="grid">
+<div>
+<label>Variant Group</label>
+<input id="groupId" maxlength="60" placeholder="jaise: oneplus-n6x">
+<p class="hint">Us phone / product ke sabhi variants mein bilkul same likhiye.</p>
+</div>
+<div>
+<label>Variant Label</label>
+<input id="variantLabel" maxlength="60" placeholder="jaise: Burgundy Red, 64 GB">
+<p class="hint">Is product ka naam jo chip par dikhega. Har variant ka alag.</p>
+</div>
+</div>
+
 <h3>2. Product Photos</h3>
 <div class="tip">
 📸 <b>Achhi photo ke niyam:</b> asli product ki photo, saaf background, kam se kam <b>500 x 500 pixel</b>. Doosri site ki photo ya watermark / phone number wali photo mat lagaiye. Pehli photo <b>Main</b> photo hoti hai: sabse pehle wahi dikhti hai. Alag-alag side (aage, peeche, side, andar ka) ki photos lagaiye.
@@ -198,6 +214,7 @@ var submitBtn = document.getElementById("submitBtn");
 function showMessage(t, c){ message.style.color = c || "#43250f"; message.textContent = t; }
 function val(id){ return document.getElementById(id).value.trim(); }
 function lines(t){ return t.split("\n").map(function(x){return x.trim();}).filter(Boolean); }
+function slug(t){ return t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
 function specsFrom(t){
   var o = {};
   lines(t).forEach(function(l){
@@ -324,6 +341,9 @@ document.getElementById("productForm").addEventListener("submit", async function
   if(stockText === "" || !Number.isInteger(stock) || stock < 0){ showMessage("Stock sahi daaliye (poora number).", "#c62828"); return; }
   if(images.length < 1){ showMessage("Kam se kam 1 photo lagaiye.", "#c62828"); return; }
 
+  var groupId = slug(val("groupId")), variantLabel = val("variantLabel");
+  if(groupId && !variantLabel){ showMessage("Variant Group bhara hai to Variant Label bhi bhariye (jaise: Black, 128 GB).", "#c62828"); return; }
+
   submitBtn.disabled = true;
   var uploaded = [];
   try{
@@ -360,6 +380,7 @@ document.getElementById("productForm").addEventListener("submit", async function
       image_url: urls[0], image_urls: urls, status: "pending",
       brand: val("brand"), model_number: val("model") || null, sku: val("sku") || null,
       subcategory: val("subcategory") || null, color: val("color") || null, size: val("size") || null,
+      group_id: groupId || null, variant_label: variantLabel || null,
       material: val("material") || null, weight: val("weight") || null, warranty: val("warranty") || null,
       highlights: lines(val("highlights")), specifications: specs, in_the_box: val("inbox") || null,
       country_of_origin: val("origin"), manufacturer: val("manufacturer") || null, packer: val("packer") || null,
