@@ -3,504 +3,391 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'">
+<script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
 <title>Add Product | PS Mart</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f7f1e8;color:#3b2416}
-header{background:#3b2416;color:white;padding:18px}
-header h2{margin:0}
-.box{width:94%;max-width:760px;margin:22px auto;background:white;padding:20px;border-radius:14px;box-shadow:0 4px 18px #0001}
-h1{color:#8b5e34;margin-top:0}
-h3{margin-top:26px;padding-bottom:9px;border-bottom:1px solid #eadbc9}
+body{margin:0;font-family:Arial,sans-serif;background:#f6f1e7;color:#2a1a0e}
+header{background:linear-gradient(110deg,#24150b,#43250f 55%,#6c3e17);color:#fff;padding:16px 4%;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #c9922e}
+header h2{margin:0;font-size:22px}
+header a{color:#24150b;background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);padding:8px 14px;border-radius:8px;font-weight:bold;font-size:14px;text-decoration:none}
+.box{width:94%;max-width:820px;margin:22px auto;background:#fff;padding:22px;border-radius:14px;border:1px solid #e6dac3;box-shadow:0 4px 18px rgba(67,37,15,.08)}
+h1{color:#43250f;margin:0 0 6px}
+h3{margin:28px 0 4px;padding-bottom:9px;border-bottom:2px solid #f0bd50;color:#43250f}
 label{display:block;margin-top:14px;font-size:14px;font-weight:bold}
-input,textarea,select{width:100%;padding:12px;margin-top:7px;border:1px solid #d6c8b9;border-radius:8px;font-size:15px;background:white;color:#3b2416}
+label i{color:#c62828;font-style:normal}
+input,textarea,select{width:100%;padding:12px;margin-top:6px;border:1px solid #d6c8b9;border-radius:8px;font-size:15px;background:#fff;color:#2a1a0e;font-family:inherit}
+input:focus,textarea:focus,select:focus{outline:0;border-color:#c9922e;box-shadow:0 0 0 3px rgba(240,189,80,.35)}
 textarea{min-height:90px;resize:vertical}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
-button{padding:12px;border:0;border-radius:8px;background:#8b5e34;color:white;font-size:15px;cursor:pointer}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.hint{font-size:12px;color:#7c6a58;line-height:1.5;margin:5px 0 0}
+.tip{background:#fff4d8;border:1px dashed #c9922e;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.6;margin-top:10px}
+button{padding:12px;border:0;border-radius:8px;cursor:pointer;font-size:15px;font-weight:bold}
 button:disabled{opacity:.6;cursor:wait}
-.mainbtn{width:100%;margin-top:22px;background:#3b2416}
-.hint{font-size:12px;color:#786657;line-height:1.5}
-#message{margin-top:16px;text-align:center;overflow-wrap:anywhere;font-weight:bold}
-.back{display:inline-block;margin-top:18px;color:#8b5e34;text-decoration:none}
-#previews{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
-.photo{border:1px solid #e5d6c6;border-radius:10px;padding:8px;min-width:0}
-.photo img{width:100%;height:130px;object-fit:contain;background:#f7f1e8;border-radius:7px}
-.photo button{width:100%;margin-top:8px;padding:8px;background:#a43b2a;font-size:13px}
-.primary{border:2px solid #c9922e}
-.section-note{background:#f7f1e8;border-radius:8px;padding:10px;font-size:13px;line-height:1.5}
-@media(max-width:440px){.grid{grid-template-columns:1fr}.box{padding:15px}#previews{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.mainbtn{width:100%;margin-top:24px;background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);color:#24150b;font-size:17px;padding:15px}
+.addphoto{background:#43250f;color:#f0bd50;margin-top:10px}
+#previews{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
+.photo{border:1px solid #e6dac3;border-radius:10px;padding:6px;min-width:0;text-align:center;background:#fffdf7}
+.photo.main{border:2px solid #c9922e}
+.photo img{width:100%;height:110px;object-fit:contain;background:#fbf6ea;border-radius:7px}
+.photo .tag{font-size:11px;font-weight:bold;color:#188038;margin:4px 0}
+.photo button{width:100%;margin-top:4px;padding:6px;font-size:12px}
+.photo .mk{background:#fbf6ea;color:#43250f;border:1px solid #c9922e}
+.photo .rm{background:#fff;color:#c62828;border:1px solid #c62828}
+#message{margin-top:16px;text-align:center;overflow-wrap:anywhere;font-weight:bold;line-height:1.6}
+.back{display:inline-block;margin-top:18px;color:#43250f;text-decoration:none;font-weight:bold}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.box{padding:15px}#previews{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
 
-<header><h2>🏪 PS Mart — Seller</h2></header>
+<header><h2>🏪 PS Mart — Seller</h2><a href="seller-dashboard.html">Dashboard</a></header>
 
 <div class="box">
 <h1>Add New Product</h1>
-<p class="hint">Complete product details carefully. Your listing will be submitted for admin approval.</p>
+<p class="hint">Product ki poori sahi jaankari bhariye. Aapka product admin ke approve karne ke baad hi customers ko dikhega. <i style="color:#c62828;font-style:normal">*</i> wale fields zaroori hain.</p>
 
 <form id="productForm">
 
-<h3>1. Basic Information</h3>
-
-<label>Product Name *</label>
-<input id="productName" required maxlength="180" placeholder="e.g. PEACE Android Smartphone">
+<h3>1. Product Ki Pehchan</h3>
 
 <div class="grid">
 <div>
-<label>Category *</label>
-<select id="category" required>
-<option value="">Select category</option>
-<option>Mobiles</option>
-<option>Electronics</option>
-<option>Fashion</option>
-<option>Beauty</option>
-<option>Home</option>
-<option>Grocery</option>
-<option>Accessories</option>
-</select>
+<label>Category <i>*</i></label>
+<select id="category" required><option value="">Category load ho rahi hai...</option></select>
 </div>
 <div>
-<label>Subcategory</label>
-<input id="subcategory" placeholder="e.g. Smartphones">
+<label>Sub-category</label>
+<input id="subcategory" placeholder="jaise: Bluetooth Earbuds">
 </div>
 <div>
-<label>Brand</label>
-<input id="brand" placeholder="Brand name">
+<label>Brand <i>*</i></label>
+<input id="brand" required maxlength="80" placeholder="Brand ka naam (na ho to 'Generic')">
 </div>
 <div>
 <label>Model Number</label>
-<input id="model" placeholder="Model number">
+<input id="model" maxlength="80" placeholder="Model number">
+</div>
+<div>
+<label>Colour</label>
+<input id="color" maxlength="60" placeholder="jaise: Black">
+</div>
+<div>
+<label>Size / Variant</label>
+<input id="size" maxlength="60" placeholder="jaise: M, 128GB">
 </div>
 </div>
 
-<label>Product Description *</label>
-<textarea id="description" required maxlength="10000" placeholder="Describe the product, features and uses"></textarea>
+<label>Product Title <i>*</i></label>
+<input id="productName" required minlength="8" maxlength="180" placeholder="Brand + Model + khaas baat. jaise: boAt Airdopes 141 Bluetooth Earbuds (Black)">
+<p class="hint">Flipkart jaisa title likhiye: Brand, Model, Type aur Colour. Sirf CAPITAL letters ya kai emoji mat lagaiye.</p>
 
-<label>Key Highlights</label>
-<textarea id="highlights" placeholder="Enter one feature per line"></textarea>
-<p class="hint">Example: 4GB RAM, 64GB storage, Dual SIM</p>
+<label>SKU / Aapka Product Code</label>
+<input id="sku" maxlength="80" placeholder="Apna andar ka code (optional)">
 
-<h3>2. Product Images</h3>
-<div class="section-note">
-Select up to 5 images together. The first image is the main product image. You can remove photos before uploading.
+<h3>2. Product Photos</h3>
+<div class="tip">
+📸 <b>Achhi photo ke niyam:</b> asli product ki photo, saaf background, kam se kam <b>500 x 500 pixel</b>. Doosri site ki photo ya watermark / phone number wali photo mat lagaiye. Pehli photo <b>Main</b> photo hoti hai: sabse pehle wahi dikhti hai. Alag-alag side (aage, peeche, side, andar ka) ki photos lagaiye.
 </div>
 
-<label>Select Product Photos *</label>
-<input id="productImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple required>
-<p class="hint">Maximum 5 images, 5 MB each. Use actual product photos. JPG, PNG, WEBP or GIF.</p>
+<input id="productImages" type="file" accept="image/jpeg,image/png,image/webp" multiple style="display:none">
+<button type="button" class="addphoto" id="pickBtn" style="width:100%">➕ Photos Chuniye (ek saath kai chun sakte hain, 8 tak)</button>
+<p class="hint" id="photoCount">Abhi koi photo nahi chuni.</p>
 <div id="previews"></div>
 
-<h3>3. Price & Inventory</h3>
+<h3>3. Price Aur Stock</h3>
 <div class="grid">
 <div>
-<label>Selling Price (₹) *</label>
-<input id="price" type="number" min="0.01" step="0.01" required placeholder="999">
+<label>Selling Price (₹) <i>*</i></label>
+<input id="price" type="number" min="1" step="0.01" required placeholder="999">
 </div>
 <div>
-<label>MRP / Old Price (₹)</label>
-<input id="oldPrice" type="number" min="0.01" step="0.01" placeholder="1299">
+<label>MRP (₹) <i>*</i></label>
+<input id="oldPrice" type="number" min="1" step="0.01" required placeholder="1299">
 </div>
 <div>
-<label>Available Stock *</label>
+<label>Stock (kitne piece hain) <i>*</i></label>
 <input id="stock" type="number" min="0" step="1" required placeholder="10">
 </div>
 <div>
-<label>SKU / Product Code</label>
-<input id="sku" maxlength="80" placeholder="Your unique product code">
+<label>GST %</label>
+<select id="gst">
+<option value="">Pata nahi / Lagu nahi</option>
+<option>0</option><option>5</option><option>12</option><option>18</option><option>28</option>
+</select>
 </div>
 </div>
-<p class="hint">MRP should be the genuine applicable maximum retail price, where required. Do not enter an invented discount price.</p>
+<label>HSN Code</label>
+<input id="hsn" maxlength="12" inputmode="numeric" placeholder="GST wala HSN code (optional)">
+<p class="hint">MRP aapke packet par chhapi asli maximum price honi chahiye. Nakli MRP daalkar jhoothi chhoot mat dikhaiye.</p>
 
-<h3>4. Product Specifications</h3>
+<h3>4. Description Aur Khaas Baatein</h3>
+<label>Product Description <i>*</i></label>
+<textarea id="description" required minlength="20" maxlength="10000" placeholder="Product kya hai, kis kaam aata hai, kya khaas hai: sahi-sahi likhiye"></textarea>
+
+<label>Key Features (Highlights)</label>
+<textarea id="highlights" placeholder="Ek line mein ek khaas baat&#10;jaise:&#10;10 ghante ki battery&#10;Type-C charging&#10;Bluetooth 5.3"></textarea>
+
+<label>Box Mein Kya Milega (In The Box)</label>
+<input id="inbox" maxlength="200" placeholder="jaise: 1 Earbuds, 1 Charging Case, 1 Type-C Cable, 1 Manual">
+
+<h3>5. Specifications</h3>
 <div class="grid">
 <div>
-<label>Colour</label>
-<input id="color" placeholder="e.g. Black">
-</div>
-<div>
-<label>Size</label>
-<input id="size" placeholder="e.g. M, 128GB">
-</div>
-<div>
 <label>Material</label>
-<input id="material" placeholder="e.g. Cotton, plastic">
+<input id="material" maxlength="80" placeholder="jaise: Plastic, Cotton">
 </div>
 <div>
-<label>Weight</label>
-<input id="weight" placeholder="e.g. 500 g">
+<label>Product Weight</label>
+<input id="weight" maxlength="40" placeholder="jaise: 45 g">
 </div>
 <div>
 <label>Warranty</label>
-<input id="warranty" placeholder="e.g. 1 year / No warranty">
-</div>
-<div>
-<label>Country of Origin</label>
-<input id="origin" placeholder="e.g. India">
+<input id="warranty" maxlength="80" placeholder="jaise: 1 saal / Koi nahi">
 </div>
 </div>
-
 <label>Technical Specifications</label>
-<textarea id="specs" placeholder="Enter one specification per line, using Name: Value&#10;RAM: 4GB&#10;Storage: 64GB&#10;Display: 6.67 inches"></textarea>
-<p class="hint">Use the specifications relevant to your category. Do not guess unknown product details.</p>
+<textarea id="specs" placeholder="Ek line mein: Naam: Value&#10;jaise:&#10;Battery: 500 mAh&#10;Connectivity: Bluetooth 5.3"></textarea>
+<p class="hint">Sirf wahi bhariye jo aapko pakka pata hai. Andaza mat lagaiye.</p>
 
-<h3>5. Package & Delivery</h3>
+<h3>6. Kanooni Jaankari</h3>
 <div class="grid">
 <div>
-<label>Package Length</label>
-<input id="length" placeholder="e.g. 20 cm">
+<label>Country of Origin <i>*</i></label>
+<input id="origin" required maxlength="60" placeholder="jaise: India">
 </div>
 <div>
-<label>Package Width</label>
-<input id="width" placeholder="e.g. 12 cm">
+<label>Manufacturer (Banane Wale) Ka Naam / Pata</label>
+<input id="manufacturer" maxlength="250" placeholder="Naam aur pata">
 </div>
-<div>
-<label>Package Height</label>
-<input id="height" placeholder="e.g. 8 cm">
 </div>
-<div>
-<label>Estimated Delivery</label>
-<select id="delivery">
-<option value="">Not specified</option>
-<option>1-2 days</option>
-<option>2-4 days</option>
-<option>3-5 days</option>
-<option>5-7 days</option>
-</select>
-</div>
+<label>Packer / Importer Ka Naam / Pata</label>
+<input id="packer" maxlength="250" placeholder="Packer ya importer ka naam aur pata (agar alag hai)">
+<p class="hint">Dibbe mein bikne wale saaman par ye jaankari kanoon ke hisaab se zaroori hoti hai.</p>
+
+<h3>7. Packing (Delivery Ke Liye)</h3>
+<div class="grid">
+<div><label>Lambai (L)</label><input id="length" maxlength="30" placeholder="jaise: 12 cm"></div>
+<div><label>Chaudai (W)</label><input id="width" maxlength="30" placeholder="jaise: 8 cm"></div>
+<div><label>Unchai (H)</label><input id="height" maxlength="30" placeholder="jaise: 5 cm"></div>
+<div><label>Packed Weight</label><input id="pweight" maxlength="30" placeholder="jaise: 120 g"></div>
 </div>
 
-<label>Return / Replacement Policy</label>
-<select id="returns">
-<option value="">Use applicable PS Mart policy</option>
-<option>No returns</option>
-<option>Replacement only</option>
-<option>7-day return</option>
-<option>7-day replacement</option>
-</select>
-<p class="hint">Select only a policy supported by your actual marketplace rules and applicable consumer law.</p>
-
-<div class="section-note" style="margin-top:20px">
-<strong>Before submitting:</strong> Verify the price, stock, specifications and photos. Your product remains pending until admin approval.
+<div class="tip" style="margin-top:22px">
+✅ <b>Submit karne se pehle:</b> price, stock aur photo ek baar dekh lijiye. Product admin ke approve karne tak "pending" rehta hai.
 </div>
 
-<button class="mainbtn" id="submitBtn" type="submit">Submit Product for Approval</button>
+<button class="mainbtn" id="submitBtn" type="submit">Submit Product For Approval</button>
 <div id="message" role="status" aria-live="polite"></div>
 </form>
 
-<a class="back" href="seller-dashboard.html">← Back to Seller Dashboard</a>
+<a class="back" href="seller-dashboard.html">← Seller Dashboard par wapas</a>
 </div>
 
+<script src="app.js"></script>
 <script>
-const SUPABASE_URL =
-"https://nctscffhnztscczjxhat.supabase.co";
+var MAX_PHOTOS = 8, MIN_SIDE = 500, MAX_SIDE = 1600;
+var images = [];            /* {blob, url} - pehli Main photo */
+var imageInput = document.getElementById("productImages");
+var previews = document.getElementById("previews");
+var message = document.getElementById("message");
+var submitBtn = document.getElementById("submitBtn");
 
-const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0IiwiaWF0IjoxNzkwNDQzNDI1LCJleHAiOjIxMDYwMTk0MjV9.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-const imageInput = document.getElementById("productImages");
-const previews = document.getElementById("previews");
-const message = document.getElementById("message");
-const submitBtn = document.getElementById("submitBtn");
-
-let selectedFiles = [];
-let previewUrls = [];
-
-function showMessage(text, color="#8b5e34"){
-  message.style.color = color;
-  message.textContent = text;
+function showMessage(t, c){ message.style.color = c || "#43250f"; message.textContent = t; }
+function val(id){ return document.getElementById(id).value.trim(); }
+function lines(t){ return t.split("\n").map(function(x){return x.trim();}).filter(Boolean); }
+function specsFrom(t){
+  var o = {};
+  lines(t).forEach(function(l){
+    var i = l.indexOf(":");
+    if(i > 0) o[l.slice(0,i).trim()] = l.slice(i+1).trim();
+    else o["Detail " + (Object.keys(o).length + 1)] = l;
+  });
+  return o;
 }
 
-function renderPreviews(){
-  previewUrls.forEach(url => URL.revokeObjectURL(url));
-  previewUrls = [];
-  previews.replaceChildren();
-
-  selectedFiles.forEach((file,index)=>{
-    const card = document.createElement("div");
-    card.className = "photo" + (index===0 ? " primary" : "");
-
-    const img = document.createElement("img");
-    const url = URL.createObjectURL(file);
-    previewUrls.push(url);
-    img.src = url;
-    img.alt = "Selected product photo " + (index+1);
-
-    const title = document.createElement("p");
-    title.className = "hint";
-    title.textContent = index===0
-      ? "Main product image"
-      : "Product image " + (index+1);
-
-    const remove = document.createElement("button");
-    remove.type = "button";
-    remove.textContent = "Remove photo";
-    remove.addEventListener("click",()=>{
-      selectedFiles.splice(index,1);
-      syncInput();
-      renderPreviews();
+/* ---------- categories database se ---------- */
+(async function(){
+  var sel = document.getElementById("category");
+  var r = await supabaseClient.from("categories").select("id,name").order("name");
+  sel.innerHTML = '<option value="">Category chuniye</option>';
+  if(r.error || !r.data || !r.data.length){
+    ["Mobiles","Electronics","Fashion","Beauty","Home","Grocery","Accessories"].forEach(function(n,i){
+      var o = document.createElement("option"); o.value = String(i+1); o.textContent = n; sel.appendChild(o);
     });
+    return;
+  }
+  r.data.forEach(function(c){
+    var o = document.createElement("option"); o.value = String(c.id); o.textContent = c.name; sel.appendChild(o);
+  });
+})();
 
-    card.append(img,title,remove);
+/* ---------- photos ---------- */
+function paint(){
+  previews.replaceChildren();
+  images.forEach(function(it, i){
+    var card = document.createElement("div");
+    card.className = "photo" + (i === 0 ? " main" : "");
+    var img = document.createElement("img"); img.src = it.url; img.alt = "Photo " + (i+1);
+    var tag = document.createElement("div"); tag.className = "tag"; tag.textContent = i === 0 ? "⭐ Main Photo" : "Photo " + (i+1);
+    card.append(img, tag);
+    if(i > 0){
+      var mk = document.createElement("button"); mk.type = "button"; mk.className = "mk"; mk.textContent = "Main banao";
+      mk.onclick = function(){ var x = images.splice(i,1)[0]; images.unshift(x); paint(); };
+      card.appendChild(mk);
+    }
+    var rm = document.createElement("button"); rm.type = "button"; rm.className = "rm"; rm.textContent = "Hatayein";
+    rm.onclick = function(){ URL.revokeObjectURL(it.url); images.splice(i,1); paint(); };
+    card.appendChild(rm);
     previews.appendChild(card);
   });
+  document.getElementById("photoCount").textContent = images.length
+    ? images.length + " / " + MAX_PHOTOS + " photo chuni gayi. Pehli photo Main hai."
+    : "Abhi koi photo nahi chuni.";
 }
 
-function syncInput(){
-  const transfer = new DataTransfer();
-  selectedFiles.forEach(file=>transfer.items.add(file));
-  imageInput.files = transfer.files;
+function loadImage(file){
+  return new Promise(function(resolve, reject){
+    var u = URL.createObjectURL(file), im = new Image();
+    im.onload = function(){ URL.revokeObjectURL(u); resolve(im); };
+    im.onerror = function(){ URL.revokeObjectURL(u); reject(new Error("Photo khul nahi payi")); };
+    im.src = u;
+  });
 }
 
-imageInput.addEventListener("change",()=>{
-  const incoming = Array.from(imageInput.files || []);
-  const combined = [...selectedFiles,...incoming];
+async function processFile(file){
+  if(["image/jpeg","image/png","image/webp"].indexOf(file.type) < 0) throw new Error(file.name + ": sirf JPG, PNG ya WEBP");
+  if(file.size > 15 * 1024 * 1024) throw new Error(file.name + ": 15 MB se badi hai");
+  var im = await loadImage(file);
+  if(Math.min(im.naturalWidth, im.naturalHeight) < MIN_SIDE) throw new Error(file.name + ": photo chhoti hai (kam se kam 500 x 500 chahiye)");
+  var scale = Math.min(1, MAX_SIDE / Math.max(im.naturalWidth, im.naturalHeight));
+  var w = Math.round(im.naturalWidth * scale), h = Math.round(im.naturalHeight * scale);
+  var c = document.createElement("canvas"); c.width = w; c.height = h;
+  var ctx = c.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, w, h); ctx.drawImage(im, 0, 0, w, h);
+  var blob = await new Promise(function(r){ c.toBlob(r, "image/jpeg", 0.88); });
+  if(!blob) throw new Error(file.name + ": photo process nahi ho payi");
+  return {blob: blob, url: URL.createObjectURL(blob)};
+}
 
-  if(combined.length > 5){
-    showMessage("Maximum 5 photos allowed. Select fewer photos.","#b42318");
-    return;
+document.getElementById("pickBtn").onclick = function(){ imageInput.click(); };
+
+imageInput.addEventListener("change", async function(){
+  var files = Array.prototype.slice.call(imageInput.files || []);
+  imageInput.value = "";
+  if(!files.length) return;
+  var room = MAX_PHOTOS - images.length;
+  if(room <= 0){ showMessage("Zyada se zyada " + MAX_PHOTOS + " photos lagti hain.", "#c62828"); return; }
+  var skipped = files.length > room;
+  files = files.slice(0, room);
+  var errs = [];
+  showMessage("Photos taiyar ho rahi hain...");
+  for(var i = 0; i < files.length; i++){
+    try{ images.push(await processFile(files[i])); }
+    catch(e){ errs.push(e.message); }
   }
-
-  for(const file of incoming){
-    if(!["image/jpeg","image/png","image/webp","image/gif"].includes(file.type)){
-      showMessage("Use JPG, PNG, WEBP or GIF images.","#b42318");
-      return;
-    }
-    if(file.size > 5*1024*1024){
-      showMessage("Each photo must be 5 MB or smaller.","#b42318");
-      return;
-    }
-  }
-
-  selectedFiles = combined;
-  syncInput();
-  renderPreviews();
-  showMessage(selectedFiles.length + " photo(s) selected.");
+  paint();
+  if(errs.length) showMessage(errs.join(" | "), "#c62828");
+  else showMessage(skipped ? "Sirf " + MAX_PHOTOS + " photos tak hi jodi gayi." : images.length + " photo taiyar hain.", "#188038");
 });
 
-function value(id){
-  return document.getElementById(id).value.trim();
-}
-
-function lines(text){
-  return text.split("\n").map(x=>x.trim()).filter(Boolean);
-}
-
-function parseSpecs(text){
-  const result = {};
-  lines(text).forEach(line=>{
-    const i = line.indexOf(":");
-    if(i > 0){
-      result[line.slice(0,i).trim()] = line.slice(i+1).trim();
-    }else{
-      result["Detail " + (Object.keys(result).length+1)] = line;
+/* ---------- product save (jo column table mein nahi, wo chhod kar baaki save) ---------- */
+async function insertProduct(payload){
+  var dropped = [];
+  for(var t = 0; t < 30; t++){
+    var r = await supabaseClient.from("products").insert(payload);
+    if(!r.error) return {ok: true, dropped: dropped};
+    var m = r.error.message || "";
+    var c = m.match(/Could not find the '([^']+)' column/i) || m.match(/column "([^"]+)" of relation "products" does not exist/i);
+    var required = ["seller_id","name","price","status","description","category_id"];
+    if(c && Object.prototype.hasOwnProperty.call(payload, c[1]) && required.indexOf(c[1]) < 0){
+      dropped.push(c[1]); delete payload[c[1]]; continue;
     }
-  });
-  return result;
+    return {ok: false, error: r.error, dropped: dropped};
+  }
+  return {ok: false, error: {message: "Bahut saare columns nahi mile"}, dropped: dropped};
 }
 
-document.getElementById("productForm").addEventListener("submit",async event=>{
-  event.preventDefault();
-
+document.getElementById("productForm").addEventListener("submit", async function(e){
+  e.preventDefault();
   if(submitBtn.disabled) return;
 
-  const name = value("productName");
-  const categoryName = value("category");
-  const description = value("description");
-  const price = Number(value("price"));
-  const oldText = value("oldPrice");
-  const oldPrice = oldText ? Number(oldText) : null;
-  const stockText = value("stock");
-  const stock = Number(stockText);
+  var name = val("productName"), categoryId = val("category"), description = val("description");
+  var price = Number(val("price")), mrp = Number(val("oldPrice")), stockText = val("stock"), stock = Number(stockText);
 
-  if(!name || !categoryName || !description ||
-     !Number.isFinite(price) || price<=0 ||
-     stockText==="" || !Number.isInteger(stock) || stock<0){
-    showMessage("Please check all required fields and prices.","#b42318");
-    return;
+  if(!name || name.length < 8 || !categoryId || !val("brand") || description.length < 20 || !val("origin")){
+    showMessage("Zaroori fields (category, brand, title, description, country of origin) poori bhariye.", "#c62828"); return;
   }
-
-  if(oldPrice!==null && (!Number.isFinite(oldPrice) || oldPrice<=0)){
-    showMessage("Enter a valid MRP or leave it blank.","#b42318");
-    return;
-  }
-
-  if(oldPrice!==null && oldPrice<price){
-    showMessage("MRP / old price should not be lower than selling price.","#b42318");
-    return;
-  }
-
-  if(selectedFiles.length===0 || selectedFiles.length>5){
-    showMessage("Select between 1 and 5 product photos.","#b42318");
-    return;
-  }
+  if(!isFinite(price) || price <= 0 || !isFinite(mrp) || mrp <= 0){ showMessage("Selling price aur MRP sahi daaliye.", "#c62828"); return; }
+  if(mrp < price){ showMessage("MRP selling price se kam nahi ho sakti.", "#c62828"); return; }
+  if(stockText === "" || !Number.isInteger(stock) || stock < 0){ showMessage("Stock sahi daaliye (poora number).", "#c62828"); return; }
+  if(images.length < 1){ showMessage("Kam se kam 1 photo lagaiye.", "#c62828"); return; }
 
   submitBtn.disabled = true;
-  const uploadedPaths = [];
-
+  var uploaded = [];
   try{
-    showMessage("Checking login...");
+    showMessage("Login check ho raha hai...");
+    var au = await supabaseClient.auth.getUser();
+    var user = au.data && au.data.user;
+    if(au.error || !user){ showMessage("Pehle login kijiye. (Is page par login nahi mila; login.html par jaakar dobara aaiye.)", "#c62828"); return; }
 
-    const {data:authData,error:authError} =
-      await supabaseClient.auth.getUser();
+    var sl = await supabaseClient.from("sellers").select("id,status").eq("user_id", user.id).maybeSingle();
+    if(sl.error) throw sl.error;
+    if(!sl.data){ showMessage("Aapka seller account nahi mila.", "#c62828"); return; }
+    if(sl.data.status !== "approved"){ showMessage("Aapka seller account abhi admin ke approval ka intezaar kar raha hai.", "#856404"); return; }
 
-    const user = authData && authData.user;
-
-    if(authError || !user){
-      showMessage("Please login first.","#b42318");
-      return;
+    var urls = [], stamp = Date.now();
+    for(var i = 0; i < images.length; i++){
+      showMessage("Photo " + (i+1) + " / " + images.length + " upload ho rahi hai...");
+      var path = "products/" + user.id + "-" + stamp + "-" + i + ".jpg";
+      var up = await supabaseClient.storage.from("product-images").upload(path, images[i].blob, {cacheControl: "3600", upsert: false, contentType: "image/jpeg"});
+      if(up.error) throw up.error;
+      uploaded.push(path);
+      urls.push(supabaseClient.storage.from("product-images").getPublicUrl(path).data.publicUrl);
     }
 
-    const {data:seller,error:sellerError} =
-      await supabaseClient
-        .from("sellers")
-        .select("id,status")
-        .eq("user_id",user.id)
-        .maybeSingle();
+    showMessage("Product save ho raha hai...");
+    var specs = specsFrom(val("specs"));
+    ["color:Colour","size:Size","material:Material","weight:Weight"].forEach(function(p){
+      var k = p.split(":"); if(val(k[0])) specs[k[1]] = val(k[0]);
+    });
+    var gst = val("gst");
 
-    if(sellerError) throw sellerError;
-
-    if(!seller){
-      showMessage("Seller account not found.","#b42318");
-      return;
-    }
-
-    if(seller.status!=="approved"){
-      showMessage("Your seller account is pending admin approval.","#856404");
-      return;
-    }
-
-    showMessage("Checking category...");
-
-    const {data:category,error:categoryError} =
-      await supabaseClient
-        .from("categories")
-        .select("id")
-        .eq("name",categoryName)
-        .maybeSingle();
-
-    if(categoryError) throw categoryError;
-
-    if(!category){
-      showMessage("Category not found in database: " + categoryName,"#b42318");
-      return;
-    }
-
-    const imageUrls = [];
-
-    for(let i=0;i<selectedFiles.length;i++){
-      showMessage("Uploading photo " + (i+1) + " of " + selectedFiles.length + "...");
-
-      const file = selectedFiles[i];
-      const extension = file.name.split(".").pop().toLowerCase();
-      const filePath = "products/" + user.id + "-" +
-        Date.now() + "-" + i + "." + extension;
-
-      const {error:uploadError} = await supabaseClient
-        .storage
-        .from("product-images")
-        .upload(filePath,file,{
-          cacheControl:"3600",
-          upsert:false,
-          contentType:file.type
-        });
-
-      if(uploadError) throw uploadError;
-
-      uploadedPaths.push(filePath);
-
-      const {data:publicData} = supabaseClient
-        .storage
-        .from("product-images")
-        .getPublicUrl(filePath);
-
-      imageUrls.push(publicData.publicUrl);
-    }
-
-    showMessage("Saving product details...");
-
-    const specs = parseSpecs(value("specs"));
-    if(value("color")) specs["Colour"] = value("color");
-    if(value("size")) specs["Size"] = value("size");
-    if(value("material")) specs["Material"] = value("material");
-    if(value("weight")) specs["Weight"] = value("weight");
-
-    const product = {
-      seller_id:seller.id,
-      category_id:category.id,
-      name:name,
-      description:description,
-      price:price,
-      old_price:oldPrice,
-      stock:stock,
-      image_url:imageUrls[0],
-      image_urls:imageUrls,
-      status:"pending",
-      brand:value("brand") || null,
-      model_number:value("model") || null,
-      sku:value("sku") || null,
-      highlights:lines(value("highlights")),
-      specifications:specs,
-      subcategory:value("subcategory") || null,
-      color:value("color") || null,
-      size:value("size") || null,
-      material:value("material") || null,
-      weight:value("weight") || null,
-      warranty:value("warranty") || null,
-      country_of_origin:value("origin") || null,
-      package_length:value("length") || null,
-      package_width:value("width") || null,
-      package_height:value("height") || null,
-      return_policy:value("returns") || null,
-      delivery_days:value("delivery") || null
+    var payload = {
+      seller_id: sl.data.id, category_id: isNaN(Number(categoryId)) ? categoryId : Number(categoryId),
+      name: name, description: description, price: price, old_price: mrp, stock: stock,
+      image_url: urls[0], image_urls: urls, status: "pending",
+      brand: val("brand"), model_number: val("model") || null, sku: val("sku") || null,
+      subcategory: val("subcategory") || null, color: val("color") || null, size: val("size") || null,
+      material: val("material") || null, weight: val("weight") || null, warranty: val("warranty") || null,
+      highlights: lines(val("highlights")), specifications: specs, in_the_box: val("inbox") || null,
+      country_of_origin: val("origin"), manufacturer: val("manufacturer") || null, packer: val("packer") || null,
+      hsn_code: val("hsn") || null, gst_percent: gst === "" ? null : Number(gst),
+      package_length: val("length") || null, package_width: val("width") || null,
+      package_height: val("height") || null, package_weight: val("pweight") || null
     };
 
-    const {error:insertError} = await supabaseClient
-      .from("products")
-      .insert(product);
+    var res = await insertProduct(payload);
+    if(!res.ok) throw res.error;
 
-    if(insertError) throw insertError;
-
-    showMessage(
-      "Product submitted successfully! Waiting for admin approval.",
-      "green"
-    );
-
+    var note = res.dropped.length ? " (Ye details save nahi hui kyunki table mein column nahi hai: " + res.dropped.join(", ") + ". ps-mart-product-fields.sql run kijiye.)" : "";
+    showMessage("✅ Product submit ho gaya! Admin ke approval ka intezaar hai." + note, "#188038");
+    uploaded = [];
     document.getElementById("productForm").reset();
-    selectedFiles = [];
-    syncInput();
-    renderPreviews();
-
-  }catch(error){
-    console.error("PS Mart product submission:",error);
-
-    if(uploadedPaths.length){
-      const {error:cleanupError} = await supabaseClient
-        .storage
-        .from("product-images")
-        .remove(uploadedPaths);
-
-      if(cleanupError){
-        console.warn("Some uploaded photos may need cleanup:",cleanupError.message);
-      }
-    }
-
-    showMessage(
-      "Could not submit product: " + (error.message || "Unknown error"),
-      "#b42318"
-    );
+    images.forEach(function(x){ URL.revokeObjectURL(x.url); });
+    images = []; paint();
+  }catch(err){
+    console.error("PS Mart product submit:", err);
+    if(uploaded.length){ try{ await supabaseClient.storage.from("product-images").remove(uploaded); }catch(x){} }
+    var msg = (err && err.message) || "Pata nahi kya hua";
+    if(/row-level security|violates/i.test(msg)) msg += " (ps-mart-product-fields.sql aur ps-mart-rls.sql run hui hain? Aap approved seller hain?)";
+    showMessage("Product submit nahi ho paya: " + msg, "#c62828");
   }finally{
     submitBtn.disabled = false;
   }
 });
+paint();
 </script>
 </body>
-  </html>
-  
+</html>
