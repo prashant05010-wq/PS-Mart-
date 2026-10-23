@@ -11,7 +11,7 @@
 .home-product-grid .product,#products .product{padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;position:relative}
 .home-product-grid .product:hover,#products .product:hover{transform:none!important;box-shadow:none!important}
 .product .pc-link{display:block;text-decoration:none;color:inherit}
-.product .pic{height:auto!important;aspect-ratio:4/5;padding:0!important;background:#f1f1f1!important;border-radius:12px!important;position:relative;overflow:hidden;display:block!important}
+.product .pic{height:auto!important;aspect-ratio:4/5;padding:0!important;background:#fbf6ea!important;border-radius:12px!important;position:relative;overflow:hidden;display:block!important}
 .product .pic img{width:100%!important;height:100%!important;object-fit:cover!important;display:block}
 .product .pc-emoji{display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:54px}
 .product .pc-rate{position:absolute;left:8px;bottom:8px;background:rgba(255,255,255,.92);border-radius:6px;padding:3px 7px;font-size:12px;font-weight:700;color:#222;display:flex;align-items:center;gap:4px}
@@ -29,45 +29,45 @@
 
 /* ===== PRODUCT DETAIL (Flipkart jaisa) ===== */
 #detail .ps-gal{position:relative}
-#detail .ps-slider{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;background:#f1f1f1;border-radius:12px}
+#detail .ps-slider{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;background:#fbf6ea;border:1px solid #e6dac3;border-radius:12px}
 #detail .ps-slider::-webkit-scrollbar{display:none}
 #detail .ps-slide{flex:0 0 100%;scroll-snap-align:center;aspect-ratio:1/1.1;display:flex;align-items:center;justify-content:center}
 #detail .ps-slide img{width:100%;height:100%;object-fit:contain;display:block;user-select:none;-webkit-user-drag:none}
 #detail .ps-dots{display:flex;justify-content:center;gap:7px;padding:12px 0 4px}
-#detail .ps-dots span{width:7px;height:7px;border-radius:50%;background:#d0d0d0;transition:.2s;cursor:pointer}
-#detail .ps-dots span.on{width:9px;height:9px;background:#1a56db;margin-top:-1px}
+#detail .ps-dots span{width:7px;height:7px;border-radius:50%;background:#e6dac3;transition:.2s;cursor:pointer}
+#detail .ps-dots span.on{width:9px;height:9px;background:#c9922e;margin-top:-1px}
 #detail .ps-arrow{position:absolute;top:45%;width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.2);font-size:22px;cursor:pointer;display:none;z-index:3}
 #detail .ps-arrow.l{left:8px}#detail .ps-arrow.r{right:8px}
 #detail .ps-heart{position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:#b8860b;font-size:22px;cursor:pointer;z-index:3;display:flex;align-items:center;justify-content:center;padding:0}
 #detail .ps-count{position:absolute;right:10px;bottom:34px;background:rgba(0,0,0,.55);color:#fff;font-size:12px;padding:3px 9px;border-radius:12px;z-index:3}
-#detail .ps-title{font:500 18px/1.35 Inter,Arial,sans-serif;margin:4px 0 8px;color:#222}
+#detail .ps-title{font:500 18px/1.35 Inter,Arial,sans-serif;margin:4px 0 8px;color:#2a1a0e}
 #detail .ps-priceline{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:10px 0 2px}
 #detail .ps-off{color:#188038;font-weight:700;font-size:22px}
 #detail .ps-old{color:#777;text-decoration:line-through;font-size:20px}
-#detail .ps-now{font-size:28px;font-weight:700;color:#111}
+#detail .ps-now{font-size:28px;font-weight:700;color:#43250f}
 #detail .ps-tax{color:#777;font-size:12px;margin:0 0 12px}
 #detail .ps-rate{display:inline-flex;align-items:center;gap:4px;background:#188038;color:#fff;font-weight:700;font-size:13px;padding:3px 8px;border-radius:6px}
-#detail .ps-offers{background:#e3f1fd;border-radius:14px;padding:14px;margin:14px 0}
-#detail .ps-offers h3{margin:0 0 8px;font:700 17px Inter,Arial,sans-serif;color:#0d3b66}
-#detail .ps-offers .offer{background:#fff;border-radius:10px;padding:10px 12px;margin-top:8px;font-size:14px}
-#detail .ps-row{background:#f4f4f4;border-radius:12px;padding:13px 14px;margin:10px 0;font-size:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#222}
-#detail .ps-row a{color:#1a56db;font-weight:700;text-decoration:none;white-space:nowrap}
-#detail .ps-row.addr{background:#eef5ff;cursor:pointer}
+#detail .ps-offers{background:#fff4d8;border:1px dashed #c9922e;border-radius:14px;padding:14px;margin:14px 0}
+#detail .ps-offers h3{margin:0 0 8px;font:700 20px 'Cormorant Garamond',Georgia,serif;color:#43250f}
+#detail .ps-offers .offer{background:#fff;border:1px solid #f1e2b8;border-radius:10px;padding:10px 12px;margin-top:8px;font-size:14px}
+#detail .ps-row{background:#fbf6ea;border:1px solid #e6dac3;border-radius:12px;padding:13px 14px;margin:10px 0;font-size:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#2a1a0e}
+#detail .ps-row a{color:#9b681b;font-weight:700;text-decoration:none;white-space:nowrap}
+#detail .ps-row.addr{background:#fff4d8;border-color:#c9922e;cursor:pointer}
 #detail .ps-stock{font-size:14px;margin:8px 0}
-#detail .ps-sec{margin-top:22px;border-top:1px solid #eee;padding-top:16px}
-#detail .ps-sec h2{margin:0 0 10px;font:700 20px Inter,Arial,sans-serif;color:#222}
+#detail .ps-sec{margin-top:22px;border-top:1px solid #e6dac3;padding-top:16px}
+#detail .ps-sec h2{margin:0 0 10px;font:700 26px 'Cormorant Garamond',Georgia,serif;color:#43250f}
 #detail .ps-sec ul{margin:0;padding-left:20px;line-height:1.8;font-size:14px}
 #detail .ps-sec .spec-table{width:100%;max-width:none}
 #detail .action-buttons{display:flex;gap:10px;margin:18px 0}
-#detail .action-buttons button{flex:1;padding:14px;border:1px solid #ccc;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;background:#fff;color:#111}
-#detail .action-buttons button.ps-buy{background:#ffe11b;border-color:#ffe11b}
+#detail .action-buttons button{flex:1;padding:14px;border:0;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;background:#43250f;color:#f0bd50}
+#detail .action-buttons button.ps-buy{background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);color:#24150b}
 #detail .action-buttons button:disabled{opacity:.5}
 #detail .ps-var{margin:14px 0 4px}
-#detail .ps-var-t{font-size:15px;margin-bottom:8px;color:#222}
+#detail .ps-var-t{font-size:15px;margin-bottom:8px;color:#2a1a0e}
 #detail .ps-chips{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
 #detail .ps-chips::-webkit-scrollbar{display:none}
-#detail .ps-chip{flex:0 0 auto;min-width:130px;border:1px solid #ddd;border-radius:12px;padding:10px 12px;text-decoration:none;color:#222;background:#fff;display:flex;flex-direction:column;gap:3px;font-size:14px}
-#detail .ps-chip.on{border:2px solid #222;background:#f4f4f4}
+#detail .ps-chip{flex:0 0 auto;min-width:130px;border:1px solid #e6dac3;border-radius:12px;padding:10px 12px;text-decoration:none;color:#222;background:#fff;display:flex;flex-direction:column;gap:3px;font-size:14px}
+#detail .ps-chip.on{border:2px solid #c9922e;background:#fff4d8}
 #detail .ps-chip em{font-style:normal;font-size:12px;color:#188038;font-weight:700}
 #detail .ps-chip em s{color:#888;font-weight:400;margin-left:4px}
 #detail .ps-chip b{font-size:16px}
@@ -85,7 +85,7 @@
   body.ps-pd #detail .detail-info{padding:0 14px}
   body.ps-pd #detail .ps-sec,body.ps-pd #detail .ps-wide{padding-left:14px;padding-right:14px}
   body.ps-pd .pm-mnav,body.ps-pd .pm-foot,body.ps-pd .location-bar{display:none!important}
-  body.ps-pd #detail .action-buttons{position:fixed;left:0;right:0;bottom:0;margin:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:#fff;border-top:1px solid #e5e5e5;z-index:3000;flex-direction:row}
+  body.ps-pd #detail .action-buttons{position:fixed;left:0;right:0;bottom:0;margin:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:#fbf6ea;border-top:2px solid #c9922e;z-index:3000;flex-direction:row}
 }
 `;
   var s = document.createElement("style");
@@ -321,7 +321,7 @@ async function detail() {
           '<div class="offer">🔄 Easy return available</div>' +
         '</div>' +
 
-        '<h2 style="font:700 20px Inter,Arial,sans-serif;margin:18px 0 8px">Delivery details</h2>' +
+        '<h2 style="font:700 26px \'Cormorant Garamond\',Georgia,serif;margin:18px 0 8px;color:#43250f">Delivery details</h2>' +
         '<div class="ps-row addr" onclick="openLocation()"><span>🏠 ' + addrText + '</span><a href="#" onclick="return false">›</a></div>' +
         '<div class="ps-row"><span>🚚 Free delivery available</span></div>' +
         '<div class="ps-row"><span>🏪 Seller: PS Mart Seller</span></div>' +
