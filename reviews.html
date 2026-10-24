@@ -3,947 +3,291 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'">
+<script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
 
 <title>Reviews | PS Mart</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-body{
-  font-family:Arial,Helvetica,sans-serif;
-  background:#f7f1e8;
-  color:#3b2415;
-}
-
-header{
-  background:#3b2112;
-  color:#ffd66b;
-  padding:15px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.logo{
-  font-size:22px;
-  font-weight:bold;
-}
-
-.back{
-  color:#ffd66b;
-  text-decoration:none;
-}
-
-.container{
-  max-width:950px;
-  margin:25px auto;
-  padding:0 15px;
-}
-
-h1{
-  margin-bottom:7px;
-}
-
-.subtitle{
-  color:#765b45;
-  margin-bottom:20px;
-}
-
-.write-btn{
-  display:inline-block;
-  background:#b8860b;
-  color:white;
-  padding:12px 18px;
-  border-radius:9px;
-  text-decoration:none;
-  font-weight:bold;
-  margin-bottom:20px;
-}
-
-.review-box{
-  background:white;
-  border:1px solid #ead7bd;
-  border-radius:14px;
-  padding:20px;
-  margin-bottom:18px;
-  box-shadow:0 4px 15px rgba(80,40,10,.1);
-}
-
-.review-top{
-  display:flex;
-  justify-content:space-between;
-  gap:15px;
-}
-
-.product-name{
-  font-size:19px;
-  font-weight:bold;
-}
-
-.stars{
-  color:#e0a400;
-  font-size:20px;
-  letter-spacing:2px;
-}
-
-.verified{
-  color:#247a35;
-  font-size:13px;
-  font-weight:bold;
-  margin-top:7px;
-}
-
-.review-title{
-  font-size:17px;
-  font-weight:bold;
-  margin-top:15px;
-}
-
-.review-text{
-  margin-top:8px;
-  line-height:1.6;
-  color:#5c4634;
-}
-
-.date{
-  color:#8a7765;
-  font-size:12px;
-  margin-top:10px;
-}
-
-.actions{
-  display:flex;
-  gap:9px;
-  margin-top:16px;
-  flex-wrap:wrap;
-}
-
-.actions button{
-  border:0;
-  padding:9px 13px;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-.edit{
-  background:#ead9b9;
-}
-
-.delete{
-  background:#f8dddd;
-  color:#9b2222;
-}
-
-.helpful{
-  background:#fff2cf;
-  color:#805900;
-}
-
-.empty{
-  text-align:center;
-  padding:35px;
-  color:#765b45;
-}
-
-.modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.65);
-  z-index:9999;
-  padding:15px;
-  overflow:auto;
-}
-
-.modal-box{
-  max-width:550px;
-  margin:35px auto;
-  background:white;
-  padding:24px;
-  border-radius:15px;
-}
-
-.modal-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
-}
-
-.close{
-  border:0;
-  background:#eee;
-  border-radius:50%;
-  width:35px;
-  height:35px;
-  font-size:20px;
-  cursor:pointer;
-}
-
-label{
-  display:block;
-  font-weight:bold;
-  margin-bottom:7px;
-}
-
-input,textarea{
-  width:100%;
-  padding:12px;
-  border:1px solid #d9c8b4;
-  border-radius:8px;
-  margin-bottom:17px;
-  font-size:15px;
-}
-
-textarea{
-  min-height:130px;
-  resize:vertical;
-}
-
-.rating-stars{
-  display:flex;
-  gap:4px;
-  font-size:35px;
-  margin-bottom:5px;
-}
-
-.rating-stars span{
-  color:#d7d7d7;
-  cursor:pointer;
-}
-
-.rating-stars span.active{
-  color:#e0a400;
-}
-
-.submit{
-  width:100%;
-  border:0;
-  background:#b8860b;
-  color:white;
-  padding:13px;
-  border-radius:9px;
-  font-size:16px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-#message{
-  display:none;
-  position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#3b2112;
-  color:white;
-  padding:12px 18px;
-  border-radius:9px;
-  z-index:10000;
-}
-
-@media(max-width:600px){
-  .review-top{
-    flex-direction:column;
-  }
-
-  .container{
-    margin-top:20px;
-  }
-}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#f7f1e8;color:#3b2415}
+header{background:#3b2112;color:#ffd66b;padding:15px 20px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:22px;font-weight:bold}
+.back{color:#ffd66b;text-decoration:none}
+.container{max-width:950px;margin:25px auto;padding:0 15px}
+h1{margin-bottom:7px}
+.subtitle{color:#765b45;margin-bottom:12px;line-height:1.6}
+.note{background:#fff4d8;border:1px dashed #c9922e;border-radius:10px;padding:11px 13px;font-size:13px;line-height:1.6;margin-bottom:18px}
+.review-box{background:white;border:1px solid #ead7bd;border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 4px 15px rgba(80,40,10,.1);display:flex;gap:16px}
+.review-box img{width:90px;height:90px;object-fit:contain;background:#f7f1e8;border-radius:10px;border:1px solid #ead7bd;flex-shrink:0}
+.body{flex:1;min-width:0}
+.product-name{font-size:18px;font-weight:bold}
+.stars{color:#e0a400;font-size:20px;letter-spacing:2px;margin-top:4px}
+.verified{color:#247a35;font-size:12px;font-weight:bold;margin-top:4px}
+.review-title{font-size:16px;font-weight:bold;margin-top:10px}
+.review-text{margin-top:6px;line-height:1.6;color:#5c4634;overflow-wrap:anywhere}
+.actions{display:flex;gap:9px;margin-top:14px;flex-wrap:wrap}
+.actions button{border:0;padding:9px 14px;border-radius:8px;cursor:pointer;font-weight:bold}
+.write{background:#b8860b;color:white}
+.edit{background:#ead9b9}
+.delete{background:#f8dddd;color:#9b2222}
+.empty{text-align:center;padding:35px;color:#765b45;background:white;border-radius:14px;border:1px solid #ead7bd;line-height:1.7}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;padding:15px;overflow:auto}
+.modal-box{max-width:550px;margin:35px auto;background:white;padding:24px;border-radius:15px}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.close{border:0;background:#eee;border-radius:50%;width:35px;height:35px;font-size:20px;cursor:pointer}
+label{display:block;font-weight:bold;margin-bottom:7px}
+input,textarea{width:100%;padding:12px;border:1px solid #d9c8b4;border-radius:8px;margin-bottom:17px;font-size:15px;font-family:inherit}
+textarea{min-height:130px;resize:vertical}
+.rating-stars{display:flex;gap:4px;font-size:35px;margin-bottom:14px}
+.rating-stars span{color:#d7d7d7;cursor:pointer}
+.rating-stars span.active{color:#e0a400}
+.submit{width:100%;border:0;background:#b8860b;color:white;padding:13px;border-radius:9px;font-size:16px;font-weight:bold;cursor:pointer}
+.submit:disabled{opacity:.6}
+#message{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#3b2112;color:white;padding:12px 18px;border-radius:9px;z-index:10000;max-width:90%}
+@media(max-width:600px){.review-box{flex-direction:column}.review-box img{width:100%;height:150px}}
 </style>
 </head>
 
 <body>
 
 <header>
-
-  <div class="logo">
-    PS MART
-  </div>
-
-  <a href="profile.html" class="back">
-    ← Profile
-  </a>
-
+  <div class="logo">PS MART</div>
+  <a href="profile.html" class="back">← Profile</a>
 </header>
-
 
 <div class="container">
 
   <h1>My Reviews ⭐</h1>
 
-  <p class="subtitle">
-    Share your shopping experience with other customers.
-  </p>
+  <p class="subtitle">Jo products aapko <b>deliver ho chuke hain</b>, unka review likhiye. Isse doosre customers ko sahi faisla lene mein madad milti hai.</p>
 
-  <a href="javascript:void(0)"
-     class="write-btn"
-     onclick="openForm()">
-    ✍ Write a Review
-  </a>
+  <div class="note">✔ Sirf asli kharidaar hi review likh sakte hain, isliye sab review <b>Verified Purchase</b> hote hain. Aap apna review kabhi bhi badal ya hata sakte hain.</div>
 
   <div id="reviewsList"></div>
 
 </div>
 
 
-<!-- REVIEW FORM -->
-
 <div id="reviewModal" class="modal">
-
   <div class="modal-box">
 
     <div class="modal-head">
-
-      <h2>Write a Review ⭐</h2>
-
-      <button class="close"
-              onclick="closeForm()">
-        ×
-      </button>
-
+      <h2 id="modalTitle">Review likhiye ⭐</h2>
+      <button class="close" onclick="closeForm()">×</button>
     </div>
 
+    <p id="modalProduct" style="font-weight:bold;margin-bottom:12px"></p>
 
-    <label>Product Name</label>
-
-    <input
-      id="productName"
-      type="text"
-      placeholder="Enter product name"
-      maxlength="150"
-    >
-
-
-    <label>Your Rating</label>
-
-    <div class="rating-stars"
-         id="ratingStars">
-
+    <label>Aapki Rating</label>
+    <div class="rating-stars" id="ratingStars">
       <span onclick="setRating(1)">★</span>
       <span onclick="setRating(2)">★</span>
       <span onclick="setRating(3)">★</span>
       <span onclick="setRating(4)">★</span>
       <span onclick="setRating(5)">★</span>
-
     </div>
 
-    <input
-      type="hidden"
-      id="rating"
-      value="0"
-    >
+    <label>Review ka Title</label>
+    <input id="reviewTitle" type="text" placeholder="Jaise: Bahut badhiya product" maxlength="100">
 
+    <label>Aapka Review</label>
+    <textarea id="reviewText" placeholder="Product kaisa laga, kya achha ya bura laga..." maxlength="2000"></textarea>
 
-    <label>Review Title</label>
-
-    <input
-      id="reviewTitle"
-      type="text"
-      placeholder="Example: Very good product"
-      maxlength="100"
-    >
-
-
-    <label>Your Review</label>
-
-    <textarea
-      id="reviewText"
-      placeholder="Tell us about your experience..."
-      maxlength="2000"
-    ></textarea>
-
-
-    <button class="submit"
-            onclick="submitReview()">
-      Submit Review
-    </button>
+    <button class="submit" id="submitBtn" onclick="submitReview()">Review Bhejein</button>
 
   </div>
-
 </div>
-
 
 <div id="message"></div>
 
-
+<script src="app.js"></script>
 <script>
 
-/* =========================
-   SUPABASE
-========================= */
+let rUser = null;
+let rItems = [];
+let activeProduct = null;
+let rating = 0;
 
-const SUPABASE_URL =
-"https://nctscffhnztscczjxhat.supabase.co";
+function esc(v){
+  return String(v == null ? "" : v)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
 
-const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+function showMessage(text){
+  const box = document.getElementById("message");
+  box.textContent = text;
+  box.style.display = "block";
+  setTimeout(() => { box.style.display = "none"; }, 3500);
+}
 
-const supabaseClient =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
-
-
-/* =========================
-   CURRENT USER
-========================= */
-
-let currentUser = null;
-let editingReviewId = null;
-
-/* =========================
-   START
-========================= */
+function safeImg(u){
+  return (typeof u === "string" && /^https:\/\//.test(u)) ? u :
+    "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 90"><rect width="90" height="90" fill="#43250f"/><text x="45" y="52" text-anchor="middle" font-family="Georgia,serif" font-size="14" fill="#f0bd50">PS Mart</text></svg>');
+}
 
 async function start(){
 
-  const {
-    data:{
-      user
-    }
-  } =
-  await supabaseClient.auth.getUser();
-
+  const { data:{ user } } = await supabaseClient.auth.getUser();
 
   if(!user){
-
-    alert("Please login first.");
-
-    window.location.href =
-      "login.html";
-
+    document.getElementById("reviewsList").innerHTML =
+      '<div class="empty">Pehle <a href="login.html">login</a> kijiye.</div>';
     return;
-
   }
 
+  rUser = user;
 
-  currentUser = user;
+  await loadReviews();
 
-  loadReviews();
+  const wanted = new URLSearchParams(location.search).get("product");
+  if(wanted){
+    const hit = rItems.find(x => String(x.product_id) === String(wanted));
+    if(hit) openForm(hit.product_id);
+  }
 
 }
-
-
-/* =========================
-   LOAD REVIEWS
-========================= */
 
 async function loadReviews(){
 
-  const list =
-    document.getElementById("reviewsList");
+  const list = document.getElementById("reviewsList");
 
+  list.innerHTML = '<div class="empty">Loading...</div>';
 
-  list.innerHTML =
-    '<div class="review-box">Loading reviews...</div>';
-
-
-  const {
-    data,
-    error
-  } =
-  await supabaseClient
-
-    .from("reviews")
-
-    .select("*")
-
-    .order(
-      "created_at",
-      {
-        ascending:false
-      }
-    );
-
+  const { data, error } = await supabaseClient.rpc("my_reviewable_products");
 
   if(error){
-
-    list.innerHTML =
-      '<div class="review-box">Unable to load reviews.</div>';
-
     console.error(error);
-
+    list.innerHTML = '<div class="empty">Reviews load nahi ho paye.<br><small>ps-mart-phase5.sql run kiya hai?</small></div>';
     return;
-
   }
 
+  rItems = Array.isArray(data) ? data : [];
 
-  if(!data || data.length === 0){
-
+  if(rItems.length === 0){
     list.innerHTML = `
-      <div class="review-box empty">
-
-        <h2>No reviews yet</h2>
-
-        <p style="margin-top:8px;">
-          Be the first person to write a review.
-        </p>
-
-      </div>
-    `;
-
+      <div class="empty">
+        <h2>Abhi review likhne layak koi product nahi</h2>
+        <p style="margin-top:8px">Jab aapka koi order deliver ho jayega, wo product yahan dikhega.</p>
+        <p style="margin-top:12px"><a href="orders.html" style="color:#8b5e34;font-weight:bold">Mere Orders dekhein →</a></p>
+      </div>`;
     return;
-
   }
 
+  list.innerHTML = rItems.map(x => {
 
-  list.innerHTML = "";
+    const has = x.rating != null;
+    const stars = has ? "★".repeat(x.rating) + "☆".repeat(5 - x.rating) : "";
 
-
-  data.forEach(function(review){
-
-    const stars =
-      "★".repeat(review.rating)
-      +
-      "☆".repeat(5 - review.rating);
-
-
-    const date =
-      review.created_at
-      ?
-      new Date(review.created_at)
-      .toLocaleDateString("en-IN")
-      :
-      "";
-
-
-    const ownReview =
-      currentUser &&
-      review.user_id === currentUser.id;
-
-
-    const card =
-      document.createElement("div");
-
-    card.className =
-      "review-box";
-
-
-    card.innerHTML = `
-
-      <div class="review-top">
-
-        <div>
-
-          <div class="product-name">
-            ${escapeHTML(review.product_name || "Product")}
-          </div>
-
+    return `
+      <div class="review-box">
+        <img src="${esc(safeImg(x.image_url))}" alt="${esc(x.name)}">
+        <div class="body">
+          <div class="product-name">${esc(x.name)}</div>
+          ${has ? `
+            <div class="stars">${stars}</div>
+            <div class="verified">✔ Verified Purchase</div>
+            ${x.title ? `<div class="review-title">${esc(x.title)}</div>` : ""}
+            <div class="review-text">${esc(x.review_text || "")}</div>
+            <div class="actions">
+              <button class="edit" data-id="${esc(x.product_id)}" onclick="openForm(this.dataset.id)">✏ Badlein</button>
+              <button class="delete" data-id="${esc(x.product_id)}" onclick="deleteReview(this.dataset.id)">🗑 Hatayein</button>
+            </div>` : `
+            <div class="review-text">Aapne abhi is product ka review nahi likha.</div>
+            <div class="actions">
+              <button class="write" data-id="${esc(x.product_id)}" onclick="openForm(this.dataset.id)">✍ Review likhiye</button>
+            </div>`}
         </div>
+      </div>`;
 
-        <div class="stars">
-          ${stars}
-        </div>
-
-      </div>
-
-
-      ${
-        review.title
-        ?
-        `<div class="review-title">
-          ${escapeHTML(review.title)}
-        </div>`
-        :
-        ""
-      }
-
-
-      <div class="review-text">
-        ${escapeHTML(review.review_text || "")}
-      </div>
-
-
-      <div class="date">
-        Reviewed on ${date}
-      </div>
-
-
-      ${
-        ownReview
-        ?
-        `
-        <div class="actions">
-
-          <button
-            class="edit"
-            onclick="editReview('${review.id}')">
-            ✏ Edit
-          </button>
-
-          <button
-            class="delete"
-            onclick="deleteReview('${review.id}')">
-            🗑 Delete
-          </button>
-
-        </div>
-        `
-        :
-        ""
-      }
-
-    `;
-
-
-    list.appendChild(card);
-
-  });
+  }).join("");
 
 }
-
-
-/* =========================
-   OPEN FORM
-========================= */
-
-function openForm(){
-
-  document.getElementById(
-    "reviewModal"
-  ).style.display = "block";
-
-  document.body.style.overflow =
-    "hidden";
-
-}
-
-
-/* =========================
-   CLOSE FORM
-========================= */
-
-function closeForm(){
-
-  document.getElementById(
-    "reviewModal"
-  ).style.display = "none";
-
-  document.body.style.overflow =
-    "auto";
-
-}
-
-
-/* =========================
-   RATING
-========================= */
 
 function setRating(value){
+  rating = value;
+  document.querySelectorAll("#ratingStars span").forEach((star, i) => {
+    star.classList.toggle("active", i < value);
+  });
+}
 
-  document.getElementById(
-    "rating"
-  ).value = value;
+function openForm(productId){
 
+  const x = rItems.find(i => String(i.product_id) === String(productId));
+  if(!x) return;
 
-  const stars =
-    document.querySelectorAll(
-      "#ratingStars span"
-    );
+  activeProduct = x.product_id;
 
+  document.getElementById("modalProduct").textContent = x.name;
+  document.getElementById("modalTitle").textContent =
+    x.rating != null ? "Review badlein ✏" : "Review likhiye ⭐";
+  document.getElementById("reviewTitle").value = x.title || "";
+  document.getElementById("reviewText").value = x.review_text || "";
+  setRating(x.rating || 0);
 
-  stars.forEach(
-    function(star,index){
-
-      if(index < value){
-
-        star.classList.add("active");
-
-      }else{
-
-        star.classList.remove("active");
-
-      }
-
-    }
-  );
+  document.getElementById("reviewModal").style.display = "block";
+  document.body.style.overflow = "hidden";
 
 }
 
-
-/* =========================
-   SUBMIT REVIEW
-========================= */
+function closeForm(){
+  document.getElementById("reviewModal").style.display = "none";
+  document.body.style.overflow = "auto";
+}
 
 async function submitReview(){
 
-  const productName =
-    document.getElementById("productName").value.trim();
+  if(!activeProduct) return;
 
-  const rating =
-    document.getElementById("rating").value;
+  const text = document.getElementById("reviewText").value.trim();
+  const title = document.getElementById("reviewTitle").value.trim();
 
-  const title =
-    document.getElementById("reviewTitle").value.trim();
+  if(!rating){ showMessage("Rating chuniye (1 se 5 star)."); return; }
+  if(text.length < 10){ showMessage("Review kam se kam 10 akshar ka likhiye."); return; }
 
-  const reviewText =
-    document.getElementById("reviewText").value.trim();
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true;
 
-  if(!productName){
+  const { data, error } = await supabaseClient.rpc("submit_review", {
+    p_product_id: String(activeProduct),
+    p_rating: rating,
+    p_title: title,
+    p_text: text
+  });
 
-    showMessage("Please enter product name.");
+  btn.disabled = false;
 
+  if(error || !data || data.success !== true){
+    console.error(error || data);
+    showMessage((data && data.message) || (error && error.message) || "Review nahi ja paya.");
     return;
   }
 
-  if(!rating){
-
-    showMessage("Please select a rating.");
-
-    return;
-  }
-
-  if(!reviewText){
-
-    showMessage("Please write your review.");
-
-    return;
-  }
-
-  /* EDIT EXISTING REVIEW */
-
-  if(editingReviewId){
-
-    const {
-      error
-    } = await supabaseClient
-      .from("reviews")
-      .update({
-
-        product_name: productName,
-        rating: Number(rating),
-        title: title,
-        review_text: reviewText
-
-      })
-      .eq("id", editingReviewId)
-      .eq("user_id", currentUser.id);
-
-    if(error){
-
-      console.error(error);
-
-      showMessage("Review could not be updated.");
-
-      return;
-    }
-
-    showMessage("Review updated successfully.");
-
-    editingReviewId = null;
-
-  }
-
-  /* ADD NEW REVIEW */
-
-  else{
-
-    const {
-      error
-    } = await supabaseClient
-      .from("reviews")
-      .insert({
-
-        user_id: currentUser.id,
-        product_name: productName,
-        rating: Number(rating),
-        title: title,
-        review_text: reviewText
-
-      });
-
-    if(error){
-
-      console.error(error);
-
-      showMessage("Review could not be submitted.");
-
-      return;
-    }
-
-    showMessage("Review submitted successfully.");
-
-  }
-
-  document.getElementById("productName").value = "";
-  document.getElementById("reviewTitle").value = "";
-  document.getElementById("reviewText").value = "";
-  document.getElementById("rating").value = "5";
-document.querySelector(
-  "#reviewModal .submit"
-).textContent = "Submit Review";
-
+  showMessage("Review save ho gaya ✅");
   closeForm();
-
-  loadReviews();
-}
-/* =========================
-   DELETE
-========================= */
-
-async function deleteReview(id){
-
-  if(
-    !confirm(
-      "Do you want to delete this review?"
-    )
-  ){
-
-    return;
-
-  }
-
-
-  const {
-    error
-  } =
-  await supabaseClient
-
-    .from("reviews")
-
-    .delete()
-
-    .eq("id",id)
-
-    .eq(
-      "user_id",
-      currentUser.id
-    );
-
-
-  if(error){
-
-    console.error(error);
-
-    showMessage(
-      "Review could not be deleted."
-    );
-
-    return;
-
-  }
-
-
-  showMessage(
-    "Review deleted."
-  );
-
-
   loadReviews();
 
 }
 
+async function deleteReview(productId){
 
-/* =========================
-   EDIT
-========================= */
+  if(!confirm("Is review ko hatana hai?")) return;
 
-async function editReview(id){
+  const { data, error } = await supabaseClient.rpc("delete_review", { p_product_id: String(productId) });
 
-  const {
-    data,
-    error
-  } = await supabaseClient
-    .from("reviews")
-    .select("*")
-    .eq("id", id)
-    .eq("user_id", currentUser.id)
-    .single();
-
-  if(error){
-
-    console.error(error);
-
-    showMessage("Review could not be loaded.");
-
+  if(error || !data || data.success !== true){
+    console.error(error || data);
+    showMessage("Review hata nahi paya.");
     return;
   }
 
-  editingReviewId = id;
-
-  document.getElementById("productName").value =
-    data.product_name || "";
-
-  document.getElementById("reviewTitle").value =
-    data.title || "";
-
-  document.getElementById("reviewText").value =
-    data.review_text || "";
-
-  document.getElementById("rating").value =
-    data.rating || 5;
-
-  document.querySelector(
-  "#reviewModal .submit"
-).textContent = "Update Review";
-  document.getElementById("reviewModal").style.display =
-    "flex";
-}
-
-/* =========================
-   HTML SECURITY
-========================= */
-
-function escapeHTML(value){
-
-  return String(value)
-
-    .replaceAll("&","&amp;")
-
-    .replaceAll("<","&lt;")
-
-    .replaceAll(">","&gt;")
-
-    .replaceAll('"',"&quot;")
-
-    .replaceAll("'","&#039;");
+  showMessage("Review hata diya gaya.");
+  loadReviews();
 
 }
-
-
-/* =========================
-   MESSAGE
-========================= */
-
-function showMessage(text){
-
-  const box =
-    document.getElementById(
-      "message"
-    );
-
-
-  box.innerText = text;
-
-  box.style.display =
-    "block";
-
-
-  setTimeout(
-    function(){
-
-      box.style.display =
-        "none";
-
-    },
-    3000
-  );
-
-}
-
-
-/* =========================
-   START
-========================= */
 
 start();
 
