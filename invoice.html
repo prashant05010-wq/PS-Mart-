@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'">
+<script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
+<title>Invoice | PS Mart</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f7f1e8;color:#2a1a0e}
+.bar{background:#3b2112;padding:12px 20px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.bar a,.bar button{color:#ffd66b;background:none;border:1px solid #ffd66b;border-radius:8px;padding:9px 14px;text-decoration:none;cursor:pointer;font-size:14px;font-family:inherit}
+.paper{max-width:820px;margin:20px auto;background:white;padding:28px;border-radius:6px;box-shadow:0 4px 18px rgba(0,0,0,.12)}
+.top{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;border-bottom:2px solid #c9922e;padding-bottom:14px}
+.brand{font:700 30px Georgia,serif;color:#43250f}
+.meta{text-align:right;font-size:14px;line-height:1.7}
+h3{margin:18px 0 6px;color:#43250f;font-size:16px}
+p{margin:3px 0;font-size:14px;line-height:1.6}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}
+th,td{padding:9px 8px;border-bottom:1px solid #eadbc9;text-align:left;vertical-align:top}
+th{background:#f7f1e8}
+td.r,th.r{text-align:right}
+.total{margin-top:14px;text-align:right;font-size:18px;font-weight:bold}
+.small{font-size:12px;color:#786657;line-height:1.6;margin-top:18px}
+.err{max-width:600px;margin:40px auto;background:white;padding:24px;border-radius:10px;text-align:center}
+@media print{.bar{display:none}body{background:white}.paper{box-shadow:none;margin:0;max-width:none}}
+</style>
+</head>
+<body>
+<div class="bar"><a href="orders.html">← Mere Orders</a><button onclick="window.print()">🖨 Print / PDF save karein</button></div>
+<div id="root"><div class="err">Loading invoice...</div></div>
+
+<script src="app.js"></script>
+<script>
+function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+function inr(n){return "₹"+Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+async function start(){
+  const root=document.getElementById("root");
+  const id=new URLSearchParams(location.search).get("order");
+  if(!id){root.innerHTML='<div class="err">Order number nahi mila.</div>';return;}
+  const u=(await supabaseClient.auth.getUser()).data.user;
+  if(!u){root.innerHTML='<div class="err">Pehle <a href="login.html">login</a> kijiye.</div>';return;}
+
+  const r=await supabaseClient.rpc("get_invoice",{p_order_id:String(id)});
+  if(r.error||!r.data||r.data.error){
+    root.innerHTML='<div class="err">'+esc((r.data&&r.data.error)||(r.error&&r.error.message)||"Invoice nahi mila")+'<br><small>ps-mart-phase5.sql run kiya hai?</small></div>';
+    return;
+  }
+
+  const o=r.data.order, items=r.data.items||[];
+  const date=o.created_at?new Date(o.created_at).toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"}):"";
+  const pay=/^COD/i.test(o.payment_method||"")?"Cash on Delivery":(o.payment_status==="paid"?"Online (Paid)":(o.payment_method||"-"));
+
+  let rows="", gstSum=0, taxableSum=0, anyGst=false, sub=0;
+  items.forEach(function(it,i){
+    const qty=Number(it.quantity||1), line=Number(it.price||0)*qty;
+    sub+=line;
+    const g=(it.gst===null||it.gst===undefined||it.gst==="")?null:Number(it.gst);
+    let taxable=line, gstAmt=0;
+    if(g!==null&&isFinite(g)){anyGst=true;taxable=line/(1+g/100);gstAmt=line-taxable;}
+    taxableSum+=taxable;gstSum+=gstAmt;
+    rows+='<tr><td>'+(i+1)+'</td><td><b>'+esc(it.name||"Product")+'</b>'
+      +(it.hsn?'<br><small>HSN: '+esc(it.hsn)+'</small>':'')
+      +'<br><small>Seller: '+esc(it.seller_legal||it.seller||"-")+(it.seller_gstin?' (GSTIN '+esc(it.seller_gstin)+')':'')+'</small></td>'
+      +'<td class="r">'+qty+'</td><td class="r">'+inr(it.price)+'</td>'
+      +'<td class="r">'+(g!==null?esc(g)+"%":"-")+'</td><td class="r">'+inr(line)+'</td></tr>';
+  });
+
+  const paid=Number(o.total_amount||0), disc=sub-paid;
+
+  root.innerHTML='<div class="paper">'
+   +'<div class="top"><div><div class="brand">PS Mart</div><p>Order Invoice / Bill</p></div>'
+   +'<div class="meta"><b>Invoice No:</b> PSM-'+esc(o.id)+'<br><b>Order ID:</b> #'+esc(o.id)+'<br><b>Date:</b> '+esc(date)+'<br><b>Payment:</b> '+esc(pay)+'</div></div>'
+   +'<h3>Bill To / Ship To</h3><p>'+esc(o.address||"-")+'</p>'
+   +'<table><tr><th>#</th><th>Item</th><th class="r">Qty</th><th class="r">Price</th><th class="r">GST</th><th class="r">Amount</th></tr>'+rows+'</table>'
+   +'<div class="total">'
+   +(disc>0.5?'<div style="font-size:14px;font-weight:normal">Items total: '+inr(sub)+'<br>Discount (coupon / gift card): -'+inr(disc)+'</div>':'')
+   +'Total Paid: '+inr(paid)+'</div>'
+   +(anyGst?'<p class="small">Price GST sameit (inclusive) hai. Is mein se karyogya kar (taxable value) lagbhag '+inr(taxableSum)+' aur GST lagbhag '+inr(gstSum)+' hai (discount se pehle ke hisaab se).</p>':'<p class="small">Sabhi keematein sabhi karon samet hain.</p>')
+   +'<p class="small">Ye order ka bill hai jo PS Mart ke system se bana hai. Registered seller ke liye GST wala "tax invoice" seller ki taraf se alag se jaari karna ho sakta hai. Sawal ho to PS Mart support se sampark kijiye.</p>'
+   +'</div>';
+}
+start();
+</script>
+</body>
+</html>
