@@ -3,143 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'">
+  <script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
 
   <title>My Products | PS Mart</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-    *{
-      box-sizing:border-box;
-    }
-
-    body{
-      margin:0;
-      font-family:Arial,sans-serif;
-      background:#f7f1e8;
-      color:#3b2416;
-    }
-
-    header{
-      background:#3b2416;
-      color:white;
-      padding:18px 25px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-    header h2{
-      margin:0;
-    }
-
-    .back{
-      color:white;
-      text-decoration:none;
-      background:#8b5e34;
-      padding:9px 14px;
-      border-radius:7px;
-    }
-
-    .container{
-      width:92%;
-      max-width:1100px;
-      margin:25px auto;
-    }
-
-    .top{
-      background:white;
-      padding:20px;
-      border-radius:12px;
-      margin-bottom:20px;
-      box-shadow:0 3px 15px rgba(0,0,0,.08);
-    }
-
-    .products{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:18px;
-    }
-
-    .product{
-      background:white;
-      border-radius:12px;
-      overflow:hidden;
-      box-shadow:0 3px 15px rgba(0,0,0,.08);
-    }
-
-    .product img{
-      width:100%;
-      height:200px;
-      object-fit:cover;
-      background:#eee;
-    }
-
-    .info{
-      padding:16px;
-    }
-
-    .info h3{
-      margin:0 0 8px;
-    }
-
-    .price{
-      font-size:20px;
-      font-weight:bold;
-      color:#8b5e34;
-    }
-
-    .old{
-      text-decoration:line-through;
-      color:#999;
-      margin-left:8px;
-      font-size:14px;
-    }
-
-    .status{
-      display:inline-block;
-      margin-top:10px;
-      padding:6px 10px;
-      border-radius:15px;
-      font-size:12px;
-      background:#fff3cd;
-      color:#856404;
-    }
-
-    .stock{
-      margin-top:8px;
-      color:#666;
-      font-size:14px;
-    }
-
-    .empty{
-      background:white;
-      padding:35px;
-      text-align:center;
-      border-radius:12px;
-    }
-
-    #message{
-      text-align:center;
-      margin:20px 0;
-      font-weight:bold;
-    }
-
-    @media(max-width:800px){
-      .products{
-        grid-template-columns:repeat(2,1fr);
-      }
-    }
-
-    @media(max-width:500px){
-      .products{
-        grid-template-columns:1fr;
-      }
-
-      header{
-        padding:15px;
-      }
-    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:#f7f1e8;color:#3b2416}
+    header{background:#3b2416;color:white;padding:18px 25px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    header h2{margin:0}
+    header a{color:white;text-decoration:none;background:#8b5e34;padding:9px 14px;border-radius:7px;margin-left:6px}
+    .container{width:92%;max-width:1100px;margin:25px auto}
+    .top{background:white;padding:20px;border-radius:12px;margin-bottom:20px;box-shadow:0 3px 15px rgba(0,0,0,.08)}
+    .top h1{margin:0 0 6px}
+    .top p{margin:0;color:#666}
+    .products{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .product{background:white;border-radius:12px;overflow:hidden;box-shadow:0 3px 15px rgba(0,0,0,.08);display:flex;flex-direction:column}
+    .product img{width:100%;height:200px;object-fit:cover;background:#eee}
+    .info{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1}
+    .info h3{margin:0}
+    .desc{color:#666;font-size:13px;margin:0;max-height:54px;overflow:hidden}
+    .status{display:inline-block;padding:5px 10px;border-radius:15px;font-size:12px;font-weight:bold;align-self:flex-start}
+    .st-pending{background:#fff3cd;color:#856404}
+    .st-approved{background:#e7f6ea;color:#188038}
+    .st-rejected{background:#fdeaea;color:#c62828}
+    .rate{font-size:13px;color:#8b5e34}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .info label{font-size:12px;font-weight:bold;color:#786657}
+    .info input{width:100%;padding:9px;border:1px solid #d6c8b9;border-radius:7px;font-size:14px}
+    .btns{display:flex;gap:8px;margin-top:4px}
+    .btns button{flex:1;border:0;padding:10px;border-radius:7px;cursor:pointer;color:white;font-weight:bold}
+    .save{background:#3b2416}.del{background:#a43b2a;flex:0 0 auto !important;padding:10px 14px !important}
+    .btns button:disabled{opacity:.6}
+    .msg{font-size:12px;min-height:16px}
+    .empty{background:white;padding:35px;text-align:center;border-radius:12px;grid-column:1/-1}
+    .add{display:inline-block;margin-top:12px;background:#8b5e34;color:white;text-decoration:none;padding:11px 18px;border-radius:8px;font-weight:bold}
+    #message{text-align:center;margin:20px 0;font-weight:bold}
+    @media(max-width:800px){.products{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:500px){.products{grid-template-columns:1fr}header{padding:15px}}
   </style>
 </head>
 
@@ -147,14 +51,14 @@
 
 <header>
   <h2>🏪 My Products</h2>
-  <a class="back" href="seller-dashboard.html">Dashboard</a>
+  <div><a href="seller-add-product.html">➕ Add Product</a><a href="seller-dashboard.html">Dashboard</a></div>
 </header>
 
 <div class="container">
 
   <div class="top">
     <h1>My Products</h1>
-    <p>Here you can see products added by your shop.</p>
+    <p>Yahan aap apne products ka <b>price aur stock</b> badal sakte hain. Naam, photo ya description badalni ho to naya product jodiye.</p>
   </div>
 
   <div id="message">Loading products...</div>
@@ -163,173 +67,155 @@
 
 </div>
 
+<script src="app.js"></script>
 <script>
 
-const SUPABASE_URL =
-"https://nctscffhnztscczjxhat.supabase.co";
+function esc(v){
+  return String(v == null ? "" : v)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
 
-const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+const PLACEHOLDER =
+  "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 300"><rect width="500" height="300" fill="#43250f"/><text x="250" y="160" text-anchor="middle" font-family="Georgia,serif" font-size="34" fill="#f0bd50">PS Mart</text></svg>');
 
-const supabaseClient =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
+function firstImage(p){
+  let list = [];
+  const raw = p.image_urls;
+  if(Array.isArray(raw)) list = raw;
+  else if(typeof raw === "string"){ try{ const j = JSON.parse(raw); if(Array.isArray(j)) list = j; }catch(e){} }
+  const url = list.find(u => typeof u === "string" && /^https:\/\//.test(u)) || p.image_url;
+  return (typeof url === "string" && /^https:\/\//.test(url)) ? url : PLACEHOLDER;
+}
 
 async function loadSellerProducts(){
 
-  const message =
-    document.getElementById("message");
+  const message = document.getElementById("message");
+  const box = document.getElementById("products");
 
-  const productsBox =
-    document.getElementById("products");
-
-
-  const {
-    data: { user },
-    error: authError
-  } = await supabaseClient.auth.getUser();
-
+  const { data:{ user }, error:authError } = await supabaseClient.auth.getUser();
 
   if(authError || !user){
-
-    message.innerText =
-      "Please login first.";
-
+    message.innerHTML = 'Pehle <a href="login.html">login</a> kijiye.';
     return;
   }
 
+  const { data:seller, error:sellerError } =
+    await supabaseClient.from("sellers").select("id").eq("user_id", user.id).maybeSingle();
 
-  const {
-    data: seller,
-    error: sellerError
-  } = await supabaseClient
-    .from("sellers")
-    .select("id")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  if(sellerError){ message.textContent = sellerError.message; return; }
+  if(!seller){ message.textContent = "Seller account nahi mila."; return; }
 
+  const { data, error } =
+    await supabaseClient
+      .from("products")
+      .select("id,name,description,price,old_price,stock,image_url,image_urls,status,rating,review_count,categories(name)")
+      .eq("seller_id", seller.id)
+      .order("created_at", { ascending:false });
 
-  if(sellerError){
+  if(error){ message.textContent = error.message; return; }
 
-    message.innerText =
-      sellerError.message;
-
-    return;
-  }
-
-
-  if(!seller){
-
-    message.innerText =
-      "Seller account not found.";
-
-    return;
-  }
-
-
-  const {
-    data,
-    error
-  } = await supabaseClient
-    .from("products")
-    .select(`
-      id,
-      name,
-      description,
-      price,
-      old_price,
-      stock,
-      image_url,
-      status,
-      categories(name)
-    `)
-    .eq("seller_id", seller.id)
-    .order("created_at", {
-      ascending:false
-    });
-
-
-  if(error){
-
-    message.innerText =
-      error.message;
-
-    return;
-  }
-
-
-  message.innerText = "";
-
+  message.textContent = "";
 
   if(!data || data.length === 0){
-
-    productsBox.innerHTML = `
+    box.innerHTML = `
       <div class="empty">
-        <h2>No products yet</h2>
-        <p>Add your first product from the Seller Dashboard.</p>
-      </div>
-    `;
-
+        <h2>Abhi koi product nahi</h2>
+        <p>Seller Dashboard se apna pehla product jodiye.</p>
+        <a class="add" href="seller-add-product.html">➕ Add Product</a>
+      </div>`;
     return;
   }
 
+  box.innerHTML = data.map(p => {
+    const st = String(p.status || "pending");
+    const note =
+      st === "pending" ? "Admin approval ke intezaar mein hai." :
+      st === "rejected" ? "Admin ne reject kiya. Sahi jaankari ke saath naya product jodiye." : "";
+    const rating = p.rating ? `⭐ ${Number(p.rating).toFixed(1)} (${Number(p.review_count || 0)} reviews)` : "Abhi koi review nahi";
+    return `
+      <div class="product" id="card-${esc(p.id)}">
+        <img src="${esc(firstImage(p))}" alt="${esc(p.name)}"
+             onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
+        <div class="info">
+          <h3>${esc(p.name)}</h3>
+          <p class="desc">${esc(p.description || "")}</p>
+          <span class="status st-${esc(st)}">${esc(st)}</span>
+          ${note ? `<small>${esc(note)}</small>` : ""}
+          <div class="rate">${rating}${p.categories && p.categories.name ? " • " + esc(p.categories.name) : ""}</div>
 
-  productsBox.innerHTML =
-    data.map(product => {
-
-      const image =
-        product.image_url ||
-        "https://via.placeholder.com/500x300?text=PS+Mart";
-
-
-      const oldPrice =
-        product.old_price
-        ? `<span class="old">₹${product.old_price}</span>`
-        : "";
-
-
-      return `
-        <div class="product">
-
-          <img
-            src="${image}"
-            alt="${product.name}"
-            onerror="this.src='https://via.placeholder.com/500x300?text=PS+Mart'"
-          >
-
-          <div class="info">
-
-            <h3>${product.name}</h3>
-
-            <p>
-              ${product.description || ""}
-            </p>
-
-            <div class="price">
-              ₹${product.price}
-              ${oldPrice}
-            </div>
-
-            <div class="stock">
-              Stock: ${product.stock}
-            </div>
-
-            <span class="status">
-              ${product.status}
-            </span>
-
+          <div class="grid2">
+            <div><label>Selling Price (₹)</label>
+              <input type="number" min="1" step="0.01" id="price-${esc(p.id)}" value="${esc(p.price)}"></div>
+            <div><label>MRP (₹)</label>
+              <input type="number" min="1" step="0.01" id="mrp-${esc(p.id)}" value="${esc(p.old_price || "")}"></div>
           </div>
+          <div><label>Stock</label>
+            <input type="number" min="0" step="1" id="stock-${esc(p.id)}" value="${esc(p.stock == null ? 0 : p.stock)}"></div>
 
+          <div class="btns">
+            <button class="save" id="save-${esc(p.id)}" data-id="${esc(p.id)}" onclick="saveProduct(this.dataset.id)">💾 Save</button>
+            <button class="del" data-id="${esc(p.id)}" onclick="deleteProduct(this.dataset.id)">🗑</button>
+          </div>
+          <div class="msg" id="msg-${esc(p.id)}"></div>
         </div>
-      `;
-
-    }).join("");
-
+      </div>`;
+  }).join("");
 }
 
+async function saveProduct(id){
+
+  const msg = document.getElementById("msg-" + id);
+  const btn = document.getElementById("save-" + id);
+
+  const price = Number(document.getElementById("price-" + id).value);
+  const mrpText = document.getElementById("mrp-" + id).value.trim();
+  const mrp = mrpText === "" ? null : Number(mrpText);
+  const stockText = document.getElementById("stock-" + id).value.trim();
+  const stock = Number(stockText);
+
+  const bad = t => { msg.style.color = "#c62828"; msg.textContent = t; };
+
+  if(!isFinite(price) || price <= 0) return bad("Sahi price daaliye.");
+  if(mrp !== null && (!isFinite(mrp) || mrp <= 0)) return bad("Sahi MRP daaliye ya khaali chhodiye.");
+  if(mrp !== null && price > mrp) return bad("Selling price MRP se zyada nahi ho sakta.");
+  if(stockText === "" || !Number.isInteger(stock) || stock < 0) return bad("Stock poori sankhya mein daaliye.");
+
+  btn.disabled = true;
+  msg.style.color = "#786657";
+  msg.textContent = "Save ho raha hai...";
+
+  const { data, error } =
+    await supabaseClient.from("products")
+      .update({ price: price, old_price: mrp, stock: stock })
+      .eq("id", id)
+      .select("id");
+
+  btn.disabled = false;
+
+  if(error){ return bad("Save nahi hua: " + error.message); }
+  if(!data || data.length === 0){ return bad("Save nahi hua (ijazat nahi mili)."); }
+
+  msg.style.color = "#188038";
+  msg.textContent = "✅ Save ho gaya";
+}
+
+async function deleteProduct(id){
+
+  if(!confirm("Is product ko hamesha ke liye hatana hai?")) return;
+
+  const { data, error } =
+    await supabaseClient.from("products").delete().eq("id", id).select("id");
+
+  if(error){
+    alert("Hata nahi paya. Is product ke orders ho sakte hain, isliye ise hataya nahi ja sakta. Stock 0 kar dijiye.\n\n" + error.message);
+    return;
+  }
+  if(!data || data.length === 0){ alert("Hata nahi paya (ijazat nahi mili)."); return; }
+
+  const card = document.getElementById("card-" + id);
+  if(card) card.remove();
+}
 
 loadSellerProducts();
 
