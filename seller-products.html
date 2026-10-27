@@ -63,7 +63,8 @@
 
   <div id="message">Loading products...</div>
 
-  <div class="products" id="products"></div>
+  <!-- NOTE: id "sellerProducts" hai, "products" nahi. app.js "#products" ko customer cards se bhar deta tha -->
+  <div class="products" id="sellerProducts"></div>
 
 </div>
 
@@ -75,6 +76,8 @@ function esc(v){
     .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
     .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
+
+const CATEGORY_NAMES = {1:"Mobiles",2:"Electronics",3:"Fashion",4:"Beauty",5:"Home",6:"Grocery",7:"Accessories"};
 
 const PLACEHOLDER =
   "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 300"><rect width="500" height="300" fill="#43250f"/><text x="250" y="160" text-anchor="middle" font-family="Georgia,serif" font-size="34" fill="#f0bd50">PS Mart</text></svg>');
@@ -91,7 +94,7 @@ function firstImage(p){
 async function loadSellerProducts(){
 
   const message = document.getElementById("message");
-  const box = document.getElementById("products");
+  const box = document.getElementById("sellerProducts");
 
   const { data:{ user }, error:authError } = await supabaseClient.auth.getUser();
 
@@ -106,10 +109,11 @@ async function loadSellerProducts(){
   if(sellerError){ message.textContent = sellerError.message; return; }
   if(!seller){ message.textContent = "Seller account nahi mila."; return; }
 
+  /* select("*") use kiya hai taaki koi column na ho to bhi page na ruke */
   const { data, error } =
     await supabaseClient
       .from("products")
-      .select("id,name,description,price,old_price,stock,image_url,image_urls,status,rating,review_count,categories(name)")
+      .select("*")
       .eq("seller_id", seller.id)
       .order("created_at", { ascending:false });
 
@@ -133,6 +137,7 @@ async function loadSellerProducts(){
       st === "pending" ? "Admin approval ke intezaar mein hai." :
       st === "rejected" ? "Admin ne reject kiya. Sahi jaankari ke saath naya product jodiye." : "";
     const rating = p.rating ? `⭐ ${Number(p.rating).toFixed(1)} (${Number(p.review_count || 0)} reviews)` : "Abhi koi review nahi";
+    const catName = CATEGORY_NAMES[Number(p.category_id)] || "";
     return `
       <div class="product" id="card-${esc(p.id)}">
         <img src="${esc(firstImage(p))}" alt="${esc(p.name)}"
@@ -142,7 +147,7 @@ async function loadSellerProducts(){
           <p class="desc">${esc(p.description || "")}</p>
           <span class="status st-${esc(st)}">${esc(st)}</span>
           ${note ? `<small>${esc(note)}</small>` : ""}
-          <div class="rate">${rating}${p.categories && p.categories.name ? " • " + esc(p.categories.name) : ""}</div>
+          <div class="rate">${rating}${catName ? " • " + esc(catName) : ""}</div>
 
           <div class="grid2">
             <div><label>Selling Price (₹)</label>
