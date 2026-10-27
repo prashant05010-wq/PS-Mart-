@@ -188,7 +188,9 @@ function orderBox(so){
     +'<div class="row"><span class="label">Order total:</span> '+inr(order.total_amount)+'</div>'
     +'<div class="row"><span class="label">Delivery address:</span> '+esc(order.address||"Not available")+'</div>'
     +'<div style="margin-top:10px"><span class="badge b-'+esc(st)+'">'+statusLabel(st)+'</span></div>'
-    +payHtml+retBox(so.order_id)+track+'<div class="status-box">'+action+'</div></div>';
+    +payHtml+retBox(so.order_id)
+    +'<a class="btn gold" style="display:inline-block;text-decoration:none" href="invoice.html?order='+encodeURIComponent(so.order_id)+'">🧾 Invoice</a>'
+    +track+'<div class="status-box">'+action+'</div></div>';
 }
 
 async function confirmPayment(btn){
