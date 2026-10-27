@@ -234,7 +234,9 @@ function orderCard(order){
     +'<div style="min-width:200px"><h3>Payment</h3><div class="price">'+inr(order.total_amount)+'</div>'
     +'<p><span class="badge '+pay.cls+'">'+pay.text+'</span></p>'
     +(pay.utr?'<p style="color:var(--muted)">UTR: '+esc(pay.utr)+'</p>':'')+'</div></div>'
-    +shipHtml+payBtn+retHtml+cancel+'</div></div>';
+    +shipHtml+payBtn+retHtml
+    +'<a class="goldbtn" style="margin-top:14px;margin-right:8px" href="invoice.html?order='+encodeURIComponent(order.id)+'">🧾 Invoice</a>'
+    +cancel+'</div></div>';
 }
 
 async function loadOrders(silent){
