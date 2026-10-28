@@ -69,7 +69,7 @@ header h2{margin:0;font:700 26px var(--serif);min-width:0;line-height:1.15}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
 <script>
-var DATA = {sellerOrders:[],items:[],returns:[],user:null,hasPayCols:true};
+var DATA = {sellerOrders:[],items:[],returns:[],dstat:{},user:null,hasPayCols:true};
 var FILTER = "all";
 
 function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
@@ -123,6 +123,11 @@ async function loadOrders(){
   DATA.sellerOrders=so.data;DATA.items=it.data||[];
   var rq=await supabaseClient.from("return_requests").select("*").in("order_id",ids.map(String));
   DATA.returns=(rq&&rq.data)||[];
+  DATA.dstat={};
+  try{
+    var ds=await supabaseClient.rpc("get_delivery_status",{p_order_ids:ids.map(String)});
+    ((ds&&ds.data)||[]).forEach(function(x){DATA.dstat[String(x.order_id)]=x;});
+  }catch(e){DATA.dstat={};}
   msg.innerText=DATA.hasPayCols?"":"⚠️ Payment tracking chalu karne ke liye ps-mart-payments.sql Supabase mein run kijiye.";
   renderAll();
 }
@@ -175,10 +180,10 @@ function orderBox(so){
   var opt=function(v,t){return '<option value="'+v+'" '+(st===v?"selected":"")+'>'+t+'</option>';};
   var action;
   if(cancelled) action='<div class="note bad">❌ Customer ne ye order cancel kar diya.</div>';
-  else if(st==="delivered") action='<div class="note good">✓ Ye order deliver ho chuka hai.</div>';
+  else if(st==="delivered") action='<div class="note good">✓ Ye order OTP se deliver ho chuka hai.</div>';
   else action='<label>Order status badlein</label><select id="status-'+esc(so.id)+'">'
     +opt("placed","📦 Order Placed")+opt("confirmed","✓ Confirmed")+opt("packed","📦 Packed")+opt("shipped","🚚 Shipped")
-    +opt("out_for_delivery","🛵 Out for Delivery")+opt("delivered","✓ Delivered")+opt("cancelled","✕ Cancelled")+'</select>'
+    +opt("out_for_delivery","🛵 Out for Delivery")+opt("cancelled","✕ Cancelled")+'</select>'
     +'<label>Tracking number (optional)</label><input id="trk-'+esc(so.id)+'" value="'+esc(so.tracking_number||"")+'" placeholder="Jaise: DL1234567890">'
     +'<label>Courier / Shipping partner (optional)</label><input id="prov-'+esc(so.id)+'" value="'+esc(so.shipping_provider||"")+'" placeholder="Jaise: Delhivery, India Post">'
     +'<br><button class="btn" id="btn-'+esc(so.id)+'" data-id="'+esc(so.id)+'" data-payment="'+pay.kind+'" onclick="updateStatus(this)">Status update karein</button>';
@@ -189,8 +194,26 @@ function orderBox(so){
     +'<div class="row"><span class="label">Delivery address:</span> '+esc(order.address||"Not available")+'</div>'
     +'<div style="margin-top:10px"><span class="badge b-'+esc(st)+'">'+statusLabel(st)+'</span></div>'
     +payHtml+retBox(so.order_id)
-    +'<a class="btn gold" style="display:inline-block;text-decoration:none" href="invoice.html?order='+encodeURIComponent(so.order_id)+'">🧾 Invoice</a>'
+    +'<a class="btn gold" style="display:inline-block;text-decoration:none" href="invoice.html?order='+encodeURIComponent(so.order_id)+'">🧾 Invoice</a> '
+    +((!cancelled&&st!=="delivered")?'<a class="btn" style="display:inline-block;text-decoration:none" href="label.html?order='+encodeURIComponent(so.order_id)+'">🏷️ Shipping Label (QR)</a>':'')
+    +delNote(so,st)
     +track+'<div class="status-box">'+action+'</div></div>';
+}
+
+function delNote(so,st){
+  var x=(DATA.dstat||{})[String(so.order_id)];
+  if(!x||st==="delivered") return "";
+  var h="";
+  if(x.fail_reason) h+='<div class="note bad">⚠️ Delivery nahi ho payi: '+esc(x.fail_reason)+'</div>';
+  if(Number(x.attempts)>=5) h+='<div class="note bad">🔒 Galat OTP bahut baar daala gaya, delivery lock hai.<br><button class="btn gold" data-order="'+esc(so.order_id)+'" onclick="resetOtp(this.dataset.order)">🔄 Naya OTP banayein</button></div>';
+  return h;
+}
+
+async function resetOtp(orderId){
+  if(!confirm("Naya OTP banana hai? Customer ko naya OTP dikhega.")) return;
+  var r=await supabaseClient.rpc("reset_delivery_otp",{p_order_id:String(orderId)});
+  if(r.error||!r.data||r.data.success!==true){alert("Reset nahi hua: "+((r.error&&r.error.message)||(r.data&&r.data.message)||""));return;}
+  alert("Naya OTP ban gaya ✓");loadOrders();
 }
 
 async function confirmPayment(btn){
