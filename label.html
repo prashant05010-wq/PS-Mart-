@@ -65,7 +65,9 @@ async function loadLabel(){
   if(i.error||!d||d.success!==true){stop("Order ki jaankari nahi mili.");return;}
 
   var items=(d.items||[]).map(function(x){return esc(x.name||"Product")+" × "+Number(x.qty||1);}).join("<br>");
-  var url=new URL("delivery.html?c="+encodeURIComponent(code),location.href).href;
+  /* Agar QR galat jagah khule to yahan apni site ka poora address likho, jaise "https://naam.github.io/repo/" */
+  var BASE="";
+  var url=(BASE?BASE.replace(/\/?$/,"/")+"delivery.html?c="+encodeURIComponent(code):new URL("delivery.html?c="+encodeURIComponent(code),location.href).href);
 
   document.getElementById("label").innerHTML=
     '<div class="top"><b>PS Mart</b><span>Order #'+esc(d.order_id)+'</span></div>'
@@ -76,7 +78,7 @@ async function loadLabel(){
     +'<div class="blk"><h4>From</h4>'+esc(d.shop_name||"PS Mart Seller")+(d.shop_phone?'<br>Phone: '+esc(d.shop_phone):'')+'</div>'
     +'<div class="blk"><h4>Items</h4>'+(items||"—")+'</div>'
     +((d.tracking_number||d.courier)?'<div class="blk"><h4>Courier</h4>'+esc(d.courier||"")+(d.tracking_number?' | '+esc(d.tracking_number):'')+'</div>':'')
-    +'<div class="qr"><div id="qr"></div><code>'+esc(code)+'</code><small>Delivery boy: QR scan karke customer se OTP lein</small></div>';
+    +'<div class="qr"><div id="qr"></div><code>'+esc(code)+'</code><small>Delivery boy: QR scan karke customer se OTP lein</small><small style="word-break:break-all;font-size:9px;opacity:.7">'+esc(url)+'</small></div>';
 
   try{new QRCode(document.getElementById("qr"),{text:url,width:150,height:150});}
   catch(e){document.getElementById("qr").textContent=url;}
