@@ -70,7 +70,9 @@ async function loadLabel(){
   document.getElementById("label").innerHTML=
     '<div class="top"><b>PS Mart</b><span>Order #'+esc(d.order_id)+'</span></div>'
     +(d.payment_mode==="COD"?'<div class="pay cod">COD: '+inr(d.collect_amount)+' collect karein</div>':'<div class="pay pre">PREPAID: paisa nahi lena</div>')
-    +'<div class="blk"><h4>Deliver to</h4>'+esc(d.address||"Address nahi mila")+'</div>'
+    +'<div class="blk"><h4>Deliver to</h4><b style="font-size:16px">'+esc(d.customer_name||"Customer")+'</b><br>'
+    +(d.customer_phone?'📞 <b>'+esc(d.customer_phone)+'</b><br>':'<span style="color:#c62828">📞 Phone number nahi diya gaya</span><br>')
+    +esc(d.address||"Address nahi mila")+'</div>'
     +'<div class="blk"><h4>From</h4>'+esc(d.shop_name||"PS Mart Seller")+(d.shop_phone?'<br>Phone: '+esc(d.shop_phone):'')+'</div>'
     +'<div class="blk"><h4>Items</h4>'+(items||"—")+'</div>'
     +((d.tracking_number||d.courier)?'<div class="blk"><h4>Courier</h4>'+esc(d.courier||"")+(d.tracking_number?' | '+esc(d.tracking_number):'')+'</div>':'')
