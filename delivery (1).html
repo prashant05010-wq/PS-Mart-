@@ -56,6 +56,8 @@ function draw(d){
   var html='<div class="card"><h3>Order #'+esc(d.order_id)+'</h3>'
     +'<div class="row"><b>Bhejne wala:</b> '+esc(d.shop_name||"PS Mart Seller")+'</div>'
     +'<div class="row"><b>Saaman:</b><br>'+(items||"—")+'</div>'
+    +'<div class="row"><b>👤 Customer:</b> '+esc(d.customer_name||"Customer")+'</div>'
+    +(d.customer_phone?'<div class="row"><a href="tel:'+esc(String(d.customer_phone).replace(/[^\d+]/g,""))+'" style="display:inline-block;background:#43250f;color:#f0bd50;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:700">📞 Call: '+esc(d.customer_phone)+'</a></div>':'<div class="row" style="color:#c62828">📞 Customer ka phone number nahi mila</div>')
     +'<div class="row"><b>📍 Deliver kahan:</b><br>'+esc(d.address||"Address nahi mila")+'</div>'
     +(d.fail_reason?'<div class="row" style="color:#8a5a00">Pichli koshish: '+esc(d.fail_reason)+'</div>':'')
     +'</div>';
