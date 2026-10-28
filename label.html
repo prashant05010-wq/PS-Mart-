@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
+<title>Shipping Label | PS Mart</title>
+<style>
+:root{--esp:#24150b;--brown:#43250f;--gold:#f0bd50;--gdeep:#c9922e;--page:#f6f1e7;--ink:#2a1a0e;--muted:#7c6a58;--line:#e6dac3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font-family:Inter,"Segoe UI",Arial,sans-serif}
+.bar{max-width:420px;margin:14px auto 0;padding:0 10px;display:flex;gap:8px;flex-wrap:wrap}
+.bar a,.bar button{border:0;background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);color:var(--esp);padding:11px 18px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none}
+.bar a.dark{background:var(--brown);color:var(--gold)}
+.label{max-width:420px;margin:12px auto 30px;background:#fff;border:2px dashed var(--brown);padding:14px}
+.top{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--brown);padding-bottom:8px}
+.top b{font:700 24px Georgia,serif;color:var(--brown)}.top span{font-size:12px;color:var(--muted)}
+.pay{margin:10px 0;padding:10px;text-align:center;font-weight:700;font-size:18px;border-radius:6px}
+.pay.cod{background:#fff4d8;border:2px solid var(--gdeep);color:#8a5a00}
+.pay.pre{background:#e7f6ea;border:2px solid #9bd3a6;color:#188038}
+.blk{margin:10px 0;font-size:14px;line-height:1.5;word-break:break-word}
+.blk h4{margin:0 0 2px;font-size:11px;letter-spacing:.5px;color:var(--muted);text-transform:uppercase}
+.qr{display:flex;flex-direction:column;align-items:center;margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.qr #qr{width:150px;height:150px}
+.qr #qr img,.qr #qr canvas{width:150px!important;height:150px!important}
+.qr code{margin-top:6px;font-size:15px;font-weight:700;letter-spacing:2px}
+.qr small{margin-top:4px;color:var(--muted);text-align:center;font-size:11px}
+#msg{max-width:420px;margin:20px auto;padding:0 10px;text-align:center;font-weight:700;color:var(--muted)}
+@media print{
+  body{background:#fff}.bar,#msg{display:none!important}
+  .label{margin:0;max-width:none;border:2px dashed #000}
+  @page{size:A6;margin:5mm}
+}
+</style>
+</head>
+<body>
+<div class="bar" id="bar" hidden>
+  <button onclick="window.print()">🖨️ Label Print karein</button>
+  <a class="dark" href="javascript:history.back()">← Wapas</a>
+</div>
+<div id="msg">Label ban raha hai...</div>
+<div class="label" id="label" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="app.js"></script>
+<script>
+function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+function inr(n){return "₹"+Number(n||0).toLocaleString("en-IN");}
+function stop(t){document.getElementById("msg").textContent=t;}
+
+async function loadLabel(){
+  var id=new URLSearchParams(location.search).get("order");
+  if(!id){stop("Order ID nahi mili.");return;}
+  var au=await supabaseClient.auth.getUser();
+  if(!au.data||!au.data.user){stop("Pehle seller login kijiye.");setTimeout(function(){location.href="login.html";},1000);return;}
+
+  var p=await supabaseClient.rpc("get_package_label",{p_order_id:String(id)});
+  if(p.error||!p.data||p.data.success!==true){
+    stop((p.data&&p.data.message)||(p.error&&p.error.message)||"Label nahi ban paya. ps-mart-delivery-otp.sql run kiya hai?");return;
+  }
+  var code=p.data.package_code;
+  var i=await supabaseClient.rpc("get_delivery_info",{p_code:code});
+  var d=i.data;
+  if(i.error||!d||d.success!==true){stop("Order ki jaankari nahi mili.");return;}
+
+  var items=(d.items||[]).map(function(x){return esc(x.name||"Product")+" × "+Number(x.qty||1);}).join("<br>");
+  var url=new URL("delivery.html?c="+encodeURIComponent(code),location.href).href;
+
+  document.getElementById("label").innerHTML=
+    '<div class="top"><b>PS Mart</b><span>Order #'+esc(d.order_id)+'</span></div>'
+    +(d.payment_mode==="COD"?'<div class="pay cod">COD: '+inr(d.collect_amount)+' collect karein</div>':'<div class="pay pre">PREPAID: paisa nahi lena</div>')
+    +'<div class="blk"><h4>Deliver to</h4>'+esc(d.address||"Address nahi mila")+'</div>'
+    +'<div class="blk"><h4>From</h4>'+esc(d.shop_name||"PS Mart Seller")+(d.shop_phone?'<br>Phone: '+esc(d.shop_phone):'')+'</div>'
+    +'<div class="blk"><h4>Items</h4>'+(items||"—")+'</div>'
+    +((d.tracking_number||d.courier)?'<div class="blk"><h4>Courier</h4>'+esc(d.courier||"")+(d.tracking_number?' | '+esc(d.tracking_number):'')+'</div>':'')
+    +'<div class="qr"><div id="qr"></div><code>'+esc(code)+'</code><small>Delivery boy: QR scan karke customer se OTP lein</small></div>';
+
+  try{new QRCode(document.getElementById("qr"),{text:url,width:150,height:150});}
+  catch(e){document.getElementById("qr").textContent=url;}
+
+  document.getElementById("msg").hidden=true;
+  document.getElementById("label").hidden=false;
+  document.getElementById("bar").hidden=false;
+}
+loadLabel();
+</script>
+</body>
+</html>
