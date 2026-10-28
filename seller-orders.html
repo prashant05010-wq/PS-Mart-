@@ -69,7 +69,7 @@ header h2{margin:0;font:700 26px var(--serif);min-width:0;line-height:1.15}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
 <script>
-var DATA = {sellerOrders:[],items:[],returns:[],dstat:{},user:null,hasPayCols:true};
+var DATA = {sellerOrders:[],items:[],returns:[],dstat:{},cust:{},user:null,hasPayCols:true};
 var FILTER = "all";
 
 function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
@@ -123,6 +123,11 @@ async function loadOrders(){
   DATA.sellerOrders=so.data;DATA.items=it.data||[];
   var rq=await supabaseClient.from("return_requests").select("*").in("order_id",ids.map(String));
   DATA.returns=(rq&&rq.data)||[];
+  DATA.cust={};
+  try{
+    var cu=await supabaseClient.rpc("get_order_customer",{p_order_ids:ids.map(String)});
+    ((cu&&cu.data)||[]).forEach(function(x){DATA.cust[String(x.order_id)]=x;});
+  }catch(e){DATA.cust={};}
   DATA.dstat={};
   try{
     var ds=await supabaseClient.rpc("get_delivery_status",{p_order_ids:ids.map(String)});
@@ -191,6 +196,7 @@ function orderBox(so){
   return '<div class="order"><h3>Order #'+esc(so.order_id)+'</h3>'
     +'<div class="row"><span class="label">Order date:</span> '+esc(date)+'</div>'+prods
     +'<div class="row"><span class="label">Order total:</span> '+inr(order.total_amount)+'</div>'
+    +custRow(so.order_id)
     +'<div class="row"><span class="label">Delivery address:</span> '+esc(order.address||"Not available")+'</div>'
     +'<div style="margin-top:10px"><span class="badge b-'+esc(st)+'">'+statusLabel(st)+'</span></div>'
     +payHtml+retBox(so.order_id)
@@ -198,6 +204,21 @@ function orderBox(so){
     +((!cancelled&&st!=="delivered")?'<a class="btn" style="display:inline-block;text-decoration:none" href="label.html?order='+encodeURIComponent(so.order_id)+'">🏷️ Shipping Label (QR)</a>':'')
     +delNote(so,st)
     +track+'<div class="status-box">'+action+'</div></div>';
+}
+
+function custRow(orderId){
+  var c=(DATA.cust||{})[String(orderId)]||{};
+  var ph=String(c.phone||"").replace(/[^\d+]/g,"");
+  var wa=ph.replace(/\D/g,""); if(wa.length===10) wa="91"+wa;
+  var h='<div class="row"><span class="label">Customer:</span> '+esc(c.name||"Naam nahi mila");
+  if(ph){
+    h+='<br><span class="label">Phone:</span> '+esc(c.phone)
+      +' &nbsp;<a class="btn gold" style="display:inline-block;text-decoration:none;margin:0;padding:6px 12px" href="tel:'+esc(ph)+'">📞 Call</a>'
+      +' <a class="btn" style="display:inline-block;text-decoration:none;margin:0;padding:6px 12px;background:#188038;color:#fff" target="_blank" rel="noopener" href="https://wa.me/'+esc(wa)+'">💬 WhatsApp</a>';
+  }else{
+    h+='<br><span style="color:#c62828;font-weight:700">⚠️ Customer ka phone number nahi mila</span>';
+  }
+  return h+'</div>';
 }
 
 function delNote(so,st){
