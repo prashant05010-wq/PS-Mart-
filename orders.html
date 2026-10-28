@@ -71,6 +71,9 @@ button,input,select{font-family:inherit}
 .cancel-btn{background:#fff;color:var(--red);border:1px solid var(--red);padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:700;margin-top:16px}
 .cancel-btn:hover{background:var(--red);color:#fff}
 .loading{text-align:center;padding:50px;color:var(--muted)}
+.otpbox{margin-top:16px;padding:14px;background:#e7f6ea;border:2px dashed var(--green);border-radius:10px;text-align:center;font-size:16px}
+.otpbox b{display:block;font-size:34px;letter-spacing:8px;color:var(--green);margin:6px 0}
+.otpbox small{display:block;color:var(--muted);font-size:12px;line-height:1.5}
 @media(max-width:600px){.product-image{width:72px;height:72px}.order-top{padding:12px}.order-body{padding:14px}.step span{font-size:10px}.circle{width:26px;height:26px;font-size:12px}}
 </style>
 </head>
@@ -227,6 +230,11 @@ function orderCard(order){
   var cancel=(String(order.status).toLowerCase()==="placed"&&os==="placed")
     ?'<button class="cancel-btn" data-id="'+esc(order.id)+'" onclick="cancelOrder(this.dataset.id)">❌ Order Cancel Karein</button>':"";
 
+  var ot=(STATE.otps||{})[String(order.id)]||[];
+  var otpHtml=ot.map(function(x){
+    return '<div class="otpbox">🔐 Aapka Delivery OTP<b>'+esc(x.otp)+'</b><small>Ye OTP delivery wale ko tab hi batayein jab saaman aapke haath me ho. Isse pehle kisi ko na batayein.</small></div>';
+  }).join("");
+
   return '<div class="order-card"><div class="order-top"><div><div class="id">Order ID: #'+esc(order.id)+'</div><small>'+esc(date)+'</small></div>'
     +'<div><span class="badge b-'+esc(os)+'">'+statusLabel(os)+'</span></div></div>'
     +'<div class="order-body">'+rows
@@ -234,7 +242,7 @@ function orderCard(order){
     +'<div style="min-width:200px"><h3>Payment</h3><div class="price">'+inr(order.total_amount)+'</div>'
     +'<p><span class="badge '+pay.cls+'">'+pay.text+'</span></p>'
     +(pay.utr?'<p style="color:var(--muted)">UTR: '+esc(pay.utr)+'</p>':'')+'</div></div>'
-    +shipHtml+payBtn+retHtml
+    +otpHtml+shipHtml+payBtn+retHtml
     +'<a class="goldbtn" style="margin-top:14px;margin-right:8px" href="invoice.html?order='+encodeURIComponent(order.id)+'">🧾 Invoice</a>'
     +cancel+'</div></div>';
 }
@@ -267,7 +275,14 @@ async function loadOrders(silent){
   var so=await supabaseClient.from("seller_orders").select("*").in("order_id",ids);
   if(so.error) console.log("Seller orders error:",so.error);
   var rq=await supabaseClient.from("return_requests").select("order_id,status,admin_note").in("order_id",ids.map(String));
-  STATE={orders:o.data,items:items,products:products,sellerOrders:so.data||[],returns:(rq&&rq.data)||[]};
+  STATE={orders:o.data,items:items,products:products,sellerOrders:so.data||[],returns:(rq&&rq.data)||[],otps:{}};
+  var need=o.data.filter(function(x){return STATE.sellerOrders.some(function(s){return String(s.order_id)===String(x.id)&&s.status==="out_for_delivery";});});
+  for(var k=0;k<need.length;k++){
+    try{
+      var g=await supabaseClient.rpc("get_delivery_otp",{p_order_id:String(need[k].id)});
+      if(g.data&&g.data.length) STATE.otps[String(need[k].id)]=g.data;
+    }catch(e){console.log("OTP error:",e);}
+  }
   if(!silent||!document.getElementById("chips").innerHTML) renderChips();
   renderOrders();
 }
