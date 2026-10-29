@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
+<title>Customer Reviews | PS Mart Seller</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f7f1e8;color:#3b2416}
+header{background:#3b2416;color:#fff;padding:16px 22px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+header h2{margin:0}
+header a{color:#fff;text-decoration:none;background:#8b5e34;padding:9px 14px;border-radius:7px}
+.wrap{width:92%;max-width:900px;margin:22px auto}
+.top{background:#fff;padding:18px;border-radius:12px;margin-bottom:16px;box-shadow:0 3px 15px rgba(0,0,0,.08)}
+.top h1{margin:0 0 4px}.top p{margin:0;color:#666}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat{background:#fff;border-radius:12px;padding:14px;text-align:center;box-shadow:0 3px 15px rgba(0,0,0,.06)}
+.stat b{display:block;font-size:26px}.stat span{font-size:12px;color:#777}
+.rev{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:12px;box-shadow:0 3px 15px rgba(0,0,0,.06)}
+.rev .st{color:#f0a500;font-size:20px;letter-spacing:2px}.rev .st i{color:#d8d0c4;font-style:normal}
+.rev h4{margin:4px 0;font-size:15px}
+.rev p{margin:6px 0 0;font-size:14px;line-height:1.5;word-break:break-word}
+.rev small{color:#888}
+.empty{background:#fff;padding:34px;text-align:center;border-radius:12px;border:1px dashed #c9922e;color:#777}
+#msg{text-align:center;font-weight:700;margin:16px 0}
+</style>
+</head>
+<body>
+<header><h2>⭐ Customer Reviews</h2><a href="seller-dashboard.html">Dashboard</a></header>
+<div class="wrap">
+  <div class="top"><h1>Aapke products ke reviews</h1><p>Customers ne deliver hone ke baad jo rating di wo yahan dikhti hai.</p></div>
+  <div class="stats" id="stats"></div>
+  <div id="msg">Loading...</div>
+  <div id="list"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+<script>
+function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+function starsOf(n){var s="";for(var i=1;i<=5;i++)s+=i<=n?"★":"<i>★</i>";return s;}
+
+async function loadReviews(){
+  var m=document.getElementById("msg");
+  var au=await supabaseClient.auth.getUser(),u=au.data&&au.data.user;
+  if(!u){m.innerHTML='Pehle <a href="login.html">login</a> kijiye.';return;}
+  var sl=await supabaseClient.from("sellers").select("id").eq("user_id",u.id).maybeSingle();
+  if(!sl.data){m.textContent="Seller account nahi mila.";return;}
+  var pr=await supabaseClient.from("products").select("id,name").eq("seller_id",sl.data.id);
+  var prods=pr.data||[];
+  if(!prods.length){m.textContent="";document.getElementById("list").innerHTML='<div class="empty">Abhi aapka koi product nahi hai.</div>';return;}
+  var names={};prods.forEach(function(p){names[String(p.id)]=p.name;});
+  var rv=await supabaseClient.from("ps_reviews").select("*").in("product_id",prods.map(function(p){return String(p.id);})).order("created_at",{ascending:false});
+  if(rv.error){m.textContent="Reviews load nahi ho paye. ps-mart-reviews.sql run kiya hai?";console.log(rv.error);return;}
+  var list=rv.data||[];m.textContent="";
+  var avg=list.length?(list.reduce(function(a,x){return a+x.rating;},0)/list.length).toFixed(1):"-";
+  document.getElementById("stats").innerHTML='<div class="stat"><b>'+list.length+'</b><span>Total reviews</span></div>'
+    +'<div class="stat"><b>'+avg+' ⭐</b><span>Average rating</span></div>'
+    +'<div class="stat"><b>'+list.filter(function(x){return x.rating<=2;}).length+'</b><span>Kam rating (1-2 ⭐)</span></div>';
+  document.getElementById("list").innerHTML=list.length?list.map(function(x){
+    return '<div class="rev"><div class="st">'+starsOf(x.rating)+'</div><h4>'+esc(names[String(x.product_id)]||"Product")+'</h4>'
+      +(x.comment?'<p>'+esc(x.comment)+'</p>':'')
+      +'<small>'+esc(x.reviewer_name||"Customer")+' ✔ Verified Purchase • '+new Date(x.created_at).toLocaleDateString("en-IN")+'</small></div>';
+  }).join(""):'<div class="empty">Abhi koi review nahi aaya.</div>';
+}
+loadReviews();
+</script>
+</body>
+</html>

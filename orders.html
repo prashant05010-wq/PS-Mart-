@@ -71,6 +71,7 @@ button,input,select{font-family:inherit}
 .cancel-btn{background:#fff;color:var(--red);border:1px solid var(--red);padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:700;margin-top:16px}
 .cancel-btn:hover{background:var(--red);color:#fff}
 .loading{text-align:center;padding:50px;color:var(--muted)}
+.rate{margin-top:8px}.rate .rs button{background:none;border:0;font-size:30px;line-height:1;cursor:pointer;color:#d8d0c4;padding:0 2px}.rate .rs button.on{color:#f0a500}.rate .rl{font-size:13px;font-weight:700;margin-top:2px}.rate .rl a{color:var(--gdeep)}
 .otpbox{margin-top:16px;padding:14px;background:#e7f6ea;border:2px dashed var(--green);border-radius:10px;text-align:center;font-size:16px}
 .otpbox b{display:block;font-size:34px;letter-spacing:8px;color:var(--green);margin:6px 0}
 .otpbox small{display:block;color:var(--muted);font-size:12px;line-height:1.5}
@@ -163,6 +164,21 @@ function timeline(status){
   }).join("")+'</div><div class="track-note">Current status: <b>'+fmtStatus(status)+'</b></div>';
 }
 
+var RLAB=["","😞 Kharab","😐 Theek-thaak","🙂 Accha","😊 Bahut accha","🤩 Shandar!"];
+function rateBlock(item,os){
+  if(os!=="delivered") return "";
+  var pid=String(item.product_id),rv=(STATE.rev||{})[pid],n=rv?Number(rv.rating||0):0;
+  var st=[1,2,3,4,5].map(function(i){return '<button class="'+(i<=n?"on":"")+'" data-pid="'+esc(pid)+'" data-n="'+i+'" onclick="rateItem(this.dataset.pid,this.dataset.n)" aria-label="'+i+' star">★</button>';}).join("");
+  var lb=STATE.justRated===pid?'<span style="color:var(--green)">✅ Review submit ho gaya: '+RLAB[n]+'</span>':(n?'Aapki rating: '+RLAB[n]+' · <a href="reviews.html">likh ke bhi bata sakte hain</a>':'Is product ko rate karein ⭐');
+  return '<div class="rate"><div class="rs">'+st+'</div><div class="rl">'+lb+'</div></div>';
+}
+async function rateItem(pid,n){
+  var r=await supabaseClient.rpc("submit_review",{p_product_id:String(pid),p_rating:Number(n),p_comment:null});
+  if(r.error||!r.data||r.data.success!==true){alert((r.data&&r.data.message)||(r.error&&r.error.message)||"Review submit nahi hua. ps-mart-reviews.sql run kiya hai?");return;}
+  STATE.rev=STATE.rev||{};STATE.rev[String(pid)]={product_id:String(pid),rating:Number(n)};STATE.justRated=String(pid);
+  renderOrders();
+}
+
 function renderChips(){
   var opts=[["all","Sab"],["active","Chal rahe"],["delivered","Delivered"],["cancelled","Cancelled"]];
   document.getElementById("chips").innerHTML=opts.map(function(o){
@@ -195,7 +211,7 @@ function orderCard(order){
     var img=p.image_url?'<img src="'+esc(p.image_url)+'" alt="'+esc(p.name)+'">':"🛍️";
     return '<div class="product-row"><div class="product-image">'+img+'</div><div class="product-info">'
       +'<a href="product.html?id='+encodeURIComponent(p.id)+'">'+esc(p.name)+'</a>'
-      +'<p>Quantity: <b>'+Number(item.quantity||1)+'</b></p><div class="price">'+inr(item.price)+'</div></div></div>';
+      +'<p>Quantity: <b>'+Number(item.quantity||1)+'</b></p><div class="price">'+inr(item.price)+'</div>'+rateBlock(item,os)+'</div></div>';
   }).join("");
 
   var ships=STATE.sellerOrders.filter(function(s){return String(s.order_id)===String(order.id);});
@@ -283,6 +299,8 @@ async function loadOrders(silent){
       if(g.data&&g.data.length) STATE.otps[String(need[k].id)]=g.data;
     }catch(e){console.log("OTP error:",e);}
   }
+  STATE.rev={};
+  try{var rvq=await supabaseClient.rpc("my_review_items");((rvq&&rvq.data)||[]).forEach(function(x){STATE.rev[String(x.product_id)]=x;});}catch(e){}
   if(!silent||!document.getElementById("chips").innerHTML) renderChips();
   renderOrders();
 }
