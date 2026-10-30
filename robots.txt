@@ -1,4 +1,24 @@
 User-agent: *
 Allow: /
+Disallow: /admin-
+Disallow: /seller-dashboard.html
+Disallow: /seller-orders.html
+Disallow: /seller-products.html
+Disallow: /seller-add-product.html
+Disallow: /seller-earnings.html
+Disallow: /seller-wallet.html
+Disallow: /seller-reviews.html
+Disallow: /checkout.html
+Disallow: /cart.html
+Disallow: /orders.html
+Disallow: /my-orders.html
+Disallow: /profile.html
+Disallow: /settings.html
+Disallow: /saved-cards.html
+Disallow: /saved-address.html
+Disallow: /notifications.html
+Disallow: /my-support.html
+Disallow: /invoice.html
+Disallow: /label.html
 
 Sitemap: https://prashant05010-wq.github.io/PS-Mart-/sitemap.xml
