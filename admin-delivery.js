@@ -4,7 +4,7 @@
   var TABS=[["req","📝 Registration"],["part","👥 Partners"],["assign","🧾 Assign"],["mon","📡 Monitoring"],["earn","💵 Earnings"],["pay","💸 Weekly Payout"],["set","⚙️ Rates"],["audit","🔍 Audit"]];
   var E=dpEsc;
   function tbl(head,rows){return '<div class="dp-scroll"><table class="dp-table"><thead><tr>'+head.map(function(h){return '<th>'+E(h)+'</th>';}).join("")+'</tr></thead><tbody>'+(rows.length?rows.join(""):'<tr><td colspan="'+head.length+'">Kuch nahi mila</td></tr>')+'</tbody></table></div>';}
-  function btn(t,fn,cls){return '<button class="dp-btn sm '+(cls||"")+'" onclick="'+fn+'">'+E(t)+'</button>';}
+  function btn(t,fn,cls,args){var call=args?fn+"("+args.map(function(a){return E(JSON.stringify(a));}).join(",")+")":fn;return '<button class="dp-btn sm '+(cls||"")+'" onclick="'+call+'">'+E(t)+'</button>';}
   function err(e){alert(friendly(e.message||e));}
   async function act(fn){try{await fn();}catch(e){err(e);}await draw();}
   function ymd(d){return d.toISOString().slice(0,10);}
@@ -33,7 +33,7 @@
   /* ---- Registration requests ---- */
   async function vReq(){
     var rows=PARTNERS.filter(function(p){return p.status==="pending";}).map(function(p){
-      return '<tr><td><b>'+E(p.full_name)+'</b><br>'+E(p.partner_code)+'</td><td>'+E(p.mobile)+'<br>'+E(p.email)+'</td><td>'+E([p.address,p.city,p.pin_code].filter(Boolean).join(", "))+'</td><td>ID doc: '+(p.id_doc_path?"✅":"❌")+'<br>Photo: '+(p.photo_path?"✅":"❌")+'<br>'+(p.id_doc_path?btn("Doc dekhein","adminDpDoc(\''+p.id+'\',\'id\')","line"):"")+(p.photo_path?btn("Photo","adminDpDoc(\''+p.id+'\',\'photo\')","line"):"")+'</td><td>'+dpDate(p.created_at)+'</td><td>'+btn("Approve","adminDpSet(\''+p.id+'\',\'approved\')","green")+btn("Reject","adminDpSet(\''+p.id+'\',\'rejected\')","red")+'</td></tr>';});
+      return '<tr><td><b>'+E(p.full_name)+'</b><br>'+E(p.partner_code)+'</td><td>'+E(p.mobile)+'<br>'+E(p.email)+'</td><td>'+E([p.address,p.city,p.pin_code].filter(Boolean).join(", "))+'</td><td>ID doc: '+(p.id_doc_path?"✅":"❌")+'<br>Photo: '+(p.photo_path?"✅":"❌")+'<br>'+(p.id_doc_path?btn("Doc dekhein","adminDpDoc","line",[p.id,"id"]):"")+(p.photo_path?btn("Photo","adminDpDoc","line",[p.id,"photo"]):"")+'</td><td>'+dpDate(p.created_at)+'</td><td>'+btn("Approve","adminDpSet","green",[p.id,"approved"])+btn("Reject","adminDpSet","red",[p.id,"rejected"])+'</td></tr>';});
     return '<h3>Registration Requests</h3>'+tbl(["Naam","Contact","Address","Verification","Date","Action"],rows);
   }
   window.adminDpDoc=async function(id,kind){
@@ -52,8 +52,8 @@
     var q=(window.__dpq||"").toLowerCase();
     var rows=PARTNERS.filter(function(p){return p.status!=="pending"&&(!q||(p.full_name+p.partner_code+p.mobile+p.email).toLowerCase().indexOf(q)>-1);}).map(function(p){
       return '<tr><td><b>'+E(p.full_name)+'</b><br>'+E(p.partner_code)+(p.is_seller_person?'<br><small>Seller team</small>':'')+'</td><td>'+E(p.mobile)+'<br>'+E(p.email)+'</td><td>'+dpBadge(p.status)+'</td><td>'+dpBadge(p.bank_status)+'</td><td>'+Number(p.deliveries||0)+'</td><td>'
-      +(p.status==="approved"?btn("Suspend","adminDpSet(\''+p.id+'\',\'suspended\')","red"):btn("Reactivate","adminDpSet(\''+p.id+'\',\'approved\')","green"))
-      +btn("Bank","adminDpBank(\''+p.id+'\')","line")+(p.id_doc_path?btn("ID doc","adminDpDoc(\''+p.id+'\',\'id\')","line"):"")+'</td></tr>';});
+      +(p.status==="approved"?btn("Suspend","adminDpSet","red",[p.id,"suspended"]):btn("Reactivate","adminDpSet","green",[p.id,"approved"]))
+      +btn("Bank","adminDpBank","line",[p.id])+(p.id_doc_path?btn("ID doc","adminDpDoc","line",[p.id,"id"]):"")+'</td></tr>';});
     return '<h3>Partners</h3><input class="dp-in" placeholder="Naam / ID / mobile se search" value="'+E(window.__dpq||"")+'" oninput="window.__dpq=this.value;adminDpTab(\'part\')" style="max-width:360px;margin-bottom:10px">'+tbl(["Partner","Contact","Status","Bank","Deliveries","Action"],rows);
   }
   window.adminDpBank=async function(id){
@@ -74,7 +74,7 @@
     var rows=o.map(function(r){
       var has=r.assignment_id;
       return '<tr><td>#'+E(r.order_id)+'<br><small>'+E(r.status)+'</small></td><td>'+E(r.shop_name||"—")+'<br><small>Method: '+(r.seller_method==="own"?"Seller ka apna":"PS Mart")+'</small></td><td>'+(r.has_label?"✅ Label":"❌ Label nahi")+'</td><td>'+(has?E(r.partner_name||"")+'<br>'+dpBadge(r.assignment_status)+'<br><small>'+(r.delivery_type==="psmart"?"PS Mart":"Seller")+'</small>':"—")+'</td><td>'
-      +(r.assignment_status==="delivered"?"Delivered":'<select class="dp-in" id="sel-'+E(r.seller_order_id)+'" style="padding:8px;font-size:14px">'+opts+'</select>'+btn(has?"Reassign":"Assign","adminDpAssign(\''+E(r.seller_order_id)+'\','+(has?1:0)+')","gold")
+      +(r.assignment_status==="delivered"?"Delivered":'<select class="dp-in" id="sel-'+E(r.seller_order_id)+'" style="padding:8px;font-size:14px">'+opts+'</select>'+btn(has?"Reassign":"Assign","adminDpAssign","gold",[r.seller_order_id,has?1:0])
       +(has&&(r.assignment_status==="failed"||r.assignment_status==="scanned"||r.assignment_status==="assigned")?btn("Reschedule","adminDpResched("+r.assignment_id+")","line"):""))+'</td></tr>';});
     return '<h3>Dispatch ke liye ready orders</h3><div class="dp-hint">Partner assign karne se pehle seller ne label/QR banaya hona chahiye.</div>'+tbl(["Order","Seller","Label","Abhi ka assignment","Action"],rows);
   }
@@ -104,7 +104,7 @@
     var per=window.__dpper||"week",r=await dpRpc("admin_dp_earnings_report",{p_period:per});
     var tot=r.reduce(function(a,x){return a+Number(x.period_earned);},0);
     return '<h3>Earnings Reports</h3><div class="dp-row" style="max-width:360px"><select class="dp-in" onchange="window.__dpper=this.value;adminDpTab(\'earn\')"><option value="day"'+(per==="day"?" selected":"")+'>Daily (aaj)</option><option value="week"'+(per==="week"?" selected":"")+'>Weekly (is hafte)</option><option value="month"'+(per==="month"?" selected":"")+'>Monthly (is mahine)</option></select></div><div class="dp-hint">Seller ke apne delivery log is report me nahi aate (alag rakhe gaye hain). Kul period earning: <b>'+dpInr(tot)+'</b></div>'
-    +tbl(["Partner","Deliveries","Period earning","Pending","Paid","Action"],r.map(function(x){return '<tr><td><b>'+E(x.full_name)+'</b><br>'+E(x.partner_code)+'</td><td>'+Number(x.deliveries)+'</td><td>'+dpInr(x.period_earned)+'</td><td>'+dpInr(x.pending_total)+'</td><td>'+dpInr(x.paid_total)+'</td><td>'+btn("Detail","adminDpEarnDetail(\''+x.person_id+'\')","line")+btn("Payout banayein","adminDpPayout(\''+x.person_id+'\')","gold")+'</td></tr>';}));
+    +tbl(["Partner","Deliveries","Period earning","Pending","Paid","Action"],r.map(function(x){return '<tr><td><b>'+E(x.full_name)+'</b><br>'+E(x.partner_code)+'</td><td>'+Number(x.deliveries)+'</td><td>'+dpInr(x.period_earned)+'</td><td>'+dpInr(x.pending_total)+'</td><td>'+dpInr(x.paid_total)+'</td><td>'+btn("Detail","adminDpEarnDetail","line",[x.person_id])+btn("Payout banayein","adminDpPayout","gold",[x.person_id])+'</td></tr>';}));
   }
   window.adminDpEarnDetail=async function(pid){
     try{var r=await dpRpc("admin_dp_person_earnings",{p_person:pid});
