@@ -38,6 +38,7 @@ async function login(){
     }
     var r=await supabaseClient.auth.signInWithPassword({email:email,password:pw});
     if(r.error)throw new Error(generic);
+    try{await supabaseClient.rpc("dp_ensure");}catch(x){}
     var me=await supabaseClient.rpc("dp_me");
     var d=me.data;
     if(me.error||!d||!d.exists){await supabaseClient.auth.signOut();throw new Error("Ye delivery partner account nahi hai.");}

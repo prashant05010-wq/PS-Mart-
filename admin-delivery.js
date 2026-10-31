@@ -5,7 +5,7 @@
   var E=dpEsc;
   function tbl(head,rows){return '<div class="dp-scroll"><table class="dp-table"><thead><tr>'+head.map(function(h){return '<th>'+E(h)+'</th>';}).join("")+'</tr></thead><tbody>'+(rows.length?rows.join(""):'<tr><td colspan="'+head.length+'">Kuch nahi mila</td></tr>')+'</tbody></table></div>';}
   function btn(t,fn,cls){return '<button class="dp-btn sm '+(cls||"")+'" onclick="'+fn+'">'+E(t)+'</button>';}
-  function err(e){alert(e.message||e);}
+  function err(e){alert(friendly(e.message||e));}
   async function act(fn){try{await fn();}catch(e){err(e);}await draw();}
   function ymd(d){return d.toISOString().slice(0,10);}
   function weekRange(){var n=new Date(Date.now()+5.5*3600*1000),dow=(n.getUTCDay()+6)%7,s=new Date(n.getTime()-dow*86400000),e=new Date(s.getTime()+6*86400000);return [ymd(s),ymd(e)];}
@@ -21,7 +21,13 @@
     try{
       PARTNERS=await dpRpc("admin_dp_list",{p_status:null});
       body.innerHTML=await ({req:vReq,part:vPart,assign:vAssign,mon:vMon,earn:vEarn,pay:vPay,set:vSet,audit:vAudit}[TAB])();
-    }catch(e){body.innerHTML='<div class="dp-msg bad">'+E(e.message)+'</div>';}
+    }catch(e){body.innerHTML='<div class="dp-msg bad">'+E(friendly(e.message))+'</div>';}
+  }
+  function friendly(m){
+    m=String(m||"");
+    if(/could not find the function|does not exist|schema cache/i.test(m))return "Delivery ka SQL Supabase me abhi run nahi hua (ya adhura run hua). 2-SUPABASE-1-delivery.sql dobara run karein. ("+m+")";
+    if(/Sirf admin/i.test(m))return "Server aapko admin nahi maan raha (is_admin() false). admin-selftest.html kholkar check karein. ("+m+")";
+    return m;
   }
 
   /* ---- Registration requests ---- */
