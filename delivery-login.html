@@ -37,7 +37,10 @@ async function login(){
       email=e.data;
     }
     var r=await supabaseClient.auth.signInWithPassword({email:email,password:pw});
-    if(r.error)throw new Error(generic);
+    if(r.error){
+      if(/not confirmed/i.test(r.error.message||""))throw new Error("Email abhi confirm nahi hua. Email me aaya confirm link kholein (ya admin se confirm karwayein).");
+      throw new Error(generic);
+    }
     try{await supabaseClient.rpc("dp_ensure");}catch(x){}
     var me=await supabaseClient.rpc("dp_me");
     var d=me.data;
