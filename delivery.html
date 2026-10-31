@@ -45,6 +45,8 @@ function inr(n){return "₹"+Number(n||0).toLocaleString("en-IN");}
 
 async function loadDelivery(){
   if(!CODE){BOX.innerHTML='<div class="bad">Package ke QR code ko scan karke page kholiye.</div>';return;}
+  /* NAYA: agar approved Delivery Partner login hai to secure dashboard par bhejo (purana flow neeche waisa hi chalta hai) */
+  try{var au=await supabaseClient.auth.getUser();if(au.data&&au.data.user){var me=await supabaseClient.rpc("dp_me");if(me.data&&me.data.exists&&me.data.status==="approved"){location.replace("delivery-dashboard.html?scan="+encodeURIComponent(CODE));return;}}}catch(e){}
   var r=await supabaseClient.rpc("get_delivery_info",{p_code:CODE}),d=r.data;
   if(r.error||!d||d.success!==true){
     BOX.innerHTML='<div class="bad">'+esc((d&&d.message)||(r.error&&r.error.message)||"Order nahi mila")+'</div>';return;

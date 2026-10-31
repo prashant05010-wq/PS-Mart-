@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="stylesheet" href="dp-style.css">
+<title>Become a Delivery Partner | PS Mart</title>
+</head>
+<body class="dp">
+<div class="dp-top"><b>🚚 PS Mart</b><a href="index.html">Home</a></div>
+<div class="dp-wrap">
+  <div class="dp-hero"><h1>Become a Delivery Partner</h1><p>PS Mart ke saath delivery karein aur har delivery par kamayein. Registration ke baad admin aapki details check karke approve karega.</p></div>
+  <div class="dp-card" id="formCard">
+    <div id="msg"></div>
+    <label class="dp-l" for="fn">Poora naam *</label><input class="dp-in" id="fn" maxlength="100" autocomplete="name">
+    <label class="dp-l" for="mob">Mobile number *</label><input class="dp-in" id="mob" inputmode="numeric" maxlength="10" placeholder="10 digit" autocomplete="tel">
+    <label class="dp-l" for="em">Email *</label><input class="dp-in" id="em" type="email" maxlength="120" autocomplete="email">
+    <label class="dp-l" for="ad">Address *</label><textarea class="dp-in" id="ad" rows="2" maxlength="300"></textarea>
+    <div class="dp-row"><div><label class="dp-l" for="ct">City *</label><input class="dp-in" id="ct" maxlength="80"></div>
+    <div><label class="dp-l" for="pin">PIN code *</label><input class="dp-in" id="pin" inputmode="numeric" maxlength="6"></div></div>
+    <label class="dp-l" for="pw">Password * (kam se kam 8 akshar, ek number zaruri)</label><input class="dp-in" id="pw" type="password" maxlength="72" autocomplete="new-password">
+    <label class="dp-l" for="pw2">Password dobara *</label><input class="dp-in" id="pw2" type="password" maxlength="72" autocomplete="new-password">
+    <label class="dp-l" for="photo">Profile photo (optional, max 2 MB)</label><input class="dp-in" id="photo" type="file" accept="image/jpeg,image/png,image/webp">
+    <label class="dp-l" for="idd">Pehchan patra - Aadhaar/DL/Voter ID (photo ya PDF, max 2 MB)</label><input class="dp-in" id="idd" type="file" accept="image/jpeg,image/png,image/webp,application/pdf">
+    <div class="dp-hint">Documents private rakhe jaate hain. Sirf PS Mart admin dekh sakta hai. Seller ya dusre partners ko kabhi nahi dikhte. Bank details approval ke baad login karke dashboard me surakshit tareeke se daalein.</div>
+    <label style="display:flex;gap:10px;margin-top:14px;font-size:14px"><input type="checkbox" id="agree" style="width:22px;height:22px"> Main PS Mart ki <a href="terms.html" target="_blank" rel="noopener">Terms</a> aur <a href="privacy-center.html" target="_blank" rel="noopener">Privacy</a> se sahmat hoon.</label>
+    <button class="dp-btn gold" id="go" onclick="register()">Registration bhejein</button>
+    <a class="dp-btn line" href="delivery-login.html">Pehle se account hai? Login</a>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+<script src="dp-common.js"></script>
+<script>
+var MAXB=2*1024*1024, OKT=["image/jpeg","image/png","image/webp","application/pdf"];
+function v(id){return (document.getElementById(id).value||"").trim();}
+function extOf(t){return {"image/jpeg":"jpg","image/png":"png","image/webp":"webp","application/pdf":"pdf"}[t]||"bin";}
+async function uploadDoc(uid,file,tag){
+  if(!file)return null;
+  if(OKT.indexOf(file.type)<0||file.size>MAXB)throw new Error("File sirf JPG/PNG/WEBP/PDF aur 2 MB tak ki ho");
+  var path=uid+"/"+tag+"-"+Date.now()+"."+extOf(file.type);
+  var r=await supabaseClient.storage.from("delivery-docs").upload(path,file,{upsert:false,contentType:file.type});
+  if(r.error)throw new Error("Upload nahi hua");
+  return path;
+}
+async function register(){
+  var b=document.getElementById("go"),m="msg";
+  var fn=v("fn"),mob=v("mob"),em=v("em").toLowerCase(),ad=v("ad"),ct=v("ct"),pin=v("pin"),pw=document.getElementById("pw").value,pw2=document.getElementById("pw2").value;
+  if(fn.length<3)return dpMsg(m,"Poora naam likhein","bad");
+  if(!/^[6-9]\d{9}$/.test(mob))return dpMsg(m,"10 digit ka sahi mobile number daalein","bad");
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))return dpMsg(m,"Sahi email daalein","bad");
+  if(ad.length<8||ct.length<2)return dpMsg(m,"Address aur city poora likhein","bad");
+  if(!/^\d{6}$/.test(pin))return dpMsg(m,"6 digit ka PIN code daalein","bad");
+  if(pw.length<8||!/\d/.test(pw)||!/[A-Za-z]/.test(pw))return dpMsg(m,"Password 8+ akshar, kam se kam ek letter aur ek number ka ho","bad");
+  if(pw!==pw2)return dpMsg(m,"Dono password alag hain","bad");
+  if(!document.getElementById("agree").checked)return dpMsg(m,"Terms ko tick karein","bad");
+  var ph=document.getElementById("photo").files[0],id=document.getElementById("idd").files[0];
+  if((ph&&(OKT.indexOf(ph.type)<0||ph.size>MAXB))||(id&&(OKT.indexOf(id.type)<0||id.size>MAXB)))return dpMsg(m,"File sirf JPG/PNG/WEBP/PDF aur 2 MB tak ki ho","bad");
+  b.disabled=true;b.textContent="Bhej rahe hain...";dpMsg(m,"");
+  try{
+    var r=await supabaseClient.auth.signUp({email:em,password:pw,options:{data:{ps_role:"delivery_partner",full_name:fn,mobile:mob,address:ad,city:ct,pin_code:pin}}});
+    if(r.error)throw new Error(/registered|exists/i.test(r.error.message)?"Ye email pehle se PS Mart par hai. Dusra email use karein.":"Registration nahi ho paya. Dobara koshish karein.");
+    var u=r.data&&r.data.user;
+    if(u&&u.identities&&u.identities.length===0)throw new Error("Ye email pehle se PS Mart par hai. Dusra email use karein.");
+    var note="";
+    if(r.data.session&&u){
+      try{
+        var pp=await uploadDoc(u.id,ph,"photo"),dd=await uploadDoc(u.id,id,"id");
+        if(pp||dd)await dpRpc("dp_set_docs",{p_photo:pp,p_doc:dd});
+      }catch(e){note=" (Documents upload nahi hue; approval ke baad dashboard se upload karein.)";}
+      await supabaseClient.auth.signOut();
+    }else if(ph||id){note=" Documents approval ke baad login karke dashboard se upload kar dein.";}
+    document.getElementById("formCard").innerHTML='<div class="dp-msg ok">✅ Registration mil gaya.'+dpEsc(note)+'</div><div class="dp-kv">Admin aapki details check karega. Approve hote hi aapko notification milega aur aap <b style="display:inline;color:inherit">Delivery Partner Login</b> se login kar payenge. Email confirm karne ka mail aaye to use zaroor confirm karein.</div><a class="dp-btn gold" href="delivery-login.html">Login page</a>';
+  }catch(e){dpMsg(m,e.message,"bad");b.disabled=false;b.textContent="Registration bhejein";}
+}
+</script>
+</body></html>

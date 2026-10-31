@@ -114,6 +114,7 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
 
 </style>
 <link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="dp-style.css"><!-- delivery system -->
 </head>
 
 <body>
@@ -184,6 +185,8 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
     <button class="tab" onclick="showSection('returnsSection',this);loadReturns()">↩️ Returns</button>
 
     <button class="tab" onclick="showSection('payoutsSection',this);loadPayouts()">💸 Payouts</button>
+
+    <button class="tab" onclick="showSection('deliverySection',this);adminDpInit()">🚚 Delivery</button>
 
   </div>
 
@@ -376,6 +379,12 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
 
   </div>
 
+
+  <!-- ================= DELIVERY MANAGEMENT ================= -->
+  <div id="deliverySection" class="section hidden">
+    <h2>🚚 Delivery Management</h2>
+    <div id="dpAdminRoot">Loading...</div>
+  </div>
 
   <!-- ================= NOTIFICATIONS (NEW) ================= -->
 
@@ -2411,5 +2420,7 @@ async function sendGiftCardToCustomer() {
 
 </script>
 
+<script src="dp-common.js"></script>
+<script src="admin-delivery.js"></script>
 </body>
 </html>

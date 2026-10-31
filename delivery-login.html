@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="stylesheet" href="dp-style.css">
+<title>Delivery Partner Login | PS Mart</title>
+</head>
+<body class="dp">
+<div class="dp-top"><b>🚚 PS Mart Delivery</b><a href="index.html">Home</a></div>
+<div class="dp-wrap">
+  <div class="dp-hero"><h1>Delivery Partner Login</h1><p>Apna Partner ID ya registered email aur password daalein.</p></div>
+  <div class="dp-card">
+    <div id="msg"></div>
+    <label class="dp-l" for="idf">Partner ID ya Email</label><input class="dp-in" id="idf" autocomplete="username" autocapitalize="none" maxlength="120">
+    <label class="dp-l" for="pw">Password</label><input class="dp-in" id="pw" type="password" autocomplete="current-password" maxlength="72" onkeydown="if(event.key==='Enter')login()">
+    <button class="dp-btn gold" id="go" onclick="login()">Login</button>
+    <a class="dp-btn line" href="delivery-register.html">Become a Delivery Partner</a>
+    <div class="dp-hint">Sirf admin se approved partners login kar sakte hain.</div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+<script src="dp-common.js"></script>
+<script>
+var fails=0,lockUntil=0;
+function next(){var p=new URLSearchParams(location.search).get("scan");return "delivery-dashboard.html"+(p?"?scan="+encodeURIComponent(p):"");}
+async function login(){
+  var b=document.getElementById("go"),m="msg";
+  if(Date.now()<lockUntil)return dpMsg(m,"Bahut koshish ho gayi. Thodi der baad dobara try karein.","bad");
+  var idf=(document.getElementById("idf").value||"").trim(),pw=document.getElementById("pw").value;
+  if(!idf||!pw)return dpMsg(m,"ID/email aur password daalein","bad");
+  b.disabled=true;b.textContent="Check ho raha hai...";dpMsg(m,"");
+  var generic="ID/email ya password galat hai";
+  try{
+    var email=idf.toLowerCase();
+    if(email.indexOf("@")<0){
+      var e=await supabaseClient.rpc("dp_email_for_id",{p_id:idf});
+      if(e.error||!e.data)throw new Error(generic);
+      email=e.data;
+    }
+    var r=await supabaseClient.auth.signInWithPassword({email:email,password:pw});
+    if(r.error)throw new Error(generic);
+    var me=await supabaseClient.rpc("dp_me");
+    var d=me.data;
+    if(me.error||!d||!d.exists){await supabaseClient.auth.signOut();throw new Error("Ye delivery partner account nahi hai.");}
+    if(d.status!=="approved"){
+      await supabaseClient.auth.signOut();
+      var t={pending:"Aapka registration abhi approval ke liye pending hai.",rejected:"Aapka registration reject ho gaya hai."+(d.status_note?" Wajah: "+d.status_note:""),suspended:"Aapka account suspend hai. Support se sampark karein."};
+      throw new Error(t[d.status]||"Login allowed nahi hai.");
+    }
+    location.replace(next());
+  }catch(err){
+    fails++;if(fails>=5){lockUntil=Date.now()+60000;fails=0;}
+    dpMsg(m,err.message||generic,"bad");b.disabled=false;b.textContent="Login";
+  }
+}
+</script>
+</body></html>

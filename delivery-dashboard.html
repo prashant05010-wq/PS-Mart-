@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex">
+<link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="dp-style.css">
+<title>Delivery Dashboard | PS Mart</title>
+</head>
+<body class="dp">
+<div class="dp-top"><b>🚚 PS Mart Delivery</b><div><span id="who" style="font-size:13px;margin-right:8px"></span><button onclick="logout()">Logout</button></div></div>
+<div class="dp-wrap" id="main"><div class="dp-card">Loading...</div></div>
+
+<nav class="dp-nav" id="nav" hidden>
+  <button data-v="home" class="on"><span>🏠</span>Overview</button>
+  <button data-v="deliv"><span>📦</span>Deliveries</button>
+  <button data-v="earn"><span>💰</span>Earnings</button>
+  <button data-v="pay"><span>🏦</span>Payments</button>
+  <button data-v="prof"><span>👤</span>Profile</button>
+</nav>
+
+<!-- QR scanner -->
+<div class="dp-modal" id="scanModal"><div class="dp-sheet">
+  <h3 style="margin:0 0 8px;font-family:Georgia,serif">📷 Parcel QR scan karein</h3>
+  <div id="qrBox"></div>
+  <div id="scanMsg"></div>
+  <label class="dp-l" for="manual">Camera na chale to parcel ka code yahan likhein</label>
+  <input class="dp-in" id="manual" maxlength="64" autocapitalize="characters" placeholder="Label par likha code">
+  <button class="dp-btn gold" onclick="manualScan()">Code check karein</button>
+  <button class="dp-btn line" onclick="closeScan()">Band karein</button>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+<script src="dp-common.js"></script>
+<script>
+var ME=null,VIEW="home",FILTER="active",DASH=null,LIST=[],scanner=null,idleT=null,busy=false;
+var main=document.getElementById("main");
+var REASONS=["Customer Not Available","Customer Phone Not Reachable","Incorrect Address","Customer Refused","Other Reason"];
+
+/* ---------- start: sirf approved partner ---------- */
+async function boot(){
+  var au=await supabaseClient.auth.getUser();
+  if(!au.data||!au.data.user){return toLogin();}
+  var me=await supabaseClient.rpc("dp_me");
+  if(me.error||!me.data||!me.data.exists||me.data.status!=="approved"){await supabaseClient.auth.signOut();return toLogin();}
+  ME=me.data;document.getElementById("who").textContent=ME.partner_code;
+  document.getElementById("nav").hidden=false;
+  document.querySelectorAll("#nav button").forEach(function(b){b.onclick=function(){go(b.dataset.v);};});
+  resetIdle();["click","touchstart","keydown"].forEach(function(e){document.addEventListener(e,resetIdle,{passive:true});});
+  await go("home");
+  var sc=new URLSearchParams(location.search).get("scan");
+  if(sc){history.replaceState(null,"","delivery-dashboard.html");await go("deliv");doScan(sc);}
+}
+function toLogin(){var s=new URLSearchParams(location.search).get("scan");location.replace("delivery-login.html"+(s?"?scan="+encodeURIComponent(s):""));}
+async function logout(){try{await supabaseClient.auth.signOut();}catch(e){}location.replace("delivery-login.html");}
+function resetIdle(){clearTimeout(idleT);idleT=setTimeout(logout,30*60*1000);} /* 30 min nishkriya = auto logout */
+
+async function go(v){
+  VIEW=v;document.querySelectorAll("#nav button").forEach(function(b){b.classList.toggle("on",b.dataset.v===v);});
+  main.innerHTML='<div class="dp-card">Loading...</div>';window.scrollTo(0,0);
+  try{
+    if(v==="home")await vHome();else if(v==="deliv")await vDeliv();else if(v==="earn")await vEarn();else if(v==="pay")await vPay();else await vProf();
+  }catch(e){main.innerHTML='<div class="dp-msg bad">'+dpEsc(e.message)+'</div>';}
+}
+
+/* ---------- Overview ---------- */
+async function vHome(){
+  var d=await dpRpc("dp_dashboard");DASH=d;
+  main.innerHTML='<div class="dp-hero"><h1>Namaste, '+dpEsc(ME.full_name)+'</h1><p>Partner ID: <b>'+dpEsc(ME.partner_code)+'</b></p></div>'
+  +(d.active_deliveries>0?'<div class="dp-msg info">📦 '+d.active_deliveries+' delivery abhi baaki hai</div><button class="dp-btn gold" onclick="go(\'deliv\')">Deliveries dekhein</button>':'')
+  +'<h3 style="font-family:Georgia,serif;margin:16px 0 8px">Deliveries</h3><div class="dp-grid">'
+  +st("Total",d.total_deliveries)+st("Aaj",d.today_deliveries)+st("Is hafte",d.week_deliveries)+st("Baaki (active)",d.active_deliveries)+'</div>'
+  +'<h3 style="font-family:Georgia,serif;margin:16px 0 8px">Kamayi</h3><div class="dp-grid">'
+  +st("Total Earnings",dpInr(d.total_earnings),1)+st("Aaj",dpInr(d.today_earnings))+st("Is hafte",dpInr(d.week_earnings))+st("Pending Payment",dpInr(d.pending_payment),1)+st("Total Paid",dpInr(d.total_paid))+st("Incentives",dpInr(d.incentives))+'</div>'
+  +'<div class="dp-card" style="margin-top:12px"><small>Agla payout period</small><br><b>'+dpDay(d.next_payout_period.start)+' – '+dpDay(d.next_payout_period.end)+'</b></div>';
+}
+function st(l,v,g){return '<div class="dp-stat'+(g?' gold':'')+'"><small>'+dpEsc(l)+'</small><b>'+dpEsc(v)+'</b></div>';}
+
+/* ---------- Deliveries ---------- */
+async function vDeliv(){
+  LIST=await dpRpc("dp_my_deliveries",{p_filter:FILTER});
+  var h='<div class="dp-pills"><button class="'+(FILTER==="active"?"on":"")+'" onclick="FILTER=\'active\';go(\'deliv\')">Active</button><button class="'+(FILTER==="done"?"on":"")+'" onclick="FILTER=\'done\';go(\'deliv\')">Delivered</button></div>'
+  +'<button class="dp-btn gold" style="margin:0 0 12px" onclick="openScan()">📷 Parcel QR scan karein</button><div id="dmsg"></div>';
+  if(!LIST.length)h+='<div class="dp-card" style="text-align:center">Koi delivery nahi hai.</div>';
+  LIST.forEach(function(x){h+=card(x);});
+  main.innerHTML=h;
+}
+function card(x){
+  var i=x.info||{},active=["assigned","scanned","rescheduled"].indexOf(x.status)>-1,ofd=x.order_status==="out_for_delivery";
+  var h='<div class="dp-card" id="c'+x.assignment_id+'"><div style="display:flex;justify-content:space-between;gap:8px"><h3>Order #'+dpEsc(x.order_id)+'</h3>'+dpBadge(x.status)+'</div>'
+  +'<div class="dp-kv"><b>Delivery type</b>'+(x.delivery_type==="psmart"?"PS Mart Delivery":"Seller Delivery")+'</div>'
+  +'<div class="dp-kv"><b>Assigned</b>'+dpDate(x.assigned_at)+'</div>';
+  if(x.status==="delivered")h+='<div class="dp-kv"><b>Delivered</b>'+dpDate(x.delivered_at)+'</div>'+(x.delivery_type==="psmart"?'<div class="dp-kv"><b>Earning</b>'+dpInr(x.earning)+'</div>':'');
+  if(x.reschedule_at)h+='<div class="dp-msg info">🔁 Reschedule: '+dpDate(x.reschedule_at)+(x.reschedule_note?' – '+dpEsc(x.reschedule_note):'')+'</div>';
+  if(x.status==="failed")h+='<div class="dp-msg bad">Delivery fail: '+dpEsc(x.fail_reason||"")+'<br>Admin/seller reschedule karenge.</div>'+(x.reschedule_requested?'<div class="dp-hint">Reschedule request bheji ja chuki hai.</div>':'<button class="dp-btn line sm" onclick="reqResched('+x.assignment_id+')">Reschedule request</button>');
+  if(i.success){
+    var items=(i.items||[]).map(function(t){return dpEsc(t.name||"Product")+" × "+Number(t.qty||1);}).join("<br>");
+    h+='<div class="dp-kv"><b>Seller</b>'+dpEsc(i.shop_name||"Seller")+'</div><div class="dp-kv"><b>Saaman</b>'+(items||"—")+'</div>'
+    +'<div class="dp-kv"><b>Customer</b>'+dpEsc(i.customer_name||"Customer")+'</div>'
+    +'<div class="dp-kv"><b>Address</b>'+dpEsc(i.address||"—")+'</div>';
+    if(active&&i.customer_phone){var tel=String(i.customer_phone).replace(/[^\d+]/g,"");h+='<div class="dp-kv"><b>Phone</b>'+dpEsc(i.customer_phone)+'</div>';}
+    if(active)h+=(i.payment_mode==="COD"?'<div class="dp-cod">💵 Customer se '+dpInr(i.collect_amount)+' cash lein</div>':'<div class="dp-pre">✅ Payment ho chuka hai. Paisa nahi lena</div>');
+    if(active){
+      h+='<div class="dp-row">'+(i.customer_phone?'<a class="dp-btn line sm" href="tel:'+dpEsc(tel)+'">📞 Call</a>':'')
+      +'<a class="dp-btn line sm" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(i.address||"")+'">🧭 Navigate</a></div>';
+    }
+  }
+  if(active){
+    if(!x.scanned)h+='<button class="dp-btn gold" onclick="openScan()">📷 Pehle parcel QR scan karein</button>';
+    else if(!ofd)h+='<button class="dp-btn green" onclick="startDel('+x.assignment_id+',this)">🚚 Delivery shuru karein (Out for Delivery)</button>';
+    else h+='<label class="dp-l" for="otp'+x.assignment_id+'">Customer se 6 digit OTP puchiye</label><input class="dp-in otp-in" id="otp'+x.assignment_id+'" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="one-time-code">'
+      +(i.payment_mode==="COD"?'<label style="display:flex;gap:10px;margin-top:10px;font-weight:600"><input type="checkbox" id="cash'+x.assignment_id+'" style="width:22px;height:22px"> Maine '+dpInr(i.collect_amount)+' cash le liye</label>':'')
+      +'<button class="dp-btn green" onclick="verifyOtp('+x.assignment_id+',this,'+(i.payment_mode==="COD"?1:0)+')">✅ OTP verify karke delivery complete karein</button>'
+      +'<div class="dp-hint">Baaki koshishein: '+Number(i.attempts_left==null?5:i.attempts_left)+'. Sirf saaman dene ke baad confirm karein.</div>';
+    h+='<details style="margin-top:12px"><summary style="font-weight:700;cursor:pointer">Delivery nahi ho payi?</summary><label class="dp-l">Wajah</label><select class="dp-in" id="why'+x.assignment_id+'">'+REASONS.map(function(r){return '<option>'+dpEsc(r)+'</option>';}).join("")+'</select><input class="dp-in" id="wn'+x.assignment_id+'" maxlength="120" placeholder="Note (optional)" style="margin-top:8px"><button class="dp-btn red" onclick="failDel('+x.assignment_id+',this)">Fail report karein</button><button class="dp-btn line" onclick="reqResched('+x.assignment_id+')">Reschedule request</button></details>';
+  }
+  return h+'</div>';
+}
+function flash(t,type){dpMsg("dmsg",t,type);window.scrollTo(0,0);}
+async function startDel(id,b){
+  if(busy)return;busy=true;b.disabled=true;
+  try{var r=await dpRpc("dp_start_delivery",{p_assignment_id:id});flash(r.message,r.success?"ok":"bad");await refreshList();}catch(e){flash(e.message,"bad");}
+  busy=false;
+}
+async function verifyOtp(id,b,cod){
+  var otp=(document.getElementById("otp"+id).value||"").trim();
+  if(!/^\d{6}$/.test(otp)){alert("6 digit ka OTP daalein");return;}
+  if(cod&&!document.getElementById("cash"+id).checked){alert("Pehle customer se cash lekar box tick karein");return;}
+  if(busy)return;busy=true;b.disabled=true;b.textContent="Check ho raha hai...";
+  try{
+    var r=await dpRpc("dp_verify_delivery",{p_assignment_id:id,p_otp:otp});
+    if(r&&r.success){flash("✅ Delivery complete! Dhanyavaad.","ok");}else{flash((r&&r.message)||"OTP galat hai","bad");}
+    await refreshList();
+  }catch(e){flash(e.message,"bad");b.disabled=false;b.textContent="✅ OTP verify karke delivery complete karein";}
+  busy=false;
+}
+async function failDel(id,b){
+  if(!confirm("Delivery fail report karni hai?"))return;
+  try{
+    var r=await dpRpc("dp_report_failed",{p_assignment_id:id,p_reason:document.getElementById("why"+id).value,p_note:document.getElementById("wn"+id).value});
+    flash(r.success?"Wajah save ho gayi. Seller/Admin ko dikhegi.":r.message,r.success?"ok":"bad");await refreshList();
+  }catch(e){flash(e.message,"bad");}
+}
+async function reqResched(id){
+  var n=prompt("Reschedule ki wajah / kab theek rahega?");if(n===null)return;
+  try{var r=await dpRpc("dp_request_reschedule",{p_assignment_id:id,p_note:n});flash(r.success?"Request bhej di gayi.":r.message,r.success?"ok":"bad");await refreshList();}catch(e){flash(e.message,"bad");}
+}
+async function refreshList(){if(VIEW==="deliv"){var m=document.getElementById("dmsg").innerHTML;await vDeliv();document.getElementById("dmsg").innerHTML=m;}}
+
+/* ---------- QR scan ---------- */
+function codeFrom(t){
+  t=String(t||"").trim();
+  try{var u=new URL(t);var c=u.searchParams.get("c");if(c)return c.trim();}catch(e){}
+  return t;
+}
+async function openScan(){
+  document.getElementById("scanModal").classList.add("show");dpMsg("scanMsg","");
+  try{
+    if(!window.Html5Qrcode){await new Promise(function(res,rej){var s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js";s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+    scanner=new Html5Qrcode("qrBox");
+    await scanner.start({facingMode:"environment"},{fps:10,qrbox:{width:220,height:220}},function(text){closeScan();doScan(codeFrom(text));},function(){});
+  }catch(e){dpMsg("scanMsg","Camera shuru nahi hua. Neeche code haath se likhein.","info");}
+}
+async function closeScan(){
+  document.getElementById("scanModal").classList.remove("show");
+  try{if(scanner){await scanner.stop();scanner.clear();}}catch(e){}scanner=null;
+}
+function manualScan(){var c=codeFrom(document.getElementById("manual").value);if(!c)return;closeScan();doScan(c);}
+async function doScan(code){
+  if(VIEW!=="deliv")await go("deliv");
+  try{
+    var r=await dpRpc("dp_scan_parcel",{p_code:code});
+    flash(r.success?"✅ Parcel verify ho gaya. Order #"+((r.info&&r.info.order_id)||""):(r.message||"Scan fail"),r.success?"ok":"bad");
+    await refreshList();
+    if(r.success){var el=document.getElementById("c"+r.assignment_id);if(el)el.scrollIntoView({behavior:"smooth"});}
+  }catch(e){flash(e.message,"bad");}
+}
+
+/* ---------- Earnings ---------- */
+async function vEarn(){
+  var d=await dpRpc("dp_dashboard");
+  var r=await supabaseClient.from("delivery_earnings").select("id,order_id,kind,amount,status,earned_at,note").order("id",{ascending:false}).limit(100);
+  var rows=r.data||[];
+  var h='<div class="dp-grid">'+st("Aaj",dpInr(d.today_earnings))+st("Is hafte",dpInr(d.week_earnings))+st("Is mahine",dpInr(d.month_earnings))+st("Total",dpInr(d.total_earnings),1)+st("Pending",dpInr(d.pending_payment))+st("Paid",dpInr(d.total_paid))+st("Incentives",dpInr(d.incentives))+'</div>'
+  +'<h3 style="font-family:Georgia,serif;margin:16px 0 8px">Delivery-wise earnings</h3>';
+  if(!rows.length)h+='<div class="dp-card">Abhi koi earning nahi.</div>';
+  rows.forEach(function(e){h+='<div class="dp-card" style="padding:12px"><div style="display:flex;justify-content:space-between"><b>'+(e.kind==="delivery"?"Order #"+dpEsc(e.order_id):e.kind==="incentive"?"Incentive":"Adjustment")+'</b><b>'+dpInr(e.amount)+'</b></div><div class="dp-hint">'+dpDate(e.earned_at)+' · '+dpBadge(e.status)+(e.note?' · '+dpEsc(e.note):'')+'</div></div>';});
+  main.innerHTML=h;
+}
+
+/* ---------- Payments ---------- */
+async function vPay(){
+  var d=await dpRpc("dp_dashboard");
+  var r=await supabaseClient.from("delivery_payouts").select("id,period_start,period_end,amount,status,txn_ref,paid_at,created_at").order("id",{ascending:false}).limit(100);
+  var rows=r.data||[];
+  var h='<div class="dp-grid">'+st("Pending Payment",dpInr(d.pending_payment),1)+st("Total Paid",dpInr(d.total_paid))+'</div>'
+  +'<div class="dp-card" style="margin-top:12px"><small>Agla payout period (weekly)</small><br><b>'+dpDay(d.next_payout_period.start)+' – '+dpDay(d.next_payout_period.end)+'</b></div>'
+  +'<h3 style="font-family:Georgia,serif;margin:16px 0 8px">Payment History</h3>';
+  if(!rows.length)h+='<div class="dp-card">Abhi koi payout nahi hua.</div>';
+  rows.forEach(function(p){h+='<div class="dp-card" style="padding:12px"><div style="display:flex;justify-content:space-between"><b>'+dpInr(p.amount)+'</b>'+dpBadge(p.status)+'</div><div class="dp-hint">Period: '+dpDay(p.period_start)+' – '+dpDay(p.period_end)+'</div>'+(p.status==="paid"?'<div class="dp-hint">Paid: '+dpDate(p.paid_at)+'<br>Reference: <b>'+dpEsc(p.txn_ref)+'</b></div>':'<div class="dp-hint">Payment process ho raha hai. Paid tabhi dikhega jab admin transaction reference save karega.</div>')+'</div>';});
+  main.innerHTML=h;
+}
+
+/* ---------- Profile ---------- */
+async function vProf(){
+  var m=await dpRpc("dp_me");ME=m;var bank=await dpRpc("dp_bank_masked");
+  var ph=await dpSignedUrl(m.photo_path);
+  var h='<div class="dp-card" style="text-align:center">'+(ph?'<img src="'+dpEsc(ph)+'" alt="Profile" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid var(--dp-gold)">':'<div style="font-size:54px">👤</div>')+'<h2 style="margin-top:8px">'+dpEsc(m.full_name)+'</h2>'+dpBadge(m.status)+'</div>'
+  +'<div class="dp-card"><div class="dp-kv"><b>Delivery Partner ID</b>'+dpEsc(m.partner_code)+'</div><div class="dp-kv"><b>Mobile</b>'+dpEsc(m.mobile)+'</div><div class="dp-kv"><b>Email</b>'+dpEsc(m.email)+'</div><div class="dp-kv"><b>Address</b>'+dpEsc([m.address,m.city,m.pin_code].filter(Boolean).join(", "))+'</div><div class="dp-kv"><b>Bank verification</b>'+dpBadge(m.bank_status)+'</div><div class="dp-kv"><b>ID document</b>'+(m.has_id_doc?"Upload ho chuka":"Abhi upload nahi hua")+'</div></div>'
+  +'<div class="dp-card"><h3>Documents upload</h3><div id="dm2"></div><label class="dp-l" for="upPhoto">Profile photo</label><input class="dp-in" type="file" id="upPhoto" accept="image/jpeg,image/png,image/webp"><label class="dp-l" for="upId">ID document</label><input class="dp-in" type="file" id="upId" accept="image/jpeg,image/png,image/webp,application/pdf"><button class="dp-btn line" onclick="uploadDocs()">Upload karein</button><div class="dp-hint">Max 2 MB. Sirf admin dekh sakta hai.</div></div>'
+  +'<div class="dp-card"><h3>Bank details (payout ke liye)</h3><div id="bm"></div>'
+  +(bank.added?'<div class="dp-kv"><b>Saved</b>'+dpEsc(bank.account_name)+' · A/c ••••'+dpEsc(bank.account_last4)+' · '+dpEsc(bank.ifsc)+(bank.upi_id?' · '+dpEsc(bank.upi_id):'')+'</div><div class="dp-hint">Badalne ke liye neeche naya bharein. Badalne par verification dobara hoga.</div>':'')
+  +'<label class="dp-l" for="bn">Account holder ka naam</label><input class="dp-in" id="bn" maxlength="100"><label class="dp-l" for="ba">Account number</label><input class="dp-in" id="ba" inputmode="numeric" maxlength="18" autocomplete="off"><label class="dp-l" for="bi">IFSC</label><input class="dp-in" id="bi" maxlength="11" autocapitalize="characters"><label class="dp-l" for="bu">UPI ID (optional)</label><input class="dp-in" id="bu" maxlength="80"><button class="dp-btn gold" onclick="saveBank()">Bank details save karein</button></div>'
+  +'<div class="dp-card"><h3>Help &amp; Support</h3><div class="dp-kv">Delivery, payment ya account ki dikkat ke liye PS Mart support se sampark karein.</div><a class="dp-btn line" href="contact.html">Support se baat karein</a></div>'
+  +'<button class="dp-btn red" onclick="logout()">Logout</button>';
+  main.innerHTML=h;
+}
+async function uploadDocs(){
+  var uid=ME.user_id,ph=document.getElementById("upPhoto").files[0],id=document.getElementById("upId").files[0],T=["image/jpeg","image/png","image/webp","application/pdf"],E={"image/jpeg":"jpg","image/png":"png","image/webp":"webp","application/pdf":"pdf"};
+  if(!ph&&!id)return dpMsg("dm2","Koi file chuniye","bad");
+  try{
+    var paths={};
+    for(var k of [["photo",ph],["id",id]]){var f=k[1];if(!f)continue;
+      if(T.indexOf(f.type)<0||f.size>2*1024*1024)throw new Error("File JPG/PNG/WEBP/PDF aur 2 MB tak ki ho");
+      var p=uid+"/"+k[0]+"-"+Date.now()+"."+E[f.type];var u=await supabaseClient.storage.from("delivery-docs").upload(p,f,{contentType:f.type,upsert:false});
+      if(u.error)throw new Error("Upload nahi hua");paths[k[0]]=p;}
+    await dpRpc("dp_set_docs",{p_photo:paths.photo||null,p_doc:paths.id||null});
+    await vProf();dpMsg("dm2","Upload ho gaya ✓","ok");
+  }catch(e){dpMsg("dm2",e.message,"bad");}
+}
+async function saveBank(){
+  try{
+    await dpRpc("dp_save_bank",{p_name:document.getElementById("bn").value,p_number:document.getElementById("ba").value,p_ifsc:document.getElementById("bi").value,p_upi:document.getElementById("bu").value});
+    await vProf();dpMsg("bm","Bank details save ho gayi. Admin verify karega.","ok");
+  }catch(e){dpMsg("bm",e.message,"bad");}
+}
+boot();
+</script>
+</body></html>

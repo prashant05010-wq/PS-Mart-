@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex">
+<link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="dp-style.css">
+<title>Seller Delivery | PS Mart</title>
+</head>
+<body class="dp">
+<div class="dp-top"><b>🚚 Seller Delivery</b><div><a href="seller-orders.html">Orders</a> <a href="seller-dashboard.html">Dashboard</a></div></div>
+<div class="dp-wrap">
+  <div id="msg"></div>
+  <div class="dp-card">
+    <h2>Delivery method</h2>
+    <label style="display:flex;gap:10px;margin:10px 0"><input type="radio" name="m" value="psmart" style="width:20px;height:20px"> <span><b>PS Mart Delivery Partner</b><br><small>Admin aapke packed orders ke liye PS Mart partner assign karega.</small></span></label>
+    <label style="display:flex;gap:10px;margin:10px 0"><input type="radio" name="m" value="own" style="width:20px;height:20px"> <span><b>Mera apna delivery person</b><br><small>Aap apni team me se assign karenge. Unhe bhi QR scan + customer OTP zaruri hai.</small></span></label>
+    <button class="dp-btn gold" onclick="savePref()">Save karein</button>
+  </div>
+
+  <div class="dp-card" id="teamCard">
+    <h2>Meri delivery team</h2>
+    <div class="dp-hint">Apne delivery person se kahein ki wo <a href="delivery-register.html">Become a Delivery Partner</a> se registration karein. Admin approve kare, phir uska Partner ID yahan daalein.</div>
+    <div class="dp-row" style="margin-top:10px"><input class="dp-in" id="pcode" placeholder="Partner ID (jaise DP1A2B3C)" maxlength="12" autocapitalize="characters"><button class="dp-btn sm gold" style="flex:0 0 auto;margin:0" onclick="addMember()">Jodein</button></div>
+    <div id="team" style="margin-top:10px"></div>
+  </div>
+
+  <h2 style="font-family:Georgia,serif;margin:16px 0 8px">Dispatch ke liye orders</h2>
+  <div id="orders">Loading...</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+<script src="dp-common.js"></script>
+<script>
+var PREF="psmart",TEAM=[];
+async function boot(){
+  var au=await supabaseClient.auth.getUser();
+  if(!au.data||!au.data.user){location.replace("login.html");return;}
+  try{var p=await dpRpc("seller_dp_get_pref");PREF=p.method;}catch(e){document.querySelector(".dp-wrap").innerHTML='<div class="dp-msg bad">Ye page sirf registered seller ke liye hai. ('+dpEsc(e.message)+')</div>';return;}
+  document.querySelectorAll("input[name=m]").forEach(function(r){r.checked=r.value===PREF;});
+  await load();
+}
+async function load(){
+  TEAM=await dpRpc("seller_dp_team_list");
+  document.getElementById("team").innerHTML=TEAM.length?TEAM.map(function(t){return '<div class="dp-card" style="padding:10px;margin:6px 0;display:flex;justify-content:space-between;align-items:center"><div><b>'+dpEsc(t.full_name)+'</b> · '+dpEsc(t.partner_code)+'<br><small>'+dpEsc(t.mobile)+'</small></div><button class="dp-btn red sm" onclick="rmMember(\''+t.id+'\')">Hatayein</button></div>';}).join(""):'<div class="dp-hint">Abhi koi member nahi.</div>';
+  var o=await dpRpc("seller_dp_orders"),h="";
+  if(!o.length)h='<div class="dp-card" style="text-align:center">Abhi dispatch ke liye koi order nahi.</div>';
+  o.forEach(function(r){
+    var has=r.assignment_id,mine=r.delivery_type==="seller";
+    h+='<div class="dp-card"><div style="display:flex;justify-content:space-between"><h3>Order #'+dpEsc(r.order_id)+'</h3><span class="dp-badge '+dpEsc(r.status)+'">'+dpEsc(r.status)+'</span></div>'
+    +(r.has_label?'':'<div class="dp-msg info">Pehle seller-orders se package label print karein (QR ke liye).</div>');
+    if(has){
+      h+='<div class="dp-kv"><b>Assigned to</b>'+dpEsc(r.partner_name||"")+' ('+(mine?"Aapki team":"PS Mart")+')</div><div class="dp-kv"><b>Status</b>'+dpBadge(r.assignment_status)+'</div>';
+      if(r.fail_reason)h+='<div class="dp-msg bad">Delivery fail: '+dpEsc(r.fail_reason)+'</div>';
+      if(r.reschedule_request)h+='<div class="dp-msg info">Partner ki reschedule request: '+dpEsc(r.reschedule_request)+'</div>';
+      if(r.reschedule_at)h+='<div class="dp-hint">Reschedule: '+dpDate(r.reschedule_at)+'</div>';
+      if(mine&&r.assignment_status!=="delivered"){
+        h+=sel(r.seller_order_id)+'<button class="dp-btn line sm" onclick="assign(\''+dpEsc(r.seller_order_id)+'\',1)">Reassign</button>';
+        if(["failed","assigned","scanned"].indexOf(r.assignment_status)>-1)h+='<button class="dp-btn gold sm" onclick="resched('+r.assignment_id+')">Reschedule</button>';
+      }
+      if(!mine&&r.assignment_status==="failed")h+='<div class="dp-hint">PS Mart delivery ko admin reschedule karega.</div>';
+    }else if(PREF==="own"){
+      h+=TEAM.length?sel(r.seller_order_id)+'<button class="dp-btn gold sm" onclick="assign(\''+dpEsc(r.seller_order_id)+'\',0)">Assign karein</button>':'<div class="dp-hint">Pehle upar team me delivery person jodein.</div>';
+    }else h+='<div class="dp-hint">PS Mart partner admin assign karega.</div>';
+    h+='</div>';
+  });
+  document.getElementById("orders").innerHTML=h;
+}
+function sel(so){return '<select class="dp-in" id="s'+dpEsc(so)+'" style="margin-top:8px"><option value="">Delivery person chuniye</option>'+TEAM.filter(function(t){return t.status==="approved";}).map(function(t){return '<option value="'+t.id+'">'+dpEsc(t.full_name)+' ('+dpEsc(t.partner_code)+')</option>';}).join("")+'</select>';}
+async function savePref(){var v=document.querySelector("input[name=m]:checked");if(!v)return;try{await dpRpc("seller_dp_set_pref",{p_method:v.value});PREF=v.value;dpMsg("msg","Delivery method save ho gaya ✓","ok");await load();}catch(e){dpMsg("msg",e.message,"bad");}}
+async function addMember(){var c=document.getElementById("pcode").value;try{var r=await dpRpc("seller_dp_team_add",{p_partner_code:c});if(!r.success)throw new Error(r.message);document.getElementById("pcode").value="";dpMsg("msg","Team me jud gaya ✓","ok");await load();}catch(e){dpMsg("msg",e.message,"bad");}}
+async function rmMember(id){if(!confirm("Is person ko team se hatana hai?"))return;try{var r=await dpRpc("seller_dp_team_remove",{p_person:id});if(!r.success)throw new Error(r.message);await load();}catch(e){dpMsg("msg",e.message,"bad");}}
+async function assign(so,re){var el=document.getElementById("s"+so);if(!el||!el.value){alert("Delivery person chuniye");return;}try{await dpRpc(re?"seller_dp_reassign":"seller_dp_assign",{p_so:so,p_person:el.value});dpMsg("msg","Assign ho gaya ✓","ok");await load();}catch(e){dpMsg("msg",e.message,"bad");}}
+async function resched(id){
+  var d=prompt("Nayi delivery date/time (YYYY-MM-DD HH:MM, IST):");if(!d)return;
+  var t=new Date(d.replace(" ","T")+":00+05:30");if(isNaN(t)){alert("Date galat hai");return;}
+  try{await dpRpc("seller_dp_reschedule",{p_assignment_id:id,p_when:t.toISOString(),p_note:prompt("Note (optional):")||""});dpMsg("msg","Reschedule ho gaya ✓","ok");await load();}catch(e){dpMsg("msg",e.message,"bad");}
+}
+boot();
+</script>
+</body></html>
