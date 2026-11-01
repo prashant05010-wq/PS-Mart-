@@ -97,6 +97,11 @@
   <input type="text" id="upi" maxlength="60" placeholder="jaise naam@bank">
   <p class="hint">Withdraw ka paisa isi UPI ID par bheja jayega. UPI par naam wahi hona chahiye jo PAN par hai.</p>
 
+  <label>Referral code (agar kisi seller ne bheja ho)</label>
+  <input type="text" id="refCode" maxlength="16" placeholder="jaise PS1A2B3C" style="text-transform:uppercase">
+
+  <div class="terms" id="commissionBox">Commission jaankari load ho rahi hai...</div>
+
   <div class="terms">
     <b>Seller ke niyam (sankshep):</b><br>
     • Sirf asli aur sahi vivaran wale products bechiye. Nakli ya galat jaankari par account band ho sakta hai.<br>
@@ -117,6 +122,7 @@
 
 </div>
 
+<script src="ref-capture.js"></script>
 <script src="app.js"></script>
 <script>
 /* supabaseClient app.js se milta hai (key yahan dobara nahi likhi) */
@@ -128,6 +134,22 @@ var STATES = ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh
 })();
 
 function val(id){ return document.getElementById(id).value.trim(); }
+
+/* NAYA: commission aur referral ke niyam registration se pehle dikhao */
+(async function(){
+  var box = document.getElementById("commissionBox");
+  try{
+    var rc = (localStorage.getItem("ps_ref") || ""); if(rc) document.getElementById("refCode").value = rc;
+    var r = await supabaseClient.rpc("public_commission_rates");
+    if(r.error || !r.data) throw new Error("x");
+    var d = r.data, esc2 = function(v){ return String(v).replace(/[&<>"]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); };
+    var h = "<b>PS Mart commission (category-wise):</b><br>" + d.categories.map(function(c){ return "• " + esc2(c.name) + ": " + esc2(c.rate) + "%"; }).join("<br>");
+    h += "<br>Commission sirf product ki bikri keemat par lagta hai (shipping, tax aur COD charge par nahi). Cancel par koi commission nahi, return/refund par commission wapas.";
+    if(d.intro.enabled) h += "<br><br><b>🎉 Naye seller offer:</b> approval ke baad pehle " + esc2(d.intro.days) + " din PS Mart commission " + esc2(d.intro.rate) + "%. Uske baad upar wala category-wise commission lagta hai. (Payment gateway/delivery jaise doosre charges, agar lagu hon, alag hain.) Ek mobile number se offer ek hi baar milta hai.";
+    if(d.referral.enabled) h += "<br><br><b>🤝 Refer &amp; Earn:</b> approved seller ko referral code milta hai. Refer kiye seller ke " + esc2(d.referral.milestone_products) + " asli approved products live hone par ₹" + esc2(d.referral.reward) + ", aur uski commission shuru hone ke baad " + esc2(d.referral.share_days) + " din tak PS Mart ki commission ka " + esc2(d.referral.share_percent) + "% (ye PS Mart ki commission se hai, aapse alag se nahi katta). Payout admin ke payment confirm karne ke baad hi \"Paid\" hota hai.";
+    box.innerHTML = h;
+  }catch(e){ box.innerHTML = "Commission category ke hisab se lagta hai. Rates admin tay karta hai."; }
+})();
 
 function say(text, color){
   var m = document.getElementById("message");
@@ -226,7 +248,18 @@ async function registerSeller(){
       ? "\n\nDhyan dein: ye jaankari save nahi hui (database mein column nahi): " + res.dropped.join(", ") + ". Admin se ps-mart-phase5.sql run karwaiye."
       : "";
 
-    say("✅ Registration jama ho gayi! Admin ki approval ke baad aap products jod payenge." + extra, res.dropped.length ? "#856404" : "green");
+    /* NAYA: referral code lagao (agar hai). Fail hone par registration par koi asar nahi */
+    var refMsg = "";
+    try{
+      var rc = (val("refCode") || localStorage.getItem("ps_ref") || "").toUpperCase();
+      if(rc){
+        var rr = await supabaseClient.rpc("referral_apply", {p_code: rc});
+        if(rr.data && rr.data.success){ refMsg = "\n\nReferral code lag gaya ✓"; localStorage.removeItem("ps_ref"); }
+        else if(rr.data && rr.data.message){ refMsg = "\n\nReferral: " + rr.data.message; }
+      }
+    }catch(e){}
+
+    say("✅ Registration jama ho gayi! Admin ki approval ke baad aap products jod payenge." + extra + refMsg, res.dropped.length ? "#856404" : "green");
 
   }catch(error){
     console.error("Seller register:", error);

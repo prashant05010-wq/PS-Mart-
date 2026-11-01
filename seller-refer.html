@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex">
+<link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="dp-style.css">
+<title>Commission &amp; Refer &amp; Earn | PS Mart</title>
+</head>
+<body class="dp">
+<div class="dp-top"><b>🎁 Refer &amp; Earn</b><div><a href="seller-dashboard.html">Dashboard</a> <a href="seller-wallet.html">Wallet</a></div></div>
+<div class="dp-wrap">
+  <div id="msg"></div>
+  <div id="offer"></div>
+
+  <div class="dp-card" id="refCard">Loading...</div>
+  <div id="refBody"></div>
+
+  <div class="dp-card"><h2>Category-wise commission</h2><div id="rates"></div>
+    <div class="dp-hint">Commission sirf product ki bikri keemat (qty × price) par lagta hai. Shipping, tax aur COD charge par nahi. Order cancel hone par koi commission nahi. Return/refund par commission usi anupaat me wapas hoti hai.</div></div>
+
+  <div class="dp-card"><h2>Mere orders ka commission</h2><div id="recent"></div></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+<script src="dp-common.js"></script>
+<script>
+var BASE=location.origin+location.pathname.replace(/[^\/]*$/,"");
+var INFO=null;
+function esc(v){return dpEsc(v);}
+async function boot(){
+  var au=await supabaseClient.auth.getUser();
+  if(!au.data||!au.data.user){location.replace("login.html");return;}
+  try{
+    INFO=await dpRpc("seller_cm_info");
+    if(INFO.error)throw new Error(INFO.error);
+    drawOffer();drawRates();drawRecent();
+    await loadRef();
+  }catch(e){document.querySelector(".dp-wrap").innerHTML='<div class="dp-msg bad">Ye page sirf registered seller ke liye hai. ('+esc(e.message)+')</div>';}
+}
+function drawOffer(){
+  var o=INFO.offer,h="";
+  if(o.active)h='<div class="dp-hero"><h1>🎉 0% Commission Offer</h1><p>Aapke paas <b>'+o.days_left+' din</b> bache hain.<br>Shuru: '+dpDay(o.start)+' · Khatam: '+dpDay(o.end)+'<br>Iske baad category ke hisab se normal commission lagega.</p></div>';
+  else if(o.eligible)h='<div class="dp-msg info">Aapka '+o.days+' din ka introductory offer '+dpDay(o.end)+' ko khatam ho chuka hai. Ab normal category-wise commission lagta hai.</div>';
+  else h='<div class="dp-msg info">'+esc(o.note||"Introductory offer is account par lagu nahi hai.")+' Category-wise commission lagta hai.</div>';
+  document.getElementById("offer").innerHTML=h;
+}
+function drawRates(){
+  var r=INFO.rates;
+  document.getElementById("rates").innerHTML='<table class="dp-table"><thead><tr><th>Category</th><th>PS Mart commission</th></tr></thead><tbody>'+
+    r.categories.map(function(c){return '<tr><td>'+esc(c.name)+'</td><td>'+esc(c.rate)+'%</td></tr>';}).join("")+'</tbody></table>';
+}
+function drawRecent(){
+  var rows=INFO.recent||[];
+  document.getElementById("recent").innerHTML=rows.length?'<div class="dp-scroll"><table class="dp-table"><thead><tr><th>Order</th><th>Bikri</th><th>Rate</th><th>Commission</th><th>Status</th></tr></thead><tbody>'+
+    rows.map(function(x){var rule={intro:"0% offer",promo:"Promo",category:"Category",default:"Default",legacy:"Purana",mixed:"Mixed"}[x.rule]||x.rule;
+      return '<tr><td>#'+esc(x.order_id)+'<br><small>'+dpDay(x.created_at)+'</small></td><td>'+dpInr(x.gross)+'</td><td>'+esc(x.rate_applied)+'%<br><small>'+esc(rule)+'</small></td><td>'+dpInr(x.commission)+'</td><td>'+dpBadge(x.status==="active"?"approved":"reversed")+'</td></tr>';}).join("")+'</tbody></table></div>':'Abhi koi delivered order nahi.';
+}
+
+async function loadRef(){
+  var d=await dpRpc("my_referral_info"),card=document.getElementById("refCard"),body=document.getElementById("refBody");
+  if(!d.approved){card.innerHTML='<h2>Refer a Seller &amp; Earn</h2><div class="dp-msg info">'+esc(d.message||"Admin approval ke baad referral code milega.")+'</div>';body.innerHTML="";return;}
+  var link=BASE+"seller-register.html?ref="+encodeURIComponent(d.code),R=d.rules,w=d.wallet,s=d.stats;
+  card.innerHTML='<h2>Refer a Seller &amp; Earn</h2>'
+   +'<div class="dp-kv"><b>Mera Referral Code</b><span style="font:700 26px Georgia,serif;letter-spacing:2px">'+esc(d.code)+'</span></div>'
+   +'<div class="dp-kv"><b>Mera Referral Link</b><span id="lnk" style="font-size:13px">'+esc(link)+'</span></div>'
+   +'<div class="dp-row"><button class="dp-btn gold" id="bCopy">📋 Link copy karein</button><button class="dp-btn green" id="bWa">WhatsApp par share</button></div>'
+   +'<button class="dp-btn line" id="bShare" style="display:none">Aur tareeke se share karein</button>'
+   +'<div class="dp-hint" style="margin-top:10px"><b>Niyam:</b> Aapka refer kiya hua seller jab '+R.milestone_products+' asli (admin se approved aur live) products daalega, aapko <b>₹'+R.reward+'</b> milenge (ek baar). Saath hi, uski normal commission shuru hone ke baad pehle '+R.share_days+' din tak PS Mart ki commission ka <b>'+R.share_percent+'%</b> aapko milega. Ye paisa PS Mart ki apni commission me se hai, referred seller se alag se kuch nahi katta. '+R.intro_days+' din ke 0% offer me commission nahi hoti, isliye us dauran reward ₹0 hota hai. Cancel/return par reward wapas hota hai. Reward '+R.hold_days+' din rukne ke baad Available hota hai.</div>';
+  document.getElementById("bCopy").onclick=function(){navigator.clipboard&&navigator.clipboard.writeText(link).then(function(){dpMsg("msg","Link copy ho gaya ✓","ok");},function(){prompt("Link copy karein:",link);});if(!navigator.clipboard)prompt("Link copy karein:",link);};
+  var txt="PS Mart par seller banein! Pehle "+R.intro_days+" din 0% commission. Mere link se register karein: "+link;
+  document.getElementById("bWa").onclick=function(){window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank","noopener");};
+  if(navigator.share){var b=document.getElementById("bShare");b.style.display="block";b.onclick=function(){navigator.share({title:"PS Mart Seller",text:txt,url:link}).catch(function(){});};}
+
+  var h='<h3 style="font-family:Georgia,serif;margin:6px 0 8px">Referral Statistics</h3><div class="dp-grid">'
+   +st("Total Referrals",s.total)+st("Pending",s.pending)+st("Approved",s.approved)+st("50 Products Complete",s.milestone_done)+st("Eligible ₹"+R.reward+" Rewards",s.eligible_rewards)+'</div>'
+   +'<h3 style="font-family:Georgia,serif;margin:16px 0 8px">Referral Wallet</h3><div class="dp-grid">'
+   +st("Available Balance",dpInr(w.available),1)+st("Pending",dpInr(w.pending))+st("₹"+R.reward+" Milestone",dpInr(w.milestone))+st(R.share_percent+"% Commission Share",dpInr(w.share))+st("Adjustments",dpInr(w.adjustments))+st("Paid",dpInr(w.paid))+st("Total Earned",dpInr(w.total_earned),1)+st("Payout process me",dpInr(w.in_payout))+'</div>'
+   +'<div class="dp-card" style="margin-top:12px"><h3>Payout request</h3><div id="pm"></div><label class="dp-l" for="upi">Aapki UPI ID</label><input class="dp-in" id="upi" maxlength="60" placeholder="naam@bank"><button class="dp-btn gold" id="bPay">Available balance ('+dpInr(w.available)+') nikalein</button><div class="dp-hint">Kam se kam ₹'+R.min_payout+' available hona chahiye. "Paid" tabhi dikhega jab admin payment ka transaction reference save kare.</div></div>';
+  h+='<h3 style="font-family:Georgia,serif;margin:16px 0 8px">Referred Sellers</h3>';
+  h+=d.referred.length?d.referred.map(function(r){return '<div class="dp-card" style="padding:12px"><div style="display:flex;justify-content:space-between"><b>'+esc(r.name)+'</b>'+dpBadge(r.status==="blocked"?"suspended":r.status==="approved"?"approved":"pending")+'</div>'
+     +'<div class="dp-hint">Register: '+dpDay(r.registered_at)+'<br>Approved products: <b>'+r.approved_products+'</b> (genuine '+r.genuine_products+'/'+R.milestone_products+') · Milestone: '+(r.milestone_at?'✅ '+dpDay(r.milestone_at):'abhi nahi')
+     +'<br>'+R.share_days+' din ka program: '+(r.share_start?dpDay(r.share_start)+' – '+dpDay(r.share_end):'pehli commission wali sale par shuru hoga')
+     +'<br>Eligible commission: '+dpInr(r.commission_generated)+' · Aapki kamayi: <b>'+dpInr(r.earned)+'</b></div></div>';}).join(""):'<div class="dp-card">Abhi koi referral nahi. Link share karein!</div>';
+  h+='<h3 style="font-family:Georgia,serif;margin:16px 0 8px">Referral Transactions</h3>';
+  h+=d.transactions.length?d.transactions.map(function(x){var k={milestone:"₹"+R.reward+" Milestone",share:R.share_percent+"% Share",adjustment:"Adjustment"}[x.kind];
+     return '<div class="dp-card" style="padding:12px"><div style="display:flex;justify-content:space-between"><b>'+esc(k)+'</b><b>'+dpInr(x.amount)+'</b></div><div class="dp-hint">ID #'+x.id+' · '+dpDate(x.created_at)+(x.referred_name?' · '+esc(x.referred_name):'')+(x.order_id?' · Order #'+esc(x.order_id):'')+'<br>'+dpBadge(x.status)+'</div></div>';}).join(""):'<div class="dp-card">Abhi koi transaction nahi.</div>';
+  h+='<h3 style="font-family:Georgia,serif;margin:16px 0 8px">Payment History</h3>';
+  h+=d.payouts.length?d.payouts.map(function(p){return '<div class="dp-card" style="padding:12px"><div style="display:flex;justify-content:space-between"><b>'+dpInr(p.amount)+'</b>'+dpBadge(p.status==="processing"?"pending":p.status)+'</div><div class="dp-hint">#'+p.id+' · '+dpDate(p.created_at)+(p.status==="paid"?'<br>Paid: '+dpDate(p.paid_at)+' · Ref: <b>'+esc(p.txn_ref)+'</b>':'<br>Status: '+esc(p.status))+'</div></div>';}).join(""):'<div class="dp-card">Abhi koi payout nahi.</div>';
+  body.innerHTML=h;
+  document.getElementById("bPay").onclick=async function(){
+    var b=this;b.disabled=true;
+    try{var r=await dpRpc("request_referral_payout",{p_upi:document.getElementById("upi").value});
+      if(!r.success)throw new Error(r.message);dpMsg("msg","Payout request bhej di gayi ✓","ok");await loadRef();}
+    catch(e){dpMsg("pm",e.message,"bad");b.disabled=false;}
+  };
+}
+function st(l,v,g){return '<div class="dp-stat'+(g?' gold':'')+'"><small>'+esc(l)+'</small><b>'+esc(v)+'</b></div>';}
+boot();
+</script>
+</body></html>

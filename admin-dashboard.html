@@ -188,6 +188,10 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
 
     <button class="tab" onclick="showSection('deliverySection',this);adminDpInit()">🚚 Delivery</button>
 
+    <button class="tab" onclick="showSection('commissionSection',this);adminCmInit()">💹 Commission</button>
+
+    <button class="tab" onclick="showSection('referralSection',this);adminRefInit()">🤝 Referral</button>
+
   </div>
 
 
@@ -260,7 +264,7 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
 
     <h2>⚙️ Marketplace Settings</h2>
 
-    <p>Current Commission Rate:</p>
+    <p>Default Commission Rate (jin categories ka alag rate set nahi hai, unpar lagta hai. Category-wise rate 💹 Commission tab me):</p>
 
     <h2 id="settingsRate">Loading...</h2>
 
@@ -381,6 +385,16 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
 
 
   <!-- ================= DELIVERY MANAGEMENT ================= -->
+  <div id="commissionSection" class="section hidden">
+    <h2>💹 Commission Management</h2>
+    <div id="cmRoot">Loading...</div>
+  </div>
+
+  <div id="referralSection" class="section hidden">
+    <h2>🤝 Referral Management</h2>
+    <div id="refRoot">Loading...</div>
+  </div>
+
   <div id="deliverySection" class="section hidden">
     <h2>🚚 Delivery Management</h2>
     <div id="dpAdminRoot">Loading...</div>
@@ -1249,8 +1263,15 @@ async function loadFinance(){
   });
 
 
-  const commission =
+  let commission =
     sales * (rate / 100);
+  /* NAYA: asli commission server se (category-wise). Na mile to purana flat hisab chalega */
+  try{
+    const cmr = await supabaseClient.rpc("admin_cm_seller_report");
+    if(!cmr.error && Array.isArray(cmr.data) && cmr.data.length){
+      commission = cmr.data.reduce((a,x)=>a+Number(x.commission||0),0);
+    }
+  }catch(e){}
 
 
   const earnings =
@@ -2422,5 +2443,6 @@ async function sendGiftCardToCustomer() {
 
 <script src="dp-common.js"></script>
 <script src="admin-delivery.js"></script>
+<script src="admin-commission.js"></script>
 </body>
 </html>

@@ -77,7 +77,7 @@ async function load(){
    +'<div class="box"><span>Withdraw request mein</span><b>'+inr(x.reserved)+'</b></div>'
    +'<div class="box"><span>Ab tak mila</span><b>'+inr(x.paid)+'</b></div>'
    +'<div class="box"><span>COD commission (katega)</span><b>'+inr(x.cod_due)+'</b></div>'
-   +'<div class="box"><span>PS Mart commission</span><b>'+esc(x.rate)+'%</b></div>'
+   +'<div class="box"><span>PS Mart commission (average)</span><b>'+esc(x.effective_rate!=null?x.effective_rate:x.rate)+'%</b></div>'
    +'</div></div>';
   document.getElementById("withdrawCard").style.display="block";
   var h=await supabaseClient.from("payout_requests").select("*").order("id",{ascending:false}).limit(50);

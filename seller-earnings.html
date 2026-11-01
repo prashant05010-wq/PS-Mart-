@@ -268,7 +268,8 @@ async function loadEarnings(){
         status
       ),
       products(
-        name
+        name,
+        category_id
       )
     `)
     .eq("seller_id",seller.id);
@@ -290,26 +291,23 @@ let totalCommission = 0;
 
 let html = "";
 
-/* Get commission rate from Supabase */
-
-const { data:settings, error:settingsError } =
-  await supabaseClient
-  .from("marketplace_settings")
-  .select("commission_rate")
-  .limit(1)
-  .single();
-
-if(settingsError){
-
-  console.log(settingsError);
-
-  alert("Commission rate load nahi hua ❌");
-
-  return;
+/* Commission rate: category-wise + offer (server se). Na mile to purana flat rate */
+let rateMap = {}, defaultRate = null;
+try{
+  const rr = await supabaseClient.rpc("seller_cm_item_rates");
+  if(!rr.error && rr.data){ rateMap = rr.data.rates || {}; defaultRate = Number(rr.data.default); }
+}catch(e){ console.log(e); }
+if(defaultRate === null || isNaN(defaultRate)){
+  const { data:settings, error:settingsError } =
+    await supabaseClient.from("marketplace_settings").select("commission_rate").limit(1).single();
+  if(settingsError){ console.log(settingsError); alert("Commission rate load nahi hua ❌"); return; }
+  defaultRate = Number(settings.commission_rate);
 }
-
-const commissionRate =
-  Number(settings.commission_rate) / 100;
+function rateFor(item){
+  const c = item.products && item.products.category_id;
+  const r = (c != null && rateMap[String(c)] != null) ? Number(rateMap[String(c)]) : defaultRate;
+  return r / 100;
+}
 
   if(!items || items.length === 0){
 
@@ -376,7 +374,7 @@ const commissionRate =
     */
 
    const commission =
-  sale * commissionRate;
+  sale * rateFor(item);
     const earning =
       sale - commission;
 
