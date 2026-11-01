@@ -514,6 +514,14 @@ button,
   <div class="menu">
 
 
+    <a href="refer-earn.html" id="referTile">
+
+      🎁<br>
+      Refer &amp; Earn
+      <small id="referSub" style="display:block;color:#C9922E;font-weight:700;font-size:12px;margin-top:2px"></small>
+
+    </a>
+
     <a href="orders.html">
 
       📦<br>
@@ -1572,6 +1580,24 @@ loadProfile();
 </script>
 
 
+<script src="ref-capture.js"></script>
+<script>
+/* Refer & Earn tile par progress dikhao (sirf dikhata hai, kuch issue nahi karta) */
+(function(){
+  var tries=0,t=setInterval(async function(){
+    tries++; if(tries>40){clearInterval(t);return;}
+    try{
+      if(typeof supabaseClient==="undefined")return;
+      var u=await supabaseClient.auth.getUser(); if(!u.data||!u.data.user)return;
+      clearInterval(t);
+      var r=await supabaseClient.rpc("customer_rewards_teaser");
+      var d=r.data; if(r.error||!d||!d.ok)return;
+      var el=document.getElementById("referSub"); if(!el)return;
+      el.textContent = d.next_name ? (d.remaining+" order aur → "+d.next_reward) : (d.referral_enabled ? "Dost ko bulayein, ₹"+d.friend_reward+" dono ko" : "");
+    }catch(e){}
+  },700);
+})();
+</script>
 </body>
 
 </html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex">
+<link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="dp-style.css">
+<title>Refer &amp; Earn | PS Mart</title>
+<style>
+.re-hero{background:linear-gradient(135deg,#3B2416,#6b3f1f);color:#f0bd50;border-radius:18px;padding:22px 18px;text-align:center;margin-bottom:14px}
+.re-hero .big{font:700 30px Georgia,serif;margin:6px 0}.re-hero p{margin:4px 0;color:#ead9b8;font-size:15px}
+.re-code{background:#fff4d8;border:2px dashed #C9922E;border-radius:12px;padding:14px;text-align:center;margin:12px 0}
+.re-code span{font:700 28px Georgia,serif;letter-spacing:3px;color:#3B2416}
+.re-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.re-steps div{background:#fff;border:1px solid #e6dac3;border-radius:12px;padding:10px 6px;text-align:center;font-size:13px}.re-steps b{display:block;font-size:24px}
+.bar{height:14px;background:#eadcc1;border-radius:999px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:linear-gradient(90deg,#C9922E,#f0bd50);border-radius:999px;transition:width .6s}
+.lv{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #e6dac3}.lv:last-child{border:0}.lv .ic{font-size:30px;width:42px;text-align:center}.lv.locked{opacity:.6}
+.copy-sm{background:#3B2416;color:#f0bd50;border:0;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body class="dp">
+<div class="dp-top"><b>🎁 Refer &amp; Earn</b><div><a href="profile.html">My Account</a> <a href="index.html">Home</a></div></div>
+<div class="dp-wrap">
+  <div id="msg"></div>
+  <div id="main"><div class="dp-card">Loading...</div></div>
+</div>
+
+<div class="dp-modal" id="claimModal"><div class="dp-sheet">
+  <h3 style="margin:0 0 6px;font-family:Georgia,serif">🎁 Gift claim karein</h3>
+  <div id="claimGift" class="dp-hint"></div><div id="cmsg"></div>
+  <label class="dp-l" for="cn">Naam</label><input class="dp-in" id="cn" maxlength="80">
+  <label class="dp-l" for="cp">Mobile</label><input class="dp-in" id="cp" inputmode="numeric" maxlength="10">
+  <label class="dp-l" for="ca">Poora pata (pincode ke saath)</label><textarea class="dp-in" id="ca" rows="3" maxlength="300"></textarea>
+  <button class="dp-btn gold" id="cgo">Claim karein</button><button class="dp-btn line" onclick="closeClaim()">Band karein</button>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="ref-capture.js"></script>
+<script src="app.js"></script>
+<script src="dp-common.js"></script>
+<script>
+var BASE=location.origin+location.pathname.replace(/[^\/]*$/,""),D=null,claimId=null;
+var ICON={1:"🥉",2:"🥈",3:"🥇",4:"💎",5:"👑"};
+function esc(v){return dpEsc(v);}
+async function boot(){
+  var au=await supabaseClient.auth.getUser();
+  if(!au.data||!au.data.user){document.getElementById("main").innerHTML='<div class="dp-card" style="text-align:center"><h2>Refer &amp; Earn</h2><p>Dosto ko bulayein aur dono kamayein. Pehle login karein.</p><a class="dp-btn gold" href="login.html">Login / Sign up</a></div>';return;}
+  try{D=await dpRpc("customer_rewards_info");if(D.error)throw new Error(D.error);draw();}
+  catch(e){document.getElementById("main").innerHTML='<div class="dp-msg bad">'+esc(e.message)+'</div>';}
+}
+function draw(){
+  var R=D.rules,link=BASE+"?cref="+encodeURIComponent(D.code),h="";
+  if(R.referral_enabled){
+    h+='<div class="re-hero"><div style="font-size:46px">🎁</div><div class="big">Refer karein, ₹'+esc(R.referrer_reward)+' kamayein</div><p>Aapka dost bhi pehle order par <b>₹'+esc(R.friend_reward)+'</b> pata hai!</p></div>'
+    +'<div class="dp-card"><div class="re-code"><small>Aapka Referral Code</small><br><span>'+esc(D.code)+'</span></div>'
+    +'<div class="dp-row"><button class="dp-btn gold" id="bCopy">📋 Link copy</button><button class="dp-btn green" id="bWa">WhatsApp</button></div><button class="dp-btn line" id="bShare" style="display:none">Aur tareeke se share karein</button>'
+    +'<div class="re-steps"><div><b>1️⃣</b>Dost ko link bhejein</div><div><b>2️⃣</b>Dost sign up karke ₹'+esc(R.min_order)+'+ ka order kare</div><div><b>3️⃣</b>Order poora hote hi dono ko ₹ reward</div></div>'
+    +'<div class="dp-hint">Reward gift card ke roop me milta hai, checkout par use hota hai ('+esc(R.valid_days)+' din valid). Order deliver hone ke '+esc(R.hold_days)+' din baad (return window) bina cancel/return ke reward milta hai. Ek customer se max '+esc(R.cap)+' referrals par reward.</div></div>'
+    +'<div class="dp-grid"><div class="dp-stat"><small>Friends</small><b>'+D.stats.total+'</b></div><div class="dp-stat"><small>Order poora</small><b>'+D.stats.completed+'</b></div><div class="dp-stat"><small>Pending</small><b>'+D.stats.pending+'</b></div><div class="dp-stat gold"><small>Aapki kamayi</small><b>'+dpInr(D.stats.earned)+'</b></div></div>';
+    h+='<h3 style="font-family:Georgia,serif;margin:14px 0 8px">Mere Friends</h3>'+(D.referrals.length?D.referrals.map(function(r){return '<div class="dp-card" style="padding:12px;display:flex;justify-content:space-between;align-items:center"><div><b>'+esc(r.name)+'</b><div class="dp-hint">Judne ki tarikh: '+dpDay(r.registered_at)+(r.completed_at?' · Order poora: '+dpDay(r.completed_at):'')+'</div></div>'+(r.status==="completed"?dpBadge("paid"):r.flagged?dpBadge("pending"):r.status==="blocked"?dpBadge("suspended"):dpBadge("pending"))+'</div>';}).join(""):'<div class="dp-card">Abhi koi friend nahi judha. Link share karein!</div>');
+  }
+  if(R.levels_enabled){
+    var nx=D.next,cur=D.level,pct=nx?Math.min(100,Math.round(D.completed_orders/nx.orders_needed*100)):100;
+    h+='<h3 style="font-family:Georgia,serif;margin:18px 0 8px">🏆 PS Mart Rewards Club</h3><div class="dp-card"><div style="display:flex;justify-content:space-between;align-items:center"><div><small style="color:#7c6a58">Aapka level</small><div style="font:700 24px Georgia,serif">'+(cur?(ICON[cur.no]||"⭐")+' '+esc(cur.name):'Abhi shuruaat')+'</div></div><div style="text-align:right"><small style="color:#7c6a58">Poore order</small><div style="font:700 24px Georgia,serif">'+D.completed_orders+'</div></div></div>'
+    +'<div class="bar"><i style="width:'+pct+'%"></i></div>'
+    +(nx?'<div style="font-weight:700">Bas <span style="color:#C9922E">'+nx.remaining+' order aur</span> → '+esc(ICON[(D.levels.find(function(l){return l.name===nx.name;})||{}).level_no]||"🎁")+' '+esc(nx.name)+': '+(nx.reward_type==="wallet"?'₹'+esc(nx.amount)+' gift card':esc(nx.gift_name))+'</div>':'<div style="font-weight:700">🎉 Aap sabse upar ke level par hain!</div>')
+    +'<div class="dp-hint">Sirf ₹'+esc(R.level_min_order)+' ya usse upar ke poore ho chuke orders gine jate hain (deliver hone ke '+esc(R.hold_days)+' din baad, bina cancel/return ke).</div></div>'
+    +'<div class="dp-card">'+D.levels.map(function(l){var st=l.reward_status;return '<div class="lv'+(l.reached?'':' locked')+'"><div class="ic">'+(ICON[l.level_no]||"⭐")+'</div><div style="flex:1"><b>'+esc(l.name)+'</b> · '+l.orders_needed+' orders<div class="dp-hint">'+(l.reward_type==="wallet"?'₹'+esc(l.amount)+' PS Mart gift card':'🎁 '+esc(l.gift_name)+' (ghar bhejenge)')+'</div></div><div>'+(l.reached?(st==="unlocked"?'<span class="dp-badge pending">Claim karein</span>':'<span class="dp-badge paid">Mil gaya</span>'):'🔒')+'</div></div>';}).join("")+'</div>';
+  }
+  h+='<h3 style="font-family:Georgia,serif;margin:18px 0 8px">🎟️ Mere Rewards</h3>';
+  h+=D.rewards.length?D.rewards.map(function(r){
+    var title=r.reward_type==="wallet"?'₹'+esc(r.amount)+' gift card':esc(r.gift_name||"Gift");
+    var src={referral_friend:"Welcome reward",referral_referrer:"Refer & Earn",level:"Level "+(r.level_no||"")+" reward",admin:"PS Mart bonus"}[r.source]||r.source;
+    var body='<div class="dp-hint">'+esc(src)+' · '+dpDay(r.created_at)+'</div>';
+    if(r.reward_type==="wallet"){
+      body+='<div class="dp-kv"><b>Gift card code</b><span style="font:700 18px Georgia,serif;letter-spacing:1px">'+esc(r.gift_code)+'</span> <button class="copy-sm" data-code="'+esc(r.gift_code)+'">Copy</button></div><div class="dp-hint">Balance: '+dpInr(r.balance)+' · Valid: '+dpDay(r.expires_at)+'<br>Checkout par "gift card" box me ye code daalein.</div>';
+    }else{
+      var lab={unlocked:"Claim karein",claimed:"Claim ho gaya, jaldi pack hoga",packed:"Pack ho gaya",shipped:"Bhej diya gaya 🚚",delivered:"Deliver ho gaya 🎉",cancelled:"Cancel"}[r.status]||r.status;
+      body+='<div class="dp-hint">Status: <b>'+esc(lab)+'</b>'+(r.note?' · '+esc(r.note):'')+'</div>'+(r.status==="unlocked"?'<button class="dp-btn gold sm" data-claim="'+r.id+'" data-gift="'+esc(r.gift_name||"Gift")+'">Address daalkar claim karein</button>':'');
+    }
+    return '<div class="dp-card" style="padding:12px"><div style="display:flex;justify-content:space-between"><b>'+title+'</b>'+dpBadge(r.status==="issued"||r.status==="delivered"?"paid":r.status==="cancelled"?"suspended":"pending")+'</div>'+body+'</div>';}).join(""):'<div class="dp-card">Abhi koi reward nahi. Order poore karein aur dosto ko bulayein!</div>';
+  h+='<div class="dp-hint" style="margin:14px 0">Rewards PS Mart ke niyamon ke hisab se hain. Galat tareeke (khud ke naam se baar-baar account, nakli order) par reward cancel ho sakta hai. Same address ya shak hone par admin jaanch karta hai.</div>';
+  document.getElementById("main").innerHTML=h;
+  document.querySelectorAll("[data-code]").forEach(function(b){b.onclick=function(){var c=b.dataset.code;navigator.clipboard?navigator.clipboard.writeText(c).then(function(){dpMsg("msg","Code copy ho gaya ✓","ok");}):prompt("Code:",c);};});
+  document.querySelectorAll("[data-claim]").forEach(function(b){b.onclick=function(){openClaim(Number(b.dataset.claim),b.dataset.gift);};});
+  if(R.referral_enabled){
+    var txt="PS Mart par shopping karein! Mere link se judein, pehle order par ₹"+R.friend_reward+" ka reward pao: "+link;
+    document.getElementById("bCopy").onclick=function(){navigator.clipboard?navigator.clipboard.writeText(link).then(function(){dpMsg("msg","Link copy ho gaya ✓","ok");}):prompt("Link:",link);};
+    document.getElementById("bWa").onclick=function(){window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank","noopener");};
+    if(navigator.share){var b=document.getElementById("bShare");b.style.display="block";b.onclick=function(){navigator.share({title:"PS Mart",text:txt,url:link}).catch(function(){});};}
+  }
+}
+function openClaim(id,name){claimId=id;document.getElementById("claimGift").textContent=name;dpMsg("cmsg","");document.getElementById("claimModal").classList.add("show");}
+function closeClaim(){document.getElementById("claimModal").classList.remove("show");}
+document.getElementById("cgo").onclick=async function(){
+  var b=this;b.disabled=true;
+  try{
+    var r=await dpRpc("customer_claim_gift",{p_reward:claimId,p_name:document.getElementById("cn").value,p_phone:document.getElementById("cp").value,p_address:document.getElementById("ca").value});
+    if(!r.success)throw new Error(r.message);
+    closeClaim();dpMsg("msg","Gift claim ho gaya ✓ Hum jaldi bhejenge.","ok");await boot();
+  }catch(e){dpMsg("cmsg",e.message,"bad");}
+  b.disabled=false;
+};
+boot();
+</script>
+</body></html>

@@ -192,6 +192,8 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
 
     <button class="tab" onclick="showSection('referralSection',this);adminRefInit()">🤝 Referral</button>
 
+    <button class="tab" onclick="showSection('rewardsSection',this);adminCrInit()">🎁 Customer Rewards</button>
+
   </div>
 
 
@@ -388,6 +390,11 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
   <div id="commissionSection" class="section hidden">
     <h2>💹 Commission Management</h2>
     <div id="cmRoot">Loading...</div>
+  </div>
+
+  <div id="rewardsSection" class="section hidden">
+    <h2>🎁 Customer Rewards (Refer &amp; Earn + Rewards Club)</h2>
+    <div id="crRoot">Loading...</div>
   </div>
 
   <div id="referralSection" class="section hidden">
@@ -2444,5 +2451,6 @@ async function sendGiftCardToCustomer() {
 <script src="dp-common.js"></script>
 <script src="admin-delivery.js"></script>
 <script src="admin-commission.js"></script>
+<script src="admin-rewards.js"></script>
 </body>
 </html>
