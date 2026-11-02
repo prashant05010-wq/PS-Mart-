@@ -593,14 +593,27 @@ function card(p) {
 
 async function loadProductsFromSupabase() {
 
-  const {
+  /* NAYA: ek group ke baaki variants listing me nahi dikhte (product page par select hote hain).
+     Agar listing_hidden column abhi nahi bana to purana tareeka chalta hai. */
+  let {
     data,
     error
   } =
     await supabaseClient
       .from("products")
       .select("*")
-      .eq("status", "approved");
+      .eq("status", "approved")
+      .eq("listing_hidden", false);
+
+  if (error) {
+    const fb =
+      await supabaseClient
+        .from("products")
+        .select("*")
+        .eq("status", "approved");
+    data = fb.data;
+    error = fb.error;
+  }
 
   if (error) {
 

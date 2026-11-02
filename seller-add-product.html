@@ -39,6 +39,19 @@ button:disabled{opacity:.6;cursor:wait}
 #message{margin-top:16px;text-align:center;overflow-wrap:anywhere;font-weight:bold;line-height:1.6}
 .back{display:inline-block;margin-top:18px;color:#43250f;text-decoration:none;font-weight:bold}
 @media(max-width:560px){.grid{grid-template-columns:1fr}.box{padding:15px}#previews{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{padding:8px 14px;border:1.5px solid #c9922e;border-radius:999px;background:#fff;color:#43250f;font-weight:bold;font-size:14px;cursor:pointer;user-select:none}
+.chip.on{background:#43250f;color:#f0bd50;border-color:#43250f}
+.vgrid{overflow-x:auto;margin-top:10px;border:1px solid #e6dac3;border-radius:10px}
+.vgrid table{width:100%;border-collapse:collapse;min-width:520px}
+.vgrid th{background:#f3e6c9;color:#43250f;font-size:12px;text-transform:uppercase;padding:8px;text-align:left}
+.vgrid td{padding:6px 8px;border-top:1px solid #efe4cd}
+.vgrid input{margin:0;padding:8px;font-size:14px}
+.vgrid td.vn{font-weight:bold;white-space:nowrap}
+.bad{color:#c62828}
+.sec{display:none}.sec.show{display:block}
+.pill{display:inline-block;background:#e7f6ea;color:#188038;font-weight:bold;font-size:12px;border-radius:999px;padding:3px 10px;margin-left:6px}
 </style>
 <link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
@@ -48,12 +61,12 @@ button:disabled{opacity:.6;cursor:wait}
 
 <div class="box">
 <h1>Add New Product</h1>
-<p class="hint">Product ki poori sahi jaankari bhariye. Aapka product admin ke approve karne ke baad hi customers ko dikhega. <i style="color:#c62828;font-style:normal">*</i> wale fields zaroori hain.</p>
+<p class="hint">Pehle <b>Category</b> chuniye. Us category ke hisab se sahi fields apne aap aa jayenge. Aapka product admin ke approve karne ke baad hi customers ko dikhega. <i style="color:#c62828;font-style:normal">*</i> wale fields zaroori hain.</p>
+<div id="schemaMsg"></div>
 
 <form id="productForm">
 
-<h3>1. Product Ki Pehchan</h3>
-
+<h3>1. Category</h3>
 <div class="grid">
 <div>
 <label>Category <i>*</i></label>
@@ -61,130 +74,62 @@ button:disabled{opacity:.6;cursor:wait}
 </div>
 <div>
 <label>Sub-category</label>
-<input id="subcategory" placeholder="jaise: Bluetooth Earbuds">
-</div>
-<div>
-<label>Brand <i>*</i></label>
-<input id="brand" required maxlength="80" placeholder="Brand ka naam (na ho to 'Generic')">
-</div>
-<div>
-<label>Model Number</label>
-<input id="model" maxlength="80" placeholder="Model number">
-</div>
-<div>
-<label>Colour</label>
-<input id="color" maxlength="60" placeholder="jaise: Black">
-</div>
-<div>
-<label>Size / Variant</label>
-<input id="size" maxlength="60" placeholder="jaise: M, 128GB">
+<select id="subcategory"><option value="">Pehle category chuniye</option></select>
 </div>
 </div>
 
+<div id="afterCat" class="sec">
+
+<h3>2. Product Ki Jaankari</h3>
 <label>Product Title <i>*</i></label>
-<input id="productName" required minlength="8" maxlength="180" placeholder="Brand + Model + khaas baat. jaise: boAt Airdopes 141 Bluetooth Earbuds (Black)">
-<p class="hint">Flipkart jaisa title likhiye: Brand, Model, Type aur Colour. Sirf CAPITAL letters ya kai emoji mat lagaiye.</p>
+<input id="productName" required minlength="8" maxlength="150" placeholder="Brand + Model + khaas baat. jaise: boAt Airdopes 141 Bluetooth Earbuds">
+<p class="hint">Title me size/color mat likhiye. Variant ke hisab se wo apne aap jud jayega (jaise "Title (M, Black)").</p>
+<div class="grid" id="specFields"></div>
 
-<label>SKU / Aapka Product Code</label>
-<input id="sku" maxlength="80" placeholder="Apna andar ka code (optional)">
-
-<div class="tip" style="margin-top:16px">
-🔗 <b>Ek hi product ke alag color / size?</b> Har variant ko alag product ki tarah add kijiye, bas niche ke 2 box mein <b>same Variant Group</b> likhiye. Customer ko product page par sab variants ek saath chune hue dikhenge. Sirf ek hi variant hai to ye khali chhod dijiye.
-</div>
-<div class="grid">
-<div>
-<label>Variant Group</label>
-<input id="groupId" maxlength="60" placeholder="jaise: oneplus-n6x">
-<p class="hint">Us phone / product ke sabhi variants mein bilkul same likhiye.</p>
-</div>
-<div>
-<label>Variant Label</label>
-<input id="variantLabel" maxlength="60" placeholder="jaise: Burgundy Red, 64 GB">
-<p class="hint">Is product ka naam jo chip par dikhega. Har variant ka alag.</p>
-</div>
+<div id="variantBox" class="sec">
+<h3>3. Variants (Size / Color / RAM ...) <span class="pill" id="vcount"></span></h3>
+<p class="hint">Jo-jo options aap bechte hain wo chuniye. Har combination ka <b>alag price aur stock</b> neeche table me dalenge.</p>
+<div id="axes"></div>
+<div class="vgrid"><table id="vtable"><thead><tr><th>Variant</th><th>Selling ₹</th><th>MRP ₹</th><th>Stock</th></tr></thead><tbody></tbody></table></div>
+<p class="hint">Stock 0 ho to wo variant "Out of Stock" dikhega aur customer use select nahi kar paayega.</p>
 </div>
 
-<h3>2. Product Photos</h3>
-<div class="tip">
-📸 <b>Achhi photo ke niyam:</b> asli product ki photo, saaf background, kam se kam <b>500 x 500 pixel</b>. Doosri site ki photo ya watermark / phone number wali photo mat lagaiye. Pehli photo <b>Main</b> photo hoti hai: sabse pehle wahi dikhti hai. Alag-alag side (aage, peeche, side, andar ka) ki photos lagaiye.
-</div>
-
+<h3>4. Product Photos</h3>
+<div class="tip">📸 Asli product ki saaf photo, kam se kam <b>500 x 500 pixel</b>. Doosri site ki photo, watermark ya phone number wali photo mat lagaiye. Pehli photo <b>Main</b> hoti hai. Ye photos sabhi variants par lagti hain.</div>
 <input id="productImages" type="file" accept="image/jpeg,image/png,image/webp" multiple style="display:none">
-<button type="button" class="addphoto" id="pickBtn" style="width:100%">➕ Photos Chuniye (ek saath kai chun sakte hain, 8 tak)</button>
+<button type="button" class="addphoto" id="pickBtn" style="width:100%">➕ Photos Chuniye (8 tak)</button>
 <p class="hint" id="photoCount">Abhi koi photo nahi chuni.</p>
 <div id="previews"></div>
 
-<h3>3. Price Aur Stock</h3>
+<h3>5. Price Aur Stock</h3>
 <div class="grid">
-<div>
-<label>Selling Price (₹) <i>*</i></label>
-<input id="price" type="number" min="1" step="0.01" required placeholder="999">
+<div><label>Selling Price (₹) <i>*</i></label><input id="price" type="number" min="1" step="0.01" required placeholder="999"></div>
+<div><label>MRP (₹) <i>*</i></label><input id="oldPrice" type="number" min="1" step="0.01" required placeholder="1299"></div>
+<div id="singleStockBox"><label>Stock (kitne piece hain) <i>*</i></label><input id="stock" type="number" min="0" step="1" placeholder="10"></div>
+<div><label>GST %</label><select id="gst"><option value="">Pata nahi / Lagu nahi</option><option>0</option><option>5</option><option>12</option><option>18</option><option>28</option></select></div>
 </div>
-<div>
-<label>MRP (₹) <i>*</i></label>
-<input id="oldPrice" type="number" min="1" step="0.01" required placeholder="1299">
-</div>
-<div>
-<label>Stock (kitne piece hain) <i>*</i></label>
-<input id="stock" type="number" min="0" step="1" required placeholder="10">
-</div>
-<div>
-<label>GST %</label>
-<select id="gst">
-<option value="">Pata nahi / Lagu nahi</option>
-<option>0</option><option>5</option><option>12</option><option>18</option><option>28</option>
-</select>
-</div>
-</div>
-<label>HSN Code</label>
-<input id="hsn" maxlength="12" inputmode="numeric" placeholder="GST wala HSN code (optional)">
-<p class="hint">MRP aapke packet par chhapi asli maximum price honi chahiye. Nakli MRP daalkar jhoothi chhoot mat dikhaiye.</p>
+<label>HSN Code</label><input id="hsn" maxlength="12" inputmode="numeric" placeholder="GST wala HSN code (optional)">
+<p class="hint">MRP packet par chhapi asli maximum price honi chahiye. Nakli MRP daalkar jhoothi chhoot mat dikhaiye. Variant table me aap kisi variant ka price alag kar sakte hain.</p>
 
-<h3>4. Description Aur Khaas Baatein</h3>
+<h3>6. Description</h3>
 <label>Product Description <i>*</i></label>
 <textarea id="description" required minlength="20" maxlength="10000" placeholder="Product kya hai, kis kaam aata hai, kya khaas hai: sahi-sahi likhiye"></textarea>
-
 <label>Key Features (Highlights)</label>
-<textarea id="highlights" placeholder="Ek line mein ek khaas baat&#10;jaise:&#10;10 ghante ki battery&#10;Type-C charging&#10;Bluetooth 5.3"></textarea>
+<textarea id="highlights" placeholder="Ek line mein ek khaas baat"></textarea>
+<div id="generalBox" class="sec">
+<label>Box Mein Kya Milega (In The Box)</label><input id="inbox" maxlength="200" placeholder="jaise: 1 Earbuds, 1 Cable, 1 Manual">
+<label>Technical Specifications (optional)</label>
+<textarea id="specs" placeholder="Ek line mein: Naam: Value&#10;jaise: Battery: 500 mAh"></textarea>
+</div>
 
-<label>Box Mein Kya Milega (In The Box)</label>
-<input id="inbox" maxlength="200" placeholder="jaise: 1 Earbuds, 1 Charging Case, 1 Type-C Cable, 1 Manual">
-
-<h3>5. Specifications</h3>
+<h3>7. Kanooni Jaankari</h3>
 <div class="grid">
-<div>
-<label>Material</label>
-<input id="material" maxlength="80" placeholder="jaise: Plastic, Cotton">
+<div><label>Country of Origin <i>*</i></label><input id="origin" required maxlength="60" placeholder="jaise: India"></div>
+<div><label>Manufacturer (Banane Wale) Ka Naam / Pata</label><input id="manufacturer" maxlength="250"></div>
 </div>
-<div>
-<label>Product Weight</label>
-<input id="weight" maxlength="40" placeholder="jaise: 45 g">
-</div>
-<div>
-<label>Warranty</label>
-<input id="warranty" maxlength="80" placeholder="jaise: 1 saal / Koi nahi">
-</div>
-</div>
-<label>Technical Specifications</label>
-<textarea id="specs" placeholder="Ek line mein: Naam: Value&#10;jaise:&#10;Battery: 500 mAh&#10;Connectivity: Bluetooth 5.3"></textarea>
-<p class="hint">Sirf wahi bhariye jo aapko pakka pata hai. Andaza mat lagaiye.</p>
+<label>Packer / Importer Ka Naam / Pata</label><input id="packer" maxlength="250">
 
-<h3>6. Kanooni Jaankari</h3>
-<div class="grid">
-<div>
-<label>Country of Origin <i>*</i></label>
-<input id="origin" required maxlength="60" placeholder="jaise: India">
-</div>
-<div>
-<label>Manufacturer (Banane Wale) Ka Naam / Pata</label>
-<input id="manufacturer" maxlength="250" placeholder="Naam aur pata">
-</div>
-</div>
-<label>Packer / Importer Ka Naam / Pata</label>
-<input id="packer" maxlength="250" placeholder="Packer ya importer ka naam aur pata (agar alag hai)">
-<p class="hint">Dibbe mein bikne wale saaman par ye jaankari kanoon ke hisaab se zaroori hoti hai.</p>
-
-<h3>7. Packing (Delivery Ke Liye)</h3>
+<h3>8. Packing (Delivery Ke Liye)</h3>
 <div class="grid">
 <div><label>Lambai (L)</label><input id="length" maxlength="30" placeholder="jaise: 12 cm"></div>
 <div><label>Chaudai (W)</label><input id="width" maxlength="30" placeholder="jaise: 8 cm"></div>
@@ -192,11 +137,9 @@ button:disabled{opacity:.6;cursor:wait}
 <div><label>Packed Weight</label><input id="pweight" maxlength="30" placeholder="jaise: 120 g"></div>
 </div>
 
-<div class="tip" style="margin-top:22px">
-✅ <b>Submit karne se pehle:</b> price, stock aur photo ek baar dekh lijiye. Product admin ke approve karne tak "pending" rehta hai.
-</div>
-
+<div class="tip" style="margin-top:22px">✅ <b>Submit karne se pehle:</b> price, stock aur photo ek baar dekh lijiye. Product admin ke approve karne tak "pending" rehta hai.</div>
 <button class="mainbtn" id="submitBtn" type="submit">Submit Product For Approval</button>
+</div>
 <div id="message" role="status" aria-live="polite"></div>
 </form>
 
@@ -205,67 +148,187 @@ button:disabled{opacity:.6;cursor:wait}
 
 <script src="app.js"></script>
 <script>
-var MAX_PHOTOS = 8, MIN_SIDE = 500, MAX_SIDE = 1600;
-var images = [];            /* {blob, url} - pehli Main photo */
-var imageInput = document.getElementById("productImages");
-var previews = document.getElementById("previews");
-var message = document.getElementById("message");
-var submitBtn = document.getElementById("submitBtn");
+var MAX_PHOTOS = 8, MIN_SIDE = 500, MAX_SIDE = 1600, MAX_ROWS = 60;
+var COLS = ["brand","model_number","color","size","material","weight","warranty","in_the_box","country_of_origin","manufacturer","packer","hsn_code"];
+var SCHEMA = null, CAT = null, VALUES = {}, ROWS = [];
+var images = [];
+var imageInput = document.getElementById("productImages"), previews = document.getElementById("previews");
+var message = document.getElementById("message"), submitBtn = document.getElementById("submitBtn");
 
 function showMessage(t, c){ message.style.color = c || "#43250f"; message.textContent = t; }
-function val(id){ return document.getElementById(id).value.trim(); }
+function $(id){ return document.getElementById(id); }
+function val(id){ var e = $(id); return e ? e.value.trim() : ""; }
 function lines(t){ return t.split("\n").map(function(x){return x.trim();}).filter(Boolean); }
-function slug(t){ return t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
+function slug(t){ return String(t).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
 function specsFrom(t){
   var o = {};
-  lines(t).forEach(function(l){
-    var i = l.indexOf(":");
-    if(i > 0) o[l.slice(0,i).trim()] = l.slice(i+1).trim();
-    else o["Detail " + (Object.keys(o).length + 1)] = l;
-  });
+  lines(t).forEach(function(l){ var i = l.indexOf(":"); if(i > 0) o[l.slice(0,i).trim()] = l.slice(i+1).trim(); else o["Detail " + (Object.keys(o).length + 1)] = l; });
   return o;
 }
+function el(tag, attrs, text){
+  var e = document.createElement(tag);
+  if(attrs) Object.keys(attrs).forEach(function(k){ if(k === "class") e.className = attrs[k]; else e.setAttribute(k, attrs[k]); });
+  if(text != null) e.textContent = text;
+  return e;
+}
 
-/* ---------- categories database se ---------- */
+/* ---------- schema (category -> fields) ---------- */
 (async function(){
-  var sel = document.getElementById("category");
-  var r = await supabaseClient.from("categories").select("id,name").order("name");
-  sel.innerHTML = '<option value="">Category chuniye</option>';
-  if(r.error || !r.data || !r.data.length){
-    ["Mobiles","Electronics","Fashion","Beauty","Home","Grocery","Accessories"].forEach(function(n,i){
-      var o = document.createElement("option"); o.value = String(i+1); o.textContent = n; sel.appendChild(o);
-    });
-    return;
+  var sel = $("category");
+  try{
+    var r = await supabaseClient.rpc("product_form_schema");
+    if(r.error || !r.data || !r.data.categories) throw new Error(r.error ? r.error.message : "schema nahi mila");
+    SCHEMA = r.data.categories;
+    sel.innerHTML = '<option value="">Category chuniye</option>';
+    SCHEMA.forEach(function(c){ sel.appendChild(el("option", {value: String(c.id)}, c.name)); });
+  }catch(e){
+    sel.innerHTML = '<option value="">Category load nahi hui</option>';
+    var m = $("schemaMsg"); m.className = "tip";
+    m.textContent = "Naya category-wise form abhi taiyar nahi hai (" + e.message + "). Admin ko category SQL chalani hogi. Tab tak purana form use kijiye: ";
+    var a = el("a", {href: "seller-add-product-classic.html"}, "Purana Add Product form"); m.appendChild(a);
   }
-  r.data.forEach(function(c){
-    var o = document.createElement("option"); o.value = String(c.id); o.textContent = c.name; sel.appendChild(o);
-  });
 })();
 
-/* ---------- photos ---------- */
+$("category").addEventListener("change", function(){
+  var id = this.value;
+  CAT = SCHEMA && SCHEMA.find(function(c){ return String(c.id) === id; }) || null;
+  VALUES = {};
+  $("afterCat").className = "sec" + (CAT ? " show" : "");
+  var sub = $("subcategory"); sub.innerHTML = "";
+  if(!CAT) { sub.appendChild(el("option", {value: ""}, "Pehle category chuniye")); return; }
+  sub.appendChild(el("option", {value: ""}, "Sub-category chuniye"));
+  (CAT.subcategories || []).forEach(function(s){ sub.appendChild(el("option", {value: s}, s)); });
+  buildFields();
+});
+
+function specFields(){ return (CAT.fields || []).filter(function(f){ return f.scope !== "variant"; }); }
+function axisFields(){ return (CAT.fields || []).filter(function(f){ return f.scope === "variant"; }); }
+
+function buildFields(){
+  var box = $("specFields"); box.innerHTML = "";
+  var sf = specFields();
+  var general = sf.length === 0;           /* is category ke liye koi custom field nahi: general form */
+  $("generalBox").className = "sec show";
+  if(general){
+    [["brand","Brand","text",true],["model","Model Number","text",false],["color","Colour","text",false],["material","Material","text",false],["warranty","Warranty","text",false]].forEach(function(x){
+      var w = el("div"); var l = el("label", null, x[1] + " "); if(x[3]) l.appendChild(el("i", null, "*"));
+      var inp = el("input", {id: "g_" + x[0], maxlength: "80"}); if(x[3]) inp.required = true;
+      w.appendChild(l); w.appendChild(inp); box.appendChild(w);
+    });
+  }
+  sf.forEach(function(f){
+    var w = el("div", f.type === "textarea" ? {style: "grid-column:1/-1"} : null);
+    var l = el("label", null, f.label + " "); if(f.required) l.appendChild(el("i", null, "*"));
+    w.appendChild(l);
+    var inp;
+    if(f.type === "select"){
+      inp = el("select", {id: "f_" + f.key}); inp.appendChild(el("option", {value: ""}, "Chuniye"));
+      (f.options || []).forEach(function(o){ inp.appendChild(el("option", {value: o}, o)); });
+    }else if(f.type === "textarea"){ inp = el("textarea", {id: "f_" + f.key, maxlength: "2000"}); }
+    else if(f.type === "date"){ inp = el("input", {id: "f_" + f.key, type: "date"}); }
+    else if(f.type === "number"){ inp = el("input", {id: "f_" + f.key, type: "number", step: "any"}); }
+    else{ inp = el("input", {id: "f_" + f.key, maxlength: "120"}); }
+    if(f.placeholder) inp.placeholder = f.placeholder;
+    if(f.required) inp.required = true;
+    w.appendChild(inp);
+    if(f.help) w.appendChild(el("p", {class: "hint"}, f.help));
+    box.appendChild(w);
+  });
+  buildAxes();
+}
+
+/* ---------- variants ---------- */
+function buildAxes(){
+  var af = axisFields(), box = $("axes"); box.innerHTML = "";
+  $("variantBox").className = "sec" + (af.length ? " show" : "");
+  $("singleStockBox").style.display = "";
+  af.forEach(function(f){
+    VALUES[f.key] = [];
+    var w = el("div", {style: "margin-top:12px"});
+    var l = el("label", null, f.label + " "); if(f.required) l.appendChild(el("i", null, "*")); w.appendChild(l);
+    if(f.type === "tags"){
+      var inp = el("input", {id: "ax_" + f.key, maxlength: "200", placeholder: "Comma se alag: Black, Blue, Red"});
+      inp.addEventListener("input", function(){
+        VALUES[f.key] = inp.value.split(",").map(function(x){ return x.trim(); }).filter(function(x, i, a){ return x && a.indexOf(x) === i; }).slice(0, 12);
+        buildRows();
+      });
+      w.appendChild(inp);
+    }else{
+      var chips = el("div", {class: "chips"});
+      (f.options || []).forEach(function(o){
+        var c = el("span", {class: "chip", role: "button", tabindex: "0"}, o);
+        function toggle(){
+          var arr = VALUES[f.key], i = arr.indexOf(o);
+          if(i >= 0){ arr.splice(i, 1); c.classList.remove("on"); } else { arr.push(o); c.classList.add("on"); }
+          /* options ka order wahi rakho jo schema me hai */
+          VALUES[f.key] = (f.options || []).filter(function(x){ return arr.indexOf(x) >= 0; });
+          buildRows();
+        }
+        c.onclick = toggle; c.onkeydown = function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggle(); } };
+        chips.appendChild(c);
+      });
+      w.appendChild(chips);
+    }
+    if(f.help) w.appendChild(el("p", {class: "hint"}, f.help));
+    box.appendChild(w);
+  });
+  buildRows();
+}
+
+function combos(){
+  var af = axisFields().filter(function(f){ return (VALUES[f.key] || []).length > 0; });
+  var res = [[]];
+  af.forEach(function(f){
+    var next = [];
+    res.forEach(function(r){ VALUES[f.key].forEach(function(v){ next.push(r.concat([[f, v]])); }); });
+    res = next;
+  });
+  return (af.length ? res : []);
+}
+
+function buildRows(){
+  var tb = document.querySelector("#vtable tbody"), old = {};
+  Array.prototype.forEach.call(tb.querySelectorAll("tr"), function(tr){ old[tr.dataset.k] = {p: tr.querySelector(".vp").value, m: tr.querySelector(".vm").value, s: tr.querySelector(".vs").value, pt: tr.querySelector(".vp").dataset.t, mt: tr.querySelector(".vm").dataset.t}; });
+  tb.innerHTML = "";
+  ROWS = combos();
+  $("vcount").textContent = ROWS.length ? ROWS.length + " variant" + (ROWS.length > 1 ? "s" : "") : "";
+  $("singleStockBox").style.display = ROWS.length ? "none" : "";
+  if(ROWS.length > MAX_ROWS){ showMessage("Ek baar me zyada se zyada " + MAX_ROWS + " variants. Kuch options kam kijiye.", "#c62828"); }
+  ROWS.slice(0, MAX_ROWS).forEach(function(r){
+    var key = r.map(function(x){ return x[1]; }).join("|"), o = old[key] || {};
+    var tr = el("tr"); tr.dataset.k = key;
+    tr.appendChild(el("td", {class: "vn"}, r.map(function(x){ return x[1]; }).join(" / ")));
+    function cell(cls, v, touched, ph, step){
+      var td = el("td"), i = el("input", {class: cls, type: "number", min: "0", step: step, placeholder: ph}); i.value = v == null ? "" : v;
+      if(touched) i.dataset.t = "1"; i.addEventListener("input", function(){ if(cls !== "vs") i.dataset.t = "1"; });
+      td.appendChild(i); return td;
+    }
+    tr.appendChild(cell("vp", o.p != null ? o.p : $("price").value, o.pt, "Price", "0.01"));
+    tr.appendChild(cell("vm", o.m != null ? o.m : $("oldPrice").value, o.mt, "MRP", "0.01"));
+    tr.appendChild(cell("vs", o.s != null ? o.s : "", false, "Stock", "1"));
+    tb.appendChild(tr);
+  });
+}
+/* base price badalne par jin variants ka price haath se nahi badla, unka price saath badle */
+["price","oldPrice"].forEach(function(id){
+  $(id).addEventListener("input", function(){
+    var cls = id === "price" ? ".vp" : ".vm";
+    document.querySelectorAll("#vtable " + cls).forEach(function(i){ if(!i.dataset.t) i.value = $(id).value; });
+  });
+});
+
+/* ---------- photos (pehle jaisa) ---------- */
 function paint(){
   previews.replaceChildren();
   images.forEach(function(it, i){
-    var card = document.createElement("div");
-    card.className = "photo" + (i === 0 ? " main" : "");
-    var img = document.createElement("img"); img.src = it.url; img.alt = "Photo " + (i+1);
-    var tag = document.createElement("div"); tag.className = "tag"; tag.textContent = i === 0 ? "⭐ Main Photo" : "Photo " + (i+1);
-    card.append(img, tag);
-    if(i > 0){
-      var mk = document.createElement("button"); mk.type = "button"; mk.className = "mk"; mk.textContent = "Main banao";
-      mk.onclick = function(){ var x = images.splice(i,1)[0]; images.unshift(x); paint(); };
-      card.appendChild(mk);
-    }
-    var rm = document.createElement("button"); rm.type = "button"; rm.className = "rm"; rm.textContent = "Hatayein";
-    rm.onclick = function(){ URL.revokeObjectURL(it.url); images.splice(i,1); paint(); };
-    card.appendChild(rm);
-    previews.appendChild(card);
+    var card = el("div", {class: "photo" + (i === 0 ? " main" : "")});
+    card.append(el("img", {src: it.url, alt: "Photo " + (i+1)}), el("div", {class: "tag"}, i === 0 ? "⭐ Main Photo" : "Photo " + (i+1)));
+    if(i > 0){ var mk = el("button", {type: "button", class: "mk"}, "Main banao"); mk.onclick = function(){ var x = images.splice(i,1)[0]; images.unshift(x); paint(); }; card.appendChild(mk); }
+    var rm = el("button", {type: "button", class: "rm"}, "Hatayein"); rm.onclick = function(){ URL.revokeObjectURL(it.url); images.splice(i,1); paint(); };
+    card.appendChild(rm); previews.appendChild(card);
   });
-  document.getElementById("photoCount").textContent = images.length
-    ? images.length + " / " + MAX_PHOTOS + " photo chuni gayi. Pehli photo Main hai."
-    : "Abhi koi photo nahi chuni.";
+  $("photoCount").textContent = images.length ? images.length + " / " + MAX_PHOTOS + " photo chuni gayi. Pehli photo Main hai." : "Abhi koi photo nahi chuni.";
 }
-
 function loadImage(file){
   return new Promise(function(resolve, reject){
     var u = URL.createObjectURL(file), im = new Image();
@@ -274,7 +337,6 @@ function loadImage(file){
     im.src = u;
   });
 }
-
 async function processFile(file){
   if(["image/jpeg","image/png","image/webp"].indexOf(file.type) < 0) throw new Error(file.name + ": sirf JPG, PNG ya WEBP");
   if(file.size > 15 * 1024 * 1024) throw new Error(file.name + ": 15 MB se badi hai");
@@ -288,122 +350,148 @@ async function processFile(file){
   if(!blob) throw new Error(file.name + ": photo process nahi ho payi");
   return {blob: blob, url: URL.createObjectURL(blob)};
 }
-
-document.getElementById("pickBtn").onclick = function(){ imageInput.click(); };
-
+$("pickBtn").onclick = function(){ imageInput.click(); };
 imageInput.addEventListener("change", async function(){
-  var files = Array.prototype.slice.call(imageInput.files || []);
-  imageInput.value = "";
+  var files = Array.prototype.slice.call(imageInput.files || []); imageInput.value = "";
   if(!files.length) return;
   var room = MAX_PHOTOS - images.length;
   if(room <= 0){ showMessage("Zyada se zyada " + MAX_PHOTOS + " photos lagti hain.", "#c62828"); return; }
-  var skipped = files.length > room;
-  files = files.slice(0, room);
-  var errs = [];
-  showMessage("Photos taiyar ho rahi hain...");
-  for(var i = 0; i < files.length; i++){
-    try{ images.push(await processFile(files[i])); }
-    catch(e){ errs.push(e.message); }
-  }
+  var skipped = files.length > room; files = files.slice(0, room);
+  var errs = []; showMessage("Photos taiyar ho rahi hain...");
+  for(var i = 0; i < files.length; i++){ try{ images.push(await processFile(files[i])); }catch(e){ errs.push(e.message); } }
   paint();
   if(errs.length) showMessage(errs.join(" | "), "#c62828");
   else showMessage(skipped ? "Sirf " + MAX_PHOTOS + " photos tak hi jodi gayi." : images.length + " photo taiyar hain.", "#188038");
 });
 
-/* ---------- product save (jo column table mein nahi, wo chhod kar baaki save) ---------- */
-async function insertProduct(payload){
-  var dropped = [];
+/* ---------- save: jo column table me nahi, wo chhod kar baaki save. Saare variants ek hi baar me (ya sab, ya koi nahi) ---------- */
+async function insertRows(rows){
+  var dropped = [], required = ["seller_id","name","price","status","description","category_id"];
   for(var t = 0; t < 30; t++){
-    var r = await supabaseClient.from("products").insert(payload);
+    var r = await supabaseClient.from("products").insert(rows);
     if(!r.error) return {ok: true, dropped: dropped};
     var m = r.error.message || "";
     var c = m.match(/Could not find the '([^']+)' column/i) || m.match(/column "([^"]+)" of relation "products" does not exist/i);
-    var required = ["seller_id","name","price","status","description","category_id"];
-    if(c && Object.prototype.hasOwnProperty.call(payload, c[1]) && required.indexOf(c[1]) < 0){
-      dropped.push(c[1]); delete payload[c[1]]; continue;
+    if(c && required.indexOf(c[1]) < 0 && Object.prototype.hasOwnProperty.call(rows[0], c[1])){
+      dropped.push(c[1]); rows.forEach(function(x){ delete x[c[1]]; }); continue;
     }
     return {ok: false, error: r.error, dropped: dropped};
   }
   return {ok: false, error: {message: "Bahut saare columns nahi mile"}, dropped: dropped};
 }
+function newGroupId(uid){
+  var r = (window.crypto && crypto.randomUUID) ? crypto.randomUUID().replace(/-/g, "").slice(0, 10) : Math.random().toString(36).slice(2, 12);
+  return "g" + String(uid).slice(0, 6) + "-" + Date.now().toString(36) + "-" + r;
+}
 
-document.getElementById("productForm").addEventListener("submit", async function(e){
+$("productForm").addEventListener("submit", async function(e){
   e.preventDefault();
-  if(submitBtn.disabled) return;
+  if(submitBtn.disabled || !CAT) return;
+  var name = val("productName"), description = val("description");
+  var price = Number(val("price")), mrp = Number(val("oldPrice"));
+  var general = specFields().length === 0, sf = specFields(), af = axisFields();
 
-  var name = val("productName"), categoryId = val("category"), description = val("description");
-  var price = Number(val("price")), mrp = Number(val("oldPrice")), stockText = val("stock"), stock = Number(stockText);
-
-  if(!name || name.length < 8 || !categoryId || !val("brand") || description.length < 20 || !val("origin")){
-    showMessage("Zaroori fields (category, brand, title, description, country of origin) poori bhariye.", "#c62828"); return;
-  }
+  if(name.length < 8 || description.length < 20 || !val("origin")){ showMessage("Title, description aur country of origin poori bhariye.", "#c62828"); return; }
   if(!isFinite(price) || price <= 0 || !isFinite(mrp) || mrp <= 0){ showMessage("Selling price aur MRP sahi daaliye.", "#c62828"); return; }
   if(mrp < price){ showMessage("MRP selling price se kam nahi ho sakti.", "#c62828"); return; }
-  if(stockText === "" || !Number.isInteger(stock) || stock < 0){ showMessage("Stock sahi daaliye (poora number).", "#c62828"); return; }
   if(images.length < 1){ showMessage("Kam se kam 1 photo lagaiye.", "#c62828"); return; }
 
-  var groupId = slug(val("groupId")), variantLabel = val("variantLabel");
-  if(groupId && !variantLabel){ showMessage("Variant Group bhara hai to Variant Label bhi bhariye (jaise: Black, 128 GB).", "#c62828"); return; }
+  /* category ke zaroori fields */
+  var cols = {}, specs = {};
+  if(general){
+    if(!val("g_brand")){ showMessage("Brand bhariye.", "#c62828"); return; }
+    cols.brand = val("g_brand"); cols.model_number = val("g_model") || null; cols.color = val("g_color") || null; cols.material = val("g_material") || null; cols.warranty = val("g_warranty") || null;
+    if(cols.color) specs["Colour"] = cols.color; if(cols.material) specs["Material"] = cols.material;
+  }
+  for(var i = 0; i < sf.length; i++){
+    var f = sf[i], v = val("f_" + f.key);
+    if(f.required && !v){ showMessage("\"" + f.label + "\" zaroori hai.", "#c62828"); return; }
+    if(v){ specs[f.label] = v; if(f.col && COLS.indexOf(f.col) >= 0) cols[f.col] = v; }
+  }
+  /* variants */
+  var combosList = combos(), rows = [];
+  for(var a = 0; a < af.length; a++){
+    if(af[a].required && !(VALUES[af[a].key] || []).length){ showMessage("\"" + af[a].label + "\": kam se kam ek option chuniye.", "#c62828"); return; }
+  }
+  if(combosList.length > MAX_ROWS){ showMessage("Variants " + MAX_ROWS + " se zyada hain. Kuch options kam kijiye.", "#c62828"); return; }
+  var trs = document.querySelectorAll("#vtable tbody tr");
+  if(combosList.length){
+    for(var k = 0; k < combosList.length; k++){
+      var tr = trs[k], vp = Number(tr.querySelector(".vp").value), vm = Number(tr.querySelector(".vm").value), vsText = tr.querySelector(".vs").value.trim(), vs = Number(vsText);
+      var label = combosList[k].map(function(x){ return x[1]; }).join(" / ");
+      if(!isFinite(vp) || vp <= 0 || !isFinite(vm) || vm < vp){ showMessage("Variant \"" + label + "\": price aur MRP sahi daaliye (MRP price se kam nahi).", "#c62828"); return; }
+      if(vsText === "" || !Number.isInteger(vs) || vs < 0){ showMessage("Variant \"" + label + "\": stock daaliye (0 bhi chalega).", "#c62828"); return; }
+      rows.push({combo: combosList[k], price: vp, mrp: vm, stock: vs});
+    }
+  }else{
+    var st = val("stock"), sn = Number(st);
+    if(st === "" || !Number.isInteger(sn) || sn < 0){ showMessage("Stock sahi daaliye (poora number).", "#c62828"); return; }
+    rows.push({combo: [], price: price, mrp: mrp, stock: sn});
+  }
 
   submitBtn.disabled = true;
   var uploaded = [];
   try{
     showMessage("Login check ho raha hai...");
-    var au = await supabaseClient.auth.getUser();
-    var user = au.data && au.data.user;
-    if(au.error || !user){ showMessage("Pehle login kijiye. (Is page par login nahi mila; login.html par jaakar dobara aaiye.)", "#c62828"); return; }
-
+    var au = await supabaseClient.auth.getUser(), user = au.data && au.data.user;
+    if(au.error || !user){ showMessage("Pehle login kijiye (login.html).", "#c62828"); return; }
     var sl = await supabaseClient.from("sellers").select("id,status").eq("user_id", user.id).maybeSingle();
     if(sl.error) throw sl.error;
     if(!sl.data){ showMessage("Aapka seller account nahi mila.", "#c62828"); return; }
     if(sl.data.status !== "approved"){ showMessage("Aapka seller account abhi admin ke approval ka intezaar kar raha hai.", "#856404"); return; }
 
     var urls = [], stamp = Date.now();
-    for(var i = 0; i < images.length; i++){
-      showMessage("Photo " + (i+1) + " / " + images.length + " upload ho rahi hai...");
-      var path = "products/" + user.id + "-" + stamp + "-" + i + ".jpg";
-      var up = await supabaseClient.storage.from("product-images").upload(path, images[i].blob, {cacheControl: "3600", upsert: false, contentType: "image/jpeg"});
+    for(var u = 0; u < images.length; u++){
+      showMessage("Photo " + (u+1) + " / " + images.length + " upload ho rahi hai...");
+      var path = "products/" + user.id + "-" + stamp + "-" + u + ".jpg";
+      var up = await supabaseClient.storage.from("product-images").upload(path, images[u].blob, {cacheControl: "3600", upsert: false, contentType: "image/jpeg"});
       if(up.error) throw up.error;
       uploaded.push(path);
       urls.push(supabaseClient.storage.from("product-images").getPublicUrl(path).data.publicUrl);
     }
 
     showMessage("Product save ho raha hai...");
-    var specs = specsFrom(val("specs"));
-    ["color:Colour","size:Size","material:Material","weight:Weight"].forEach(function(p){
-      var k = p.split(":"); if(val(k[0])) specs[k[1]] = val(k[0]);
-    });
-    var gst = val("gst");
-
-    var payload = {
-      seller_id: sl.data.id, category_id: isNaN(Number(categoryId)) ? categoryId : Number(categoryId),
-      name: name, description: description, price: price, old_price: mrp, stock: stock,
-      image_url: urls[0], image_urls: urls, status: "pending",
-      brand: val("brand"), model_number: val("model") || null, sku: val("sku") || null,
-      subcategory: val("subcategory") || null, color: val("color") || null, size: val("size") || null,
-      group_id: groupId || null, variant_label: variantLabel || null,
-      material: val("material") || null, weight: val("weight") || null, warranty: val("warranty") || null,
-      highlights: lines(val("highlights")), specifications: specs, in_the_box: val("inbox") || null,
+    Object.assign(specs, specsFrom(val("specs")));
+    var gst = val("gst"), multi = rows.length > 1, gid = multi ? newGroupId(user.id) : null;
+    var baseSku = val("sku");
+    var shared = {
+      seller_id: sl.data.id, category_id: isNaN(Number(CAT.id)) ? CAT.id : Number(CAT.id),
+      description: description, image_url: urls[0], image_urls: urls, status: "pending",
+      subcategory: val("subcategory") || null, highlights: lines(val("highlights")),
+      in_the_box: val("inbox") || cols.in_the_box || null,
       country_of_origin: val("origin"), manufacturer: val("manufacturer") || null, packer: val("packer") || null,
       hsn_code: val("hsn") || null, gst_percent: gst === "" ? null : Number(gst),
-      package_length: val("length") || null, package_width: val("width") || null,
-      package_height: val("height") || null, package_weight: val("pweight") || null
+      package_length: val("length") || null, package_width: val("width") || null, package_height: val("height") || null, package_weight: val("pweight") || null
     };
+    COLS.forEach(function(c){ if(cols[c] && c !== "in_the_box" && c !== "country_of_origin") shared[c] = cols[c]; });
 
-    var res = await insertProduct(payload);
+    var payload = rows.map(function(r){
+      var row = Object.assign({}, shared), sp = Object.assign({}, specs), vals = [], attrs = [];
+      r.combo.forEach(function(x){
+        var f = x[0], v = x[1]; vals.push(v); attrs.push([f.label, v]);
+        if(f.col === "size") row.size = v; else if(f.col === "color") row.color = v; else if(f.col && COLS.indexOf(f.col) >= 0) row[f.col] = v;
+        sp[f.label] = v;
+      });
+      row.name = multi ? name + " (" + vals.join(", ") + ")" : name;
+      row.price = r.price; row.old_price = r.mrp; row.stock = r.stock; row.specifications = sp;
+      if(multi){ row.group_id = gid; row.variant_label = vals.join(" / "); row.variant_attrs = attrs; }
+      else if(attrs.length){ row.variant_attrs = attrs; }
+      row.sku = baseSku ? (multi ? baseSku + "-" + slug(vals.join("-")) : baseSku) : null;
+      return row;
+    });
+
+    var res = await insertRows(payload);
     if(!res.ok) throw res.error;
-
-    var note = res.dropped.length ? " (Ye details save nahi hui kyunki table mein column nahi hai: " + res.dropped.join(", ") + ". ps-mart-product-fields.sql run kijiye.)" : "";
-    showMessage("✅ Product submit ho gaya! Admin ke approval ka intezaar hai." + note, "#188038");
+    var note = res.dropped.length ? " (Ye details save nahi hui kyunki table me column nahi hai: " + res.dropped.join(", ") + ". Admin ko SQL chalani hogi.)" : "";
+    showMessage("✅ Product submit ho gaya" + (multi ? " (" + payload.length + " variants)" : "") + "! Admin ke approval ka intezaar hai." + note, "#188038");
     uploaded = [];
-    document.getElementById("productForm").reset();
-    images.forEach(function(x){ URL.revokeObjectURL(x.url); });
-    images = []; paint();
+    $("productForm").reset(); images.forEach(function(x){ URL.revokeObjectURL(x.url); }); images = []; paint();
+    $("afterCat").className = "sec"; CAT = null; VALUES = {};
   }catch(err){
     console.error("PS Mart product submit:", err);
     if(uploaded.length){ try{ await supabaseClient.storage.from("product-images").remove(uploaded); }catch(x){} }
     var msg = (err && err.message) || "Pata nahi kya hua";
-    if(/row-level security|violates/i.test(msg)) msg += " (ps-mart-product-fields.sql aur ps-mart-rls.sql run hui hain? Aap approved seller hain?)";
+    if(/row-level security|violates/i.test(msg)) msg += " (Aap approved seller hain? Product SQL/RLS chali hai?)";
     showMessage("Product submit nahi ho paya: " + msg, "#c62828");
   }finally{
     submitBtn.disabled = false;

@@ -194,6 +194,8 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
 
     <button class="tab" onclick="showSection('rewardsSection',this);adminCrInit()">🎁 Customer Rewards</button>
 
+    <button class="tab" onclick="showSection('productSetupSection',this);adminPfInit()">🧩 Product Setup</button>
+
   </div>
 
 
@@ -390,6 +392,11 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
   <div id="commissionSection" class="section hidden">
     <h2>💹 Commission Management</h2>
     <div id="cmRoot">Loading...</div>
+  </div>
+
+  <div id="productSetupSection" class="section hidden">
+    <h2>🧩 Product Setup (Categories, Fields &amp; Variants)</h2>
+    <div id="pfRoot">Loading...</div>
   </div>
 
   <div id="rewardsSection" class="section hidden">
@@ -2452,5 +2459,6 @@ async function sendGiftCardToCustomer() {
 <script src="admin-delivery.js"></script>
 <script src="admin-commission.js"></script>
 <script src="admin-rewards.js"></script>
+<script src="admin-products.js"></script>
 </body>
 </html>

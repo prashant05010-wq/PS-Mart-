@@ -72,6 +72,11 @@
 #detail .ps-chip em s{color:#888;font-weight:400;margin-left:4px}
 #detail .ps-chip b{font-size:16px}
 #detail .ps-chip.out{opacity:.5}
+#detail .ps-ax{margin-bottom:10px}
+#detail .ps-opts{display:flex;flex-wrap:wrap;gap:8px}
+#detail .ps-opt{min-width:46px;text-align:center;border:1.5px solid #d6c8b9;border-radius:10px;padding:9px 14px;text-decoration:none;color:#222;background:#fff;font-size:14px;font-weight:600}
+#detail .ps-opt.on{border:2px solid #c9922e;background:#fff4d8;color:#43250f}
+#detail .ps-opt.out{opacity:.45;text-decoration:line-through;cursor:not-allowed;pointer-events:none}
 @media(min-width:801px){
   #detail .ps-arrow{display:block}
   #detail .detail-top{align-items:start}
@@ -248,8 +253,9 @@ async function detail() {
     try {
       var vr = await supabaseClient
         .from("products")
-        .select("id,price,old_price,variant_label,stock")
+        .select("id,price,old_price,variant_label,stock,variant_attrs,size,color")
         .eq("group_id", p.group_id)
+        .eq("seller_id", p.seller_id)
         .eq("status", "approved")
         .order("price", { ascending: true });
       variants = vr.data || [];
@@ -257,7 +263,39 @@ async function detail() {
   }
 
   var variantHtml = "";
-  if (variants.length > 1) {
+  /* NAYA: variant_attrs ho to har axis (Size, Color, RAM...) ka alag selector. Out of stock option select nahi hota. */
+  var curAttrs = Array.isArray(p.variant_attrs) ? p.variant_attrs : null;
+  var rowsA = variants.filter(function (v) { return Array.isArray(v.variant_attrs) && v.variant_attrs.length; });
+  if (curAttrs && curAttrs.length && rowsA.length > 1) {
+    var curMap = {};
+    curAttrs.forEach(function (a) { curMap[a[0]] = a[1]; });
+    var axisHtml = curAttrs.map(function (axis) {
+      var name = axis[0], seen = [];
+      rowsA.forEach(function (v) {
+        var a = v.variant_attrs.find(function (x) { return x[0] === name; });
+        if (a && seen.indexOf(a[1]) < 0) seen.push(a[1]);
+      });
+      var chips = seen.map(function (val) {
+        /* is value wala sabse sahi variant: baaki axes current selection se jitne zyada mile + stock me ho */
+        var best = null, bestScore = -1;
+        rowsA.forEach(function (v) {
+          var m = {}; v.variant_attrs.forEach(function (x) { m[x[0]] = x[1]; });
+          if (m[name] !== val) return;
+          var score = 0;
+          Object.keys(curMap).forEach(function (k) { if (k !== name && m[k] === curMap[k]) score++; });
+          if (Number(v.stock || 0) > 0) score += 1000;
+          if (score > bestScore) { bestScore = score; best = v; }
+        });
+        var avail = best && Number(best.stock || 0) > 0;
+        var on = curMap[name] === val;
+        var cls = "ps-opt" + (on ? " on" : "") + (avail ? "" : " out");
+        if (!avail || !best) return '<span class="' + cls + '" aria-disabled="true" title="Out of stock">' + psEsc(val) + '</span>';
+        return '<a class="' + cls + '" href="product.html?id=' + encodeURIComponent(best.id) + '">' + psEsc(val) + '</a>';
+      }).join("");
+      return '<div class="ps-ax"><div class="ps-var-t">' + psEsc(name) + ': <b>' + psEsc(curMap[name] || "") + '</b></div><div class="ps-opts">' + chips + '</div></div>';
+    }).join("");
+    variantHtml = '<div class="ps-var">' + axisHtml + '</div>';
+  } else if (variants.length > 1) {
     variantHtml = '<div class="ps-var"><div class="ps-var-t">Variant: <b>' + psEsc(p.variant_label || "") + '</b></div><div class="ps-chips">' +
       variants.map(function (v) {
         var d = psDiscount(v);
