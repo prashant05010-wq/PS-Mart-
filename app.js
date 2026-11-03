@@ -172,11 +172,23 @@ function psExtraSpecRows(p) {
 
   const shown = ["colour", "size", "material", "weight"];
 
+  /* jo value upar column se dikh chuki hai, wo specifications se dobara na dikhe */
+  const dupe = {
+    "brand": p.brand,
+    "model number": p.model_number,
+    "warranty": p.warranty
+  };
+
   if (spec && typeof spec === "object" && !Array.isArray(spec)) {
 
     Object.keys(spec).forEach(k => {
 
-      if (shown.indexOf(k.toLowerCase()) < 0) {
+      const lk = k.toLowerCase();
+
+      if (
+        shown.indexOf(lk) < 0 &&
+        !(dupe[lk] && String(dupe[lk]).trim())
+      ) {
         add(k, spec[k]);
       }
 
