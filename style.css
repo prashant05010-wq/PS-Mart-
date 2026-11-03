@@ -917,3 +917,22 @@ footer small{
   }
 
 }
+
+/* =====================================================================
+   BOTTOM NAV (phone) - cart, products, product, orders, my-orders pages
+   Home page jaisa naya look: emoji ki jagah icon, active tab par sunehri line.
+   Sirf look badalta hai; links aur buttons wahi hain.
+   ===================================================================== */
+@media(max-width:700px){
+  body .pm-mnav{height:calc(64px + env(safe-area-inset-bottom,0px))!important;background:#24150b!important;border-top:2px solid #C9922E!important;box-shadow:0 -4px 16px rgba(0,0,0,.25)}
+  body .pm-mnav a{position:relative;gap:4px!important;font-size:11px!important;font-weight:500;color:#cdbda3;-webkit-tap-highlight-color:transparent}
+  body .pm-mnav a.on{color:#f0bd50!important;font-weight:700}
+  body .pm-mnav a.on::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:3px;border-radius:0 0 4px 4px;background:#f0bd50}
+  body .pm-mnav a span{display:flex!important;align-items:center;justify-content:center;width:26px;height:26px;line-height:0!important}
+  body .pm-mnav a span:not(:has(*)){font-size:0!important}
+  body .pm-mnav a span:not(:has(*))::before{content:"";display:block;width:24px;height:24px;background-color:currentColor;-webkit-mask:var(--pm-ic) center/contain no-repeat;mask:var(--pm-ic) center/contain no-repeat}
+  body .pm-mnav a[href="index.html"] span{--pm-ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7.5L21 11'/%3E%3Cpath d='M5 10v10h14V10'/%3E%3Cpath d='M10 20v-6h4v6'/%3E%3C/svg%3E")}
+  body .pm-mnav a[href="products.html"] span{--pm-ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='3.5' width='7' height='7' rx='1.5'/%3E%3Crect x='13.5' y='3.5' width='7' height='7' rx='1.5'/%3E%3Crect x='3.5' y='13.5' width='7' height='7' rx='1.5'/%3E%3Crect x='13.5' y='13.5' width='7' height='7' rx='1.5'/%3E%3C/svg%3E")}
+  body .pm-mnav a[href="profile.html"] span{--pm-ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21a8 8 0 0 1 16 0'/%3E%3C/svg%3E")}
+  body .pm-mnav a[href="cart.html"] span{--pm-ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='20' r='1.4'/%3E%3Ccircle cx='18' cy='20' r='1.4'/%3E%3Cpath d='M2 3h3l2.6 12.4a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 7H6'/%3E%3C/svg%3E")}
+}
