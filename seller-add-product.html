@@ -51,6 +51,11 @@ button:disabled{opacity:.6;cursor:wait}
 .vgrid td.vn{font-weight:bold;white-space:nowrap}
 .bad{color:#c62828}
 .sec{display:none}.sec.show{display:block}
+.more{margin-top:22px;border:1px solid #e6dac3;border-radius:10px;background:#fffdf7;padding:0 14px}
+.more>summary{cursor:pointer;padding:14px 0;font-weight:bold;color:#43250f;list-style:none}
+.more>summary::-webkit-details-marker{display:none}
+.more[open]{padding-bottom:16px}
+.more[open]>summary{border-bottom:1px solid #efe4cd;margin-bottom:4px}
 .pill{display:inline-block;background:#e7f6ea;color:#188038;font-weight:bold;font-size:12px;border-radius:999px;padding:3px 10px;margin-left:6px}
 </style>
 <link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -61,7 +66,7 @@ button:disabled{opacity:.6;cursor:wait}
 
 <div class="box">
 <h1>Add New Product</h1>
-<p class="hint">Pehle <b>Category</b> chuniye. Us category ke hisab se sahi fields apne aap aa jayenge. Aapka product admin ke approve karne ke baad hi customers ko dikhega. <i style="color:#c62828;font-style:normal">*</i> wale fields zaroori hain.</p>
+<p class="hint">Pehle <b>Category</b> phir <b>Sub-category</b> chuniye. Unke hisab se sahi fields apne aap aa jayenge. Aapka product admin ke approve karne ke baad hi customers ko dikhega. <i style="color:#c62828;font-style:normal">*</i> wale fields zaroori hain.</p>
 <div id="schemaMsg"></div>
 
 <form id="productForm">
@@ -73,7 +78,7 @@ button:disabled{opacity:.6;cursor:wait}
 <select id="category" required><option value="">Category load ho rahi hai...</option></select>
 </div>
 <div>
-<label>Sub-category</label>
+<label>Sub-category <i id="subStar" style="display:none">*</i></label>
 <select id="subcategory"><option value="">Pehle category chuniye</option></select>
 </div>
 </div>
@@ -106,36 +111,39 @@ button:disabled{opacity:.6;cursor:wait}
 <div><label>Selling Price (₹) <i>*</i></label><input id="price" type="number" min="1" step="0.01" required placeholder="999"></div>
 <div><label>MRP (₹) <i>*</i></label><input id="oldPrice" type="number" min="1" step="0.01" required placeholder="1299"></div>
 <div id="singleStockBox"><label>Stock (kitne piece hain) <i>*</i></label><input id="stock" type="number" min="0" step="1" placeholder="10"></div>
-<div><label>GST %</label><select id="gst"><option value="">Pata nahi / Lagu nahi</option><option>0</option><option>5</option><option>12</option><option>18</option><option>28</option></select></div>
+<div><label>Country of Origin <i>*</i></label><input id="origin" required maxlength="60" value="India" placeholder="jaise: India"></div>
 </div>
-<label>HSN Code</label><input id="hsn" maxlength="12" inputmode="numeric" placeholder="GST wala HSN code (optional)">
 <p class="hint">MRP packet par chhapi asli maximum price honi chahiye. Nakli MRP daalkar jhoothi chhoot mat dikhaiye. Variant table me aap kisi variant ka price alag kar sakte hain.</p>
 
 <h3>6. Description</h3>
 <label>Product Description <i>*</i></label>
 <textarea id="description" required minlength="20" maxlength="10000" placeholder="Product kya hai, kis kaam aata hai, kya khaas hai: sahi-sahi likhiye"></textarea>
+
+<details id="moreBox" class="more">
+<summary>➕ Aur details (zaroori nahi, chahein to bhariye)</summary>
+<div class="grid">
+<div><label>GST %</label><select id="gst"><option value="">Pata nahi / Lagu nahi</option><option>0</option><option>5</option><option>12</option><option>18</option><option>28</option></select></div>
+<div><label>HSN Code</label><input id="hsn" maxlength="12" inputmode="numeric" placeholder="GST wala HSN code (optional)"></div>
+</div>
 <label>Key Features (Highlights)</label>
 <textarea id="highlights" placeholder="Ek line mein ek khaas baat"></textarea>
 <div id="generalBox" class="sec">
 <label>Box Mein Kya Milega (In The Box)</label><input id="inbox" maxlength="200" placeholder="jaise: 1 Earbuds, 1 Cable, 1 Manual">
-<label>Technical Specifications (optional)</label>
+<label>Aur Specifications (optional)</label>
 <textarea id="specs" placeholder="Ek line mein: Naam: Value&#10;jaise: Battery: 500 mAh"></textarea>
+<p class="hint">Upar jo fields nahi mile, wo yahan apni taraf se jod sakte hain.</p>
 </div>
-
-<h3>7. Kanooni Jaankari</h3>
 <div class="grid">
-<div><label>Country of Origin <i>*</i></label><input id="origin" required maxlength="60" placeholder="jaise: India"></div>
 <div><label>Manufacturer (Banane Wale) Ka Naam / Pata</label><input id="manufacturer" maxlength="250"></div>
+<div><label>Packer / Importer Ka Naam / Pata</label><input id="packer" maxlength="250"></div>
 </div>
-<label>Packer / Importer Ka Naam / Pata</label><input id="packer" maxlength="250">
-
-<h3>8. Packing (Delivery Ke Liye)</h3>
 <div class="grid">
-<div><label>Lambai (L)</label><input id="length" maxlength="30" placeholder="jaise: 12 cm"></div>
-<div><label>Chaudai (W)</label><input id="width" maxlength="30" placeholder="jaise: 8 cm"></div>
-<div><label>Unchai (H)</label><input id="height" maxlength="30" placeholder="jaise: 5 cm"></div>
+<div><label>Packing Lambai (L)</label><input id="length" maxlength="30" placeholder="jaise: 12 cm"></div>
+<div><label>Packing Chaudai (W)</label><input id="width" maxlength="30" placeholder="jaise: 8 cm"></div>
+<div><label>Packing Unchai (H)</label><input id="height" maxlength="30" placeholder="jaise: 5 cm"></div>
 <div><label>Packed Weight</label><input id="pweight" maxlength="30" placeholder="jaise: 120 g"></div>
 </div>
+</details>
 
 <div class="tip" style="margin-top:22px">✅ <b>Submit karne se pehle:</b> price, stock aur photo ek baar dekh lijiye. Product admin ke approve karne tak "pending" rehta hai.</div>
 <button class="mainbtn" id="submitBtn" type="submit">Submit Product For Approval</button>
@@ -150,7 +158,7 @@ button:disabled{opacity:.6;cursor:wait}
 <script>
 var MAX_PHOTOS = 8, MIN_SIDE = 500, MAX_SIDE = 1600, MAX_ROWS = 60;
 var COLS = ["brand","model_number","color","size","material","weight","warranty","in_the_box","country_of_origin","manufacturer","packer","hsn_code"];
-var SCHEMA = null, CAT = null, VALUES = {}, ROWS = [];
+var SCHEMA = null, CAT = null, VALUES = {}, ROWS = [], SUBCFG = null, PRE = null, WR = {};
 var images = [];
 var imageInput = document.getElementById("productImages"), previews = document.getElementById("previews");
 var message = document.getElementById("message"), submitBtn = document.getElementById("submitBtn");
@@ -172,6 +180,218 @@ function el(tag, attrs, text){
   return e;
 }
 
+/* @@CFG-START  Sub-category wise fields: sirf main fields. Naya type jodna ho to SUBRULES me ek line badhaiye. */
+var YN = ["Yes", "No"], SZ = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+var AGE = ["0-2 Years", "3+ Years", "5+ Years", "8+ Years", "12+ Years"];
+var WARR = ["No Warranty", "6 Months", "1 Year", "2 Years"];
+var GEN = ["Men", "Women", "Boys", "Girls", "Unisex"];
+var OCC = ["Casual", "Party", "Festive", "Wedding", "Office / Formal", "Daily Wear"];
+var SK = ["All Skin Types", "Oily", "Dry", "Combination", "Sensitive", "Normal"];
+function F(key, label, type, opts, req, col, x){
+  var o = {key: key, label: label, type: type, options: opts || [], required: !!req, scope: "spec"};
+  if(col) o.col = col;
+  if(x) Object.keys(x).forEach(function(k){ o[k] = x[k]; });
+  return o;
+}
+function V(key, label, type, opts, req, col, x){ var o = F(key, label, type, opts, req, col, x); o.scope = "variant"; return o; }
+var BR = F("brand", "Brand", "text", null, true, "brand");
+var MODEL = F("model", "Model Number", "text", null, false, "model_number");
+var WA = F("warranty", "Warranty", "select", WARR, false, "warranty");
+function COLV(req){ return V("colour", "Colour", "tags", null, req, "color", {help: "Comma se alag likhiye: Black, Blue, Red. Har colour ka alag price aur stock neeche table me aayega."}); }
+function SIZEV(req){ return V("size", "Size", "chips", SZ, req, "size"); }
+function NETQ(){ return F("net_qty", "Net Quantity", "text", null, true, null, {placeholder: "jaise: 100 ml / 50 g"}); }
+function EXP(){ return F("expiry", "Expiry Date", "date", null, false, null, {help: "Packet par likhi tarikh."}); }
+function ING(){ return F("ingredients", "Ingredients", "text", null, false, null, {placeholder: "Main ingredients, comma se alag"}); }
+function USE(){ return F("usage", "Usage Instructions", "textarea", null, false); }
+function AGEF(req){ return F("age", "Recommended Age", "select", AGE, req); }
+var CATRX = {fashion: /fashion|cloth|apparel/, beauty: /beauty|personal care|cosmetic/, toys: /toy/, electronics: /electronic/, mobiles: /mobile|phone/, home: /home|kitchen/};
+var SUBRULES = [
+  /* ---------- FASHION ---------- */
+  {c: "fashion", s: /saree|sari/, f: [BR,
+    F("fabric", "Saree Fabric", "select", ["Cotton", "Silk", "Georgette", "Chiffon", "Crepe", "Net", "Linen", "Banarasi", "Satin", "Other"], true),
+    F("length", "Saree Length", "text", null, false, null, {placeholder: "jaise: 5.5 m"}),
+    F("blouse", "Blouse Piece Included", "select", YN, true),
+    F("blouse_fabric", "Blouse Fabric", "text", null, false, null, {showIf: {key: "blouse", vals: ["Yes"]}}),
+    F("pattern", "Pattern", "select", ["Solid", "Printed", "Embroidered", "Woven", "Zari Work", "Floral", "Other"], false),
+    F("work", "Work Type", "select", ["Zari", "Embroidery", "Stone Work", "Sequin", "Block Print", "None"], false),
+    F("occasion", "Occasion", "multiselect", OCC, false),
+    F("wash", "Wash Care", "select", ["Dry Clean", "Hand Wash", "Machine Wash"], false),
+    COLV(true)]},
+  {c: "fashion", s: /t-?\s?shirt|tee\b|polo/, f: [BR,
+    F("fabric", "Fabric", "select", ["Cotton", "Polyester", "Cotton Blend", "Dry-Fit", "Linen", "Other"], true),
+    F("fit", "Fit Type", "select", ["Regular", "Slim", "Oversized", "Relaxed"], false),
+    F("neck", "Neck Type", "select", ["Round Neck", "V-Neck", "Polo", "Henley", "Hooded"], false),
+    F("sleeve", "Sleeve Type", "select", ["Half Sleeve", "Full Sleeve", "Sleeveless", "3/4 Sleeve"], false),
+    F("gender", "Gender", "select", GEN, true),
+    F("pattern", "Pattern", "select", ["Solid", "Printed", "Striped", "Graphic", "Colour Block", "Checked"], false),
+    F("occasion", "Occasion", "multiselect", OCC, false),
+    SIZEV(true), COLV(true)]},
+  {c: "fashion", s: /shirt/, f: [BR,
+    F("fabric", "Fabric", "select", ["Cotton", "Linen", "Polyester", "Cotton Blend", "Denim", "Other"], true),
+    F("fit", "Fit Type", "select", ["Regular", "Slim", "Relaxed"], false),
+    F("collar", "Collar Type", "select", ["Spread", "Button Down", "Mandarin", "Cutaway", "Other"], false),
+    F("sleeve", "Sleeve Type", "select", ["Full Sleeve", "Half Sleeve", "Roll-Up Sleeve"], false),
+    F("gender", "Gender", "select", GEN, true),
+    F("pattern", "Pattern", "select", ["Solid", "Checked", "Striped", "Printed", "Self Design"], false),
+    F("occasion", "Occasion", "multiselect", OCC, false),
+    SIZEV(true), COLV(true)]},
+  {c: "fashion", s: /kurt/, f: [BR,
+    F("fabric", "Fabric", "select", ["Cotton", "Rayon", "Georgette", "Crepe", "Silk", "Polyester", "Other"], true),
+    F("length", "Kurti Length", "select", ["Short", "Knee Length", "Calf Length", "Long"], false),
+    F("sleeve", "Sleeve Type", "select", ["Half Sleeve", "Full Sleeve", "3/4 Sleeve", "Sleeveless"], false),
+    F("neck", "Neck Type", "select", ["Round Neck", "V-Neck", "Mandarin", "Keyhole", "Other"], false),
+    F("pattern", "Pattern", "select", ["Solid", "Printed", "Floral", "Embroidered", "Striped"], false),
+    F("work", "Work Type", "select", ["Embroidery", "Print", "Handwork", "Sequin", "None"], false),
+    F("occasion", "Occasion", "multiselect", OCC, false),
+    SIZEV(true), COLV(true)]},
+  {c: "fashion", s: /jean|trouser|pant|chino|denim|palazzo|legging|jogger/, f: [BR,
+    F("fabric", "Fabric", "select", ["Denim", "Cotton", "Polyester", "Cotton Blend", "Linen", "Other"], true),
+    F("fit", "Fit Type", "select", ["Slim", "Regular", "Skinny", "Relaxed", "Bootcut", "Wide Leg"], false),
+    F("length", "Length", "text", null, false, null, {placeholder: "jaise: 32 inch"}),
+    F("gender", "Gender", "select", GEN, true),
+    F("pattern", "Pattern", "select", ["Solid", "Washed", "Faded", "Distressed", "Striped"], false),
+    V("waist", "Waist Size (inch)", "chips", ["28", "30", "32", "34", "36", "38", "40", "42"], true, "size"),
+    COLV(true)]},
+  {c: "fashion", s: /shoe|sandal|sneaker|slipper|footwear|chappal|boot|heel|flip/, f: [BR,
+    F("shoe_type", "Shoe Type", "select", ["Sports", "Casual", "Formal", "Sneakers", "Sandals", "Slippers / Flip Flops", "Boots", "Heels"], true),
+    F("gender", "Gender", "select", GEN, true),
+    F("upper", "Upper Material", "select", ["Mesh", "Synthetic", "Leather", "Canvas", "Fabric", "Rubber"], false),
+    F("sole", "Sole Material", "select", ["EVA", "Rubber", "PU", "TPR", "PVC"], false),
+    F("closure", "Closure Type", "select", ["Lace-Up", "Slip-On", "Velcro", "Buckle"], false),
+    F("occasion", "Occasion", "multiselect", OCC, false),
+    V("uk_size", "UK Size", "chips", ["5", "6", "7", "8", "9", "10", "11"], true, "size"),
+    COLV(true)]},
+  {c: "fashion", s: /other|dress|top|jacket|skirt|innerwear|lehenga|salwar|dupatta|bag|belt|wallet|cap|scarf|sock/, f: [BR,
+    F("material", "Material", "text", null, false, "material", {placeholder: "jaise: Cotton / Leather"}),
+    F("gender", "Gender", "select", GEN, false),
+    F("occasion", "Occasion", "multiselect", OCC, false),
+    SIZEV(false), COLV(false)]},
+  /* ---------- BEAUTY ---------- */
+  {c: "beauty", s: /face\s*wash|cleanser/, f: [BR,
+    F("skin", "Skin Type", "select", SK, false),
+    F("concern", "Skin Concern", "select", ["Acne", "Oil Control", "Dullness", "Pigmentation", "Dryness", "Anti-Ageing", "General Cleansing"], false),
+    ING(), NETQ(),
+    F("form", "Formulation", "select", ["Gel", "Foam", "Cream", "Liquid", "Scrub"], false), EXP(), USE()]},
+  {c: "beauty", s: /shampoo|conditioner|hair\s*wash/, f: [BR,
+    F("hair", "Hair Type", "select", ["All Hair Types", "Normal", "Oily", "Dry", "Damaged", "Curly", "Thin"], false),
+    F("concern", "Hair Concern", "select", ["Hair Fall", "Dandruff", "Frizz", "Dryness", "Damage Repair", "Hair Growth"], false),
+    ING(), NETQ(),
+    F("form", "Formulation", "select", ["Liquid", "Cream", "Gel", "Powder"], false), EXP(), USE()]},
+  {c: "beauty", s: /sunscreen|sun\s*block|spf/, f: [BR,
+    F("spf", "SPF", "select", ["SPF 15", "SPF 20", "SPF 30", "SPF 40", "SPF 50", "SPF 50+"], true),
+    F("pa", "PA Rating", "select", ["PA+", "PA++", "PA+++", "PA++++", "Not Applicable"], false),
+    F("skin", "Skin Type", "select", SK, false), ING(), NETQ(), EXP()]},
+  {c: "beauty", s: /moistur|cream|lotion/, f: [BR,
+    F("skin", "Skin Type", "select", SK, false),
+    F("spf", "SPF (agar ho)", "text", null, false, null, {placeholder: "jaise: SPF 30"}),
+    ING(), NETQ(),
+    F("form", "Formulation", "select", ["Cream", "Gel", "Lotion", "Oil"], false), EXP()]},
+  {c: "beauty", s: /lipstick|lip\s*stick|lip\s*colou?r|lip\s*tint/, f: [BR,
+    F("finish", "Finish", "select", ["Matte", "Glossy", "Satin", "Creamy"], false),
+    F("form", "Formulation", "select", ["Bullet", "Liquid", "Crayon", "Tint"], false),
+    NETQ(), EXP(),
+    V("shade", "Shade", "tags", null, true, "color", {help: "Comma se alag likhiye: Ruby Red, Nude Pink. Har shade ka alag price aur stock aayega."})]},
+  {c: "beauty", s: /other|serum|oil|perfume|deodorant|makeup|kajal|nail|foundation|compact|body/, f: [BR,
+    F("skin", "Skin / Hair Type", "select", SK, false), ING(), NETQ(), EXP(), USE(),
+    V("shade", "Shade / Variant", "tags", null, false, "color", {help: "Alag shade ya type ho to comma se likhiye. Nahi hai to khali chhodiye."})]},
+  /* ---------- TOYS ---------- */
+  {c: "toys", s: /remote|\brc\b|rc car|toy car|vehicle/, f: [BR, AGEF(true),
+    F("material", "Material", "select", ["Plastic", "ABS Plastic", "Metal", "Mixed"], false, "material"),
+    F("battery_type", "Battery Type", "select", ["AA", "AAA", "Rechargeable Li-ion", "Other"], false),
+    F("remote_type", "Remote Control Type", "select", ["2.4 GHz Remote", "Infrared Remote", "Mobile App"], false),
+    F("battery_inc", "Battery Included", "select", YN, false),
+    F("dimensions", "Dimensions", "text", null, false, null, {placeholder: "jaise: 25 x 12 x 10 cm"}),
+    COLV(false)]},
+  {c: "toys", s: /block|lego|brick/, f: [BR, AGEF(true),
+    F("pieces", "Number of Pieces", "number", null, true, null, {min: 1}),
+    F("material", "Material", "select", ["Plastic", "ABS Plastic", "Wood", "Foam"], false, "material"),
+    F("theme", "Theme", "text", null, false, null, {placeholder: "jaise: City, Cars, Animals"}),
+    F("colour_txt", "Colour", "text", null, false, "color", {placeholder: "jaise: Multicolour"})]},
+  {c: "toys", s: /soft|plush|teddy|stuffed/, f: [BR,
+    F("character", "Character / Animal", "text", null, true, null, {placeholder: "jaise: Teddy Bear"}),
+    F("material", "Material", "select", ["Plush", "Cotton", "Polyester", "Fur"], false, "material"),
+    AGEF(false),
+    F("height", "Height", "text", null, false, null, {placeholder: "jaise: 40 cm"}),
+    COLV(false)]},
+  {c: "toys", s: /educat|learning|puzzle|stem|board game|montessori/, f: [BR, AGEF(true),
+    F("learning", "Learning Type", "select", ["Alphabets & Numbers", "Maths", "Science / STEM", "Language", "Logic & Puzzle", "Creative / Art"], false),
+    F("material", "Material", "select", ["Plastic", "Wood", "Cardboard", "Foam", "Mixed"], false, "material"),
+    F("pieces", "Number of Pieces", "number", null, false, null, {min: 1})]},
+  {c: "toys", s: /other|doll|game|musical|ride|craft|art|action|figure/, f: [BR, AGEF(true),
+    F("material", "Material", "text", null, false, "material"),
+    F("battery_req", "Battery Required", "select", YN, false),
+    COLV(false)]},
+  /* ---------- ELECTRONICS ---------- */
+  {c: "electronics", s: /headphone|earbud|earphone|neckband|tws|headset|airpod/, f: [BR, MODEL,
+    F("conn", "Connectivity", "select", ["Bluetooth", "Wired", "Bluetooth + Wired"], true),
+    F("bt_version", "Bluetooth Version", "select", ["5.0", "5.1", "5.2", "5.3", "5.4"], false, null, {showIf: {key: "conn", vals: ["Bluetooth", "Bluetooth + Wired"]}}),
+    F("battery_life", "Battery Life", "text", null, false, null, {placeholder: "jaise: 20 hours"}),
+    F("mic", "Microphone", "select", YN, false),
+    F("charging", "Charging Type", "select", ["USB Type-C", "Micro USB", "Lightning", "Wireless"], false), WA,
+    COLV(false)]},
+  {c: "electronics", s: /smart\s*watch|watch|fitness band|\bband\b/, f: [BR, MODEL,
+    F("display", "Display Type", "select", ["AMOLED", "OLED", "LCD", "TFT", "LED"], false),
+    F("screen", "Screen Size", "text", null, false, null, {placeholder: "jaise: 1.83 inch"}),
+    F("battery_life", "Battery Life", "text", null, false, null, {placeholder: "jaise: 7 days"}),
+    F("bt_call", "Bluetooth Calling", "select", YN, false),
+    F("water", "Water Resistance", "select", ["None", "IP67", "IP68", "5 ATM"], false),
+    F("compat", "Compatibility", "select", ["Android & iOS", "Android only", "iOS only"], false), WA,
+    COLV(false)]},
+  {c: "electronics", s: /speaker|soundbar|sound bar|boombox/, f: [BR, MODEL,
+    F("conn", "Connectivity", "select", ["Bluetooth", "Wired", "Bluetooth + Wired", "Wi-Fi"], true),
+    F("power", "Output Power", "text", null, false, null, {placeholder: "jaise: 10 W"}),
+    F("battery_cap", "Battery Capacity", "text", null, false, null, {placeholder: "jaise: 2000 mAh"}),
+    F("bt_version", "Bluetooth Version", "select", ["5.0", "5.1", "5.2", "5.3"], false, null, {showIf: {key: "conn", vals: ["Bluetooth", "Bluetooth + Wired"]}}), WA,
+    COLV(false)]},
+  {c: "electronics", s: /other|charger|power\s*bank|camera|trimmer|cable|adapter|laptop|tv|television/, f: [BR, MODEL, WA,
+    F("conn", "Connectivity", "select", ["Bluetooth", "Wired", "Wi-Fi", "Not Applicable"], false), COLV(false)]},
+  /* ---------- MOBILES ---------- */
+  {c: "mobiles", s: /accessor|cover|case|charger|cable|protector|tempered|power\s*bank|holder|stand/, f: [BR,
+    F("acc_type", "Accessory Type", "select", ["Back Cover / Case", "Screen Protector", "Charger", "Cable", "Power Bank", "Holder / Stand", "Other"], true),
+    F("compat_brand", "Compatible Brand", "text", null, false, null, {placeholder: "jaise: Samsung"}),
+    F("compat_models", "Compatible Models", "text", null, false, null, {placeholder: "jaise: Galaxy M34, M35"}),
+    F("material", "Material", "text", null, false, "material"), WA, COLV(false)]},
+  {c: "mobiles", s: /smart\s*phone|phone|mobile|android|iphone|5g|4g/, f: [BR,
+    F("model", "Model Number", "text", null, true, "model_number"),
+    F("processor", "Processor", "text", null, false, null, {placeholder: "jaise: Snapdragon 7 Gen 1"}),
+    F("display_size", "Display Size", "text", null, false, null, {placeholder: "jaise: 6.7 inch"}),
+    F("battery", "Battery Capacity", "text", null, false, null, {placeholder: "jaise: 5000 mAh"}),
+    F("camera", "Camera Details", "text", null, false, null, {placeholder: "jaise: 50 MP + 8 MP"}),
+    F("os", "Operating System", "select", ["Android", "iOS", "Other"], false), WA,
+    V("ram", "RAM", "chips", ["2 GB", "3 GB", "4 GB", "6 GB", "8 GB", "12 GB", "16 GB"], true),
+    V("storage", "Internal Storage", "chips", ["32 GB", "64 GB", "128 GB", "256 GB", "512 GB", "1 TB"], true),
+    COLV(true)]},
+  /* ---------- HOME & KITCHEN ---------- */
+  {c: "home", s: /cookware|cooker|\bpan\b|kadai|tawa|\bpot\b|utensil|pressure|kitchenware/, f: [BR,
+    F("material", "Material", "select", ["Stainless Steel", "Aluminium", "Non-Stick", "Cast Iron", "Copper", "Glass", "Ceramic"], true, "material"),
+    F("capacity", "Capacity", "text", null, false, null, {placeholder: "jaise: 1.5 L"}),
+    F("cooktop", "Compatible Cooktops", "select", ["Gas & Induction", "Gas Only", "Induction Only", "All Cooktops"], false),
+    F("pieces", "Number of Pieces", "number", null, false, null, {min: 1}), COLV(false)]},
+  {c: "home", s: /storage|container|organi[sz]er|bottle|jar|basket|lunch|box/, f: [BR,
+    F("material", "Material", "select", ["Plastic", "Stainless Steel", "Glass", "Wood", "Fabric", "Other"], false, "material"),
+    F("capacity", "Capacity", "text", null, false, null, {placeholder: "jaise: 750 ml"}),
+    F("dimensions", "Dimensions", "text", null, false, null, {placeholder: "jaise: 20 x 10 x 8 cm"}),
+    F("pieces", "Number of Pieces", "number", null, false, null, {min: 1}), COLV(false)]},
+  {c: "home", s: /decor|showpiece|wall|frame|lamp|light|vase|curtain|cushion|clock|artificial/, f: [BR,
+    F("material", "Material", "text", null, false, "material", {placeholder: "jaise: Wood, Metal, Glass"}),
+    F("dimensions", "Dimensions", "text", null, false, null, {placeholder: "jaise: 30 x 20 cm"}),
+    F("style", "Style", "select", ["Modern", "Traditional", "Minimalist", "Vintage", "Ethnic"], false),
+    F("install", "Installation Type", "select", ["Wall Mount", "Table Top", "Floor Standing", "Hanging", "No Installation"], false), COLV(false)]},
+  {c: "home", s: /other|furnish|bedsheet|towel|clean|appliance|bath|mop/, f: [BR,
+    F("material", "Material", "text", null, false, "material"),
+    F("dimensions", "Dimensions", "text", null, false, null, {placeholder: "jaise: 30 x 20 cm"}), COLV(false)]}
+];
+function psSubConfig(catName, subName){
+  var c = String(catName || "").toLowerCase(), s = String(subName || "").toLowerCase();
+  if(!s) return null;
+  for(var i = 0; i < SUBRULES.length; i++){
+    var r = SUBRULES[i];
+    if(CATRX[r.c].test(c) && r.s.test(s)) return {fields: r.f};
+  }
+  return null;
+}
+/* @@CFG-END */
+
 /* ---------- schema (category -> fields) ---------- */
 (async function(){
   var sel = $("category");
@@ -192,22 +412,49 @@ function el(tag, attrs, text){
 $("category").addEventListener("change", function(){
   var id = this.value;
   CAT = SCHEMA && SCHEMA.find(function(c){ return String(c.id) === id; }) || null;
-  VALUES = {};
+  VALUES = {}; SUBCFG = null; PRE = null;
   $("afterCat").className = "sec" + (CAT ? " show" : "");
   var sub = $("subcategory"); sub.innerHTML = "";
-  if(!CAT) { sub.appendChild(el("option", {value: ""}, "Pehle category chuniye")); return; }
-  sub.appendChild(el("option", {value: ""}, "Sub-category chuniye"));
-  (CAT.subcategories || []).forEach(function(s){ sub.appendChild(el("option", {value: s}, s)); });
+  if(!CAT){ sub.appendChild(el("option", {value: ""}, "Pehle category chuniye")); sub.required = false; $("subStar").style.display = "none"; return; }
+  var subs = CAT.subcategories || [];
+  sub.appendChild(el("option", {value: ""}, subs.length ? "Sub-category chuniye" : "Is category me sub-category nahi hai"));
+  subs.forEach(function(s){ sub.appendChild(el("option", {value: s}, s)); });
+  sub.required = subs.length > 0; $("subStar").style.display = subs.length ? "" : "none";
   buildFields();
 });
 
-function specFields(){ return (CAT.fields || []).filter(function(f){ return f.scope !== "variant"; }); }
-function axisFields(){ return (CAT.fields || []).filter(function(f){ return f.scope === "variant"; }); }
+/* sub-category badalne par: purane fields hatte hain, naye aate hain. Jo field dono me hai (jaise Brand, Fabric) uski value bachi rehti hai */
+$("subcategory").addEventListener("change", function(){
+  if(!CAT) return;
+  var next = psSubConfig(CAT.name, this.value);
+  PRE = snapshot(); VALUES = {}; SUBCFG = next;
+  buildFields(); PRE = null;
+});
+function snapshot(){
+  var snap = {spec: {}, axes: {}};
+  Array.prototype.forEach.call(document.querySelectorAll('#specFields [id^="f_"]'), function(i){ if(i.value) snap.spec[i.id.slice(2)] = i.value; });
+  Object.keys(VALUES).forEach(function(k){ if(VALUES[k] && VALUES[k].length) snap.axes[k] = VALUES[k].slice(); });
+  return snap;
+}
+
+function activeFields(){ return SUBCFG ? SUBCFG.fields : ((CAT && CAT.fields) || []); }
+function specFields(){ return activeFields().filter(function(f){ return f.scope !== "variant"; }); }
+function axisFields(){ return activeFields().filter(function(f){ return f.scope === "variant"; }); }
+
+/* dependent field: jaise "Blouse Piece = Yes" hone par hi "Blouse Fabric" dikhe */
+function applyShowIf(){
+  specFields().forEach(function(f){
+    if(!f.showIf || !WR[f.key]) return;
+    var c = $("f_" + f.showIf.key), ok = !!c && f.showIf.vals.indexOf(c.value) >= 0;
+    WR[f.key].style.display = ok ? "" : "none";
+    if(!ok){ var i = $("f_" + f.key); if(i){ i.value = ""; if(i.__setSel) i.__setSel([]); } }
+  });
+}
 
 function buildFields(){
-  var box = $("specFields"); box.innerHTML = "";
+  var box = $("specFields"); box.innerHTML = ""; WR = {};
   var sf = specFields();
-  var general = sf.length === 0;           /* is category ke liye koi custom field nahi: general form */
+  var general = sf.length === 0;           /* koi custom field nahi: general form */
   $("generalBox").className = "sec show";
   if(general){
     [["brand","Brand","text",true],["model","Model Number","text",false],["color","Colour","text",false],["material","Material","text",false],["warranty","Warranty","text",false]].forEach(function(x){
@@ -217,23 +464,52 @@ function buildFields(){
     });
   }
   sf.forEach(function(f){
-    var w = el("div", f.type === "textarea" ? {style: "grid-column:1/-1"} : null);
+    var wide = f.type === "textarea" || f.type === "multiselect";
+    var w = el("div", wide ? {style: "grid-column:1/-1"} : null);
     var l = el("label", null, f.label + " "); if(f.required) l.appendChild(el("i", null, "*"));
     w.appendChild(l);
-    var inp;
+    var inp, saved = (PRE && PRE.spec[f.key] != null) ? PRE.spec[f.key] : null;
     if(f.type === "select"){
       inp = el("select", {id: "f_" + f.key}); inp.appendChild(el("option", {value: ""}, "Chuniye"));
       (f.options || []).forEach(function(o){ inp.appendChild(el("option", {value: o}, o)); });
-    }else if(f.type === "textarea"){ inp = el("textarea", {id: "f_" + f.key, maxlength: "2000"}); }
-    else if(f.type === "date"){ inp = el("input", {id: "f_" + f.key, type: "date"}); }
-    else if(f.type === "number"){ inp = el("input", {id: "f_" + f.key, type: "number", step: "any"}); }
-    else{ inp = el("input", {id: "f_" + f.key, maxlength: "120"}); }
+      if(saved !== null && (f.options || []).indexOf(saved) >= 0) inp.value = saved;
+    }else if(f.type === "multiselect"){
+      inp = el("input", {id: "f_" + f.key, type: "hidden"});
+      var chips = el("div", {class: "chips"}), sel = [], cs = [];
+      var repaint = function(){
+        cs.forEach(function(c){ c.e.classList.toggle("on", sel.indexOf(c.o) >= 0); });
+        inp.value = (f.options || []).filter(function(x){ return sel.indexOf(x) >= 0; }).join(", ");
+      };
+      (f.options || []).forEach(function(o){
+        var c = el("span", {class: "chip", role: "button", tabindex: "0"}, o);
+        var tg = function(){ var i = sel.indexOf(o); if(i >= 0) sel.splice(i, 1); else sel.push(o); repaint(); };
+        c.onclick = tg; c.onkeydown = function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); tg(); } };
+        cs.push({e: c, o: o}); chips.appendChild(c);
+      });
+      inp.__setSel = function(a){ sel = (f.options || []).filter(function(x){ return a.indexOf(x) >= 0; }); repaint(); };
+      if(saved) inp.__setSel(String(saved).split(", "));
+      w.appendChild(chips);
+    }else if(f.type === "textarea"){
+      inp = el("textarea", {id: "f_" + f.key, maxlength: "2000"}); if(saved !== null) inp.value = saved;
+    }else if(f.type === "date"){
+      inp = el("input", {id: "f_" + f.key, type: "date"}); if(saved !== null) inp.value = saved;
+    }else if(f.type === "number"){
+      inp = el("input", {id: "f_" + f.key, type: "number", step: "any"}); if(f.min != null) inp.min = String(f.min); if(saved !== null) inp.value = saved;
+    }else{
+      inp = el("input", {id: "f_" + f.key, maxlength: "120"}); if(saved !== null) inp.value = saved;
+    }
     if(f.placeholder) inp.placeholder = f.placeholder;
-    if(f.required) inp.required = true;
+    if(f.required && f.type !== "multiselect") inp.required = true;
     w.appendChild(inp);
     if(f.help) w.appendChild(el("p", {class: "hint"}, f.help));
+    if(f.showIf) WR[f.key] = w;
     box.appendChild(w);
   });
+  sf.forEach(function(f){
+    if(!f.showIf) return;
+    var c = $("f_" + f.showIf.key); if(c) c.addEventListener("change", applyShowIf);
+  });
+  applyShowIf();
   buildAxes();
 }
 
@@ -244,19 +520,22 @@ function buildAxes(){
   $("singleStockBox").style.display = "";
   af.forEach(function(f){
     VALUES[f.key] = [];
+    var keep = (PRE && PRE.axes[f.key]) ? PRE.axes[f.key] : [];
     var w = el("div", {style: "margin-top:12px"});
     var l = el("label", null, f.label + " "); if(f.required) l.appendChild(el("i", null, "*")); w.appendChild(l);
     if(f.type === "tags"){
       var inp = el("input", {id: "ax_" + f.key, maxlength: "200", placeholder: "Comma se alag: Black, Blue, Red"});
+      if(keep.length){ VALUES[f.key] = keep.slice(0, 12); inp.value = VALUES[f.key].join(", "); }
       inp.addEventListener("input", function(){
         VALUES[f.key] = inp.value.split(",").map(function(x){ return x.trim(); }).filter(function(x, i, a){ return x && a.indexOf(x) === i; }).slice(0, 12);
         buildRows();
       });
       w.appendChild(inp);
     }else{
+      VALUES[f.key] = (f.options || []).filter(function(x){ return keep.indexOf(x) >= 0; });
       var chips = el("div", {class: "chips"});
       (f.options || []).forEach(function(o){
-        var c = el("span", {class: "chip", role: "button", tabindex: "0"}, o);
+        var c = el("span", {class: "chip" + (VALUES[f.key].indexOf(o) >= 0 ? " on" : ""), role: "button", tabindex: "0"}, o);
         function toggle(){
           var arr = VALUES[f.key], i = arr.indexOf(o);
           if(i >= 0){ arr.splice(i, 1); c.classList.remove("on"); } else { arr.push(o); c.classList.add("on"); }
@@ -486,7 +765,7 @@ $("productForm").addEventListener("submit", async function(e){
     showMessage("✅ Product submit ho gaya" + (multi ? " (" + payload.length + " variants)" : "") + "! Admin ke approval ka intezaar hai." + note, "#188038");
     uploaded = [];
     $("productForm").reset(); images.forEach(function(x){ URL.revokeObjectURL(x.url); }); images = []; paint();
-    $("afterCat").className = "sec"; CAT = null; VALUES = {};
+    $("afterCat").className = "sec"; CAT = null; VALUES = {}; SUBCFG = null;
   }catch(err){
     console.error("PS Mart product submit:", err);
     if(uploaded.length){ try{ await supabaseClient.storage.from("product-images").remove(uploaded); }catch(x){} }
