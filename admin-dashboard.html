@@ -678,22 +678,82 @@ async function updateSeller(id,status){
 
 /* ================= PRODUCTS ================= */
 
+const PS_ADMIN_CATS = {
+  1: "Mobiles",
+  2: "Electronics",
+  3: "Fashion",
+  4: "Beauty",
+  5: "Home",
+  6: "Grocery",
+  7: "Accessories"
+};
+
+/* product ki saari details (brand + sub-category wali specifications) admin ko dikhane ke liye */
+function psAdminSpecs(p){
+
+  const rows = [];
+
+  const add = (k, v) => {
+    if (v !== null && v !== undefined && String(v).trim() !== "") {
+      rows.push([k, v]);
+    }
+  };
+
+  add("Brand", p.brand);
+  add("Model Number", p.model_number);
+  add("Warranty", p.warranty);
+
+  let spec = p.specifications;
+
+  if (typeof spec === "string") {
+    try { spec = JSON.parse(spec); } catch (e) { spec = null; }
+  }
+
+  if (spec && typeof spec === "object" && !Array.isArray(spec)) {
+
+    Object.keys(spec).forEach(k => {
+
+      const lk = k.toLowerCase();
+
+      if (lk === "brand" && p.brand) return;
+      if (lk === "model number" && p.model_number) return;
+      if (lk === "warranty" && p.warranty) return;
+
+      add(k, spec[k]);
+
+    });
+
+  }
+
+  if (!rows.length) return "";
+
+  return `
+    <details style="margin:8px 0">
+      <summary style="cursor:pointer;font-weight:bold">
+        Product Details (${rows.length})
+      </summary>
+      <table style="margin-top:6px;font-size:13px">
+        ${rows.map(r => `
+          <tr>
+            <td style="padding:3px 10px 3px 0;color:#7c6a58">
+              ${esc(r[0])}
+            </td>
+            <td style="padding:3px 0">
+              ${esc(r[1])}
+            </td>
+          </tr>`).join("")}
+      </table>
+    </details>
+  `;
+
+}
+
 async function loadProducts(){
 
   const {data,error} =
     await supabaseClient
     .from("products")
-    .select(`
-      id,
-      name,
-      description,
-      price,
-      old_price,
-      stock,
-      image_url,
-      status,
-      sellers(shop_name)
-    `);
+    .select("*, sellers(shop_name)");
 
 
   const box =
@@ -758,6 +818,22 @@ async function loadProducts(){
         <b>Stock:</b>
         ${product.stock || 0}
       </p>
+
+      <p>
+        <b>Category:</b>
+        ${esc(PS_ADMIN_CATS[product.category_id] || ("ID " + (product.category_id ?? "-")))}
+        ${product.subcategory ? " &rsaquo; " + esc(product.subcategory) : ""}
+      </p>
+
+      ${
+        product.variant_label
+        ?
+        `<p><b>Variant:</b> ${esc(product.variant_label)}</p>`
+        :
+        ""
+      }
+
+      ${psAdminSpecs(product)}
 
       <p>
         <b>Status:</b>
