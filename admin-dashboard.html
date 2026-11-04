@@ -752,7 +752,8 @@ async function loadProducts(){
   const {data,error} =
     await supabaseClient
     .from("products")
-    .select("*, sellers(shop_name)");
+    .select("*, sellers(shop_name)")
+    .order("created_at",{ascending:false});
 
 
   const box =
