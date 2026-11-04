@@ -106,7 +106,7 @@ button:disabled{opacity:.6;cursor:wait}
 
 <h3>2. Product Photos</h3>
 <div class="tip">
-📸 <b>Achhi photo ke niyam:</b> asli product ki photo, saaf background, kam se kam <b>500 x 500 pixel</b>. Doosri site ki photo ya watermark / phone number wali photo mat lagaiye. Pehli photo <b>Main</b> photo hoti hai: sabse pehle wahi dikhti hai. Alag-alag side (aage, peeche, side, andar ka) ki photos lagaiye.
+📸 <b>Achhi photo ke niyam:</b> asli product ki photo, saaf background, product poora dikhe. Doosri site ki photo ya watermark / phone number wali photo mat lagaiye. Pehli photo <b>Main</b> photo hoti hai: sabse pehle wahi dikhti hai. Alag-alag side (aage, peeche, side, andar ka) ki photos lagaiye.
 </div>
 
 <input id="productImages" type="file" accept="image/jpeg,image/png,image/webp" multiple style="display:none">
@@ -205,7 +205,7 @@ button:disabled{opacity:.6;cursor:wait}
 
 <script src="app.js"></script>
 <script>
-var MAX_PHOTOS = 8, MIN_SIDE = 500, MAX_SIDE = 1600;
+var MAX_PHOTOS = 8, MAX_SIDE = 1600;
 var images = [];            /* {blob, url} - pehli Main photo */
 var imageInput = document.getElementById("productImages");
 var previews = document.getElementById("previews");
@@ -279,7 +279,6 @@ async function processFile(file){
   if(["image/jpeg","image/png","image/webp"].indexOf(file.type) < 0) throw new Error(file.name + ": sirf JPG, PNG ya WEBP");
   if(file.size > 15 * 1024 * 1024) throw new Error(file.name + ": 15 MB se badi hai");
   var im = await loadImage(file);
-  if(Math.min(im.naturalWidth, im.naturalHeight) < MIN_SIDE) throw new Error(file.name + ": photo chhoti hai (kam se kam 500 x 500 chahiye)");
   var scale = Math.min(1, MAX_SIDE / Math.max(im.naturalWidth, im.naturalHeight));
   var w = Math.round(im.naturalWidth * scale), h = Math.round(im.naturalHeight * scale);
   var c = document.createElement("canvas"); c.width = w; c.height = h;
