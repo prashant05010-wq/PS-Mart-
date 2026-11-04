@@ -121,6 +121,8 @@ body{
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
+function psSafe(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+
 const SUPABASE_URL = "https://nctscffhnztscczjxhat.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
 
@@ -197,9 +199,9 @@ async function loadWishlist(){
         return `
           <div class="wishlist-card">
 
-            <img src="${p.image_url || 'https://via.placeholder.com/300'}">
+            <img src="${psSafe(p.image_url || 'https://via.placeholder.com/300')}" alt="">
 
-            <h3>${p.name}</h3>
+            <h3>${psSafe(p.name)}</h3>
 
             <div>
               <span class="price">₹${p.price}</span>
