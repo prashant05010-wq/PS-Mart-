@@ -29,16 +29,17 @@ button:disabled{opacity:.6;cursor:wait}
 .mainbtn{width:100%;margin-top:24px;background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);color:#24150b;font-size:17px;padding:15px}
 .addphoto{background:#43250f;color:#f0bd50;margin-top:10px}
 #previews{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
-.photo{border:1px solid #e6dac3;border-radius:10px;padding:6px;min-width:0;text-align:center;background:#fffdf7}
+.photo,.addtile{position:relative;aspect-ratio:1/1;border:1px solid #e6dac3;border-radius:10px;background:#fff;overflow:hidden;min-width:0}
 .photo.main{border:2px solid #c9922e}
-.photo img{width:100%;height:110px;object-fit:contain;background:#fbf6ea;border-radius:7px}
-.photo .tag{font-size:11px;font-weight:bold;color:#188038;margin:4px 0}
-.photo button{width:100%;margin-top:4px;padding:6px;font-size:12px}
-.photo .mk{background:#fbf6ea;color:#43250f;border:1px solid #c9922e}
-.photo .rm{background:#fff;color:#c62828;border:1px solid #c62828}
+.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:4px;display:block}
+.photo .tag{position:absolute;left:0;right:0;bottom:0;background:rgba(36,21,11,.8);color:#f0bd50;font-size:11px;font-weight:bold;text-align:center;padding:3px 0;margin:0}
+.photo .rm{position:absolute;top:4px;right:4px;width:26px;height:26px;padding:0;margin:0;border-radius:50%;background:#fff;color:#c62828;border:1px solid #c62828;font-size:15px;line-height:24px;text-align:center;cursor:pointer}
+.photo .mk{position:absolute;left:4px;top:4px;width:auto;margin:0;padding:3px 7px;font-size:10px;line-height:1.2;background:#fff;color:#43250f;border:1px solid #c9922e;border-radius:6px;cursor:pointer}
+.addtile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:2px dashed #c9922e;background:#fffdf7;color:#43250f;font-weight:bold;font-size:12px;cursor:pointer;padding:0;width:100%}
+.addtile b{font-size:28px;line-height:1;color:#c9922e;font-weight:normal}
 #message{margin-top:16px;text-align:center;overflow-wrap:anywhere;font-weight:bold;line-height:1.6}
 .back{display:inline-block;margin-top:18px;color:#43250f;text-decoration:none;font-weight:bold}
-@media(max-width:560px){.grid{grid-template-columns:1fr}.box{padding:15px}#previews{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.box{padding:15px}#previews{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .chip{padding:8px 14px;border:1.5px solid #c9922e;border-radius:999px;background:#fff;color:#43250f;font-weight:bold;font-size:14px;cursor:pointer;user-select:none}
@@ -100,9 +101,8 @@ button:disabled{opacity:.6;cursor:wait}
 </div>
 
 <h3>4. Product Photos</h3>
-<div class="tip">📸 Asli product ki saaf photo, kam se kam <b>500 x 500 pixel</b>. Doosri site ki photo, watermark ya phone number wali photo mat lagaiye. Pehli photo <b>Main</b> hoti hai. Ye photos sabhi variants par lagti hain.</div>
+<div class="tip">📸 Asli product ki saaf photo lagaiye, product poora dikhna chahiye. Doosri site ki photo, watermark ya phone number wali photo mat lagaiye. Pehli photo <b>Main</b> hoti hai. Ye photos sabhi variants par lagti hain.</div>
 <input id="productImages" type="file" accept="image/jpeg,image/png,image/webp" multiple style="display:none">
-<button type="button" class="addphoto" id="pickBtn" style="width:100%">➕ Photos Chuniye (8 tak)</button>
 <p class="hint" id="photoCount">Abhi koi photo nahi chuni.</p>
 <div id="previews"></div>
 
@@ -156,7 +156,7 @@ button:disabled{opacity:.6;cursor:wait}
 
 <script src="app.js"></script>
 <script>
-var MAX_PHOTOS = 8, MIN_SIDE = 500, MAX_SIDE = 1600, MAX_ROWS = 60;
+var MAX_PHOTOS = 8, MAX_SIDE = 1600, MAX_ROWS = 60;
 var COLS = ["brand","model_number","color","size","material","weight","warranty","in_the_box","country_of_origin","manufacturer","packer","hsn_code"];
 var SCHEMA = null, CAT = null, VALUES = {}, ROWS = [], SUBCFG = null, PRE = null, WR = {};
 var images = [];
@@ -601,12 +601,20 @@ function paint(){
   previews.replaceChildren();
   images.forEach(function(it, i){
     var card = el("div", {class: "photo" + (i === 0 ? " main" : "")});
-    card.append(el("img", {src: it.url, alt: "Photo " + (i+1)}), el("div", {class: "tag"}, i === 0 ? "⭐ Main Photo" : "Photo " + (i+1)));
+    card.appendChild(el("img", {src: it.url, alt: "Photo " + (i+1)}));
+    card.appendChild(el("div", {class: "tag"}, i === 0 ? "Main Photo" : "Photo " + (i+1)));
     if(i > 0){ var mk = el("button", {type: "button", class: "mk"}, "Main banao"); mk.onclick = function(){ var x = images.splice(i,1)[0]; images.unshift(x); paint(); }; card.appendChild(mk); }
-    var rm = el("button", {type: "button", class: "rm"}, "Hatayein"); rm.onclick = function(){ URL.revokeObjectURL(it.url); images.splice(i,1); paint(); };
+    var rm = el("button", {type: "button", class: "rm", "aria-label": "Photo hatayein"}, "\u2715"); rm.onclick = function(){ URL.revokeObjectURL(it.url); images.splice(i,1); paint(); };
     card.appendChild(rm); previews.appendChild(card);
   });
-  $("photoCount").textContent = images.length ? images.length + " / " + MAX_PHOTOS + " photo chuni gayi. Pehli photo Main hai." : "Abhi koi photo nahi chuni.";
+  if(images.length < MAX_PHOTOS){
+    var add = el("button", {type: "button", class: "addtile"});
+    add.appendChild(el("b", null, "+"));
+    add.appendChild(el("span", null, images.length ? "Aur photo" : "Photo jodiye"));
+    add.onclick = function(){ imageInput.click(); };
+    previews.appendChild(add);
+  }
+  $("photoCount").textContent = images.length ? images.length + " / " + MAX_PHOTOS + " photo. Pehli photo Main hai." : "Abhi koi photo nahi chuni. (8 tak, JPG / PNG / WEBP)";
 }
 function loadImage(file){
   return new Promise(function(resolve, reject){
@@ -620,7 +628,6 @@ async function processFile(file){
   if(["image/jpeg","image/png","image/webp"].indexOf(file.type) < 0) throw new Error(file.name + ": sirf JPG, PNG ya WEBP");
   if(file.size > 15 * 1024 * 1024) throw new Error(file.name + ": 15 MB se badi hai");
   var im = await loadImage(file);
-  if(Math.min(im.naturalWidth, im.naturalHeight) < MIN_SIDE) throw new Error(file.name + ": photo chhoti hai (kam se kam 500 x 500 chahiye)");
   var scale = Math.min(1, MAX_SIDE / Math.max(im.naturalWidth, im.naturalHeight));
   var w = Math.round(im.naturalWidth * scale), h = Math.round(im.naturalHeight * scale);
   var c = document.createElement("canvas"); c.width = w; c.height = h;
@@ -629,7 +636,6 @@ async function processFile(file){
   if(!blob) throw new Error(file.name + ": photo process nahi ho payi");
   return {blob: blob, url: URL.createObjectURL(blob)};
 }
-$("pickBtn").onclick = function(){ imageInput.click(); };
 imageInput.addEventListener("change", async function(){
   var files = Array.prototype.slice.call(imageInput.files || []); imageInput.value = "";
   if(!files.length) return;
