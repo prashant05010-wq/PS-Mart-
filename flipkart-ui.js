@@ -58,6 +58,14 @@
 #detail .ps-sec h2{margin:0 0 10px;font:700 26px 'Cormorant Garamond',Georgia,serif;color:#43250f}
 #detail .ps-sec ul{margin:0;padding-left:20px;line-height:1.8;font-size:14px}
 #detail .ps-sec .spec-table{width:100%;max-width:none}
+/* collapsible sections (All details / Specifications) - Flipkart jaisa chevron */
+#detail .ps-acc>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
+#detail .ps-acc>summary::-webkit-details-marker{display:none}
+#detail .ps-acc>summary h2{margin:0}
+#detail .ps-acc .ps-chev{width:10px;height:10px;border-right:2.5px solid #43250f;border-bottom:2.5px solid #43250f;transform:rotate(45deg);margin:-4px 6px 0 12px;transition:transform .2s;flex:0 0 auto}
+#detail .ps-acc[open] .ps-chev{transform:rotate(-135deg);margin-top:4px}
+#detail .ps-acc>summary:focus-visible{outline:2px solid #c9922e;outline-offset:4px;border-radius:4px}
+#detail .ps-acc .ps-acc-body{padding-top:12px}
 #detail .action-buttons{display:flex;gap:10px;margin:18px 0}
 #detail .action-buttons button{flex:1;padding:14px;border:0;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;background:#43250f;color:#f0bd50}
 #detail .action-buttons button.ps-buy{background:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#c9922e);color:#24150b}
@@ -376,18 +384,18 @@ async function detail() {
 
     highlights +
 
-    '<div class="ps-sec ps-wide"><h2>All details</h2>' +
-      '<p style="font-size:14px;line-height:1.7;color:#333;margin:0">' +
-      psEsc(p.description || "Premium quality product available on PS Mart.") + '</p></div>' +
+    '<details class="ps-sec ps-wide ps-acc"><summary><h2>All details</h2><i class="ps-chev" aria-hidden="true"></i></summary>' +
+      '<div class="ps-acc-body"><p style="font-size:14px;line-height:1.7;color:#333;margin:0">' +
+      psEsc(p.description || "Premium quality product available on PS Mart.") + '</p></div></details>' +
 
-    '<div class="ps-sec ps-wide"><h2>Specifications</h2>' +
-      '<table class="spec-table">' +
+    '<details class="ps-sec ps-wide ps-acc"><summary><h2>Specifications</h2><i class="ps-chev" aria-hidden="true"></i></summary>' +
+      '<div class="ps-acc-body"><table class="spec-table">' +
         '<tr><td>Product Name</td><td>' + psEsc(p.name) + '</td></tr>' +
         '<tr><td>Category</td><td>' + (cats[Number(p.category_id)] || "General") + '</td></tr>' +
         '<tr><td>Availability</td><td>' + (inStock ? "In Stock" : "Out of Stock") + '</td></tr>' +
         '<tr><td>Seller</td><td>PS Mart Seller</td></tr>' +
         psExtraSpecRows(p) +
-      '</table></div>' +
+      '</table></div></details>' +
 
     '<div class="ps-sec ps-wide"><h2>Ratings &amp; Reviews</h2>' +
       '<div class="review-box"><b>No reviews yet</b><p>Be the first customer to review this product.</p></div></div>' +
