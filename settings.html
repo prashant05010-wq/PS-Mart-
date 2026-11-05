@@ -199,7 +199,8 @@
 
     }
 
-  </style>
+  .setting.clickable{cursor:pointer}.setting.clickable:hover{background:#faf6ee}.setting.clickable:focus-visible{outline:2px solid #c9922e;outline-offset:-2px}
+</style>
 
 <link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 </head>
@@ -441,7 +442,7 @@
       </div>
 
 
-      <div class="setting">
+      <div class="setting clickable" role="link" tabindex="0" onclick="location.href='privacy-center.html?from=settings'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();location.href='privacy-center.html?from=settings'}">
 
         <div class="setting-info">
 
@@ -458,7 +459,7 @@
       </div>
 
 
-      <div class="setting">
+      <div class="setting clickable" role="link" tabindex="0" onclick="location.href='login-security.html'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();location.href='login-security.html'}">
 
         <div class="setting-info">
 

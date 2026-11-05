@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Security | PS Mart</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#F7F1E8;color:#3B2416;min-height:100vh}
+.header{background:linear-gradient(135deg,#3b1f0f,#6b3d1e);color:#fff;padding:16px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 3px 12px rgba(0,0,0,.18)}
+.header h1{font-size:20px}
+.back{color:#fff;text-decoration:none;font-size:14px;white-space:nowrap}
+.container{max-width:640px;margin:18px auto;padding:0 14px 40px}
+.card{background:#fff;border-radius:15px;box-shadow:0 3px 12px rgba(0,0,0,.08);margin-bottom:16px;overflow:hidden}
+.card h2{font-size:17px;padding:15px 18px;border-bottom:1px solid #eee}
+.card .body{padding:16px 18px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #f3ece0;font-size:14px}
+.row:last-child{border-bottom:0}
+.row span:first-child{color:#7a6a58}
+.row span:last-child{text-align:right;word-break:break-word;font-weight:600}
+label{display:block;font-size:13px;font-weight:700;margin:12px 0 5px}
+.pw{position:relative}
+.pw input{width:100%;padding:12px 64px 12px 12px;border:1px solid #d9c9ad;border-radius:10px;font-size:15px;background:#fffdf9;color:#3B2416}
+.pw input:focus{outline:2px solid #C9922E;border-color:#C9922E}
+.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;color:#8a6a2f;font-weight:700;font-size:12px;padding:8px;cursor:pointer}
+.hint{font-size:12px;color:#7a6a58;margin-top:5px;line-height:1.4}
+.meter{height:6px;border-radius:4px;background:#eee;margin-top:8px;overflow:hidden}
+.meter i{display:block;height:100%;width:0;transition:width .2s,background .2s}
+.meter-label{font-size:12px;margin-top:4px;font-weight:700}
+.btn{width:100%;margin-top:18px;padding:13px;border:0;border-radius:10px;background:#C9922E;color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+.btn:hover{background:#a87518}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn.alt{background:#fff;color:#3B2416;border:1px solid #C9922E;margin-top:10px}
+.btn.alt:hover{background:#F7F1E8}
+.btn.danger{background:#a83232}
+.btn.danger:hover{background:#842525}
+.msg{margin-top:14px;padding:11px 12px;border-radius:10px;font-size:13px;display:none;line-height:1.45}
+.msg.ok{display:block;background:#e7f4ea;color:#1b6b2f}
+.msg.err{display:block;background:#fdeaea;color:#a83232}
+.msg.info{display:block;background:#fbf3e0;color:#7a5a14}
+#reauthBox{display:none;margin-top:6px}
+.center{text-align:center;padding:30px 18px}
+.center a{color:#C9922E;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back" href="settings.html">&larr; Settings</a>
+  <h1>Login Security</h1>
+</div>
+
+<div class="container">
+
+  <div id="needLogin" class="card" style="display:none">
+    <div class="center">
+      <p style="margin-bottom:10px">Login Security dekhne ke liye pehle login kijiye.</p>
+      <a href="login.html">Login karein</a>
+    </div>
+  </div>
+
+  <div id="app" style="display:none">
+
+    <div class="card">
+      <h2>🔐 Account &amp; Session</h2>
+      <div class="body" id="info"></div>
+    </div>
+
+    <div class="card">
+      <h2>🔑 Change Password</h2>
+      <div class="body">
+        <form id="pwForm" autocomplete="off" novalidate>
+          <label for="curPw">Current Password</label>
+          <div class="pw"><input id="curPw" type="password" autocomplete="current-password"><button type="button" data-toggle="curPw">Show</button></div>
+          <div class="hint">Agar aap OTP se login karte ho aur pehle kabhi password set nahi kiya, to ise khali chhod do. Agar bhara hai to hum pehle usse verify karenge.</div>
+
+          <label for="newPw">New Password</label>
+          <div class="pw"><input id="newPw" type="password" autocomplete="new-password"><button type="button" data-toggle="newPw">Show</button></div>
+          <div class="meter"><i id="meterBar"></i></div>
+          <div class="meter-label" id="meterLabel"></div>
+          <div class="hint">Kam se kam 8 characters. Capital, small, number aur symbol milakar rakhein.</div>
+
+          <label for="confPw">Confirm New Password</label>
+          <div class="pw"><input id="confPw" type="password" autocomplete="new-password"><button type="button" data-toggle="confPw">Show</button></div>
+
+          <div id="reauthBox">
+            <label for="nonce">Email Verification Code</label>
+            <div class="pw"><input id="nonce" type="text" inputmode="numeric" autocomplete="one-time-code"></div>
+            <div class="hint">Security ke liye Supabase ne aapke email par ek code bheja hai. Wo code yahan daalein.</div>
+          </div>
+
+          <button class="btn" id="pwBtn" type="submit">Update Password</button>
+          <div class="msg" id="pwMsg"></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📱 Sessions</h2>
+      <div class="body">
+        <button class="btn alt" id="outHere" type="button">Logout from this device</button>
+        <button class="btn alt" id="outOthers" type="button">Logout from all other devices</button>
+        <div class="hint">"Other devices" se aapka ye current session logout nahi hoga.</div>
+        <div class="msg" id="sessMsg"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var SUPABASE_URL = "https://nctscffhnztscczjxhat.supabase.co";
+var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw";
+var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+var $ = function (id) { return document.getElementById(id); };
+var currentUser = null;
+
+function show(el, cls, text) { el.className = "msg " + cls; el.textContent = text; }
+function fmt(d) { try { return d ? new Date(d).toLocaleString() : "-"; } catch (e) { return "-"; } }
+function addRow(parent, k, v) {
+  var r = document.createElement("div"); r.className = "row";
+  var a = document.createElement("span"); a.textContent = k;
+  var b = document.createElement("span"); b.textContent = v;
+  r.appendChild(a); r.appendChild(b); parent.appendChild(r);
+}
+
+async function init() {
+  var s = await sb.auth.getSession();
+  var session = s && s.data && s.data.session;
+  if (!session) { $("needLogin").style.display = "block"; return; }
+  currentUser = session.user;
+  $("app").style.display = "block";
+  var info = $("info");
+  var provider = (currentUser.app_metadata && currentUser.app_metadata.provider) || "email";
+  addRow(info, "Email", currentUser.email || "-");
+  addRow(info, "Sign-in method", provider === "email" ? "Email (OTP / password)" : provider);
+  addRow(info, "Email verified", currentUser.email_confirmed_at ? "Yes" : "No");
+  addRow(info, "Account created", fmt(currentUser.created_at));
+  addRow(info, "Last sign-in", fmt(currentUser.last_sign_in_at));
+  if (session.expires_at) addRow(info, "This session refreshes by", fmt(session.expires_at * 1000));
+}
+
+/* ---------- show / hide ---------- */
+document.querySelectorAll("[data-toggle]").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var i = $(b.getAttribute("data-toggle"));
+    var hidden = i.type === "password";
+    i.type = hidden ? "text" : "password";
+    b.textContent = hidden ? "Hide" : "Show";
+  });
+});
+
+/* ---------- strength ---------- */
+function strength(p) {
+  var n = 0;
+  if (p.length >= 8) n++;
+  if (p.length >= 12) n++;
+  if (/[a-z]/.test(p) && /[A-Z]/.test(p)) n++;
+  if (/\d/.test(p)) n++;
+  if (/[^A-Za-z0-9]/.test(p)) n++;
+  return Math.min(n, 4);
+}
+$("newPw").addEventListener("input", function () {
+  var p = this.value, bar = $("meterBar"), lab = $("meterLabel");
+  if (!p) { bar.style.width = "0"; lab.textContent = ""; return; }
+  var n = strength(p);
+  var L = [["Weak", "#c0392b"], ["Weak", "#c0392b"], ["Fair", "#e08e0b"], ["Good", "#6a9f2a"], ["Strong", "#1b8a3a"]][n];
+  bar.style.width = (n * 25 || 12) + "%"; bar.style.background = L[1];
+  lab.textContent = L[0]; lab.style.color = L[1];
+});
+
+/* ---------- change password ---------- */
+var needNonce = false;
+
+$("pwForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  var msg = $("pwMsg"), btn = $("pwBtn");
+  var cur = $("curPw").value, np = $("newPw").value, cf = $("confPw").value;
+
+  if (np.length < 8) return show(msg, "err", "New password kam se kam 8 characters ka hona chahiye.");
+  if (strength(np) < 2) return show(msg, "err", "Password bahut kamzor hai. Capital, small, number ya symbol milakar rakhein.");
+  if (np !== cf) return show(msg, "err", "New password aur Confirm password match nahi karte.");
+  if (cur && cur === np) return show(msg, "err", "New password purane password se alag hona chahiye.");
+
+  btn.disabled = true; show(msg, "info", "Please wait...");
+  try {
+    /* 1) Agar current password diya hai to pehle verify karo */
+    if (cur) {
+      var v = await sb.auth.signInWithPassword({ email: currentUser.email, password: cur });
+      if (v.error) { show(msg, "err", "Current password galat hai."); btn.disabled = false; return; }
+    }
+
+    /* 2) Password update (Supabase Auth). Plain text kahin store nahi hota. */
+    var payload = { password: np };
+    if (needNonce) {
+      var code = $("nonce").value.trim();
+      if (!code) { show(msg, "err", "Email me aaya verification code daalein."); btn.disabled = false; return; }
+      payload.nonce = code;
+    }
+    var r = await sb.auth.updateUser(payload);
+
+    if (r.error) {
+      var m = String(r.error.message || "").toLowerCase();
+      if (m.indexOf("reauth") >= 0 || m.indexOf("nonce") >= 0) {
+        var ra = await sb.auth.reauthenticate();
+        if (ra.error) { show(msg, "err", "Verification code nahi bhej paye: " + ra.error.message); }
+        else {
+          needNonce = true; $("reauthBox").style.display = "block";
+          show(msg, "info", "Security ke liye aapke email par code bheja gaya hai. Code daalkar dobara Update Password dabayein.");
+        }
+      } else if (m.indexOf("same") >= 0) {
+        show(msg, "err", "New password purane password se alag hona chahiye.");
+      } else {
+        show(msg, "err", "Password update nahi hua: " + r.error.message);
+      }
+      btn.disabled = false; return;
+    }
+
+    show(msg, "ok", "Password badal gaya.");
+    $("pwForm").reset(); $("meterBar").style.width = "0"; $("meterLabel").textContent = "";
+    needNonce = false; $("reauthBox").style.display = "none";
+  } catch (err) {
+    show(msg, "err", "Kuch gadbad hui. Dobara try karein.");
+  }
+  btn.disabled = false;
+});
+
+/* ---------- sessions ---------- */
+$("outHere").addEventListener("click", async function () {
+  var r = await sb.auth.signOut({ scope: "local" });
+  if (r.error) return show($("sessMsg"), "err", "Logout nahi hua: " + r.error.message);
+  location.href = "login.html";
+});
+$("outOthers").addEventListener("click", async function () {
+  if (!confirm("Baaki sabhi devices se logout kar dein? Ye device logged in rahega.")) return;
+  var r = await sb.auth.signOut({ scope: "others" });
+  if (r.error) return show($("sessMsg"), "err", "Logout nahi hua: " + r.error.message);
+  show($("sessMsg"), "ok", "Baaki sabhi devices logout ho gaye.");
+});
+
+init();
+</script>
+</body>
+</html>

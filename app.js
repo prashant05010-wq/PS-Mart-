@@ -698,7 +698,10 @@ async function renderProducts() {
     const matchesSearch =
       !q ||
       name.includes(q) ||
-      description.includes(q);
+      description.includes(q) ||
+      String(p.brand || "").toLowerCase().includes(q) ||
+      String(p.subcategory || "").toLowerCase().includes(q) ||
+      String(categoryNames[productCategoryId] || "").toLowerCase().includes(q);
 
     const price = Number(p.price || 0);
 
