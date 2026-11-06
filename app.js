@@ -813,6 +813,31 @@ function pickUnique(list, used, n) {
   return out;
 }
 
+/* Home sections: pehle 10 products (kai column + kai row me), neeche "Show more" se 10-10 aur, maximum 30 */
+function renderHomeGrid(el, list) {
+  const PAGE = 10, MAX = 30;
+  list = list.slice(0, MAX);
+  const old = el.nextElementSibling;
+  if (old && old.classList && old.classList.contains("home-more")) old.remove();
+  let shown = Math.min(PAGE, list.length);
+  el.innerHTML = list.slice(0, shown).map(p => card(p)).join("");
+  if (list.length > shown) {
+    const wrap = document.createElement("div");
+    wrap.className = "home-more";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "Show more";
+    btn.addEventListener("click", () => {
+      const next = Math.min(shown + PAGE, list.length);
+      el.insertAdjacentHTML("beforeend", list.slice(shown, next).map(p => card(p)).join(""));
+      shown = next;
+      if (shown >= list.length) wrap.remove();
+    });
+    wrap.appendChild(btn);
+    el.after(wrap);
+  }
+}
+
 async function renderHome() {
 
   const products = await loadProductsFromSupabase();
@@ -824,10 +849,7 @@ async function renderHome() {
 
   const flash = document.querySelector("#flashDeals");
   if (flash) {
-    flash.innerHTML = products
-      .slice(0, 5)
-      .map(card)
-      .join("");
+    renderHomeGrid(flash, products);
 
     if (!products.length) {
       flash.innerHTML = `
@@ -865,8 +887,7 @@ async function renderHome() {
 
   if (trending) {
 
-    const trendingProducts =
-      pickUnique([...products]
+    const trendingProductsSorted = [...products]
         .sort((a, b) => {
 
           const aRating = Number(a.rating || 0);
@@ -878,13 +899,11 @@ async function renderHome() {
 
           return Number(b.review_count || 0) -
                  Number(a.review_count || 0);
-        })
-        , usedHome, 5);
+        });
 
-    trending.innerHTML =
-      trendingProducts
-        .map(card)
-        .join("");
+    const trendingProducts = pickUnique(trendingProductsSorted, usedHome, 5);
+
+    renderHomeGrid(trending, trendingProducts.concat(trendingProductsSorted.filter(p => !trendingProducts.includes(p))));
 
     if (!trendingProducts.length) {
       trending.innerHTML = `
@@ -905,18 +924,15 @@ async function renderHome() {
 
   if (arrivals) {
 
-    const newProducts =
-      pickUnique([...products]
+    const newProductsSorted = [...products]
         .sort((a, b) => {
           return new Date(b.created_at || 0) -
                  new Date(a.created_at || 0);
-        })
-        , usedHome, 5);
+        });
 
-    arrivals.innerHTML =
-      newProducts
-        .map(card)
-        .join("");
+    const newProducts = pickUnique(newProductsSorted, usedHome, 5);
+
+    renderHomeGrid(arrivals, newProducts.concat(newProductsSorted.filter(p => !newProducts.includes(p))));
 
     if (!newProducts.length) {
       arrivals.innerHTML = `
