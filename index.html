@@ -142,6 +142,9 @@ body .home-product-grid .pc-body h3{margin:0!important;font-size:13.5px!importan
 body .home-product-grid .pc-price{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;margin-top:6px}
 body .home-product-grid .pc-price b{font-size:16px;color:var(--brown)}
 body .home-product-grid .pc-price del{font-size:12.5px;color:#8b7d6b}
+.home-more{display:flex;justify-content:center;margin:14px 0 4px}
+.home-more button{background:#fff;color:#43250f;border:1px solid #C9922E;border-radius:22px;padding:10px 30px;font-size:14px;font-weight:700;cursor:pointer}
+.home-more button:hover{background:#F7F1E8}
 .home-product-grid .empty{grid-column:1/-1;padding:30px;text-align:center;color:var(--muted);background:#fff;border-radius:10px;border:1px solid var(--line)}
 .home-product-grid .product>a[href="coupons.html"]{display:none!important}
 
@@ -166,9 +169,8 @@ body .home-product-grid .pc-price del{font-size:12.5px;color:#8b7d6b}
 @media(max-width:1000px){
   .cat-row{grid-template-columns:repeat(8,minmax(76px,1fr));overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
   .cat-row::-webkit-scrollbar{display:none}
-  .home-product-grid{display:flex;overflow-x:auto;gap:12px;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:6px}
-  .home-product-grid::-webkit-scrollbar{display:none}
-  body .home-product-grid .product{flex:0 0 190px;min-width:190px!important;max-width:190px!important;scroll-snap-align:start}
+  .home-product-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  body .home-product-grid .product{min-width:0!important;max-width:none!important}
   .trust-section{grid-template-columns:repeat(2,1fr)}
   .ps-footer{grid-template-columns:repeat(2,1fr)}
 }
@@ -186,7 +188,7 @@ body .home-product-grid .pc-price del{font-size:12.5px;color:#8b7d6b}
   .promo-viewport{border-radius:12px}
   .promo-slide{aspect-ratio:2.2/1}
   .section-head{margin:24px 2px 12px}.section-head h2{font-size:23px}.section-head a{font-size:12px}
-  body .home-product-grid .product{flex-basis:158px;min-width:158px!important;max-width:158px!important}
+  .home-product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   body .home-product-grid .pc-body h3{font-size:13px!important}
   body .home-product-grid .pc-price b{font-size:15px}
   .trust-section{padding:15px;gap:15px}.trust-icon{font-size:24px}.trust-box b{font-size:12px}.trust-box span{font-size:10px}
