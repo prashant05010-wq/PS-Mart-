@@ -100,6 +100,16 @@
   body.ps-pd .pm-mnav,body.ps-pd .pm-foot,body.ps-pd .location-bar{display:none!important}
   body.ps-pd #detail .action-buttons{position:fixed;left:0;right:0;bottom:0;margin:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:#fbf6ea;border-top:2px solid #c9922e;z-index:3000;flex-direction:row}
 }
+#detail .ps-trust{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 4px}
+#detail .ps-trust a{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;text-decoration:none;color:#43250f;background:#fbf6ea;border:1px solid #e6dac3;border-radius:10px;padding:10px 4px;font-size:12px;font-weight:700;line-height:1.2}
+#detail .ps-trust a b{font-size:20px;font-weight:400}
+#detail .ps-trust a:nth-child(-n+2){border-color:#C9922E}
+#detail .ps-reviews-sum{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+#detail .ps-reviews-sum b{font-size:30px;color:#43250f}
+#detail .ps-rv{border-top:1px solid #efe4cc;padding:10px 0}
+#detail .ps-rv .st{color:#C9922E;letter-spacing:1px}
+#detail .ps-rv p{margin:4px 0;font-size:14px;line-height:1.5}
+#detail .ps-rv small{color:#7c6a58}
 `;
   var s = document.createElement("style");
   s.id = "ps-flipkart-css";
@@ -229,6 +239,13 @@ function psInitSlider() {
 /* =========================
    PRODUCT DETAIL  (Flipkart layout)
 ========================= */
+/* delivery date: config.js me deliveryDays hai (default 5 din) */
+function psDeliveryBy() {
+  var days = (window.PSMART_CONFIG && Number(window.PSMART_CONFIG.deliveryDays)) || 5;
+  var d = new Date(); d.setDate(d.getDate() + days);
+  return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
+}
+
 async function detail() {
 
   var e = document.querySelector("#detail");
@@ -358,17 +375,23 @@ async function detail() {
           '<span class="ps-now">' + money(p.price) + '</span>' +
         '</div>' +
         '<p class="ps-tax">Inclusive of all taxes</p>' +
+        '<div class="ps-trust">' +
+          '<a href="policies.html#return"><b>↩️</b>7 Days Return</a>' +
+          '<a href="policies.html#assured"><b>🛡️</b>PS Mart Assured</a>' +
+          '<a href="policies.html#refund"><b>🔒</b>Secure Payment</a>' +
+        '</div>' +
 
         '<div class="ps-offers">' +
           '<h3>Available offers</h3>' +
           '<div class="offer">🏷️ Special price available on PS Mart</div>' +
           '<div class="offer">💳 Secure payment on all orders</div>' +
           '<div class="offer">🚚 Free delivery available</div>' +
-          '<div class="offer">🔄 Easy return available</div>' +
+          '<div class="offer">🔄 7 days return after delivery (see Return Policy)</div>' +
         '</div>' +
 
         '<h2 style="font:700 26px \'Cormorant Garamond\',Georgia,serif;margin:18px 0 8px;color:#43250f">Delivery details</h2>' +
         '<div class="ps-row addr" onclick="openLocation()"><span>🏠 ' + addrText + '</span><a href="#" onclick="return false">›</a></div>' +
+        '<div class="ps-row"><span>📅 Delivery by <b>' + psDeliveryBy() + '</b></span></div>' +
         '<div class="ps-row"><span>🚚 Free delivery available</span></div>' +
         '<div class="ps-row"><span>🏪 Seller: PS Mart Seller</span></div>' +
 
