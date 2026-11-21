@@ -12,6 +12,13 @@
     n = Math.max(0, Math.min(5, Math.round(Number(n) || 0)));
     return "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n);
   }
+  var rcss = "#detail .ps-reviews-sum{display:flex;align-items:center;gap:12px;margin-bottom:10px}" +
+    "#detail .ps-reviews-sum b{font-size:30px;color:#43250f}" +
+    "#detail .ps-rv{border-top:1px solid #efe4cc;padding:10px 0}" +
+    "#detail .ps-rv .st{color:#C9922E;letter-spacing:1px}" +
+    "#detail .ps-rv p{margin:4px 0;font-size:14px;line-height:1.5}" +
+    "#detail .ps-rv small{color:#7c6a58}";
+  var rs = document.createElement("style"); rs.textContent = rcss; document.head.appendChild(rs);
   var pid = new URLSearchParams(location.search).get("id");
   var cache = null, loading = false;
 

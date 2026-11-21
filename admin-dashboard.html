@@ -194,6 +194,7 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
     <button class="tab" onclick="showSection('rewardsSection',this);adminCrInit()">🎁 Customer Rewards</button>
 
     <button class="tab" onclick="showSection('productSetupSection',this);adminPfInit()">🧩 Product Setup</button>
+    <button class="tab" onclick="showSection('assuredSection',this);adminAssuredInit()">PS MART ASSURED</button>
 
   </div>
 
@@ -396,6 +397,11 @@ input{padding:12px;border:1px solid #ccc;border-radius:7px;font-size:16px;width:
   <div id="productSetupSection" class="section hidden">
     <h2>🧩 Product Setup (Categories, Fields &amp; Variants)</h2>
     <div id="pfRoot">Loading...</div>
+  </div>
+
+  <div id="assuredSection" class="section hidden">
+    <h2>PS MART ASSURED</h2>
+    <div id="assuredRoot">Loading...</div>
   </div>
 
   <div id="rewardsSection" class="section hidden">
@@ -1990,7 +1996,11 @@ async function loadReturns(){
 
       ${
         r.status === "requested"
-          ? `<small>⏳ Seller ke faisle ka intezaar (Approve / Reject seller karta hai)</small>`
+          ? `<small>⏳ Seller ke faisle ka intezaar. Admin bhi review kar sakta hai:</small>
+             <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+               <button class="gold" onclick="setReturn('${esc(r.id)}','approved')">Approve</button>
+               <button class="gold" style="background:#8b1e1e;color:#fff" onclick="setReturn('${esc(r.id)}','rejected')">Reject</button>
+             </div>`
           : ""
       }
 
@@ -2536,5 +2546,6 @@ async function sendGiftCardToCustomer() {
 <script src="admin-commission.js"></script>
 <script src="admin-rewards.js"></script>
 <script src="admin-products.js"></script>
+<script src="admin-assured.js"></script>
 </body>
 </html>
