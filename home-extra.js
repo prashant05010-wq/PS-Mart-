@@ -3,7 +3,8 @@
   var css = [
     "body .home-product-grid .product,body .products .product{box-shadow:0 2px 12px rgba(59,36,22,.07);transition:transform .2s,box-shadow .2s,border-color .2s}",
     "body .home-product-grid .product:hover{transform:translateY(-3px)!important;box-shadow:0 14px 28px rgba(59,36,22,.16)!important}",
-    ".hx-off{position:absolute;top:8px;left:8px;z-index:3;padding:3px 9px;border-radius:0 10px 10px 0;background:linear-gradient(135deg,#f7dd9b,#f0bd50 50%,#C9922E);color:#3B2416;font:800 11px/1.2 Inter,'Segoe UI',Arial,sans-serif;letter-spacing:.3px;box-shadow:0 2px 6px rgba(59,36,22,.25)}",
+    ".hx-off{display:none!important}",
+    ".hx-pct{font:700 12px/1.2 Inter,'Segoe UI',Arial,sans-serif;color:#1b7a3c;white-space:nowrap}",
     ".section-head h2{letter-spacing:.2px}",
     ".section-head::after{width:96px;height:3px;border-radius:3px}",
     ".promo-viewport{box-shadow:0 14px 34px rgba(59,36,22,.28)}",
@@ -21,6 +22,8 @@
   function num(s) { var n = parseFloat(String(s || "").replace(/[^0-9.]/g, "")); return isFinite(n) ? n : 0; }
 
   function tags() {
+    var gone = document.querySelectorAll(".hx-off");
+    for (var g = 0; g < gone.length; g++) gone[g].parentNode.removeChild(gone[g]);
     var cards = document.querySelectorAll(".product:not([data-hx])");
     for (var i = 0; i < cards.length; i++) {
       var c = cards[i];
@@ -32,8 +35,8 @@
       var pct = Math.round((o - p) / o * 100);
       if (pct < 5) continue;
       var t = document.createElement("span");
-      t.className = "hx-off"; t.textContent = pct + "% OFF";
-      pic.appendChild(t);
+      t.className = "hx-pct"; t.textContent = pct + "% off";
+      old.parentNode.appendChild(t);
     }
   }
 

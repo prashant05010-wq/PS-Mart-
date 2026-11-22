@@ -146,20 +146,37 @@
     return '<a class="psa-tile' + (on ? " on" : "") + '" href="' + href + '"><span class="psa-ti">' + svg + "</span><span>" + label + "</span></a>";
   }
 
+  /* "Product highlights" / "Key Features" wale section ko dhundo (dono layout me chalta hai) */
+  function findAnchor(d) {
+    var want = ["product highlights", "key features", "product description", "specifications", "all details"];
+    var hs = d.querySelectorAll("h2,h3,summary");
+    for (var w = 0; w < want.length; w++) {
+      for (var h = 0; h < hs.length; h++) {
+        var txt = (hs[h].textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
+        if (txt.indexOf(want[w]) === 0) {
+          var sec = hs[h].closest(".info-section,.ps-sec,.ps-wide,details");
+          if (sec && sec !== d && d.contains(sec)) return sec;
+        }
+      }
+    }
+    return null;
+  }
+
   function renderDetail(map) {
     var d = document.getElementById("detail");
-    if (!d || d.querySelector(".psa-trust")) return;
-    var info = d.querySelector(".detail-info") || d;
+    if (!d) return;
+    /* galti se #detail ke bahar bani purani rows hata do */
+    var all = document.querySelectorAll(".psa-trust,.psa-exwrap");
+    for (var z = 0; z < all.length; z++) { if (!d.contains(all[z])) all[z].parentNode.removeChild(all[z]); }
+    if (d.querySelector(".psa-trust")) return;
+    if (!d.querySelector(".action-buttons") && !d.querySelector(".detail-info")) return; /* detail abhi bana nahi */
     var id = new URLSearchParams(location.search).get("id");
     var a = id && map[String(id)];
 
-    /* purana generic badge (pehli update se) agar page par ho to hata do */
     var old = d.querySelectorAll(".ps-trust");
     for (var k = 0; k < old.length; k++) old[k].parentNode.removeChild(old[k]);
 
-    /* Row "Product highlights" ke just upar (highlights na ho to agle section ke upar) */
-    var target = null, secs = d.querySelectorAll(".ps-sec.ps-wide");
-    for (var s = 0; s < secs.length; s++) { if (!info.contains(secs[s])) { target = secs[s]; break; } }
+    var target = findAnchor(d);
     var retOk = !(a && a.return_eligible === false);
 
     var row = document.createElement("div");
@@ -171,8 +188,8 @@
       (a ? tile("policies.html#assured", shield(30), "PS Mart<br>Assured", true)
          : tile("contact.html", icon("sup"), "Customer<br>Support", false));
 
-    var parent = target ? target.parentNode : info.parentNode;
-    var ref = target || info.nextSibling;
+    var parent = target ? target.parentNode : d;
+    var ref = target || null;
     parent.insertBefore(row, ref);
 
     /* sirf zaruri chhoti lines (table nahi): Verified Seller aur product ka return note */
