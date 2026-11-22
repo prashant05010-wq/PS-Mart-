@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#3B2416">
+<title>Create Account | PS Mart</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ps-auth.css">
+</head>
+<body>
+<main class="au-card">
+  <div class="au-top"><a class="au-logo" href="index.html" aria-label="PS Mart home"><i>PS</i><b>PS MART</b></a></div>
+  <div class="au-body">
+    <h1>Create Account</h1>
+    <p class="au-sub">PS Mart par apna naya account banayein</p>
+    <div class="au-f"><label for="fn">Full Name</label>
+      <input class="au-in" id="fn" type="text" autocomplete="name" maxlength="80" placeholder="Aapka poora naam"></div>
+    <div class="au-f"><label for="em">Email Address</label>
+      <input class="au-in" id="em" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com"></div>
+    <div class="au-f"><label for="pw">Password</label>
+      <div class="au-pw"><input class="au-in" id="pw" type="password" autocomplete="new-password" placeholder="Kam se kam 8 akshar">
+        <button type="button" class="au-eye" id="pwEye" aria-label="Show password"></button></div>
+      <div class="au-hint">8+ akshar, ek letter aur ek number zaruri.</div></div>
+    <div class="au-f"><label for="pw2">Confirm Password</label>
+      <div class="au-pw"><input class="au-in" id="pw2" type="password" autocomplete="new-password" placeholder="Password dobara likhein">
+        <button type="button" class="au-eye" id="pw2Eye" aria-label="Show password"></button></div></div>
+    <button class="au-btn" id="goBtn" type="button">Create Account</button>
+    <div id="msg" class="au-msg" role="alert"></div>
+    <div class="au-small">Account banakar aap hamari <a class="au-link" href="policies.html">policies</a> se sahmat hote hain.</div>
+    <div class="au-foot">Pehle se account hai? <a href="login.html">Login</a></div>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="ps-auth.js"></script>
+<script>
+(function () {
+  var A = PSAuth, sb = A.client, $ = A.$, busy = false;
+  A.wireEye("pw", "pwEye"); A.wireEye("pw2", "pw2Eye");
+
+  async function go() {
+    if (busy) return;
+    var fn = $("fn").value.trim().replace(/\s+/g, " "), em = $("em").value.trim().toLowerCase(), pw = $("pw").value, pw2 = $("pw2").value;
+    if (fn.length < 2) return A.msg("msg", "Apna poora naam likhein.", "bad");
+    if (!A.isEmail(em)) return A.msg("msg", "Sahi email address likhein.", "bad");
+    var pp = A.passwordProblem(pw); if (pp) return A.msg("msg", pp, "bad");
+    if (pw !== pw2) return A.msg("msg", "Dono password same nahi hain.", "bad");
+    busy = true; $("goBtn").disabled = true; A.msg("msg", "Account ban raha hai...", "info");
+    try {
+      /* sirf naam jata hai. Role ya koi aur special field kabhi nahi bhejte. */
+      var r = await sb.auth.signUp({ email: em, password: pw,
+        options: { data: { full_name: fn }, emailRedirectTo: A.baseUrl() + "login.html" } });
+      if (r.error) { A.msg("msg", A.friendly(r.error), "bad"); }
+      else if (r.data && r.data.user && r.data.user.identities && r.data.user.identities.length === 0) {
+        /* email pehle se registered (purane OTP users bhi) */
+        A.msg("msg", "Is email se account pehle se hai. Login karein, ya 'Forgot password' se password set karein, ya Email OTP se login karein.", "info");
+      } else if (r.data && r.data.session) {
+        $("pw").value = ""; $("pw2").value = "";
+        var ok = await A.finishLogin(r.data.session, "msg");
+        if (ok) return;
+      } else {
+        $("pw").value = ""; $("pw2").value = "";
+        A.msg("msg", "Account ban gaya. Aapke email par confirm link bheja gaya hai. Link kholne ke baad login karein (spam folder bhi dekhein).", "ok");
+        $("goBtn").textContent = "Done";
+        return;
+      }
+    } catch (e) { A.msg("msg", A.friendly(e), "bad"); }
+    busy = false; $("goBtn").disabled = false;
+  }
+  $("goBtn").addEventListener("click", go);
+  $("pw2").addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
+})();
+</script>
+</body>
+</html>

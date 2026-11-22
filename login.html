@@ -1,668 +1,151 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-
 <meta charset="utf-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1"
->
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#3B2416">
 <title>Login | PS Mart</title>
-
-<link rel="stylesheet" href="style.css">
-
-<style>
-
-.loginwrap{
-  min-height:75vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:30px 15px;
-}
-
-.loginbox{
-  width:100%;
-  max-width:420px;
-  background:#fffaf0;
-  padding:30px;
-  border-radius:18px;
-  box-shadow:0 10px 35px rgba(0,0,0,.12);
-  text-align:center;
-  box-sizing:border-box;
-}
-
-.loginbox h1{
-  margin-bottom:8px;
-}
-
-.loginbox p{
-  color:#666;
-}
-
-.loginbox input{
-  width:100%;
-  box-sizing:border-box;
-  padding:14px;
-  margin:10px 0;
-  border:1px solid #ddd;
-  border-radius:10px;
-  font-size:16px;
-}
-
-.goldbtn{
-  width:100%;
-  padding:14px;
-  margin-top:10px;
-  border:0;
-  border-radius:10px;
-  background:#c99a3d;
-  color:white;
-  font-size:16px;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.goldbtn:hover{
-  opacity:.9;
-}
-
-.goldbtn:disabled{
-  opacity:.6;
-  cursor:not-allowed;
-}
-
-#message{
-  margin-top:15px;
-  font-weight:bold;
-}
-
-.hidden{
-  display:none;
-}
-
-</style>
-
-<link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ps-auth.css">
 </head>
-
-
 <body>
-
-
-<header class="header">
-
-  <a
-    class="logo"
-    href="index.html"
-  >
-    🛍️ <b>PS</b> Mart
-  </a>
-
-</header>
-
-
-
-<main class="loginwrap">
-
-  <div class="loginbox">
-
-    <h1>
-      Welcome to PS Mart
-    </h1>
-
-    <p id="subtitle">
-      Enter your email to continue
-    </p>
-
-
-    <!-- EMAIL -->
-
-    <input
-      type="email"
-      id="email"
-      placeholder="Enter your email"
-      autocomplete="email"
-    >
-
-
-    <!-- SEND OTP -->
-
-    <button
-      class="goldbtn"
-      id="sendOtpBtn"
-      onclick="sendOTP()"
-    >
-      Send OTP
-    </button>
-
-
-    <!-- OTP -->
-
-    <div
-      id="otpBox"
-      class="hidden"
-    >
-
-      <input
-        type="text"
-        id="otp"
-        placeholder="Enter 8-digit OTP"
-        inputmode="numeric"
-        maxlength="8"
-        autocomplete="one-time-code"
-      >
-
-      <button
-        class="goldbtn"
-        id="verifyBtn"
-        onclick="verifyOTP()"
-      >
-        Verify OTP & Login
-      </button>
-
+<main class="au-card">
+  <div class="au-top"><a class="au-logo" href="index.html" aria-label="PS Mart home"><i>PS</i><b>PS MART</b></a></div>
+  <div class="au-body">
+    <div id="already" class="au-already au-hide">
+      <div>Aap pehle se login hain.</div>
+      <button type="button" id="contBtn">Continue</button>
+      <button type="button" id="outBtn">Logout</button>
     </div>
 
+    <!-- PASSWORD LOGIN -->
+    <section id="pwPanel">
+      <h1>Welcome Back!</h1>
+      <p class="au-sub">Apne PS Mart account me login karein</p>
+      <div class="au-f"><label for="pwEmail">Email Address</label>
+        <input class="au-in" id="pwEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com"></div>
+      <div class="au-f"><label for="pwPass">Password</label>
+        <div class="au-pw"><input class="au-in" id="pwPass" type="password" autocomplete="current-password" placeholder="Enter your password">
+          <button type="button" class="au-eye" id="pwEye" aria-label="Show password"></button></div></div>
+      <div class="au-row"><a href="forgot-password.html">Forgot Password?</a></div>
+      <button class="au-btn" id="pwBtn" type="button">Login</button>
+      <div id="msgPw" class="au-msg" role="alert"></div>
+      <div class="au-or">OR</div>
+      <button class="au-btn alt" id="toOtp" type="button">Login with Email OTP</button>
+    </section>
 
-    <div id="message"></div>
+    <!-- EMAIL OTP LOGIN -->
+    <section id="otpPanel" class="au-hide">
+      <h1>Login with Email OTP</h1>
+      <p class="au-sub">Aapke email par ek OTP bheja jayega</p>
+      <div class="au-f"><label for="otpEmail">Email Address</label>
+        <input class="au-in" id="otpEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com"></div>
+      <button class="au-btn" id="sendBtn" type="button">Send OTP</button>
+      <div id="otpBox" class="au-hide" style="margin-top:14px">
+        <div class="au-f"><label for="otpCode">OTP</label>
+          <input class="au-in" id="otpCode" type="text" inputmode="numeric" maxlength="8" autocomplete="one-time-code" placeholder="Enter OTP"></div>
+        <button class="au-btn" id="verBtn" type="button">Verify OTP &amp; Login</button>
+      </div>
+      <div id="msgOtp" class="au-msg" role="alert"></div>
+      <div class="au-or">OR</div>
+      <button class="au-btn alt" id="toPw" type="button">Login with Password</button>
+    </section>
 
+    <div class="au-foot">Naye hain? <a href="signup.html">Create Account</a></div>
+    <div class="au-small"><a class="au-link" href="seller-register.html">Sell on PS Mart</a> &nbsp;|&nbsp; <a class="au-link" href="delivery-login.html">Delivery partner login</a></div>
   </div>
-
 </main>
-
-
-
-<!-- SUPABASE -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- EXISTING FILES -->
-
-<script src="data.js"></script>
-
-<script src="app.js"></script>
-
-
+<script src="ps-auth.js"></script>
 <script>
+(function () {
+  var A = PSAuth, sb = A.client, $ = A.$, fails = 0, lockUntil = 0, busy = false;
 
-/* =====================================================
-   PS MART LOGIN SUPABASE CLIENT
-===================================================== */
+  A.wireEye("pwPass", "pwEye");
 
-const psLoginClient =
-  window.supabase.createClient(
-
-    "https://nctscffhnztscczjxhat.supabase.co",
-
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jdHNjZmZobnp0c2Njemp4aGF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0NDM0MjUsImV4cCI6MjEwNjAxOTQyNX0.1bR1XER2te7enAtKXaRdTqPnsigh3VJyCLXVbPjKKWw"
-
-  );
-
-
-/* =====================================================
-   SEND OTP
-===================================================== */
-
-async function sendOTP(){
-
-  const email =
-    document
-      .getElementById("email")
-      .value
-      .trim();
-
-
-  const message =
-    document.getElementById("message");
-
-
-  const sendButton =
-    document.getElementById("sendOtpBtn");
-
-
-  if(!email){
-
-    message.innerText =
-      "Please enter your email.";
-
-    return;
-
+  function show(which) {
+    $("pwPanel").classList.toggle("au-hide", which !== "pw");
+    $("otpPanel").classList.toggle("au-hide", which !== "otp");
+    if (which === "otp" && !$("otpEmail").value) $("otpEmail").value = $("pwEmail").value.trim();
   }
-
-
-  message.innerText =
-    "Sending OTP...";
-
-
-  sendButton.disabled = true;
-
-
-  try{
-
-    const { error } =
-      await psLoginClient.auth.signInWithOtp({
-
-        email: email,
-
-        options: {
-
-          shouldCreateUser: true
-
-        }
-
-      });
-
-
-    if(error){
-
-      console.error(
-        "OTP ERROR:",
-        error
-      );
-
-      message.innerText =
-        error.message;
-
-      sendButton.disabled = false;
-
-      return;
-
-    }
-
-
-    message.innerText =
-      "OTP sent! Check your email.";
-
-
-    document
-      .getElementById("otpBox")
-      .classList
-      .remove("hidden");
-
-
-    sendButton.innerText =
-      "Resend OTP";
-
-
-    sendButton.disabled = false;
-
-  }
-
-
-  catch(error){
-
-    console.error(
-      "OTP SEND ERROR:",
-      error
-    );
-
-
-    message.innerText =
-      "Something went wrong. Please try again.";
-
-
-    sendButton.disabled = false;
-
-  }
-
-}
-
-
-
-/* =====================================================
-   VERIFY OTP
-===================================================== */
-
-async function verifyOTP(){
-
-  const email =
-    document
-      .getElementById("email")
-      .value
-      .trim();
-
-
-  const otp =
-    document
-      .getElementById("otp")
-      .value
-      .trim();
-
-
-  const message =
-    document.getElementById("message");
-
-
-  const verifyButton =
-    document.getElementById("verifyBtn");
-
-
-  if(!email){
-
-    message.innerText =
-      "Please enter your email.";
-
-    return;
-
-  }
-
-
-  if(!otp || otp.length !== 8){
-
-    message.innerText =
-      "Please enter the 8-digit OTP.";
-
-    return;
-
-  }
-
-
-  message.innerText =
-    "Verifying OTP...";
-
-
-  verifyButton.disabled = true;
-
-
-  try{
-
-    /* =========================
-       VERIFY OTP
-    ========================= */
-
-    const {
-      data,
-      error
-    } =
-      await psLoginClient.auth.verifyOtp({
-
-        email: email,
-
-        token: otp,
-
-        type: "email"
-
-      });
-
-
-    if(error){
-
-      console.error(
-        "VERIFY OTP ERROR:",
-        error
-      );
-
-      message.innerText =
-        error.message;
-
-      verifyButton.disabled = false;
-
-      return;
-
-    }
-
-
-    /* =========================
-       CHECK SESSION
-    ========================= */
-
-    if(!data.session){
-
-      message.innerText =
-        "OTP verified, but login session was not created.";
-
-      verifyButton.disabled = false;
-
-      return;
-
-    }
-
-
-    /* =========================
-       SAVE SESSION
-    ========================= */
-
-    const {
-      data: sessionResult,
-      error: sessionError
-    } =
-      await psLoginClient.auth.setSession({
-
-        access_token:
-          data.session.access_token,
-
-        refresh_token:
-          data.session.refresh_token
-
-      });
-
-
-    if(sessionError){
-
-      console.error(
-        "SESSION ERROR:",
-        sessionError
-      );
-
-      message.innerText =
-        "Could not save login session.";
-
-      verifyButton.disabled = false;
-
-      return;
-
-    }
-
-
-    /* =========================
-       CONFIRM SESSION
-    ========================= */
-
-    const {
-      data: currentSession,
-      error: currentSessionError
-    } =
-      await psLoginClient.auth.getSession();
-
-
-    if(
-      currentSessionError ||
-      !currentSession.session
-    ){
-
-      console.error(
-        "CURRENT SESSION ERROR:",
-        currentSessionError
-      );
-
-      message.innerText =
-        "Login session could not be confirmed.";
-
-      verifyButton.disabled = false;
-
-      return;
-
-    }
-
-
-    /* =========================
-       LOGIN SUCCESS
-    ========================= */
-
-    message.innerText =
-      "Login successful!";
-
-
-    const user =
-      currentSession.session.user;
-
-
-    console.log(
-      "LOGGED IN USER:",
-      user.id
-    );
-
-
-    /* =========================
-       GET PROFILE ROLE
-    ========================= */
-
-    const {
-      data: profile,
-      error: profileError
-    } =
-      await psLoginClient
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-
-    /* =========================
-       PROFILE NOT FOUND
-    ========================= */
-
-    if(profileError){
-
-      console.error(
-        "PROFILE ERROR:",
-        profileError
-      );
-
-
-      message.innerText =
-        "Login successful! Opening PS Mart...";
-
-
-      setTimeout(() => {
-
-        window.location.href =
-          "index.html";
-
-      },1000);
-
-
-      return;
-
-    }
-
-
-    const role =
-      profile.role;
-
-
-    console.log(
-      "USER ROLE:",
-      role
-    );
-
-
-    /* =========================
-       REDIRECT
-    ========================= */
-
-    setTimeout(() => {
-
-
-      /* SELLER */
-
-      if(role === "seller"){
-
-        window.location.href =
-          "seller-dashboard.html";
-
+  $("toOtp").addEventListener("click", function () { show("otp"); });
+  $("toPw").addEventListener("click", function () { show("pw"); });
+
+  /* ---------- Email + Password ---------- */
+  async function passwordLogin() {
+    if (busy) return;
+    var email = $("pwEmail").value.trim().toLowerCase(), pw = $("pwPass").value;
+    if (!A.isEmail(email)) return A.msg("msgPw", "Sahi email address likhein.", "bad");
+    if (!pw) return A.msg("msgPw", "Password likhein.", "bad");
+    if (Date.now() < lockUntil) return A.msg("msgPw", "Bahut zyada galat koshish. 1 minute baad try karein.", "bad");
+    busy = true; $("pwBtn").disabled = true; A.msg("msgPw", "Check ho raha hai...", "info");
+    try {
+      var r = await sb.auth.signInWithPassword({ email: email, password: pw });
+      if (r.error || !r.data || !r.data.session) {
+        fails++; if (fails >= 5) { lockUntil = Date.now() + 60000; fails = 0; }
+        A.msg("msgPw", A.friendly(r.error), "bad");
+      } else {
+        $("pwPass").value = "";
+        var ok = await A.finishLogin(r.data.session, "msgPw");
+        if (ok) return;
       }
+    } catch (e) { A.msg("msgPw", A.friendly(e), "bad"); }
+    busy = false; $("pwBtn").disabled = false;
+  }
+  $("pwBtn").addEventListener("click", passwordLogin);
+  $("pwPass").addEventListener("keydown", function (e) { if (e.key === "Enter") passwordLogin(); });
+  $("pwEmail").addEventListener("keydown", function (e) { if (e.key === "Enter") $("pwPass").focus(); });
 
-
-      /* ADMIN */
-
-      else if(role === "admin"){
-
-        window.location.href =
-          "index.html";
-
+  /* ---------- Email OTP (purana tareeka, waise hi) ---------- */
+  async function sendOtp() {
+    var email = $("otpEmail").value.trim().toLowerCase();
+    if (!A.isEmail(email)) return A.msg("msgOtp", "Sahi email address likhein.", "bad");
+    $("sendBtn").disabled = true; A.msg("msgOtp", "OTP bhej rahe hain...", "info");
+    try {
+      var r = await sb.auth.signInWithOtp({ email: email, options: { shouldCreateUser: true } });
+      if (r.error) { A.msg("msgOtp", A.friendly(r.error), "bad"); $("sendBtn").disabled = false; return; }
+      A.msg("msgOtp", "OTP bhej diya gaya. Apna email check karein (spam folder bhi).", "ok");
+      $("otpBox").classList.remove("au-hide");
+      $("otpCode").focus();
+      A.cooldown($("sendBtn"), 60, "Resend OTP");
+    } catch (e) { A.msg("msgOtp", A.friendly(e), "bad"); $("sendBtn").disabled = false; }
+  }
+  async function verifyOtp() {
+    if (busy) return;
+    var email = $("otpEmail").value.trim().toLowerCase(), code = $("otpCode").value.replace(/\s/g, "");
+    if (!A.isEmail(email)) return A.msg("msgOtp", "Sahi email address likhein.", "bad");
+    if (!/^\d{6,8}$/.test(code)) return A.msg("msgOtp", "Email me aaya OTP (sirf number) likhein.", "bad");
+    busy = true; $("verBtn").disabled = true; A.msg("msgOtp", "OTP check ho raha hai...", "info");
+    try {
+      var r = await sb.auth.verifyOtp({ email: email, token: code, type: "email" });
+      if (r.error || !r.data || !r.data.session) {
+        A.msg("msgOtp", A.friendly(r.error || "otp invalid"), "bad");
+      } else {
+        $("otpCode").value = "";
+        var ok = await A.finishLogin(r.data.session, "msgOtp");
+        if (ok) return;
       }
-
-
-      /* CUSTOMER */
-
-      else{
-
-        window.location.href =
-          "index.html";
-
-      }
-
-
-    },800);
-
+    } catch (e) { A.msg("msgOtp", A.friendly(e), "bad"); }
+    busy = false; $("verBtn").disabled = false;
   }
+  $("sendBtn").addEventListener("click", sendOtp);
+  $("verBtn").addEventListener("click", verifyOtp);
+  $("otpCode").addEventListener("keydown", function (e) { if (e.key === "Enter") verifyOtp(); });
 
-
-  catch(error){
-
-    console.error(
-      "VERIFY ERROR:",
-      error
-    );
-
-
-    message.innerText =
-      "Something went wrong. Please try again.";
-
-
-    verifyButton.disabled = false;
-
-  }
-
-}
-
-
-
-/* =====================================================
-   CHECK EXISTING SESSION
-===================================================== */
-
-async function checkExistingLogin(){
-
-  try{
-
-    const {
-      data
-    } =
-      await psLoginClient.auth.getSession();
-
-
-    if(data.session){
-
-      console.log(
-        "Existing login session found."
-      );
-
-    }
-
-  }
-
-  catch(error){
-
-    console.error(
-      "SESSION CHECK ERROR:",
-      error
-    );
-
-  }
-
-}
-
-
-checkExistingLogin();
-
+  /* ---------- Pehle se login ho to ---------- */
+  sb.auth.getSession().then(function (s) {
+    var ses = s && s.data && s.data.session;
+    if (!ses) return;
+    $("already").classList.remove("au-hide");
+    $("contBtn").addEventListener("click", async function () {
+      var r = await A.routeFor(ses.user);
+      if (r.blocked) { await sb.auth.signOut(); location.reload(); return; }
+      location.replace(r.url);
+    });
+    $("outBtn").addEventListener("click", async function () { await sb.auth.signOut(); location.reload(); });
+  }).catch(function () {});
+})();
 </script>
-
-
 </body>
-
-  </html>
+</html>
