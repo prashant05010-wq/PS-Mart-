@@ -25,9 +25,9 @@
     ".psa-head{display:flex;align-items:center;padding:12px 14px;background:linear-gradient(110deg,#24150b,#3B2416 60%,#6c3e17)}",
     ".psa-head .psa-b{margin:0}",
     ".psa-head .psa-b .t b{color:#f7dd9b}.psa-head .psa-b .t i{color:#e9d9b6}",
-    ".psa-trust{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0 6px;padding-top:14px;border-top:1px solid #e6dac3}",
-    ".psa-tile{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;text-decoration:none;color:#3B2416;font:600 13px/1.25 Inter,'Segoe UI',Arial,sans-serif;min-width:0}",
-    ".psa-ti{width:56px;height:56px;border-radius:14px;background:#F7F1E8;border:1px solid #eadcc0;display:flex;align-items:center;justify-content:center}",
+    ".psa-trust{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:16px 0 6px;padding-top:14px;border-top:1px solid #e6dac3}",
+    ".psa-tile{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;text-decoration:none;color:#3B2416;font:600 12px/1.25 Inter,'Segoe UI',Arial,sans-serif;min-width:0}",
+    ".psa-ti{width:52px;height:52px;border-radius:14px;background:#F7F1E8;border:1px solid #eadcc0;display:flex;align-items:center;justify-content:center}",
     ".psa-ti svg{width:30px;height:30px}",
     ".psa-tile.on .psa-ti{border-color:#C9922E;background:#fff}",
     ".psa-rows{display:grid;grid-template-columns:1fr;gap:0}",
@@ -67,6 +67,7 @@
     var p = {
       ret: '<path d="M4 10h11a5 5 0 0 1 0 10H8" /><path d="M8 6 4 10l4 4"/>',
       ver: '<path d="M12 3 20 6v6c0 5-3.400 8-8 9-4.600-1-8-4-8-9V6z"/><path d="M8.500 12.500l2.500 2.500 4.500-5"/>',
+      cod: '<rect x="2.500" y="7" width="19" height="10" rx="2"/><circle cx="12" cy="12" r="2.500"/><path d="M6 10v4M18 10v4"/>',
       pay: '<rect x="3" y="6" width="18" height="12" rx="2.500"/><path d="M8 10h8M8 10c2.500 0 2.500 3 0 3h-1l4 3"/>',
       sup: '<path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="3" y="13" width="4" height="6" rx="1.500"/><rect x="17" y="13" width="4" height="6" rx="1.500"/><path d="M19 19c0 1.500-2 2.500-5 2.500"/>'
     }[kind];
@@ -160,6 +161,7 @@
     row.className = "psa-trust";
     row.innerHTML =
       tile("policies.html#return", icon("ret"), retOk ? "7-Day<br>Return" : "No<br>Return", false) +
+      tile("policies.html#refund", icon("cod"), "Cash on<br>Delivery", false) +
       tile("policies.html#refund", icon("pay"), "Secure<br>Payment", false) +
       (a ? tile("policies.html#assured", shield(30), "PS Mart<br>Assured", true)
          : tile("contact.html", icon("sup"), "Customer<br>Support", false));
