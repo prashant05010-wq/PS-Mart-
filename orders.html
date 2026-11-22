@@ -346,10 +346,16 @@ async function payNow(orderId,btn){
 }
 
 async function cancelOrder(orderId){
-  if(!confirm("Kya aap sach mein ye order cancel karna chahte hain?")) return;
-  var r=await supabaseClient.from("orders").update({status:"cancelled"}).eq("id",orderId);
-  if(r.error){alert("Order cancel nahi ho paya ❌");console.log(r.error);return;}
-  alert("Order cancel ho gaya ✅");
+  if(!confirm("Kya aap sach mein ye order cancel karna chahte hain?\n\nOnline payment hua hai to paisa 5 se 7 working days me wapas aayega.")) return;
+  var r=await supabaseClient.functions.invoke("order-refund",{body:{order_id:orderId}});
+  var d=r.data||null;
+  if(r.error||!d||d.success!==true){
+    var msg="Order cancel nahi ho paya ❌";
+    try{ if(r.error&&r.error.context&&r.error.context.json){ var j=await r.error.context.json(); if(j&&j.error) msg=j.error; } }catch(e){}
+    if(d&&d.error) msg=d.error;
+    alert(msg);console.log(r.error);return;
+  }
+  alert(d.refunded?"Order cancel ho gaya ✅\nRefund shuru ho gaya hai. Paisa 5 se 7 working days me aapke payment method me aayega.":"Order cancel ho gaya ✅");
   loadOrders();
 }
 
