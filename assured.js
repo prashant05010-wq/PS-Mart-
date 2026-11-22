@@ -93,6 +93,7 @@
 
   /* ---------- Product listing (cards) ---------- */
   function decorateCards(map) {
+    if (/\/(index\.html)?$/.test(location.pathname)) return; /* home page par badge nahi */
     var cards = document.querySelectorAll(".product:not([data-psa])");
     for (var i = 0; i < cards.length; i++) {
       var c = cards[i];
@@ -152,9 +153,9 @@
     var old = d.querySelectorAll(".ps-trust");
     for (var k = 0; k < old.length; k++) old[k].parentNode.removeChild(old[k]);
 
-    /* Flipkart jaisa order: delivery -> seller -> badge row -> offers */
-    var rows = info.querySelectorAll(".ps-row");
-    var after = rows.length ? rows[rows.length - 1] : (info.querySelector(".ps-tax") || info.firstElementChild);
+    /* Row "Product highlights" ke just upar (highlights na ho to agle section ke upar) */
+    var target = null, secs = d.querySelectorAll(".ps-sec.ps-wide");
+    for (var s = 0; s < secs.length; s++) { if (!info.contains(secs[s])) { target = secs[s]; break; } }
     var retOk = !(a && a.return_eligible === false);
 
     var row = document.createElement("div");
@@ -165,17 +166,17 @@
       tile("policies.html#refund", icon("pay"), "Secure<br>Payment", false) +
       (a ? tile("policies.html#assured", shield(30), "PS Mart<br>Assured", true)
          : tile("contact.html", icon("sup"), "Customer<br>Support", false));
-    after.parentNode.insertBefore(row, after.nextSibling);
 
-    var offers = info.querySelector(".ps-offers");
-    if (offers) row.parentNode.insertBefore(offers, row.nextSibling);
+    var parent = target ? target.parentNode : info.parentNode;
+    var ref = target || info.nextSibling;
+    parent.insertBefore(row, ref);
 
-    /* poora assurance section sirf Assured products par */
+    /* poora assurance section sirf Assured products par, row ke neeche */
     if (a && !d.querySelector(".psa-box")) {
       var box = document.createElement("div");
       box.className = "psa-box";
       box.innerHTML = detailHtml(a);
-      row.parentNode.insertBefore(box, row.nextSibling);
+      parent.insertBefore(box, ref);
     }
   }
 
