@@ -359,14 +359,6 @@ async function detail() {
         '</div>' +
         '<p class="ps-tax">Inclusive of all taxes</p>' +
 
-        '<div class="ps-offers">' +
-          '<h3>Available offers</h3>' +
-          '<div class="offer">🏷️ Special price available on PS Mart</div>' +
-          '<div class="offer">💳 Secure payment on all orders</div>' +
-          '<div class="offer">🚚 Free delivery available</div>' +
-          '<div class="offer">🔄 Easy return available</div>' +
-        '</div>' +
-
         '<h2 style="font:700 26px \'Cormorant Garamond\',Georgia,serif;margin:18px 0 8px;color:#43250f">Delivery details</h2>' +
         '<div class="ps-row addr" onclick="openLocation()"><span>🏠 ' + addrText + '</span><a href="#" onclick="return false">›</a></div>' +
         '<div class="ps-row"><span>🚚 Free delivery available</span></div>' +

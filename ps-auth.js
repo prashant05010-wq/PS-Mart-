@@ -75,8 +75,8 @@
       var p = await client.from("profiles").select("role").eq("id", user.id).maybeSingle();
       if (p && p.data) role = p.data.role;
     } catch (e) {}
-    if (role === "admin") return { url: "admin-dashboard.html" };
-    if (role === "seller") return { url: "seller-dashboard.html" };
+    /* admin aur seller bhi login ke baad home page par aate hain (dashboard profile page se kholte hain) */
+    if (role === "admin" || role === "seller") return { url: safeNext() || "index.html" };
     try {
       var m = await client.rpc("dp_me");
       var d = m && m.data;
