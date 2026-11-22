@@ -1,0 +1,43 @@
+/* PS Mart - login / signup / password pages ka shared design */
+:root{--dark:#3B2416;--gold:#C9922E;--cream:#F7F1E8;--ink:#2a1a0e;--muted:#7c6a58;--line:#e6dac3;--esp:#24150b;
+--serif:"Cormorant Garamond",Georgia,serif;--sans:Inter,"Segoe UI",Arial,sans-serif;
+--ggrad:linear-gradient(135deg,#f7dd9b,#f0bd50 45%,#C9922E)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;background:radial-gradient(circle at 20% 0,#fff 0,var(--cream) 55%,#efe4cc 100%);font-family:var(--sans);color:var(--ink);display:flex;align-items:center;justify-content:center;padding:22px 14px}
+.au-card{width:100%;max-width:430px;background:#fff;border:1.5px solid var(--gold);border-radius:20px;box-shadow:0 18px 50px rgba(59,36,22,.18);overflow:hidden}
+.au-top{background:linear-gradient(110deg,#24150b,#3B2416 60%,#6c3e17);padding:22px 20px;text-align:center;border-bottom:3px solid var(--gold)}
+.au-logo{display:inline-flex;align-items:center;gap:12px;text-decoration:none}
+.au-logo i{width:52px;height:52px;border-radius:50%;background:var(--ggrad);color:var(--esp);display:flex;align-items:center;justify-content:center;font:700 24px var(--serif);font-style:normal;box-shadow:0 0 0 4px rgba(240,189,80,.3)}
+.au-logo b{font:700 30px var(--serif);color:#fff;letter-spacing:.3px}
+.au-body{padding:24px 22px 22px}
+.au-body h1{margin:0 0 4px;font:700 30px var(--serif);color:var(--dark);text-align:center}
+.au-sub{margin:0 0 18px;text-align:center;color:var(--muted);font-size:14px;line-height:1.5}
+.au-f{margin:0 0 14px}
+.au-f label{display:block;margin:0 0 6px;font-size:13px;font-weight:600;color:var(--dark)}
+.au-in{width:100%;padding:13px 14px;border:1.5px solid #d9c8a6;border-radius:12px;font:inherit;font-size:16px;color:var(--ink);background:#fffdf8;outline:0;transition:border-color .2s,box-shadow .2s}
+.au-in:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,146,46,.22)}
+.au-pw{position:relative}.au-pw .au-in{padding-right:48px}
+.au-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.au-eye svg{width:22px;height:22px}
+.au-row{display:flex;justify-content:flex-end;margin:-4px 0 14px}
+.au-row a,.au-link{color:#8a5a12;font-weight:600;font-size:13.5px;text-decoration:none}
+.au-row a:hover,.au-link:hover{text-decoration:underline}
+.au-btn{width:100%;padding:14px;border:0;border-radius:12px;background:var(--ggrad);color:var(--esp);font:700 16px var(--sans);cursor:pointer;box-shadow:0 6px 16px rgba(201,146,46,.4);transition:transform .15s,opacity .15s}
+.au-btn:hover{transform:translateY(-1px)}
+.au-btn[disabled]{opacity:.6;cursor:not-allowed;transform:none}
+.au-btn.alt{background:#fff;color:var(--dark);border:1.5px solid var(--gold);box-shadow:none}
+.au-or{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--muted);font-size:13px;font-weight:600}
+.au-or::before,.au-or::after{content:"";flex:1;height:1px;background:var(--line)}
+.au-msg{margin:14px 0 0;padding:11px 13px;border-radius:10px;font-size:14px;line-height:1.5;display:none}
+.au-msg.show{display:block}
+.au-msg.bad{background:#fdecea;color:#8b1e1e;border:1px solid #f3c2bd}
+.au-msg.ok{background:#e9f7ee;color:#1b6b38;border:1px solid #bfe3cb}
+.au-msg.info{background:#fbf3df;color:#6b4a0c;border:1px solid #ecd9a8}
+.au-foot{margin-top:18px;text-align:center;font-size:14px;color:var(--muted)}
+.au-foot a{color:#8a5a12;font-weight:700;text-decoration:none}
+.au-small{margin-top:10px;text-align:center;font-size:12.5px;color:var(--muted)}
+.au-hide{display:none!important}
+.au-hint{font-size:12px;color:var(--muted);margin-top:5px}
+.au-already{margin:0 0 16px;padding:12px;border-radius:12px;background:var(--cream);border:1px dashed var(--gold);font-size:14px;text-align:center}
+.au-already button{margin:8px 4px 0;padding:9px 16px;border-radius:10px;border:1.5px solid var(--gold);background:#fff;color:var(--dark);font-weight:700;cursor:pointer}
