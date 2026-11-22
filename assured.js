@@ -65,7 +65,7 @@
   function badge(size, withSub) {
     var lg = size === "lg";
     return '<span class="psa-b' + (lg ? " lg" : "") + '">' + shield(lg ? 34 : 22) +
-      '<span class="t"><b>PS MART ASSURED</b>' + (withSub ? "<i>Trusted Shopping Experience</i>" : "") + "</span></span>";
+      '<span class="t"><b>PS MART ASSURED</b>' + (withSub ? "" : "") + "</span></span>";
   }
 
   function icon(kind) {
@@ -149,8 +149,7 @@
   function renderDetail(map) {
     var d = document.getElementById("detail");
     if (!d || d.querySelector(".psa-trust")) return;
-    var info = d.querySelector(".detail-info");
-    if (!info) return;
+    var info = d.querySelector(".detail-info") || d;
     var id = new URLSearchParams(location.search).get("id");
     var a = id && map[String(id)];
 
@@ -194,7 +193,10 @@
 
   var timer = null;
   function run() {
-    load().then(function (map) { decorateCards(map); renderDetail(map); });
+    load().then(function (map) {
+      try { decorateCards(map); } catch (e) { console.log("PSA cards:", e); }
+      try { renderDetail(map); } catch (e) { console.log("PSA detail:", e); }
+    });
   }
   function schedule() { clearTimeout(timer); timer = setTimeout(run, 120); }
 

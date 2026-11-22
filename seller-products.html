@@ -122,6 +122,13 @@ async function loadSellerProducts(){
 
   message.textContent = "";
 
+  /* delete requests (table na ho to chupchap chhod do) */
+  const REQ = {};
+  try{
+    const rq = await supabaseClient.from("product_delete_requests").select("product_id,status,admin_note,created_at").order("created_at",{ascending:true});
+    if(!rq.error && rq.data) rq.data.forEach(x => { REQ[String(x.product_id)] = x; });
+  }catch(e){}
+
   if(!data || data.length === 0){
     box.innerHTML = `
       <div class="empty">
@@ -144,10 +151,16 @@ async function loadSellerProducts(){
         <img src="${esc(firstImage(p))}" alt="${esc(p.name)}"
              onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
         <div class="info">
-          <h3>${esc(p.name)}</h3>
-          <p class="desc">${esc(p.description || "")}</p>
+          <div><label>Product ka naam</label>
+            <input type="text" maxlength="200" id="name-${esc(p.id)}" value="${esc(p.name)}"></div>
+          <div><label>Description</label>
+            <textarea rows="3" maxlength="2000" id="desc-${esc(p.id)}" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font:inherit;box-sizing:border-box">${esc(p.description || "")}</textarea></div>
           <span class="status st-${esc(st)}">${esc(st)}</span>
           ${note ? `<small>${esc(note)}</small>` : ""}
+          ${(function(){ const q = REQ[String(p.id)]; if(!q) return ""; 
+            if(q.status === "pending") return `<small style="color:#9a6b00">⏳ Delete request admin ke paas hai.</small>`;
+            if(q.status === "rejected") return `<small style="color:#c62828">Delete request reject hui${q.admin_note ? ": " + esc(q.admin_note) : ""}.</small>`;
+            return ""; })()}
           <div class="rate">${rating}${catName ? " • " + esc(catName) : ""}</div>
 
           <div class="grid2">
@@ -161,7 +174,7 @@ async function loadSellerProducts(){
 
           <div class="btns">
             <button class="save" id="save-${esc(p.id)}" data-id="${esc(p.id)}" onclick="saveProduct(this.dataset.id)">💾 Save</button>
-            <button class="del" data-id="${esc(p.id)}" onclick="deleteProduct(this.dataset.id)">🗑</button>
+            <button class="del" data-id="${esc(p.id)}" onclick="requestDelete(this.dataset.id)" title="Delete request admin ko bhejein">🗑 Delete Request</button>
           </div>
           <div class="msg" id="msg-${esc(p.id)}"></div>
         </div>
@@ -174,6 +187,8 @@ async function saveProduct(id){
   const msg = document.getElementById("msg-" + id);
   const btn = document.getElementById("save-" + id);
 
+  const nameVal = document.getElementById("name-" + id).value.trim();
+  const descVal = document.getElementById("desc-" + id).value.trim();
   const price = Number(document.getElementById("price-" + id).value);
   const mrpText = document.getElementById("mrp-" + id).value.trim();
   const mrp = mrpText === "" ? null : Number(mrpText);
@@ -182,6 +197,7 @@ async function saveProduct(id){
 
   const bad = t => { msg.style.color = "#c62828"; msg.textContent = t; };
 
+  if(nameVal.length < 3) return bad("Product ka naam kam se kam 3 akshar ka rakhiye.");
   if(!isFinite(price) || price <= 0) return bad("Sahi price daaliye.");
   if(mrp !== null && (!isFinite(mrp) || mrp <= 0)) return bad("Sahi MRP daaliye ya khaali chhodiye.");
   if(mrp !== null && price > mrp) return bad("Selling price MRP se zyada nahi ho sakta.");
@@ -193,7 +209,7 @@ async function saveProduct(id){
 
   const { data, error } =
     await supabaseClient.from("products")
-      .update({ price: price, old_price: mrp, stock: stock })
+      .update({ name: nameVal, description: descVal, price: price, old_price: mrp, stock: stock })
       .eq("id", id)
       .select("id");
 
@@ -206,21 +222,21 @@ async function saveProduct(id){
   msg.textContent = "✅ Save ho gaya";
 }
 
-async function deleteProduct(id){
+async function requestDelete(id){
 
-  if(!confirm("Is product ko hamesha ke liye hatana hai?")) return;
+  const reason = prompt("Is product ko hatane ki wajah likhiye (admin ki manzoori ke baad hi hatega):");
+  if(reason === null) return;
 
-  const { data, error } =
-    await supabaseClient.from("products").delete().eq("id", id).select("id");
+  const { data, error } = await supabaseClient.rpc("seller_request_product_delete", { p_product_id: String(id), p_reason: reason });
 
   if(error){
-    alert("Hata nahi paya. Is product ke orders ho sakte hain, isliye ise hataya nahi ja sakta. Stock 0 kar dijiye.\n\n" + error.message);
+    alert("Request nahi gayi: " + error.message + "\n\n(Agar 'function does not exist' aaye to admin se ps-mart-seller-delete.sql run karwayein.)");
     return;
   }
-  if(!data || data.length === 0){ alert("Hata nahi paya (ijazat nahi mili)."); return; }
+  if(!data || data.success !== true){ alert((data && data.message) || "Request nahi gayi."); return; }
 
-  const card = document.getElementById("card-" + id);
-  if(card) card.remove();
+  alert("Delete request admin ko bhej di gayi. Manzoori milne par hi product hatega.");
+  loadSellerProducts();
 }
 
 loadSellerProducts();
