@@ -30,6 +30,11 @@
     ".psa-ti{width:52px;height:52px;border-radius:14px;background:#F7F1E8;border:1px solid #eadcc0;display:flex;align-items:center;justify-content:center}",
     ".psa-ti svg{width:30px;height:30px}",
     ".psa-tile.on .psa-ti{border-color:#C9922E;background:#fff}",
+    ".psa-exwrap{margin:6px 0 10px}",
+    ".psa-ex{display:flex;gap:10px;align-items:flex-start;padding:8px 0;font:500 13px/1.45 Inter,'Segoe UI',Arial,sans-serif;color:#3B2416}",
+    ".psa-exi{flex:0 0 26px;height:26px;border-radius:50%;background:#F7F1E8;border:1px solid #C9922E;display:flex;align-items:center;justify-content:center}",
+    ".psa-exi svg{width:15px;height:15px}",
+    "@media(max-width:700px){.psa-trust,.psa-exwrap{margin-left:14px;margin-right:14px}}",
     ".psa-rows{display:grid;grid-template-columns:1fr;gap:0}",
     ".psa-row{display:flex;gap:12px;padding:12px 14px;border-top:1px solid #e6dac3}",
     ".psa-row:first-child{border-top:0}",
@@ -171,12 +176,19 @@
     var ref = target || info.nextSibling;
     parent.insertBefore(row, ref);
 
-    /* poora assurance section sirf Assured products par, row ke neeche */
-    if (a && !d.querySelector(".psa-box")) {
-      var box = document.createElement("div");
-      box.className = "psa-box";
-      box.innerHTML = detailHtml(a);
-      parent.insertBefore(box, ref);
+    /* sirf zaruri chhoti lines (table nahi): Verified Seller aur product ka return note */
+    var ex = "";
+    if (a && a.verified_seller) {
+      ex += '<div class="psa-ex"><span class="psa-exi">' + icon("ver") + "</span><span><b>Verified Seller</b>. Seller verification completed with PS Mart.</span></div>";
+    }
+    if (a && a.return_note) {
+      ex += '<div class="psa-ex"><span class="psa-exi">' + icon("ret") + "</span><span><b>Return note:</b> " + esc(a.return_note) + "</span></div>";
+    }
+    if (ex) {
+      var exBox = document.createElement("div");
+      exBox.className = "psa-exwrap";
+      exBox.innerHTML = ex;
+      parent.insertBefore(exBox, ref);
     }
   }
 
