@@ -43,10 +43,10 @@
     if (!modal) {
       modal = document.createElement("div"); modal.className = "dpw-modal";
       modal.innerHTML =
-        '<div class="dpw-sheet" role="dialog" aria-modal="true" aria-label="App install guide"><h3>PS Mart Delivery install karein</h3>' +
+        '<div class="dpw-sheet" role="dialog" aria-modal="true" aria-label="App install guide"><h3>PS Mart Scanner install karein</h3>' +
         "<p>Install karna zaruri nahi hai. Aap website se bhi wahi account aur wahi data use kar sakte hain.</p>" +
         "<h4>Android (Chrome)</h4><ol><li>Chrome ke upar daayein <b>3 dots</b> dabayein.</li><li><b>Install app</b> ya <b>Add to Home screen</b> chuniye.</li><li><b>Install</b> dabayein.</li></ol>" +
-        "<h4>Windows / Laptop (Chrome ya Edge)</h4><ol><li>Address bar ke daayein taraf <b>install icon</b> dabayein, ya 3 dots menu me <b>Install PS Mart Delivery</b> / <b>Save and share &rarr; Install page as app</b> chuniye.</li><li>Desktop par shortcut ban jayega.</li></ol>" +
+        "<h4>Windows / Laptop (Chrome ya Edge)</h4><ol><li>Address bar ke daayein taraf <b>install icon</b> dabayein, ya 3 dots menu me <b>Install PS Mart Scanner</b> / <b>Save and share &rarr; Install page as app</b> chuniye.</li><li>Desktop par shortcut ban jayega.</li></ol>" +
         "<h4>iPhone (Safari)</h4><ol><li>Neeche <b>Share</b> button dabayein.</li><li><b>Add to Home Screen</b> chuniye.</li></ol>" +
         '<button type="button" class="dpw-close">Theek hai</button></div>';
       modal.addEventListener("click", function (e) { if (e.target === modal || (e.target.className || "") === "dpw-close") modal.classList.remove("show"); });

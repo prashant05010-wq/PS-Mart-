@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex">
+<link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="manifest" href="scanner.webmanifest"><meta name="theme-color" content="#3B2416">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PS Scanner"><link rel="apple-touch-icon" href="scanner-apple-touch-icon.png">
+<link rel="stylesheet" href="dp-style.css">
+<style>
+body.dp{padding-bottom:30px}
+.sc-cam{position:relative;background:#120a05;border-radius:14px;overflow:hidden;min-height:240px;border:2px solid var(--dp-gold)}
+#qrBox{width:100%}
+#qrBox video{width:100%!important;display:block}
+.sc-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#f7dd9b;font-weight:600;padding:12px;text-align:center}
+.sc-tools{margin-top:10px}.sc-tools .dp-btn{flex:1}
+.sc-done{text-align:center}
+.sc-tick{width:84px;height:84px;margin:6px auto 10px;border-radius:50%;background:#188038;color:#fff;font-size:48px;line-height:84px}
+.dpw-ins{display:block}
+@media(min-width:700px){.dp-wrap{max-width:620px}}
+</style>
+<title>Parcel Scanner | PS Mart</title>
+</head>
+<body class="dp">
+<div class="dp-top"><b>📷 PS Mart Scanner</b><div><span id="who" style="font-size:13px;margin-right:8px"></span><button onclick="logout()">Logout</button></div></div>
+
+<div class="dp-wrap">
+  <button type="button" class="dpw-ins" data-dp-install id="insBtn" hidden style="width:100%;margin-bottom:12px">📲 Install Scanner App</button>
+  <div id="flash"></div>
+  <div id="stage"><div class="dp-card">Loading...</div></div>
+  <a class="dp-btn line" href="delivery-dashboard.html" style="text-decoration:none;text-align:center">🏠 Earnings aur deliveries website par dekhein</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+<script src="dp-common.js"></script>
+<script src="delivery-pwa.js"></script>
+<script>
+var scanner=null,busy=false,CUR=null,DONE=0,idleT=null,cams=[],camIdx=0,torchOn=false,PEND=[];
+var NOINET="Internet nahi hai. Ye kaam tabhi hoga jab internet chalu ho. Abhi kuch save nahi hua.";
+var REASONS=["Customer Not Available","Customer Phone Not Reachable","Incorrect Address","Customer Refused","Other Reason"];
+function $(id){return document.getElementById(id);}
+function flash(t,type){dpMsg("flash",t,type);if(t)window.scrollTo(0,0);}
+function emsg(e){var m=String((e&&e.message)||e||"");return /fetch|network|load failed|connection/i.test(m)?"Internet connection check karein. Ye kaam abhi poora nahi hua.":m;}
+function camMsg(e){var s=((e&&e.name)||"")+" "+String((e&&e.message)||e||"");
+  if(/NotAllowed|Permission|denied/i.test(s))return "Camera ki permission band hai. Browser ya phone settings me is site ko Camera allow karein, ya neeche code haath se likhein.";
+  if(/NotFound|DevicesNotFound/i.test(s))return "Is device me camera nahi mila. Neeche code haath se likhein.";
+  if(/NotReadable|TrackStart|in use/i.test(s))return "Camera kisi aur app me chalu hai. Use band karke dobara try karein, ya code haath se likhein.";
+  if(!window.Html5Qrcode||!navigator.onLine)return "Scanner load nahi ho paya. Internet check karein, ya neeche code haath se likhein.";
+  return "Camera shuru nahi hua. Neeche code haath se likhein.";}
+function beep(){
+  try{var C=window.AudioContext||window.webkitAudioContext;var c=new C(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=.15;o.start();setTimeout(function(){try{o.stop();c.close();}catch(e){}},140);}catch(e){}
+  try{if(navigator.vibrate)navigator.vibrate(120);}catch(e){}
+}
+function codeFrom(t){
+  t=String(t||"").trim();
+  try{var u=new URL(t);var c=u.searchParams.get("c");if(c)return c.trim();}catch(e){}
+  return t;
+}
+
+/* ---------- start: sirf approved partner ---------- */
+async function boot(){
+  var au,me;
+  try{au=await supabaseClient.auth.getUser();}catch(e){return offlineBoot();}
+  if(!au.data||!au.data.user){return toLogin();}
+  try{me=await supabaseClient.rpc("dp_me");}catch(e){return offlineBoot();}
+  if(me.error||!me.data||!me.data.exists||me.data.status!=="approved"){await supabaseClient.auth.signOut();return toLogin();}
+  $("who").textContent=me.data.partner_code;
+  resetIdle();["click","touchstart","keydown"].forEach(function(e){document.addEventListener(e,resetIdle,{passive:true});});
+  var sc=new URLSearchParams(location.search).get("scan");
+  if(sc){history.replaceState(null,"","delivery-scan.html");return handleCode(sc);}
+  showScan();
+}
+function offlineBoot(){$("stage").innerHTML='<div class="dp-card"><div class="dp-msg bad">'+dpEsc(NOINET)+'</div><button class="dp-btn gold" onclick="location.reload()">Dobara try karein</button></div>';}
+function toLogin(){location.replace("delivery-login.html?next=scanner");}
+async function logout(){await stopCamera();try{await supabaseClient.auth.signOut();}catch(e){}location.replace("delivery-login.html?next=scanner");}
+function resetIdle(){clearTimeout(idleT);idleT=setTimeout(logout,30*60*1000);} /* 30 min nishkriya = auto logout */
+
+/* ---------- Step 1: scan ---------- */
+async function showScan(msg,type){
+  await stopCamera();CUR=null;busy=false;
+  flash(msg||"",type);
+  $("stage").innerHTML='<div class="dp-card"><h3>Parcel scan karein</h3>'
+   +'<div class="sc-cam"><div id="qrBox"></div><div id="camPh" class="sc-ph">Camera shuru ho raha hai...</div></div><div id="scanMsg"></div>'
+   +'<div class="dp-row sc-tools"><button class="dp-btn line sm" id="torchBtn" onclick="toggleTorch()" hidden>🔦 Flash</button>'
+   +'<button class="dp-btn line sm" id="swBtn" onclick="switchCam()" hidden>🔄 Camera badlein</button>'
+   +'<button class="dp-btn line sm" onclick="startCamera()">📷 Camera chalayein</button></div>'
+   +'<label class="dp-l" for="manual">Camera na chale to parcel ka code likhein</label>'
+   +'<input class="dp-in" id="manual" maxlength="64" autocapitalize="characters" autocomplete="off" placeholder="Label par likha code" onkeydown="if(event.key===\'Enter\')manualGo()">'
+   +'<button class="dp-btn gold" onclick="manualGo()">Code check karein</button>'
+   +'<div class="dp-hint" style="margin-top:8px">Is session me complete delivery: <b>'+DONE+'</b></div></div><div id="pend"></div>';
+  loadPending();
+  startCamera();
+}
+async function startCamera(){
+  if(busy)return;
+  await stopCamera();
+  var box=$("qrBox");if(!box)return;dpMsg("scanMsg","");
+  if(!dpOnline()){dpMsg("scanMsg","Internet nahi hai. Scanner ko internet chahiye.","info");var p0=$("camPh");if(p0)p0.textContent="Internet nahi hai";return;}
+  try{
+    if(!window.Html5Qrcode){await new Promise(function(res,rej){var s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js";s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+    scanner=new Html5Qrcode("qrBox");
+    var cfg=cams.length?{deviceId:{exact:cams[camIdx].id}}:{facingMode:"environment"};
+    await scanner.start(cfg,{fps:10,qrbox:{width:230,height:230}},function(text){onCode(text);},function(){});
+    var ph=$("camPh");if(ph)ph.style.display="none";
+    try{if(!cams.length)cams=await Html5Qrcode.getCameras();if(cams.length>1&&$("swBtn"))$("swBtn").hidden=false;}catch(e){}
+    try{var caps=scanner&&scanner.getRunningTrackCapabilities&&scanner.getRunningTrackCapabilities();if(caps&&caps.torch&&$("torchBtn"))$("torchBtn").hidden=false;}catch(e){}
+  }catch(e){
+    dpMsg("scanMsg",camMsg(e),"info");var ph2=$("camPh");if(ph2)ph2.textContent="Camera nahi chala";scanner=null;
+  }
+}
+async function stopCamera(){
+  try{if(scanner){if(scanner.isScanning)await scanner.stop();scanner.clear();}}catch(e){}
+  scanner=null;torchOn=false;
+}
+async function toggleTorch(){
+  try{torchOn=!torchOn;await scanner.applyVideoConstraints({advanced:[{torch:torchOn}]});}catch(e){torchOn=false;dpMsg("scanMsg","Is camera par flash chalu nahi ho paya.","info");}
+}
+async function switchCam(){
+  if(cams.length<2)return;camIdx=(camIdx+1)%cams.length;startCamera();
+}
+function onCode(text){if(busy)return;beep();handleCode(codeFrom(text));}
+function manualGo(){var c=codeFrom(($("manual")||{}).value);if(!c)return;handleCode(c);}
+
+async function handleCode(code){
+  code=String(code||"").trim();if(!code||busy)return;
+  if(!dpOnline()){await showScan(NOINET,"bad");return;}
+  busy=true;await stopCamera();flash("");
+  $("stage").innerHTML='<div class="dp-card">Parcel check ho raha hai...</div>';
+  try{
+    var r=await dpRpc("dp_scan_parcel",{p_code:code});
+    if(!r||!r.success){busy=false;return showScan((r&&r.message)||"Scan fail","bad");}
+    CUR={aid:r.assignment_id,info:r.info||{},x:null};
+    await loadCur();busy=false;
+    if(CUR.x&&CUR.x.status==="delivered")return showScan("Ye parcel pehle hi deliver ho chuka hai.","info");
+    if(!CUR.x)return showScan("Parcel ki detail nahi mil payi. Dobara scan karein.","bad");
+    showParcel("✅ Parcel verify ho gaya.","ok");
+  }catch(e){busy=false;showScan(emsg(e),"bad");}
+}
+async function loadCur(){
+  var same=function(y){return String(y.assignment_id)===String(CUR.aid);};
+  var list=await dpRpc("dp_my_deliveries",{p_filter:"active"});
+  var x=(list||[]).find(same);
+  if(!x){var d=await dpRpc("dp_my_deliveries",{p_filter:"done"});x=(d||[]).find(same);}
+  CUR.x=x||null;
+}
+async function loadPending(){
+  try{
+    var list=await dpRpc("dp_my_deliveries",{p_filter:"active"});var el=$("pend");if(!el)return;
+    PEND=(list||[]).filter(function(x){return x.scanned&&["assigned","scanned","rescheduled"].indexOf(x.status)>-1;});
+    if(!PEND.length){el.innerHTML="";return;}
+    el.innerHTML='<div class="dp-card"><h3>Scan ho chuke, abhi baaki</h3>'+PEND.map(function(x){
+      var i=x.info||{};
+      return '<div class="dp-kv" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span><b>Order #'+dpEsc(x.order_id)+'</b>'+dpEsc(i.customer_name||"")+'</span>'
+        +'<button class="dp-btn gold sm" onclick="resume('+Number(x.assignment_id)+')">Continue</button></div>';}).join("")+'</div>';
+  }catch(e){}
+}
+async function resume(aid){
+  var x=PEND.find(function(y){return Number(y.assignment_id)===Number(aid);});if(!x)return;
+  await stopCamera();CUR={aid:x.assignment_id,info:x.info||{},x:x};showParcel("","");
+}
+
+/* ---------- Step 2/3: parcel detail, delivery shuru, OTP ---------- */
+function showParcel(msg,type){
+  flash(msg||"",type);
+  var x=CUR.x||{},i=(x.info&&x.info.success)?x.info:(CUR.info||{}),ofd=x.order_status==="out_for_delivery",cod=i.payment_mode==="COD";
+  var items=(i.items||[]).map(function(t){return dpEsc(t.name||"Product")+" × "+Number(t.qty||1);}).join("<br>");
+  var tel=String(i.customer_phone||"").replace(/[^\d+]/g,"");
+  var h='<div class="dp-card"><div style="display:flex;justify-content:space-between;gap:8px"><h3>Order #'+dpEsc(x.order_id||i.order_id||"")+'</h3>'+dpBadge(x.status||"scanned")+'</div>'
+   +'<div class="dp-kv"><b>Parcel ID / Assignment</b>#'+dpEsc(CUR.aid)+'</div>'
+   +'<div class="dp-kv"><b>Seller</b>'+dpEsc(i.shop_name||"Seller")+'</div><div class="dp-kv"><b>Saaman</b>'+(items||"—")+'</div>'
+   +'<div class="dp-kv"><b>Customer</b>'+dpEsc(i.customer_name||"Customer")+'</div><div class="dp-kv"><b>Address</b>'+dpEsc(i.address||"—")+'</div>';
+  if(i.customer_phone)h+='<div class="dp-kv"><b>Phone</b>'+dpEsc(i.customer_phone)+'</div>';
+  h+=(cod?'<div class="dp-cod">💵 Customer se '+dpInr(i.collect_amount)+' cash lein</div>':'<div class="dp-pre">✅ Payment ho chuka hai. Paisa nahi lena</div>');
+  h+='<div class="dp-row">'+(i.customer_phone?'<a class="dp-btn line sm" href="tel:'+dpEsc(tel)+'">📞 Call</a>':'')
+   +'<a class="dp-btn line sm" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(i.address||"")+'">🧭 Navigate</a></div>';
+  if(!ofd){
+    h+='<button class="dp-btn green" id="startBtn" onclick="startDel()">🚚 Delivery shuru karein (Out for Delivery)</button>'
+     +'<div class="dp-hint">Shuru karne ke baad customer se 6 digit OTP puchna hai.</div>';
+  }else{
+    h+='<label class="dp-l" for="otp">Customer se 6 digit OTP puchiye</label><input class="dp-in otp-in" id="otp" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="one-time-code">'
+     +(cod?'<label style="display:flex;gap:10px;margin-top:10px;font-weight:600"><input type="checkbox" id="cash" style="width:22px;height:22px"> Maine '+dpInr(i.collect_amount)+' cash le liye</label>':'')
+     +'<button class="dp-btn green" id="verBtn" onclick="verifyOtp()">✅ OTP verify karke delivery complete karein</button>'
+     +'<div class="dp-hint">Baaki koshishein: '+Number(i.attempts_left==null?5:i.attempts_left)+'. Sirf saaman dene ke baad confirm karein.</div>';
+  }
+  h+='<details style="margin-top:12px"><summary style="font-weight:700;cursor:pointer">Delivery nahi ho payi?</summary><label class="dp-l" for="why">Wajah</label><select class="dp-in" id="why">'
+   +REASONS.map(function(r){return '<option>'+dpEsc(r)+'</option>';}).join("")+'</select><input class="dp-in" id="wn" maxlength="200" placeholder="Note (optional)" style="margin-top:8px">'
+   +'<button class="dp-btn red" onclick="failDel()">Delivery fail report karein</button></details></div>'
+   +'<button class="dp-btn line" onclick="showScan()">↩ Dusra parcel scan karein</button>';
+  $("stage").innerHTML=h;
+}
+async function startDel(){
+  if(!dpOnline()){flash(NOINET,"bad");return;}
+  if(busy)return;busy=true;var b=$("startBtn");if(b)b.disabled=true;
+  try{
+    var r=await dpRpc("dp_start_delivery",{p_assignment_id:CUR.aid});
+    if(r&&r.success){await loadCur();busy=false;showParcel(r.message||"Delivery shuru ho gayi.","ok");return;}
+    flash((r&&r.message)||"Delivery shuru nahi hui","bad");if(b)b.disabled=false;
+  }catch(e){flash(emsg(e),"bad");if(b)b.disabled=false;}
+  busy=false;
+}
+async function verifyOtp(){
+  if(!dpOnline()){flash(NOINET,"bad");return;}
+  var x=CUR.x||{},i=(x.info&&x.info.success)?x.info:(CUR.info||{}),cod=i.payment_mode==="COD";
+  var otp=($("otp").value||"").trim();
+  if(!/^\d{6}$/.test(otp)){flash("6 digit ka OTP daalein","bad");return;}
+  if(cod&&!$("cash").checked){flash("Pehle customer se cash lekar box tick karein","bad");return;}
+  if(busy)return;busy=true;var b=$("verBtn");b.disabled=true;b.textContent="Check ho raha hai...";
+  try{
+    var r=await dpRpc("dp_verify_delivery",{p_assignment_id:CUR.aid,p_otp:otp});
+    if(r&&r.success){DONE++;busy=false;showDone();return;}
+    await loadCur();busy=false;showParcel((r&&r.message)||"OTP galat hai","bad");return;
+  }catch(e){flash(emsg(e),"bad");b.disabled=false;b.textContent="✅ OTP verify karke delivery complete karein";}
+  busy=false;
+}
+function showDone(){
+  var x=CUR.x||{},oid=x.order_id||(CUR.info&&CUR.info.order_id)||"";
+  flash("");
+  $("stage").innerHTML='<div class="dp-card sc-done"><div class="sc-tick">✓</div><h2>Delivery complete!</h2>'
+   +'<p>Order #'+dpEsc(oid)+' customer ko de diya gaya. Dhanyavaad.</p>'
+   +'<button class="dp-btn gold" onclick="showScan()">📷 Agla parcel scan karein</button></div>';
+}
+async function failDel(){
+  if(!dpOnline()){flash(NOINET,"bad");return;}
+  if(!confirm("Delivery fail report karni hai?"))return;
+  if(busy)return;busy=true;
+  try{
+    var r=await dpRpc("dp_report_failed",{p_assignment_id:CUR.aid,p_reason:$("why").value,p_note:$("wn").value});
+    busy=false;
+    if(!r||!r.success){flash((r&&r.message)||"Report nahi hui","bad");return;}
+    flash("Wajah save ho gayi. Seller/Admin ko dikhegi.","ok");
+    $("stage").innerHTML='<div class="dp-card"><h3>Delivery fail report ho gayi</h3><button class="dp-btn line" onclick="reqResched()">🔁 Reschedule request bhejein</button></div>'
+     +'<button class="dp-btn gold" onclick="showScan()">📷 Agla parcel scan karein</button>';
+  }catch(e){busy=false;flash(emsg(e),"bad");}
+}
+async function reqResched(){
+  if(!dpOnline()){flash(NOINET,"bad");return;}
+  var n=prompt("Reschedule ki wajah / kab theek rahega?");if(n===null)return;
+  try{var r=await dpRpc("dp_request_reschedule",{p_assignment_id:CUR.aid,p_note:n});flash(r&&r.success?"Request bhej di gayi.":((r&&r.message)||"Request nahi gayi"),r&&r.success?"ok":"bad");}
+  catch(e){flash(emsg(e),"bad");}
+}
+
+window.addEventListener("pagehide",function(){stopCamera();});
+document.addEventListener("DOMContentLoaded",function(){
+  var inst=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
+  if(!inst&&$("insBtn"))$("insBtn").hidden=false;
+});
+boot();
+</script>
+</body></html>
