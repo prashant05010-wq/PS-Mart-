@@ -102,8 +102,11 @@ async function loadInvoice(){
     items=items.filter(function(x){return String(x.seller_id)===String(mySeller.id);});
     seller=mySeller;
   }else if(items[0]){
-    var s2=await supabaseClient.from("sellers").select("shop_name").eq("id",items[0].seller_id).maybeSingle();
-    seller=s2&&s2.data;
+    var sn=null;
+    try{var rn=await supabaseClient.rpc("get_seller_names",{p_seller_ids:[String(items[0].seller_id)]});
+      if(!rn.error&&rn.data&&rn.data[0]&&rn.data[0].seller_name)sn={shop_name:rn.data[0].seller_name};}catch(e){}
+    if(!sn){var s2=await supabaseClient.from("sellers").select("shop_name").eq("id",items[0].seller_id).maybeSingle();sn=s2&&s2.data;}
+    seller=sn;
   }
   if(!items.length){fail("Is order me koi item nahi mila.");return;}
 

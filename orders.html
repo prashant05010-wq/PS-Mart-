@@ -112,6 +112,7 @@ button,input,select{font-family:inherit}
 <script src="config.js"></script>
 <script src="data.js"></script>
 <script src="app.js"></script>
+<script src="seller-names.js"></script>
 <script>
 var DELIVERY_DAYS = (window.PSMART_CONFIG&&PSMART_CONFIG.deliveryDays)||5;   /* config.js se */
 var STATUS_LIST = ["placed","confirmed","packed","shipped","out_for_delivery","delivered"];
@@ -212,6 +213,7 @@ function orderCard(order){
     var img=p.image_url?'<img src="'+esc(p.image_url)+'" alt="'+esc(p.name)+'">':"🛍️";
     return '<div class="product-row"><div class="product-image">'+img+'</div><div class="product-info">'
       +'<a href="product.html?id='+encodeURIComponent(p.id)+'">'+esc(p.name)+'</a>'
+      +'<div data-psn-seller="'+esc(item.seller_id||p.seller_id||"")+'"></div>'
       +'<p>Quantity: <b>'+Number(item.quantity||1)+'</b></p><div class="price">'+inr(item.price)+'</div>'+rateBlock(item,os)+'</div></div>';
   }).join("");
 

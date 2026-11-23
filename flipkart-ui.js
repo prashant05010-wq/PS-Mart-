@@ -409,3 +409,11 @@ async function detail() {
   /* address badalne par "HOME ..." line update */
   document.addEventListener("psmart:address", function () { detail(); }, { once: true });
 }
+
+/* Har product par asli seller ka naam: seller-names.js apne aap load hoti hai */
+(function () {
+  var s = document.createElement("script");
+  s.src = "seller-names.js?v=1";
+  s.defer = true;
+  document.head.appendChild(s);
+})();
