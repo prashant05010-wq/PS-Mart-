@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="stylesheet" href="dp-style.css">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex"><link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="manifest" href="delivery.webmanifest"><meta name="theme-color" content="#3B2416"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="PS Delivery"><link rel="apple-touch-icon" href="delivery-apple-touch-icon.png"><link rel="stylesheet" href="dp-style.css">
 <title>Delivery Partner Login | PS Mart</title>
 </head>
 <body class="dp">
@@ -13,12 +13,14 @@
     <label class="dp-l" for="pw">Password</label><input class="dp-in" id="pw" type="password" autocomplete="current-password" maxlength="72" onkeydown="if(event.key==='Enter')login()">
     <button class="dp-btn gold" id="go" onclick="login()">Login</button>
     <a class="dp-btn line" href="delivery-register.html">Become a Delivery Partner</a>
+    <div class="dpw-bar" data-dp-bar style="justify-content:center;margin-top:12px;padding:0"><button type="button" class="dpw-ins" data-dp-install hidden>📲 Install App</button><button type="button" class="dpw-how" data-dp-howto>App install kaise karein?</button></div>
     <div class="dp-hint">Sirf admin se approved partners login kar sakte hain.</div>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
 <script src="dp-common.js"></script>
+<script src="delivery-pwa.js"></script>
 <script>
 var fails=0,lockUntil=0;
 function next(){var p=new URLSearchParams(location.search).get("scan");return "delivery-dashboard.html"+(p?"?scan="+encodeURIComponent(p):"");}
@@ -56,5 +58,9 @@ async function login(){
     dpMsg(m,err.message||generic,"bad");b.disabled=false;b.textContent="Login";
   }
 }
+</script>
+<script>
+/* Pehle se login approved partner ko seedha dashboard par bhejo */
+(async function(){try{var au=await supabaseClient.auth.getUser();if(au.data&&au.data.user){var me=await supabaseClient.rpc("dp_me");if(!me.error&&me.data&&me.data.exists&&me.data.status==="approved"){location.replace(next());}}}catch(e){}})();
 </script>
 </body></html>

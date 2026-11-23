@@ -1,9 +1,10 @@
-/* PS Mart service worker
-   Network-first: online ho to hamesha taaza page/file milti hai (purani copy ka jhanjhat nahi).
-   Offline ho to pehle dekhi hui page ya offline.html dikhta hai.
-   Supabase / CDN (doosri site ki) requests ko ye chhuta hi nahi. */
-var CACHE = "psmart-v1";
+/* PS Mart service worker (v2)
+   Sirf SAFE static files (css, js, images, fonts, manifest) cache hoti hain, wo bhi network-first.
+   Pages (HTML), Supabase ka data, login/session, parcel ya customer ki koi jaankari cache NAHI hoti.
+   Offline hone par sirf offline.html dikhta hai. Doosri site (Supabase / CDN) ki requests ko ye chhuta nahi. */
+var CACHE = "psmart-v2";
 var OFFLINE = "offline.html";
+var STATIC = ["style", "script", "image", "font", "manifest"];
 
 self.addEventListener("install", function (e) {
   e.waitUntil(
@@ -29,6 +30,16 @@ self.addEventListener("fetch", function (e) {
   var url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
+  /* Pages: hamesha network se. Offline ho to sirf offline.html. Kuch cache nahi hota. */
+  if (req.mode === "navigate") {
+    e.respondWith(fetch(req).catch(function () { return caches.match(OFFLINE); }));
+    return;
+  }
+
+  if (STATIC.indexOf(req.destination) === -1) return;
+  /* kisi token ya parcel code wale url ko cache nahi karte */
+  if (/[?&](scan|c|token|access_token|code)=/i.test(url.search)) return;
+
   e.respondWith(
     fetch(req)
       .then(function (res) {
@@ -39,11 +50,7 @@ self.addEventListener("fetch", function (e) {
         return res;
       })
       .catch(function () {
-        return caches.match(req).then(function (hit) {
-          if (hit) return hit;
-          if (req.mode === "navigate") return caches.match(OFFLINE);
-          return Response.error();
-        });
+        return caches.match(req).then(function (hit) { return hit || Response.error(); });
       })
   );
 });
