@@ -39,8 +39,8 @@ body .home-product-grid .product .pic img{transition:transform .45s ease}
 }
 @media(prefers-reduced-motion:reduce){.pm-rv{opacity:1;transform:none;transition:none}.pm-sk i{animation:none}.promo-viewport{transform:none!important}}
 
-/* category photo circle ke andar poori dikhe (kate nahi) */
-.cat-img{background:#fff!important}
-.cat-img img{padding:10%!important;object-fit:contain!important;border-radius:50%}
+/* category photo rounded square me poori dikhe (kate nahi) */
+.cat-img{background:#fff!important;border-radius:24%!important}
+.cat-img img{padding:3%!important;object-fit:contain!important;border-radius:0}
 /* phone ka auto dark-mode site ko ulta na kare */
 :root{color-scheme:only light}
