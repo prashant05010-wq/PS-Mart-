@@ -174,7 +174,7 @@ function codeFrom(t){
   try{var u=new URL(t);var c=u.searchParams.get("c");if(c)return c.trim();}catch(e){}
   return t;
 }
-function openScan(){location.href="https://prashant05010-wq.github.io/PS-Scanner/";}
+function openScan(){location.href="delivery-scan.html";}
 async function closeScan(){
   document.getElementById("scanModal").classList.remove("show");
   try{if(scanner){await scanner.stop();scanner.clear();}}catch(e){}scanner=null;
