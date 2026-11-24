@@ -1,4 +1,4 @@
-/* PS Mart premium.js: scroll animation, loading skeleton, Delivery Partner section. Koi data ya login ko nahi chhuta. */
+/* PS Mart premium.js: scroll animation aur loading skeleton. Koi data ya login ko nahi chhuta. */
 (function () {
   function reveal() {
     if (!("IntersectionObserver" in window)) return;
@@ -27,16 +27,7 @@
       })(g);
     }
   }
-  function delivery() {
-    var sb = document.querySelector(".seller-banner");
-    if (!sb || document.querySelector(".pm-del")) return;
-    var d = document.createElement("section");
-    d.className = "seller-banner pm-del";
-    d.innerHTML = "<div><h2>Become a Delivery Partner</h2><p>Deliver PS Mart orders in your city and earn for every delivery.</p></div>" +
-      '<a class="seller-btn" href="delivery-register.html">Register as Delivery Partner</a>';
-    sb.parentNode.insertBefore(d, sb.nextSibling);
-  }
-  function run() { try { delivery(); skeleton(); reveal(); } catch (e) {} }
+  function run() { try { skeleton(); reveal(); } catch (e) {} }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run); else run();
   window.addEventListener("load", run);
 })();
