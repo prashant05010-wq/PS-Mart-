@@ -421,9 +421,9 @@ async function detail() {
 /* Premium design layer: premium.css aur premium.js apne aap load hoti hain */
 (function () {
   var l = document.createElement("link");
-  l.rel = "stylesheet"; l.href = "premium.css?v=2";
+  l.rel = "stylesheet"; l.href = "premium.css?v=3";
   document.head.appendChild(l);
   var s = document.createElement("script");
-  s.src = "premium.js?v=2"; s.defer = true;
+  s.src = "premium.js?v=3"; s.defer = true;
   document.head.appendChild(s);
 })();

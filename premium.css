@@ -38,3 +38,8 @@ body .home-product-grid .product .pic img{transition:transform .45s ease}
   body .home-product-grid .product:hover .pic img{transform:scale(1.07)}
 }
 @media(prefers-reduced-motion:reduce){.pm-rv{opacity:1;transform:none;transition:none}.pm-sk i{animation:none}.promo-viewport{transform:none!important}}
+
+/* category photo poora gol circle bharey (square dikhna band) */
+.cat-img img{padding:0!important;object-fit:cover!important;border-radius:50%}
+/* phone ka auto dark-mode site ko ulta na kare */
+:root{color-scheme:only light}

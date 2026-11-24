@@ -4,7 +4,8 @@
 .tab:active,.btn:active,.save-btn:active,.profile-btn:active,button.gold:active,.dp-btn:active,.btn-sm:active{transform:scale(.96)}
 .tab{border-radius:12px}
 .tab.active,.tab.on{box-shadow:0 4px 12px rgba(201,146,46,.45)}
-.profile-top,.dp-hero{box-shadow:0 12px 28px rgba(59,36,22,.25)}
+.dp-hero{box-shadow:0 12px 28px rgba(59,36,22,.25)}
+.profile-top{box-shadow:none!important;transform:none!important}
 .section:not(.hidden){animation:pdIn .35s ease}
 .stat,.dp-stat{border-top:3px solid #C9922E}
 @keyframes pdIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
