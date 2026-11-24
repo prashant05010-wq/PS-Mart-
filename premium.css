@@ -1,0 +1,40 @@
+/* PS Mart premium look: sirf halka CSS (transform + opacity). Blur ya bhaari effect nahi, taaki sasta Android phone bhi smooth chale. */
+.pm-rv{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
+.pm-rv.in{opacity:1;transform:none}
+/* navigation */
+.ps-search{box-shadow:0 6px 18px rgba(0,0,0,.28);transition:transform .2s,box-shadow .2s}
+.ps-search:focus-within{transform:translateY(-1px)}
+.ps-headlinks a{position:relative}
+.ps-headlinks a::after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:2px;border-radius:2px;background:#f0bd50;transform:scaleX(0);transition:transform .25s}
+.ps-headlinks a:hover::after{transform:scaleX(1)}
+.ps-logo-icon{box-shadow:0 0 0 3px rgba(240,189,80,.35),0 6px 14px rgba(0,0,0,.35)}
+.mobile-nav a{transition:transform .15s,color .2s}.mobile-nav a:active{transform:scale(.9)}
+/* hero banner */
+.promo-viewport{border-radius:18px;box-shadow:0 20px 44px rgba(59,36,22,.32),0 0 0 1px rgba(240,189,80,.45)}
+.promo-dots button[aria-current="true"]::before{box-shadow:0 2px 6px rgba(201,146,46,.6)}
+/* category cards (3D jaisa) */
+.cat-img{background:linear-gradient(160deg,#fff,#f6e9cb);border-color:#e9d39c;box-shadow:0 10px 18px rgba(59,36,22,.16),inset 0 -8px 12px rgba(201,146,46,.18),inset 0 3px 4px #fff}
+/* product cards */
+body .home-product-grid .product .pic img{transition:transform .45s ease}
+.psn-hint{display:none}
+/* buttons */
+#detail .action-buttons button,.goldbtn,.seller-btn{transition:transform .15s,box-shadow .2s}
+#detail .action-buttons button:active,.seller-btn:active{transform:scale(.97)}
+/* delivery partner section */
+.pm-del{margin-top:18px;background:linear-gradient(110deg,#f7dd9b,#f0bd50 55%,#C9922E)!important;border-color:#3B2416!important}
+.pm-del h2{color:#3B2416!important}.pm-del p{color:#4a2f1a!important}
+.pm-del .seller-btn{background:#3B2416;color:#f7dd9b;box-shadow:0 6px 16px rgba(36,21,11,.4)}
+/* loading skeleton */
+.pm-sk{background:#fff;border:1px solid #e6dac3;border-radius:12px;padding:8px}
+.pm-sk i{display:block;border-radius:8px;background:linear-gradient(90deg,#f1e8d4 25%,#faf4e6 50%,#f1e8d4 75%);background-size:200% 100%;animation:pmsh 1.2s linear infinite}
+.pm-sk i:nth-child(1){aspect-ratio:1/1}.pm-sk i:nth-child(2){height:12px;margin-top:10px;width:90%}.pm-sk i:nth-child(3){height:14px;margin-top:8px;width:45%}
+@keyframes pmsh{to{background-position:-200% 0}}
+/* 3D hover sirf mouse wale device par (phone par nahi) */
+@media(hover:hover) and (pointer:fine){
+  .promo-viewport{transform:perspective(1200px) rotateX(1.5deg);transition:transform .45s}
+  .promo-viewport:hover{transform:perspective(1200px) rotateX(0)}
+  .cat-tile:hover .cat-img{transform:translateY(-7px) scale(1.05)!important;box-shadow:0 18px 26px rgba(59,36,22,.24),inset 0 3px 4px #fff!important}
+  body .home-product-grid .product:hover{transform:translateY(-6px) perspective(900px) rotateX(1.2deg)!important;box-shadow:0 20px 34px rgba(59,36,22,.22)!important}
+  body .home-product-grid .product:hover .pic img{transform:scale(1.07)}
+}
+@media(prefers-reduced-motion:reduce){.pm-rv{opacity:1;transform:none;transition:none}.pm-sk i{animation:none}.promo-viewport{transform:none!important}}

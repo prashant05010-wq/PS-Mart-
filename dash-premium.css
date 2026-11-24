@@ -1,0 +1,15 @@
+/* PS Mart dashboards ka premium look (customer profile, seller, admin, delivery). Sirf dikhawat: layout, data aur buttons ka kaam nahi badalta. */
+.card,.stat,.dp-card,.dp-stat{border:1px solid #e6dac3;border-radius:16px;box-shadow:0 6px 18px rgba(59,36,22,.08);transition:transform .2s,box-shadow .2s}
+.tab,.btn,.save-btn,.profile-btn,button.gold,.dp-btn,.refresh,.btn-sm{transition:transform .15s,box-shadow .2s,background .2s}
+.tab:active,.btn:active,.save-btn:active,.profile-btn:active,button.gold:active,.dp-btn:active,.btn-sm:active{transform:scale(.96)}
+.tab{border-radius:12px}
+.tab.active,.tab.on{box-shadow:0 4px 12px rgba(201,146,46,.45)}
+.profile-top,.dp-hero{box-shadow:0 12px 28px rgba(59,36,22,.25)}
+.section:not(.hidden){animation:pdIn .35s ease}
+.stat,.dp-stat{border-top:3px solid #C9922E}
+@keyframes pdIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(hover:hover) and (pointer:fine){
+  .card:hover,.stat:hover,.dp-card:hover,.dp-stat:hover{transform:translateY(-3px);box-shadow:0 14px 28px rgba(59,36,22,.16)}
+  .tab:hover,.btn:hover,.save-btn:hover,.profile-btn:hover,button.gold:hover,.dp-btn.gold:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(201,146,46,.35)}
+}
+@media(prefers-reduced-motion:reduce){.section:not(.hidden){animation:none}.card,.stat,.dp-card,.dp-stat{transition:none}}

@@ -417,3 +417,13 @@ async function detail() {
   s.defer = true;
   document.head.appendChild(s);
 })();
+
+/* Premium design layer: premium.css aur premium.js apne aap load hoti hain */
+(function () {
+  var l = document.createElement("link");
+  l.rel = "stylesheet"; l.href = "premium.css?v=1";
+  document.head.appendChild(l);
+  var s = document.createElement("script");
+  s.src = "premium.js?v=1"; s.defer = true;
+  document.head.appendChild(s);
+})();
