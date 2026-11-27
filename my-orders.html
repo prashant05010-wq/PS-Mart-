@@ -10,7 +10,7 @@
   gtag('config', 'G-RF64CHGYC8');
 </script>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://checkout.razorpay.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.postalpincode.in https://api.razorpay.com https://lumberjack.razorpay.com https://lumberjack-cx.razorpay.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; frame-src https://api.razorpay.com https://checkout.razorpay.com; object-src 'none'; base-uri 'self'">
 <script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
 <title>My Orders | PS Mart</title>
@@ -85,6 +85,8 @@ button,input,select{font-family:inherit}
 @media(max-width:600px){.product-image{width:72px;height:72px}.order-top{padding:12px}.order-body{padding:14px}.step span{font-size:10px}.circle{width:26px;height:26px;font-size:12px}}
 </style>
 <link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script src="no-zoom.js"></script>
+<meta name="robots" content="noindex, nofollow">
 </head>
 <body>
 
@@ -362,6 +364,5 @@ setInterval(async function(){
   }catch(e){console.log("Background refresh error:",e);}
 },15000);
 </script>
-<script src="ps-realtime.js" data-tables="orders,seller_orders,notifications"></script>
 </body>
 </html>

@@ -11,7 +11,7 @@
   gtag('config', 'G-RF64CHGYC8');
 </script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'">
 <script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
 
@@ -105,6 +105,8 @@ header{background:#3b2416;color:white;padding:16px 25px;display:flex;justify-con
 
 <link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="dash-premium.css?v=1">
+<link rel="stylesheet" href="seller-rewards.css">
+<meta name="robots" content="noindex, nofollow">
 </head>
 
 <body>
@@ -393,6 +395,24 @@ header{background:#3b2416;color:white;padding:16px 25px;display:flex;justify-con
       <button
         onclick="location.href='seller-refer.html'">
         Open Refer &amp; Earn
+      </button>
+
+    </div>
+
+
+    <div class="card" id="srCard" style="display:none">
+
+      <h3>Seller Rewards &amp; Achievements</h3>
+
+      <div class="sr-mini-body"></div>
+
+      <p>
+        Level, badge, milestone progress aur rewards.
+      </p>
+
+      <button
+        onclick="location.href='seller-rewards.html'">
+        View Rewards
       </button>
 
     </div>
@@ -802,6 +822,9 @@ async function logoutSeller(){
 loadSeller();
 
 </script>
+
+<script src="seller-rewards.js"></script>
+<script src="no-zoom.js"></script>
 
 </body>
 </html>

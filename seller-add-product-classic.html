@@ -10,7 +10,7 @@
   gtag('config', 'G-RF64CHGYC8');
 </script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'">
 <script>if (window.top !== window.self) { window.top.location = window.self.location; }</script>
 <title>Add Product | PS Mart</title>
@@ -49,6 +49,8 @@ button:disabled{opacity:.6;cursor:wait}
 @media(max-width:560px){.grid{grid-template-columns:1fr}.box{padding:15px}#previews{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 <link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script src="no-zoom.js"></script>
+<meta name="robots" content="noindex, nofollow">
 </head>
 <body>
 
@@ -91,7 +93,7 @@ button:disabled{opacity:.6;cursor:wait}
 
 <label>Product Title <i>*</i></label>
 <input id="productName" required minlength="8" maxlength="180" placeholder="Brand + Model + khaas baat. jaise: boAt Airdopes 141 Bluetooth Earbuds (Black)">
-<p class="hint">Flipkart jaisa title likhiye: Brand, Model, Type aur Colour. Sirf CAPITAL letters ya kai emoji mat lagaiye.</p>
+<p class="hint">Saaf title likhiye: Brand, Model, Type aur Colour. Sirf CAPITAL letters ya kai emoji mat lagaiye.</p>
 
 <label>SKU / Aapka Product Code</label>
 <input id="sku" maxlength="80" placeholder="Apna andar ka code (optional)">

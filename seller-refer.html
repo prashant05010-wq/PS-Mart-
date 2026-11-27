@@ -8,10 +8,11 @@
   gtag('js', new Date());
   gtag('config', 'G-RF64CHGYC8');
 </script>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"><meta name="robots" content="noindex">
 <link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="dp-style.css">
 <title>Commission &amp; Refer &amp; Earn | PS Mart</title>
+<script src="no-zoom.js"></script>
 </head>
 <body class="dp">
 <div class="dp-top"><b>🎁 Refer &amp; Earn</b><div><a href="seller-dashboard.html">Dashboard</a> <a href="seller-wallet.html">Wallet</a></div></div>
@@ -80,7 +81,7 @@ async function loadRef(){
 
   var h='<h3 style="font-family:Georgia,serif;margin:6px 0 8px">Referral Statistics</h3><div class="dp-grid">'
    +st("Total Referrals",s.total)+st("Pending",s.pending)+st("Approved",s.approved)+st("50 Products Complete",s.milestone_done)+st("Eligible ₹"+R.reward+" Rewards",s.eligible_rewards)+'</div>'
-   +'<h3 style="font-family:Georgia,serif;margin:16px 0 8px">Referral Wallet</h3><div class="dp-grid">'
+   +'<h3 style="font-family:Georgia,serif;margin:16px 0 8px">Rewards Wallet (Referral + Upload)</h3><div class="dp-grid">'
    +st("Available Balance",dpInr(w.available),1)+st("Pending",dpInr(w.pending))+st("₹"+R.reward+" Milestone",dpInr(w.milestone))+st(R.share_percent+"% Commission Share",dpInr(w.share))+st("Adjustments",dpInr(w.adjustments))+st("Paid",dpInr(w.paid))+st("Total Earned",dpInr(w.total_earned),1)+st("Payout process me",dpInr(w.in_payout))+'</div>'
    +'<div class="dp-card" style="margin-top:12px"><h3>Payout request</h3><div id="pm"></div><label class="dp-l" for="upi">Aapki UPI ID</label><input class="dp-in" id="upi" maxlength="60" placeholder="naam@bank"><button class="dp-btn gold" id="bPay">Available balance ('+dpInr(w.available)+') nikalein</button><div class="dp-hint">Kam se kam ₹'+R.min_payout+' available hona chahiye. "Paid" tabhi dikhega jab admin payment ka transaction reference save kare.</div></div>';
   h+='<h3 style="font-family:Georgia,serif;margin:16px 0 8px">Referred Sellers</h3>';
@@ -89,7 +90,7 @@ async function loadRef(){
      +'<br>'+R.share_days+' din ka program: '+(r.share_start?dpDay(r.share_start)+' – '+dpDay(r.share_end):'pehli commission wali sale par shuru hoga')
      +'<br>Eligible commission: '+dpInr(r.commission_generated)+' · Aapki kamayi: <b>'+dpInr(r.earned)+'</b></div></div>';}).join(""):'<div class="dp-card">Abhi koi referral nahi. Link share karein!</div>';
   h+='<h3 style="font-family:Georgia,serif;margin:16px 0 8px">Referral Transactions</h3>';
-  h+=d.transactions.length?d.transactions.map(function(x){var k={milestone:"₹"+R.reward+" Milestone",share:R.share_percent+"% Share",adjustment:"Adjustment"}[x.kind];
+  h+=d.transactions.length?d.transactions.map(function(x){var k={milestone:"₹"+R.reward+" Milestone",share:R.share_percent+"% Share",adjustment:"Adjustment",upload_reward:"Upload Reward"}[x.kind]||x.kind;
      return '<div class="dp-card" style="padding:12px"><div style="display:flex;justify-content:space-between"><b>'+esc(k)+'</b><b>'+dpInr(x.amount)+'</b></div><div class="dp-hint">ID #'+x.id+' · '+dpDate(x.created_at)+(x.referred_name?' · '+esc(x.referred_name):'')+(x.order_id?' · Order #'+esc(x.order_id):'')+'<br>'+dpBadge(x.status)+'</div></div>';}).join(""):'<div class="dp-card">Abhi koi transaction nahi.</div>';
   h+='<h3 style="font-family:Georgia,serif;margin:16px 0 8px">Payment History</h3>';
   h+=d.payouts.length?d.payouts.map(function(p){return '<div class="dp-card" style="padding:12px"><div style="display:flex;justify-content:space-between"><b>'+dpInr(p.amount)+'</b>'+dpBadge(p.status==="processing"?"pending":p.status)+'</div><div class="dp-hint">#'+p.id+' · '+dpDate(p.created_at)+(p.status==="paid"?'<br>Paid: '+dpDate(p.paid_at)+' · Ref: <b>'+esc(p.txn_ref)+'</b>':'<br>Status: '+esc(p.status))+'</div></div>';}).join(""):'<div class="dp-card">Abhi koi payout nahi.</div>';

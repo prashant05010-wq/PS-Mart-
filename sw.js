@@ -2,7 +2,7 @@
    Sirf SAFE static files (css, js, images, fonts, manifest) cache hoti hain, wo bhi network-first.
    Pages (HTML), Supabase ka data, login/session, parcel ya customer ki koi jaankari cache NAHI hoti.
    Offline hone par sirf offline.html dikhta hai. Doosri site (Supabase / CDN) ki requests ko ye chhuta nahi. */
-var CACHE = "psmart-v2";
+var CACHE = "psmart-v3";
 var OFFLINE = "offline.html";
 var STATIC = ["style", "script", "image", "font", "manifest"];
 
