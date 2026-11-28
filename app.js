@@ -2519,3 +2519,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   await detail();
 
 });
+
+
+/* ===== Coupon auto-apply: coupons page par "Claim/Apply" dabane par cart me coupon apne aap lagta hai ===== */
+(function(){
+  if(!/cart\.html$/i.test(location.pathname)) return;
+  var tries=0;
+  var t=setInterval(async function(){
+    tries++;
+    var code=null;
+    try{code=localStorage.getItem("psmart-auto-apply-coupon");}catch(_){}
+    if(!code){clearInterval(t);return;}
+    var inp=document.getElementById("couponInput");
+    if(inp&&typeof applyCoupon==="function"){
+      clearInterval(t);
+      try{localStorage.removeItem("psmart-auto-apply-coupon");}catch(_){}
+      var done=null;try{done=JSON.parse(localStorage.getItem("psmart-applied-coupon")||"null");}catch(_){}
+      if(done&&String(done.code).toUpperCase()===String(code).toUpperCase())return;
+      inp.value=code;
+      try{await applyCoupon();}catch(_){}
+    }else if(tries>40){clearInterval(t);}
+  },250);
+})();
